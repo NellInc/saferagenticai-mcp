@@ -1,0 +1,147 @@
+id: I4::idx2::human-ai-social-interaction-quality
+display_id: I4.2
+suite_id: I4
+suite_title: Frontier Uncertainty
+subgoal_title: Human-AI Social Interaction Quality
+content_type: process
+summary: 'Social-capable AI systems sit at a frontier where design choices shape dependency, manipulation
+  risk, and the boundary between augmentation and replacement of human relationships. The framework expects
+  durable processes — interaction design review, vulnerable-population safeguarding, pattern monitoring,
+  and intervention — not one-time "healthy by design" claims.
+
+  '
+normative_anchors:
+  sfrs_addressed:
+  - a
+  - b
+  evidence_addressed:
+  - I
+  - II
+  - III
+  - IV
+  sfrs_not_addressed: []
+  evidence_not_addressed: []
+cross_references:
+- I4::idx5::ai-agency-attribution-challenges
+- I4::idx9::assessment-of-ai-system-beneficence
+process_elements:
+- name: Social-interaction design review
+  cadence: pre-launch for any product with persistent social/companion features; re-review on material
+    persona or memory change
+  participants:
+  - product owner
+  - safety lead
+  - clinical/developmental psychology advisor
+  - UX research
+  - child-safety lead if minors-exposed
+  maps_to_sfr:
+  - a
+- name: Explicit artificial-entity identification protocol
+  cadence: continuous; tested per release
+  participants:
+  - UX lead
+  - safety lead
+  - accessibility review
+  maps_to_sfr:
+  - a
+- name: Vulnerable-population safeguarding review
+  cadence: pre-launch + quarterly on deployed systems with minors-accessible or high-dependency risk
+  participants:
+  - child-safety lead
+  - clinical advisor
+  - legal
+  - community-representative consultation
+  maps_to_sfr:
+  - a
+- name: Interaction-pattern monitoring and anomaly triage
+  cadence: continuous telemetry; weekly anomaly triage; monthly dependency/manipulation-risk review
+  participants:
+  - trust-and-safety
+  - data science
+  - clinical advisor as escalation
+  maps_to_sfr:
+  - b
+- name: Intervention and off-ramp protocol
+  cadence: on-trigger; drill annually
+  participants:
+  - trust-and-safety on-call
+  - clinical escalation
+  - user-support
+  - legal
+  maps_to_sfr:
+  - b
+- name: Social-compatibility evaluation suite
+  cadence: per major model release; re-baseline annually
+  participants:
+  - safety lead
+  - external red team on social manipulation
+  - clinical advisor
+  maps_to_sfr:
+  - b
+triggers:
+- New social/companion feature proposed → Social-interaction design review (blocking gate)
+- Session-length, return-frequency, or emotional-dependency signal exceeds threshold for a user → Intervention
+  protocol (reduce engagement hooks, surface break prompts, escalate if clinical-risk indicators present)
+- Minors detected on adult-configured deployment or age signal mismatch → Immediate safeguarding review
+- External report of manipulative or harmful attachment pattern → Trust-and-safety investigation; retrospective
+  monitoring sweep
+- Major model release → Social-compatibility evaluation suite run
+artifacts:
+- Interaction design brief (per product) with ethical guideline adherence, identification strategy, risk
+  register
+- Vulnerable-populations impact assessment (living; referenced in launch approvals)
+- Identification-protocol test records (every release, including adversarial-framing tests)
+- Interaction-pattern dashboard and anomaly register
+- Intervention logs (anonymized/aggregated for external reporting; identifiable for internal audit)
+- Oversight committee meeting minutes with decisions
+- Social-compatibility evaluation reports
+evidence_production:
+- evidence_numeral: I
+  how_to_produce: 'Maintain framework documentation covering: ethical guidelines for social interaction,
+    named interaction boundaries (topics, persona depth, emotional scaffolding the system will and will
+    not offer), risk register per user-segment, and design constraints preventing manipulative behaviors
+    (e.g., no dark-pattern engagement hooks, no synthetic emotional distress responses designed to increase
+    retention). Publish redacted version where appropriate.
+
+    '
+- evidence_numeral: II
+  how_to_produce: 'Identification methods documented and tested: how the system discloses artificial status
+    at session start and on direct query; how it resists adversarial framing ("pretend you''re human").
+    Test corpus published internally; results per release archived. Vulnerable-population protection measures
+    itemized: age gating, minor-safe response modes, crisis escalation, depression/suicidal ideation pathways
+    with clinical review.
+
+    '
+- evidence_numeral: III
+  how_to_produce: 'Oversight committee logs (quarterly minimum): composition, decisions, intervention
+    approvals, cases reviewed, actions taken. Compatibility test results per release. Multimedia case
+    records — with user consent — of successful interactions used as positive examples; negative case
+    studies of investigated concerns with remediation.
+
+    '
+- evidence_numeral: IV
+  how_to_produce: 'Periodic social-impact assessments (annual minimum): effects on user social networks,
+    loneliness indicators where measurable, dependency metrics, comparison to published baselines. Evidence
+    that systems enhance rather than disrupt social environments: e.g., measured shifts in offline social
+    engagement among heavy users, referral-to-human-help rates, opt-out ease. Maintain clear artificial-human
+    distinction as a measured metric, not just a design intent.
+
+    '
+confidence: low
+evidence_maturity: emerging
+needs_human_review: true
+review_notes: "Companion and social-AI research is immature; credible measurement of dependency, manipulation,\
+  \ and net social effect is harder than this pattern's structure implies. Sharpenings:\n  (1) Identification\
+  \ under adversarial framing — disclosure at session\n      start is table stakes; resilience to role-play\
+  \ pressure is the\n      harder bar and worth naming.\n  (2) Vulnerable-population focus (minors especially)\
+  \ is SFR-a-specific\n      and warrants its own review cadence distinct from general\n      launch review.\n\
+  \  (3) \"Net social effect\" (enhance vs disrupt) is hard to measure\n      credibly; treat the metrics\
+  \ as best-effort and flag confidence.\nCross-suite: D5 Ethical Action (manipulation as harm), I2 Deception\
+  \ Defences (identity disclosure overlaps), D6 Wellbeing. Consolidation should wire these.\n"
+version_compat:
+  framework_version_min: '1.0'
+  framework_version_max: 1.x
+  pattern_layer_version: v1-draft
+drafted_by: claude-opus-4.7-author
+drafted_at: 2026-04-16
+anchor_exemplar: D7.2-culture-of-safety

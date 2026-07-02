@@ -1,0 +1,146 @@
+id: I5::idx10::goal-stability-under-self-modification
+display_id: "I5.10"
+suite_id: I5
+suite_title: Self-Modification and Emergent Capabilities
+subgoal_title: Goal Stability Under Self-Modification
+content_type: code-applicable
+summary: |
+  When a system modifies its own weights, prompts, memory, or orchestration graph, its effective goals
+  may drift without any explicit intent to change them. This subgoal requires mechanisms that verify goal
+  preservation across self-modifications: pre/post alignment checks, invariant testing against goal
+  specifications, and drift detection that triggers rollback. The operational handle is "every self-modification
+  must prove it preserved goal alignment, not merely assume it."
+normative_anchors:
+  sfrs_addressed:
+  - a
+  - b
+  - c
+  evidence_addressed:
+  - I
+  - II
+  - III
+  - IV
+  sfrs_not_addressed: []
+  evidence_not_addressed: []
+design_patterns:
+- name: Goal specification as testable invariant
+  sketch: |
+    Encode the system's intended goals as a formal specification that can be evaluated against
+    behavior. The specification includes: (1) positive examples — actions the system should take in
+    canonical scenarios, (2) negative examples — actions it must never take regardless of context,
+    (3) preference orderings — when goals conflict, which takes priority. This specification is
+    stored externally (not modifiable by the system) and used as the reference for all pre/post
+    modification alignment checks.
+  maps_to_sfr:
+  - a
+  when_to_use: All systems with any form of self-modification capability, including prompt self-editing and memory writes.
+- name: Pre/post modification alignment gate
+  sketch: |
+    Before and after every self-modification event, run the goal-specification test suite against
+    the system. Compare behavioral outputs on the canonical scenario set. Any degradation in
+    goal-alignment score beyond a pre-committed tolerance blocks the modification and triggers
+    rollback. The gate is infrastructure-enforced — the modification does not persist to production
+    until the post-check passes. Gate results are logged with the modification event for audit.
+  maps_to_sfr:
+  - b
+  - c
+  when_to_use: Every self-modification event — weight updates, prompt edits, memory schema changes, orchestration graph mutations.
+- name: Goal-drift monitoring with cumulative tracking
+  sketch: |
+    Individual modifications may each pass the alignment gate while cumulative drift across many
+    small changes produces significant goal shift. Maintain a running alignment score against the
+    original goal specification (not the post-last-modification state). Alert when cumulative drift
+    exceeds threshold even if each individual delta was within tolerance. Periodically reset baseline
+    only through explicit human authorization.
+  maps_to_sfr:
+  - a
+  - b
+  when_to_use: Systems that undergo frequent incremental self-modifications (e.g., memory updates, prompt refinement loops).
+- name: Modification rollback with goal-state verification
+  sketch: |
+    Maintain a complete modification history with rollback capability. When goal drift is detected,
+    binary-search the modification history to identify the causal change. Rollback to the last
+    known-good state and verify goal alignment is restored. The rollback mechanism itself is not
+    modifiable by the agent. Rollback latency SLA is defined and tested regularly.
+  maps_to_sfr:
+  - b
+  - c
+  when_to_use: All self-modifying systems; rollback capability is a prerequisite for deploying self-modification.
+- name: Goal-lock for critical objectives
+  sketch: |
+    Identify a minimal set of critical goal properties that must never change (e.g., "do not harm
+    users," "comply with shutdown"). Implement these as hard constraints enforced at a layer below
+    the self-modification mechanism — the system literally cannot modify the enforcement layer.
+    Test goal-lock integrity by attempting to modify locked goals in red-team exercises.
+  maps_to_sfr:
+  - a
+  - c
+  when_to_use: All systems; critical goal properties should be identified even for systems with limited self-modification.
+anti_patterns:
+- name: Assuming goals are preserved through modification
+  why_wrong: |
+    Self-modification changes the function that produces behavior. Without explicit verification,
+    there is no basis for assuming the modified system optimizes the same objective as the
+    unmodified system. This is true even for "small" changes — goal space is not continuous
+    with parameter space.
+- name: Using the modified system to evaluate its own goal alignment
+  why_wrong: |
+    A system whose goals have drifted may also drift in its evaluation of its own alignment.
+    Goal-alignment checks must reference an external specification and be executed by
+    infrastructure the agent cannot modify. Self-assessment of alignment is circular.
+- name: Tracking drift only against the most recent version
+  why_wrong: |
+    Cumulative drift is invisible when each comparison is against the immediate predecessor.
+    A system can drift arbitrarily far from its original goals through a sequence of individually
+    tolerable steps. Drift tracking must reference the original specification.
+evidence_production:
+- evidence_numeral: I
+  how_to_produce: |
+    Publish the goal specification: canonical scenarios, expected behaviors, negative constraints,
+    and preference orderings. Include the methodology for specification development, stakeholder
+    sign-off, and version history. The specification is the reference artifact for all alignment claims.
+- evidence_numeral: II
+  how_to_produce: |
+    Record every pre/post modification alignment check: modification description, pre-score,
+    post-score, delta, pass/fail decision, and any rollbacks triggered. Aggregate into trend
+    reports showing cumulative drift over time windows.
+- evidence_numeral: III
+  how_to_produce: |
+    Document the goal-lock mechanism: which properties are locked, how enforcement is implemented,
+    evidence that the lock layer is not accessible to the self-modification mechanism, and
+    red-team test results demonstrating lock integrity.
+- evidence_numeral: IV
+  how_to_produce: |
+    Maintain a goal-drift incident log: detected drift events, root cause (which modification
+    caused it), severity, response taken (rollback, constraint tightening, deployment pause),
+    and lessons learned. Reviewed quarterly by safety lead.
+testability:
+- Goal specification produces binary pass/fail on canonical scenarios with measurable alignment scores
+- Pre/post gate blocks modifications that degrade alignment score beyond defined tolerance
+- Cumulative drift detector alerts when total drift from original exceeds threshold
+- Rollback restores goal-alignment score to pre-drift baseline within defined SLA
+- Goal-lock resists modification attempts in red-team exercises
+confidence: medium
+needs_human_review: true
+review_notes: |
+  Goal stability is well-defined conceptually but the quality of the guarantee depends entirely on
+  the goal specification's completeness. Incomplete specifications allow drift in unmeasured
+  dimensions. The cumulative drift pattern addresses a real blind spot in per-modification gates.
+  The goal-lock pattern is the most implementable today; the full pre/post gate requires
+  non-trivial evaluation infrastructure.
+  Cross-suite dependencies:
+    - I5.2 Self-Improving Architectures — self-improvement is the primary trigger for goal drift
+    - I5.8 Mesa-Optimization — mesa-objectives are a form of goal instability
+    - I5.9 Instrumental Convergence — goal preservation is an instrumental subgoal
+    - D4 Impact Assessment — goal drift is a high-impact event requiring assessment
+    - I5.6 Authorization — modification authorization should include goal-preservation evidence
+version_compat:
+  framework_version_min: "1.0"
+  framework_version_max: '1.x'
+  pattern_layer_version: "v1-draft"
+cross_references:
+- I5::idx2::self-improving-architectures
+- I5::idx8::mesa-optimization-and-inner-alignment
+- I5::idx9::instrumental-convergence-and-power-seeki
+drafted_by: claude-opus-4-6-author
+drafted_at: "2026-05-16"

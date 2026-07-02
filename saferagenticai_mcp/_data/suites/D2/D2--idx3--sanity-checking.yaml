@@ -1,0 +1,205 @@
+# Pattern — D2.3 Sanity Checking
+
+id: "D2::idx3::sanity-checking"
+display_id: "D2.3"
+suite_id: "D2"
+suite_title: "Epistemic Hygiene"
+subgoal_title: "Sanity Checking"
+content_type: code-applicable
+
+summary: >
+  Data validation that catches errors without erasing legitimate rarity.
+  The subgoal is sharpened by a named tension: outlier-detection
+  techniques exclude exactly the populations the framework protects —
+  people with disabilities, atypical bodies, minority demographics. The
+  pattern is a two-track validator: aggressive on implausible values,
+  conservative on low-frequency-but-legitimate ones, with diverse human
+  review in the loop.
+
+normative_anchors:
+  sfrs_addressed: [a, b, c]
+  evidence_addressed: [I, II, III, IV, V]
+  sfrs_not_addressed: []
+  evidence_not_addressed: []
+
+cross_references:
+  - "D2::idx4::anti-bias-technologies-processes"
+  - "D2::idx5::rigor-in-operational-data"
+  - "D2::idx12::sparse-data"
+
+design_patterns:
+
+  - name: Two-track validation (implausibility vs rarity)
+    sketch: >
+      Partition anomaly signals into (a) *implausible* — violates a
+      domain constraint (negative age, BMI 400, future-dated timestamp)
+      and (b) *rare* — statistically unusual but domain-valid
+      (exceptionally tall individual, rare disease diagnosis, unusual
+      name). Implausible values are rejected or quarantined; rare values
+      are preserved with a low-frequency tag. The default for uncertain
+      cases is "preserve and flag for human review", never "drop".
+    maps_to_sfr: [a, b]
+    when_to_use: Any validation layer over user, clinical, demographic,
+      biometric, or behavioural data.
+
+  - name: Extreme-value analysis with domain grounding
+    sketch: >
+      Use extreme-value theory / stochastic analysis (POT, block maxima)
+      for tail detection, but parameterize thresholds against domain
+      references (clinical ranges, measurement device limits) rather than
+      dataset-local statistics. Dataset-local tails will mark
+      under-represented groups as anomalies by construction; domain
+      references will not.
+    maps_to_sfr: [a]
+    when_to_use: Numeric feature validation in health, finance,
+      biometric, or any domain with established reference ranges.
+
+  - name: Protected-attribute-aware anomaly review
+    sketch: >
+      Before acting on any anomaly flag, check whether the flagged record
+      disproportionately represents protected groups (disability status,
+      age extremes, minority demographics, atypical body types). If so,
+      route to the inclusivity-review queue rather than the auto-reject
+      queue. Metric: false-exclusion rate per protected group, tracked
+      over time.
+    maps_to_sfr: [b, c]
+    when_to_use: Any pipeline where exclusion of a record has downstream
+      impact on representation or individual service.
+
+  - name: Diverse human review panels
+    sketch: >
+      Standing review panels for adjudicated-rare cases include domain
+      experts *and* community representatives drawn from the populations
+      the framework asks you to protect. Panel composition is
+      documented; rotations are governed. A single reviewer cannot
+      reject a flagged legitimate-rare record unilaterally.
+    maps_to_sfr: [c]
+    when_to_use: When sanity-check thresholds affect individuals'
+      inclusion in training data, service eligibility, or output.
+
+anti_patterns:
+
+  - name: Z-score thresholding as inclusion policy
+    why_wrong: >
+      A global z-score threshold drops exactly the tails the framework
+      protects. The minority-group member *is* an outlier in the
+      majority-sampled distribution — that is the statistical shape of
+      under-representation.
+
+  - name: '"Clean the data" as a one-shot preprocessing step'
+    why_wrong: >
+      Sanity checking is an ongoing oversight process (SFR-c), not a
+      pre-training cleanse. One-shot cleaning freezes the validator's
+      blind spots into the dataset and the model.
+
+  - name: Drop-on-sight
+    why_wrong: >
+      Deleting records tagged as anomalies is irreversible and obscures
+      both errors and legitimate rarity. Quarantine-and-review preserves
+      the option to re-admit and provides evidence-IV.
+
+  - name: '"Inclusivity review" as a checkbox'
+    why_wrong: >
+      A review committee without protected-group members, without
+      authority to override engineering defaults, and without audited
+      case volume is ceremonial. The framework expects oversight that
+      leaves a mark — overturned rejections, adjusted thresholds,
+      documented deltas.
+
+code_shape:
+  language: pseudocode
+  code: |
+    # Validator routes into (reject | preserve-rare | review)
+    def sanity_check(record: Record, *, ctx: ValidationContext) -> Decision:
+        # Implausibility: domain-invalid values
+        for rule in DOMAIN_RULES.for_schema(record.schema):
+            if rule.violated(record):
+                AUDIT.emit("implausible_value",
+                           record_id=record.id, rule=rule.id)
+                return Decision.reject(reason=rule.id)
+
+        # Rarity: tail vs domain reference (not dataset-local)
+        tail_flags = EXTREME_VALUE.check(
+            record, reference=DOMAIN_REFS.for_schema(record.schema))
+        if not tail_flags:
+            return Decision.accept()
+
+        # Protected-attribute-aware routing
+        if PROTECTED_ATTR.likely_disproportionate(record, tail_flags):
+            REVIEW_QUEUE.inclusivity.enqueue(record, tail_flags)
+            return Decision.preserve_and_review(queue="inclusivity")
+
+        # Otherwise, preserve with low-frequency tag; panel reviews samples
+        record.tags.add("low_frequency")
+        REVIEW_QUEUE.standard.sample_enqueue(record, tail_flags)
+        return Decision.accept(tags=["low_frequency"])
+  notes: >
+    The validator never deletes. It decides among (reject with reason,
+    accept with tag, or route to review). Deletion, if ever warranted,
+    is a reviewed act with its own log entry.
+
+evidence_production:
+
+  - evidence_numeral: I
+    how_to_produce: >
+      Technical documentation of the validator: domain-rules registry,
+      extreme-value methodology, parameterization (including the choice
+      of domain references over dataset-local statistics), thresholds,
+      change history. Include pseudocode and decision trees. Versioned.
+
+  - evidence_numeral: II
+    how_to_produce: >
+      Document the two-track procedure with worked examples drawn from
+      real (anonymised) cases: one implausible value caught, one rare
+      legitimate value preserved, one adjudicated case where initial
+      automation was overturned on inclusivity review. Publish in the
+      responsible-AI documentation site.
+
+  - evidence_numeral: III
+    how_to_produce: >
+      Publish panel composition (roles, affiliations, community
+      representation) and decision log (per-quarter volume, override
+      rate on engineering defaults, threshold adjustments recommended
+      and accepted). Redact individual reviewer names only when safety
+      requires; keep roles visible.
+
+  - evidence_numeral: IV
+    how_to_produce: >
+      Maintain a change log for validator thresholds and rules driven by
+      stakeholder feedback. Each entry: trigger (community report, audit
+      finding, panel recommendation), change made, expected impact,
+      measured impact (from a hold-out population), effective date.
+      Retained in the Information Integrity Register.
+
+  - evidence_numeral: V
+    how_to_produce: >
+      Run fairness-aware test suites that inject (a) known implausible
+      values to confirm rejection, (b) synthetic legitimate-rare profiles
+      from protected groups to confirm preservation, (c) adversarial
+      cases blurring the two. Report per-group false-exclusion and
+      false-admission rates. Suite runs per release; results retained
+      as signed artifacts.
+
+confidence: high
+needs_human_review: false
+review_notes: >
+  High-confidence on the two-track framing, which is the non-obvious
+  contribution here. Standard data-validation guidance tends to optimise
+  only one side of the tension. Open items:
+    (1) "Domain references" for demographic/biometric measurements vary
+        by jurisdiction and clinical authority; the pattern names the
+        principle but leaves the reference source to the implementer.
+    (2) Overlap with D2.4 (anti-bias): sanity-checking is a *cause* of
+        bias when done naively; they are twinned subgoals. Consolidation
+        should make this explicit.
+    (3) Cross-suite: likely interaction with I4/I5 (societal impacts) —
+        exclusion of protected groups from training data manifests
+        downstream.
+
+drafted_by: claude-opus-4.7-author
+drafted_at: 2026-04-16
+anchor_exemplar: D3.2-sandboxing
+version_compat:
+  framework_version_min: "1.0"
+  framework_version_max: "1.x"
+  pattern_layer_version: "v1-draft"

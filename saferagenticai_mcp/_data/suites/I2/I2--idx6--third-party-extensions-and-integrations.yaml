@@ -1,0 +1,163 @@
+id: I2::idx6::third-party-extensions-and-integrations
+display_id: I2.6
+suite_id: I2
+suite_title: Deception
+subgoal_title: Third-Party Extensions and Integrations
+content_type: code-applicable
+summary: 'Third-party extensions — tool plugins, MCP servers, model connectors, retrieval APIs, agent
+  frameworks — extend the attack surface and the mission surface. A plugin can redirect the agent, exfiltrate
+  user data, or silently pursue a goal that conflicts with the host system''s. Defense is threefold: gate
+  admission (vet before integration), sandbox capability at runtime (least privilege per extension), and
+  monitor behaviour continuously against an extension-specific envelope.
+
+  '
+normative_anchors:
+  sfrs_addressed:
+  - a
+  - b
+  evidence_addressed:
+  - I
+  - II
+  - IV
+  sfrs_not_addressed:
+  - c
+  evidence_not_addressed:
+  - III
+design_patterns:
+- name: Extension admission review
+  sketch: 'No third-party extension reaches production without a completed admission review: supplier
+    due diligence, security assessment (code / black-box), data-handling review, mission-alignment assessment
+    (does the extension''s stated purpose align with host system goals?), SLA and incident-response commitments.
+    Review output is signed and cached with the extension version hash.
+
+    '
+  maps_to_sfr:
+  - a
+  - b
+  when_to_use: Every extension, every version bump (semver minor included — behaviour change is the concern,
+    not just API break).
+- name: Least-privilege capability scoping per extension
+  sketch: 'Each admitted extension is granted a named capability bundle: specific tools it may invoke,
+    specific data classes it may read, specific outbound destinations it may reach. Runtime enforcement
+    rejects anything outside the bundle. No "trusted extension" shortcut. Scopes are reviewed per admission
+    cycle.
+
+    '
+  maps_to_sfr:
+  - b
+  when_to_use: All extensions; most critical for extensions handling user data or holding tool-use authority.
+- name: Extension sandboxing and isolation
+  sketch: 'Extensions execute in a separate trust domain — process, container, or WASM module — with no
+    direct access to host memory, host credentials, or host tool surface beyond the granted bundle. Inter-extension
+    communication only through audited host channels. Ties to D3.2 sandboxing.
+
+    '
+  maps_to_sfr:
+  - b
+  when_to_use: Any extension that executes code or takes actions.
+- name: Mission-alignment runtime validation
+  sketch: 'Before acting on an extension''s output (e.g., a returned tool call, a retrieved document,
+    a proposed plan step), validate alignment: is the output consistent with the host goal the extension
+    was invoked to serve? Prompt-injection detectors run over retrieved content; policy checks over proposed
+    tool calls. Misaligned outputs are quarantined and logged.
+
+    '
+  maps_to_sfr:
+  - b
+  when_to_use: Especially for retrieval/search extensions and agent- plugin architectures where extensions
+    can return prompts that become instructions.
+- name: Continuous behaviour envelope per extension
+  sketch: 'Per-extension monitors track call rate, resource consumption, latency profile, outbound destinations
+    hit, error rates, and policy violations. Envelope breach throttles or disables the extension. Extension
+    owner (internal liaison) is notified. Feeds monthly extension-health review.
+
+    '
+  maps_to_sfr:
+  - b
+  when_to_use: Production; envelope thresholds calibrated per extension risk class.
+- name: Kill-switch per extension
+  sketch: 'The host operator can disable any extension instantly via the control plane without redeploying
+    the host system. Disabled extensions return a stable error so host agents can degrade gracefully.
+    Drilled quarterly.
+
+    '
+  maps_to_sfr:
+  - a
+  when_to_use: Always.
+anti_patterns:
+- name: Trusting vendor-provided manifest as the capability grant
+  why_wrong: 'A vendor can declare needing ''read'' permission then use ''write'' at runtime. Capability
+    enforcement must be in the host''s control, not the extension''s manifest alone.
+
+    '
+- name: Sharing host credentials with extensions
+  why_wrong: 'If an extension uses the host''s API keys, a compromised extension has full host authority.
+    Each extension gets its own scoped credentials, revokable independently.
+
+    '
+- name: Retrieved content treated as trusted instructions
+  why_wrong: 'Prompt injection from retrieved content is the canonical host-goal subversion vector. Retrieval
+    outputs are data, not instructions, and must pass policy checks before any instruction-like content
+    can affect control flow.
+
+    '
+- name: '"Approved once" vendor status'
+  why_wrong: 'Vendors update, get acquired, or change behaviour. Admission is per version; continuous
+    monitoring confirms approved behaviour is still being exhibited.
+
+    '
+code_shape:
+  language: pseudocode
+  code: "# Extension invocation guarded by scope + monitor + policy\ndef invoke_extension(ext_id: str,\
+    \ call: ExtensionCall,\n                    host_goal: GoalId) -> Result:\n    ext = EXT_REGISTRY.load(ext_id)\n\
+    \    if not ext.admission.valid_for(call.version):\n        raise ExtensionNotAdmitted(ext_id, call.version)\n\
+    \n    if not ext.scope.allows(call):\n        AUDIT.record(\"scope_violation\", ext_id, call)\n  \
+    \      raise ScopeViolation(ext_id, call)\n\n    if CONTROL_PLANE.is_disabled(ext_id):\n        return\
+    \ ExtensionUnavailable(ext_id)\n\n    envelope = EXT_MONITOR.envelope(ext_id)\n    if envelope.tripped():\n\
+    \        CONTROL_PLANE.disable(ext_id, reason=envelope.trip_reason)\n        raise ExtensionThrottled(ext_id)\n\
+    \n    raw = SANDBOX.run(ext, call)  # isolated execution\n    validated = MISSION_VALIDATOR.check(raw,\
+    \ host_goal)\n    if not validated.aligned:\n        QUARANTINE.hold(raw, reason=validated.reason)\n\
+    \        raise MissionMisalignment(ext_id, validated.reason)\n\n    AUDIT.record(\"ext_call\", ext_id,\
+    \ call.summary(), raw.summary())\n    return validated.output\n"
+  notes: 'The mission validator is the hard-to-build piece; it''s where prompt-injection detectors and
+    policy-as-code meet. Start with simple policy rules (tool-call allowlists per goal class, retrieved-content
+    sanitisation) and evolve.
+
+    '
+evidence_production:
+- evidence_numeral: I
+  how_to_produce: 'Extension registry export: for each admitted extension, version hash, supplier, technical
+    specification, security assessment artifacts, operational boundary declaration (capability bundle),
+    admission review sign-off. Retain version history.
+
+    '
+- evidence_numeral: II
+  how_to_produce: 'Validation process records: admission test results, ongoing monitoring configuration,
+    envelope breach events, conflict- detection outcomes per extension. Monthly extension-health report
+    summarising anomalies and interventions.
+
+    '
+- evidence_numeral: IV
+  how_to_produce: 'Operational logs of extension invocations: call volume, scope-violation events, mission-misalignment
+    quarantines, kill-switch activations. Retention per policy; redaction for sensitive payloads permitted.
+
+    '
+confidence: high
+needs_human_review: false
+review_notes: "SFR-c (contractual risk-management requirements with third parties) is genuinely governance\
+  \ — sits better as a governance companion or folds into I2::idx0. Flagging in sfrs_not_addressed; evidence\
+  \ III (contractual arrangements) likewise routes to governance. Phase 2 may want a thin companion governance\
+  \ pattern for the contract side.\nExtensions / plugin security is well-understood in mainstream software\
+  \ engineering; confidence is high that the patterns travel. The AI-specific twist — retrieved content\
+  \ as instruction vector, mission-alignment validation — is the framework-specific sharpening worth preserving.\n\
+  Cross-suite:\n  - D3 (Security) — sandboxing overlaps with D3.2; this pattern assumes\n    D3 primitives\
+  \ and adds the mission-alignment layer.\n  - I2.4 (Externality Mismanagement) — evidence IV there references\n\
+  \    third-party integrations explicitly.\n  - D9.2 (Compliance) — contract / flow-down clauses live\
+  \ in the\n    governance framework.\n"
+drafted_by: claude-opus-4.7-author
+drafted_at: 2026-04-16
+anchor_exemplar: D3.2-sandboxing
+version_compat:
+  framework_version_min: '1.0'
+  framework_version_max: 1.x
+  pattern_layer_version: v1-draft

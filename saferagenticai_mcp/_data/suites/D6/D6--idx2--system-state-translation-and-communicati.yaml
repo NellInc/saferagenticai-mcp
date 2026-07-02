@@ -1,0 +1,158 @@
+id: D6::idx2::system-state-translation-and-communicati
+display_id: D6.2
+suite_id: D6
+suite_title: Understanding and Controlling the Context
+subgoal_title: System State Translation and Communication
+content_type: code-applicable
+summary: 'The gap between what the system internally represents and what it says to humans is where hallucinated
+  confidence, over-anthropomorphizing, and false assurance live. This subgoal expects engineering controls
+  — not just style guides — that bind externally-communicated state to an auditable internal representation,
+  with validation that the translation preserves meaning. The anti-anthropomorphism requirement is operational:
+  avoid surface cues (pronouns, feeling-words, agency-claims) that over-read the internal state.
+
+  '
+normative_anchors:
+  sfrs_addressed:
+  - a
+  - b
+  - c
+  evidence_addressed:
+  - I
+  - II
+  - III
+  - IV
+  sfrs_not_addressed: []
+  evidence_not_addressed: []
+design_patterns:
+- name: State-linked communication envelope
+  sketch: 'Every externally-facing status string, confidence indicator, or agent-state report emits alongside
+    a machine-readable envelope: `{state_id, internal_confidence, calibration_band, evidence_refs, translation_version}`.
+    The envelope is persisted with the output so post-hoc audits can trace a user-facing claim back to
+    the underlying computation.
+
+    '
+  maps_to_sfr:
+  - a
+  when_to_use: Any surface where the system communicates its own state, confidence, progress, or certainty
+    to a human.
+- name: Translation contract with test suite
+  sketch: 'Treat the internal-to-external translation as an interface with a contract: inputs (internal
+    state vector / trace), outputs (human string + envelope), invariants (e.g., "confidence band monotone
+    in internal probability", "no future-tense commitments without commitment-state set"). Ship the contract''s
+    tests with the code.
+
+    '
+  maps_to_sfr:
+  - a
+  - b
+  when_to_use: Wherever non-trivial internal state maps to a user- facing surface (progress, confidence,
+    recommendation, refusal).
+- name: Anti-anthropomorphism lint
+  sketch: 'Static and runtime checks reject communications that over-attribute agency or interiority beyond
+    what the internal state supports: first-person feeling claims ("I think", "I feel"), unbounded commitments
+    ("I will always"), consciousness claims, memory- persistence claims where sessions are stateless.
+    Lint runs on prompts, templated responses, and (sampled) live outputs.
+
+    '
+  maps_to_sfr:
+  - c
+  when_to_use: Any org that has not taken an explicit product position endorsing anthropomorphic voice;
+    even those should lint to prevent drift past the chosen line.
+- name: Explanatory faithfulness probes
+  sketch: 'Regularly test whether the system''s explanation of its own behavior matches the behavior''s
+    actual cause. Inject known perturbations (input features, tool availability, system-prompt changes)
+    and verify the explanation updates accordingly. A system whose explanations don''t move when the cause
+    moves is narrating, not reporting.
+
+    '
+  maps_to_sfr:
+  - a
+  - c
+  when_to_use: Any capability that provides self-explanation or reasoning traces to users.
+anti_patterns:
+- name: Free-text status without envelope
+  why_wrong: 'If the user-facing string has no machine-readable backing, you cannot audit it, cannot regression-test
+    it, and cannot prove the translation was faithful. "The system is confident" with no bound internal
+    confidence value is a vibe, not state communication.
+
+    '
+- name: Confidence bar with no calibration
+  why_wrong: 'Progress bars and confidence indicators without validated mapping to internal probability
+    actively mislead. SFR-a requires alignment, not decoration.
+
+    '
+- name: First-person interior language as default voice
+  why_wrong: '"I think", "I feel", "I''m sure" inherits anthropomorphic loading the system cannot back
+    up. Over-interpretation by observers is the exact failure mode SFR-b names.
+
+    '
+- name: Explanation generated after the fact from the output alone
+  why_wrong: 'Post-hoc rationalization from the model''s own output is not interpretability — it is a
+    second generation on top of the first. The translation should start from internal state / trace, not
+    from the surface string.
+
+    '
+code_shape:
+  language: pseudocode
+  code: "# State-linked communication: internal state -> user string + envelope\n@dataclass\nclass StateEnvelope:\n\
+    \    state_id: str\n    internal_confidence: float       # raw model probability / calibrated\n  \
+    \  calibration_band: tuple[float, float]\n    evidence_refs: list[str]         # pointers to trace\
+    \ / retrieval hits\n    translation_version: str         # semver of the translation contract\n\n\
+    def communicate_state(\n    internal: InternalState, ctx: AgentContext\n) -> tuple[str, StateEnvelope]:\n\
+    \    env = StateEnvelope(\n        state_id=internal.id,\n        internal_confidence=internal.calibrated_p,\n\
+    \        calibration_band=CALIBRATOR.band(internal.calibrated_p),\n        evidence_refs=[e.uri for\
+    \ e in internal.evidence],\n        translation_version=TRANSLATION_VERSION,\n    )\n    text = TRANSLATOR.render(internal,\
+    \ envelope=env)\n    # Contract tests run here in dev; sampled in prod.\n    ANTHROPO_LINT.check(text)\
+    \                  # raises on violation\n    CONTRACT.assert_invariants(internal, text) # confidence\
+    \ monotonicity, etc.\n    AUDIT.record(ctx, output=text, envelope=env)\n    return text, env\n"
+  notes: 'The envelope is the audit anchor — evidence II/IV require it to exist and to be retrievable
+    alongside the text. TRANSLATOR is the component under test for SFR-a; ANTHROPO_LINT operationalizes
+    SFR-c.
+
+    '
+evidence_production:
+- evidence_numeral: I
+  how_to_produce: 'Commission domain-expert review rounds (per user domain — e.g., medical, legal, educational
+    where relevant). Reviewers compare envelope-backed internal states to rendered communications and
+    sign off or flag divergences. Retain signed review reports; re-run on material translation changes.
+
+    '
+- evidence_numeral: II
+  how_to_produce: 'Ship an internal tool ("state explorer") that surfaces the envelope for any captured
+    user-facing output: lets engineers and reviewers drill from a message back to state, evidence refs,
+    and calibration band. Tool must be available to auditors (D6.1 evidence III).
+
+    '
+- evidence_numeral: III
+  how_to_produce: 'Automated contract tests run per release: invariants over the translation, anti-anthropomorphism
+    lint coverage, calibration regression tests. User feedback signal (e.g., "the system said it was sure
+    and it wasn''t") feeds back into the contract suite.
+
+    '
+- evidence_numeral: IV
+  how_to_produce: 'Translation-accuracy validation: sample live outputs, attach their envelopes, have
+    reviewers grade faithfulness on a rubric (e.g., overconfidence, underconfidence, anthropomorphic drift,
+    evidence-free claim). Publish quarterly accuracy metrics internally; cite externally where appropriate.
+
+    '
+cross_references:
+- D6::idx8::prevention-of-role-persistence-errors
+confidence: medium
+needs_human_review: true
+review_notes: 'SFR-b ("translation challenges ... potential misinterpretation or over-interpretation")
+  is marked non-normative in the JSON but is the most operationally loaded clause; the pattern treats
+  it as addressed because engineering controls for misinterpretation are indivisible from SFR-a/c. Cross-suite:
+  D5 (transparency — same information, user- facing framing), I2 (deception — the anti-anthropomorphism
+  lint is the defensive twin to I2''s offensive-deception prohibitions), I1 (opaque agency — envelope-backed
+  communication is the positive form of the opacity failure). Content-type is code-applicable because
+  the controls are fundamentally in code; a process/governance aspect (domain-expert review boards) exists
+  but is subordinate.
+
+  '
+drafted_by: claude-opus-4.7-author
+drafted_at: 2026-04-16
+anchor_exemplar: D3.2-sandboxing
+version_compat:
+  framework_version_min: '1.0'
+  framework_version_max: 1.x
+  pattern_layer_version: v1-draft

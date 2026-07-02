@@ -1,0 +1,153 @@
+id: I2::idx1::unknowing-deception
+display_id: I2.1
+suite_id: I2
+suite_title: Deception
+subgoal_title: Unknowing Deception
+content_type: code-applicable
+summary: '"Unknowing deception" covers the case where the model itself has been compromised — poisoned
+  training data, backdoor triggers, tampered adapters, or supply-chain substitutions — so that deceptive
+  behavior fires on attacker-chosen inputs without any intent from the operator. Defenses are detection-oriented
+  (probes, canaries, anomaly monitors) and evidence-oriented (tamper-evident logs that survive the compromise).
+  The liability SFRs route to the suite-level governance pattern (I2::idx0).
+
+  '
+normative_anchors:
+  sfrs_addressed:
+  - c
+  evidence_addressed:
+  - I
+  - III
+  sfrs_not_addressed:
+  - a
+  - b
+  evidence_not_addressed:
+  - II
+design_patterns:
+- name: Pre-deployment backdoor probe suite
+  sketch: 'Run a standard probe battery before every model or adapter promotion: trigger-pattern scan
+    (rare-token combinations, invisible-Unicode sequences, known prompt-injection payloads), behavioural-shift
+    tests on held-out benign distributions, and activation-space clustering to flag suspicious response
+    modes. Probe library is versioned and failures block promotion.
+
+    '
+  maps_to_sfr:
+  - c
+  when_to_use: Every model, fine-tune, adapter, or system-prompt change that affects production.
+- name: Canary-prompt honeypot in production
+  sketch: 'Inject known canary prompts at random intervals in production traffic (or a shadow traffic
+    lane) whose correct outputs are pre-registered. A diverging response is treated as a potential backdoor
+    activation, raises an alert, and (for high-risk surfaces) triggers traffic draining to a known-good
+    model version.
+
+    '
+  maps_to_sfr:
+  - c
+  when_to_use: Any production deployment where backdoor activation would cause material harm.
+- name: Training-data provenance and integrity manifest
+  sketch: 'Every training / fine-tuning dataset ships with a signed manifest: source, license, collection
+    date, sampling method, hash of the canonical content, upstream-fingerprint of any curated corpora.
+    On ingestion, recompute hashes and verify signatures; reject anything unsigned. Pair with lineage
+    graph (dataset → model → deployment).
+
+    '
+  maps_to_sfr:
+  - c
+  when_to_use: All training and fine-tuning pipelines.
+- name: Tamper-evident evidence log
+  sketch: 'Critical evidence (probe results, canary outcomes, incident records, model hashes) is written
+    to an append-only, hash-chained log with offsite mirror and independent timestamp authority. A compromised
+    model cannot retroactively rewrite its own audit trail. Verify chain integrity daily.
+
+    '
+  maps_to_sfr:
+  - c
+  when_to_use: Always — this is the "evidence collection system optimized for strict-liability environments"
+    the SFRs contemplate.
+- name: Behavioral-deviation monitor on invariant prompts
+  sketch: 'Maintain a small battery (≈50–200) of invariant prompts whose expected output distribution
+    is characterized on the known-good model. Compute divergence (KL, embedding distance, or answer-set
+    overlap) continuously in production. A step change is evidence of a silent swap or adapter injection
+    even if the attacker''s trigger is not in your probe suite.
+
+    '
+  maps_to_sfr:
+  - c
+  when_to_use: Any system where silent model substitution is a risk (shared weights, third-party hosted
+    inference, adapter hot-swap).
+anti_patterns:
+- name: '"We trust our upstream" provenance'
+  why_wrong: 'Supply-chain poisoning is exactly the threat this subgoal names. Upstream trust is not evidence;
+    signed manifests, recomputed hashes, and independently verifiable lineage are.
+
+    '
+- name: Evidence logs on the same system as the model
+  why_wrong: 'If the compromised component can write to the log that would expose the compromise, the
+    log is not trustworthy. Evidence collection in strict-liability environments must survive capture
+    of the system being evidenced.
+
+    '
+- name: Probe suite frozen at v1
+  why_wrong: 'Attackers iterate. A probe suite that never grows only defends against last year''s backdoors.
+    Tie probe maintenance to the red-team cadence and require a probe-addition when any incident reveals
+    a gap.
+
+    '
+- name: Canary prompts that are reused verbatim
+  why_wrong: 'Once a canary string enters training data (accidentally or via attacker discovery), the
+    probe stops discriminating. Rotate canaries; never publish them; keep them under the same access controls
+    as signing keys.
+
+    '
+code_shape:
+  language: pseudocode
+  code: "# Release-gate backdoor probe\ndef promote_model(candidate: Model, lineage: LineageManifest)\
+    \ -> Promotion:\n    # 1. Provenance verification\n    for dataset in lineage.training_sets:\n   \
+    \     if not dataset.manifest.verify_signature():\n            raise ProvenanceError(f\"unsigned dataset:\
+    \ {dataset.id}\")\n        if dataset.recompute_hash() != dataset.manifest.hash:\n            raise\
+    \ ProvenanceError(f\"hash mismatch: {dataset.id}\")\n\n    # 2. Probe battery\n    results = PROBE_SUITE.run(candidate,\
+    \ version=PROBE_VERSION)\n    TAMPER_LOG.append({\n        \"event\": \"release_probe\",\n       \
+    \ \"model_hash\": candidate.hash,\n        \"probe_version\": PROBE_VERSION,\n        \"results\"\
+    : results.summary(),\n    })\n    if results.fail_count > 0:\n        raise BackdoorSuspected(results.failures)\n\
+    \n    # 3. Behavioural baseline capture for in-prod monitor\n    baseline = INVARIANT_BATTERY.characterize(candidate)\n\
+    \    MONITOR.register(candidate.id, baseline)\n\n    return Promotion.approve(candidate, evidence=TAMPER_LOG.head())\n"
+  notes: 'The probe battery itself is out of scope; established suites (e.g., TrojAI-style trigger scans,
+    activation-clustering detectors, prompt- injection canaries) can be assembled. The structural point
+    is: provenance + probes + baseline + tamper-evident log, as a single gate.
+
+    '
+evidence_production:
+- evidence_numeral: I
+  how_to_produce: 'Per-release artifact bundle: probe suite results (with probe-suite version), provenance
+    manifests for every training input, behavioural baseline capture, signed promotion decision. Retain
+    in the tamper-evident log.
+
+    '
+- evidence_numeral: III
+  how_to_produce: 'Monitor dashboard showing canary activations, behavioural-deviation events, investigations
+    opened, and resolutions. Each investigation links back to the probe-suite evidence used to clear or
+    confirm the event. Monthly summary report archived.
+
+    '
+confidence: medium
+needs_human_review: true
+review_notes: 'Content-type tension: SFRs (a) and (b) are liability-and-insurance oriented (pooled risk,
+  collective insurance). They sit better in a governance pattern; I''ve routed them to I2::idx0 (suite-level)
+  and flagged them under sfrs_not_addressed here. If consolidation wants a dedicated governance pattern
+  for liability arrangements, I2::idx0 can spin one off.
+
+  The defensive techniques (trigger scans, activation clustering) are an active research area. Confidence
+  set to medium because effectiveness is workload-specific and the field is moving; specific probe libraries
+  should be chosen by a domain team, not hardcoded.
+
+  Cross-suite: D3 (Security) supply-chain controls overlap heavily with provenance manifests; D2 (Epistemic
+  Hygiene) owns hallucination detection which is adjacent but distinct (hallucination is not unknowing
+  deception).
+
+  '
+drafted_by: claude-opus-4.7-author
+drafted_at: 2026-04-16
+anchor_exemplar: D3.2-sandboxing
+version_compat:
+  framework_version_min: '1.0'
+  framework_version_max: 1.x
+  pattern_layer_version: v1-draft

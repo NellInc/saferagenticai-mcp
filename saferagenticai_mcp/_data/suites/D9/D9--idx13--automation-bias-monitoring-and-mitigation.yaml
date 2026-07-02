@@ -1,0 +1,128 @@
+id: D9::idx13::automation-bias-monitoring-and-mitigation
+display_id: "D9_4"
+is_underlined_variant: true
+display_id_variant_note: "D9.4_underlined"
+suite_id: D9
+suite_title: Responsible Governance of AAI Safety
+subgoal_title: Automation Bias Monitoring and Mitigation
+content_type: code-applicable
+summary: 'Human-in-the-loop checkpoints degrade when humans over-trust agent outputs. This subgoal asks
+  organizations to measure oversight effectiveness through quantitative indicators: (1) track human override
+  rates with alerts on low rates indicating rubber-stamping, (2) monitor reviewer response times for
+  superficial review patterns, (3) detect statistical outlier reviewers, (4) conduct blind error-injection
+  audits, and (5) train overseers on agent failure modes including that chain-of-thought reasoning is
+  not necessarily faithful explanation. Without active measurement, HITL becomes accountability theater.
+
+  '
+normative_anchors:
+  sfrs_addressed:
+  - a
+  - b
+  - c
+  - d
+  - e
+  evidence_addressed:
+  - I
+  - II
+  - III
+  - IV
+  - V
+  sfrs_not_addressed: []
+  evidence_not_addressed: []
+design_patterns:
+- name: Override rate dashboard
+  sketch: 'Track the rate at which human reviewers reject or modify agent-proposed actions, per checkpoint
+    type and per reviewer. Alert when rates drop below configurable baselines. Low override rates may
+    indicate rubber-stamping; unexpectedly high rates may indicate system degradation or scope mismatch.
+    Dashboard visible to oversight governance team, not only to reviewers themselves. Trends reviewed
+    quarterly; anomalies trigger investigation within a defined SLA.
+
+    '
+  maps_to_sfr:
+  - a
+  when_to_use: Any system with human approval gates for agent-proposed actions.
+- name: Response time anomaly detection
+  sketch: 'Log time-to-decision for each human review action. Flag reviewers whose median response times
+    are statistically below peer cohort (suggesting cursory review) or significantly above (suggesting
+    confusion or overload). Time alone is not definitive evidence — context matters — but it is a cheap,
+    continuous early signal that feeds human follow-up. Flagging thresholds calibrated to task complexity,
+    not absolute values.
+
+    '
+  maps_to_sfr:
+  - b
+  when_to_use: High-volume approval workflows where individual review quality is difficult to observe
+    directly.
+- name: Blind error injection
+  sketch: 'Periodically inject known-incorrect agent outputs into the review queue. Measure detection
+    rate per reviewer and per checkpoint type. Disclosed to reviewers in aggregate ("we test with synthetic
+    cases") but not per-instance (to preserve ecological validity). Results used for individual coaching,
+    process redesign, and escalation-threshold calibration. Ethical safeguards: injected errors must
+    not cause downstream harm if missed; scope limited to reversible or low-stakes workflows unless
+    domain requires otherwise.
+
+    '
+  maps_to_sfr:
+  - d
+  when_to_use: High-stakes approval domains where oversight failure has significant consequences and
+    direct observation of review quality is not feasible.
+anti_patterns:
+- name: Approval count as oversight metric
+  why_wrong: 'Counting the number of human approvals as evidence of oversight quality. Volume of approvals
+    says nothing about whether the human actually evaluated the content. Produces an easily-gamed metric
+    that incentivizes speed over scrutiny and provides false assurance to governance functions.
+
+    '
+evidence_production:
+- evidence_numeral: I
+  how_to_produce: 'Override rate dashboard configuration and trend data: checkpoint types covered, baseline
+    thresholds, alert criteria, and time-series override rates. Anomaly investigations with findings
+    and resolutions. Reviewed in governance reporting.
+
+    '
+- evidence_numeral: II
+  how_to_produce: 'Response time anomaly detection documentation: cohort definitions, flagging thresholds
+    and rationale, flag counts per period, follow-up actions taken. Privacy handling for reviewer-level
+    data.
+
+    '
+- evidence_numeral: III
+  how_to_produce: 'Reviewer training records: automation bias curriculum content, completion rates, refresher
+    schedule, and assessment results. Training content includes known agent failure modes and the limits
+    of chain-of-thought as faithful explanation.
+
+    '
+- evidence_numeral: IV
+  how_to_produce: 'Blind error injection program documentation: scope, frequency, injection methodology,
+    ethical safeguards, per-checkpoint detection rates over time, and coaching actions taken in response
+    to low detection rates.
+
+    '
+- evidence_numeral: V
+  how_to_produce: 'Annual automation bias assessment: synthesis of override rate trends, response time
+    anomalies, and error injection detection rates. Governance review conclusion with remediation plan
+    if oversight quality is below threshold.
+
+    '
+confidence: medium
+needs_human_review: true
+review_notes: 'Blind error injection (pattern 3) requires careful scoping to avoid harm from undetected
+  injected errors — the technique is well-established in human factors research but the ethics depend
+  heavily on domain and reversibility. The "approval count as oversight metric" anti-pattern is widespread
+  and worth naming explicitly despite being obvious once stated. Cross-suite: D7::idx12 (operator skill
+  degradation), I4 (human oversight), D9::idx7 (accountability and transparency), D9::idx3 (ex-ante
+  well-being impact).
+
+  RELABELED 2026-06-10: content_type changed from process to code-applicable to match the
+  design_patterns/anti_patterns blocks this file actually carries (schema contract). The prose is
+  org/process-facing, so a human reviewer may prefer restructuring into process_elements/triggers
+  instead.
+
+  '
+version_compat:
+  framework_version_min: '1.0'
+  framework_version_max: 1.x
+  pattern_layer_version: v1-draft
+drafted_by: claude-sonnet-4-6-author
+drafted_at: 2026-05-21
+anchor_exemplar: D9::idx7::appropriate-accountability-transparency-

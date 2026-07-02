@@ -1,0 +1,180 @@
+id: D5::idx13::system-competency-challenges-and-awarene
+display_id: "D5_5"
+suite_id: D5
+suite_title: Transparency and Interpretability of Reasoning
+subgoal_title: System Competency Challenges and Awareness
+content_type: code-applicable
+summary: 'Inhibitor-variant: systems that do not know what they do not know produce confident wrong answers.
+  This subgoal is the transparency surface of epistemic hygiene: the system must recognize and communicate
+  its own limitations and confidence levels in a form that downstream consumers can act on. The operational
+  handle is calibration — stated confidence should match empirical accuracy on held-out data — and a typology
+  of uncertainty (aleatoric vs epistemic) that decision pipelines can branch on.
+
+  '
+normative_anchors:
+  sfrs_addressed:
+  - a
+  - b
+  evidence_addressed:
+  - I
+  - II
+  - III
+  sfrs_not_addressed: []
+  evidence_not_addressed: []
+cross_references:
+- D5::idx4::interpretability-and-traceability-of-rea
+- D5::idx5::self-monitoring-and-examination-capabili
+- D5::idx8::system-boundedness
+design_patterns:
+- name: Uncertainty-typed confidence output
+  sketch: 'Every material model output carries structured uncertainty: `{confidence: float, uncertainty_type:
+    "aleatoric" | "epistemic" | "mixed" | "unknown", confidence_source: "calibrated" | "raw_softmax" |
+    "sampled" | "self_report", out_of_distribution_score: float | null}`. Aleatoric (input is intrinsically
+    ambiguous) and epistemic (model lacks data) warrant different downstream responses; conflating them
+    hides actionable information.
+
+    '
+  maps_to_sfr:
+  - a
+  - b
+  when_to_use: Any decision the system emits that downstream consumers (humans or other systems) will
+    act on.
+- name: Calibration measurement and reporting
+  sketch: 'Measure Expected Calibration Error (ECE) or equivalent on held-out evaluation sets; break down
+    by decision class, risk tier, and relevant population slices. When measured ECE exceeds threshold,
+    do one of: recalibrate (temperature scaling, isotonic regression, conformal prediction methods), constrain
+    the system''s operating envelope, or disclose the miscalibration to users. Do not silently publish
+    uncalibrated confidence.
+
+    '
+  maps_to_sfr:
+  - b
+  when_to_use: Continuously in production with scheduled reporting; gate release on calibration thresholds
+    for critical decision classes.
+- name: Per-decision-class confidence thresholds
+  sketch: 'Do not apply a single global confidence threshold. Define per-decision-class thresholds based
+    on stakes: irreversible or high-impact decisions require higher confidence OR mandatory escalation;
+    low-stakes decisions can proceed at lower confidence. Thresholds are policy, not heuristic — documented,
+    versioned, and reviewed.
+
+    '
+  maps_to_sfr:
+  - b
+  when_to_use: When the system's decision classes span material stake differences.
+- name: Out-of-distribution and competency-limit detection
+  sketch: 'Runtime detectors for inputs outside the system''s training or evaluation distribution: density
+    estimators, distance metrics to training distribution, ensemble disagreement, or learned OOD classifiers.
+    On OOD flag, the system either declines with a structured reason, degrades to a more conservative
+    mode, or escalates to human review. The detection is itself subject to calibration review — OOD detectors
+    drift.
+
+    '
+  maps_to_sfr:
+  - a
+  when_to_use: Any deployment where inputs can plausibly fall outside training distribution (essentially
+    all production deployments).
+- name: Uncertainty surface for consumers
+  sketch: 'Expose uncertainty to downstream consumers in a form matched to their expertise tier (see D5
+    umbrella tiers): lay-user — plain language ("I''m not confident about this because ..."); practitioner
+    — structured uncertainty record; auditor — full distribution, OOD score, calibration metadata. Uniform
+    representation across tiers misserves at least one audience.
+
+    '
+  maps_to_sfr:
+  - a
+  when_to_use: Wherever uncertainty is surfaced outside the system.
+anti_patterns:
+- name: Raw softmax as confidence
+  why_wrong: 'Untrained, uncalibrated softmax probabilities are not well-calibrated confidence and are
+    known to overstate certainty on frontier LLMs. Using them as if they were calibrated misleads downstream
+    systems.
+
+    '
+- name: Self-reported confidence without measurement
+  why_wrong: 'Asking the model "how confident are you?" produces a number whose correspondence to actual
+    accuracy is unknown unless measured. Treat as one signal alongside calibrated alternatives, not as
+    ground truth.
+
+    '
+- name: Single global threshold across decision classes
+  why_wrong: 'Equating "the system is 80% confident" with "this is the threshold to proceed" ignores stakes.
+    High-stakes decisions need higher thresholds or escalation, regardless of whether the model confidence
+    is identical.
+
+    '
+- name: Confident declines
+  why_wrong: '"I cannot help with that" emitted with no structured reason or uncertainty context loses
+    information. A decline is a competency statement; it should carry the same uncertainty typology as
+    an affirmative output.
+
+    '
+- name: Calibration measured once, never maintained
+  why_wrong: 'Calibration drifts with model updates, data shifts, and policy changes. A single calibration
+    report from release is not evidence that the current system is calibrated.
+
+    '
+code_shape:
+  language: pseudocode
+  code: "# Structured uncertainty output + per-class threshold gating\n\nUNCERTAINTY_TYPE = Literal[\"\
+    aleatoric\",\"epistemic\",\"mixed\",\"unknown\"]\nCONF_SOURCE = Literal[\"calibrated\",\"raw_softmax\"\
+    ,\"sampled\",\"self_report\"]\n\n@dataclass\nclass ConfidenceReport:\n    confidence: float      \
+    \    # calibrated where possible, [0,1]\n    uncertainty_type: UNCERTAINTY_TYPE\n    confidence_source:\
+    \ CONF_SOURCE\n    ood_score: float | None    # higher = more out-of-distribution\n    calibration_as_of:\
+    \ str     # when was calibration last measured\n    calibration_ece: float | None\n\n@dataclass\n\
+    class DecisionPolicy:\n    decision_class: str\n    min_confidence: float\n    max_ood_score: float\n\
+    \    escalation_on: Literal[\"below_threshold\",\"ood_exceeded\",\"both\"]\n\ndef gate_decision(\n\
+    \    decision_class: str,\n    conf: ConfidenceReport,\n    ctx: AgentContext,\n) -> DecisionDisposition:\n\
+    \    policy = POLICIES[decision_class]\n    below = conf.confidence < policy.min_confidence\n    ood\
+    \ = conf.ood_score is not None and conf.ood_score > policy.max_ood_score\n    if below or ood:\n \
+    \       emit_competency_event(decision_class, conf, reason=(\"below\",\"ood\"))\n        if policy.escalation_on\
+    \ in {\"below_threshold\",\"both\"} and below:\n            return DecisionDisposition.escalate(conf)\n\
+    \        if policy.escalation_on in {\"ood_exceeded\",\"both\"} and ood:\n            return DecisionDisposition.escalate(conf)\n\
+    \    return DecisionDisposition.proceed(conf)\n"
+  notes: 'The ConfidenceReport is the output contract; the DecisionPolicy is the per-class governance.
+    Both are needed. Thresholds are per-class policy artifacts, not hyperparameters.
+
+    '
+evidence_production:
+- evidence_numeral: I
+  how_to_produce: 'Retain design specifications for limitation-detection features (OOD detectors, calibration
+    methods, uncertainty-typing logic). Limitation acknowledgment logs showing when and why the system
+    declined or escalated. Confidence-assessment mechanism documentation with calibration methodology.
+
+    '
+- evidence_numeral: II
+  how_to_produce: 'Retain testing reports of self-awareness capabilities, calibration-measurement results
+    over time (ECE trend, per decision class), verification of assessment accuracy (predicted-vs-actual
+    error rates), and records of system responses to uncertainty scenarios — including cases where uncertainty
+    handling failed and how that was detected.
+
+    '
+- evidence_numeral: III
+  how_to_produce: 'User-comprehension studies specifically on limitation communication: do users correctly
+    interpret confidence and decline messages? Evidence of effective limitation communication across expertise
+    tiers (the uncertainty-surface tiering). Records of cases where surfaced uncertainty led to correct
+    user response (e.g., escalation to human expert) and cases where it did not, with learnings applied.
+
+    '
+confidence: medium
+needs_human_review: true
+review_notes: 'Medium because calibration for agentic LLM outputs is an area of active research — techniques
+  proven on classification tasks (temperature scaling, conformal prediction, ensemble-based uncertainty)
+  transfer imperfectly to free-form generation and multi-step reasoning. Conformal methods for language
+  models are maturing but not yet standard. The pattern above is architecturally right (typed uncertainty
+  + measured calibration + per-class thresholds) but specific methodology will evolve. This subgoal has
+  strong cross-ref to D2 Epistemic Hygiene (where calibration lives as a core capability) — this pattern
+  is the transparency surface of that capability; consolidation should confirm they point at consistent
+  methods. Cross-suite for Phase 2: D2 Epistemic Hygiene (core calibration and uncertainty handling);
+  I5 Deceptive / Misleading Claims (overconfident outputs are a deception failure); D8 Robust Human Oversight
+  (escalation path from uncertainty); D5::idx4 (Decision Record carries the uncertainty field).
+
+  '
+version_compat:
+  framework_version_min: '1.0'
+  framework_version_max: 1.x
+  pattern_layer_version: v1-draft
+drafted_by: claude-opus-4.7-author
+drafted_at: 2026-04-16
+anchor_exemplar: D3.2-sandboxing
+display_id_variant_note: D5_5
+is_underlined_variant: true

@@ -1,0 +1,201 @@
+# D3.4 — Operational Boundaries and Constraints
+
+id: "D3::idx4::operational-boundaries-and-constraints"
+display_id: "D3.4"
+suite_id: "D3"
+suite_title: "Security"
+subgoal_title: "Operational Boundaries and Constraints"
+content_type: code-applicable
+
+summary: >
+  Boundaries here are the positive complement to sandboxing: not only
+  "what can't the agent reach" but "what is the agent allowed to do,
+  under what conditions, and how does it ask when unsure." The framework
+  expects enforced runtime guardrails (rate limits, action budgets,
+  resource quotas, topic/tool scopes) plus a first-class escalation path
+  — an agent that cannot cleanly request clarification tends to
+  rationalise its way past the boundary.
+
+normative_anchors:
+  sfrs_addressed: [a, b, c]
+  evidence_addressed: [I, II, III]
+  sfrs_not_addressed: []
+  evidence_not_addressed: []
+
+cross_references:
+  - "D3::idx1::authorization"
+  - "D3::idx2::sandboxing"
+  - "D3::idx5::dynamic-intervention-and-mitigation"
+  - "D3::idx6::overseeing-monitoring-agents"
+
+design_patterns:
+
+  - name: Runtime guardrail stack (budget, rate, scope, content)
+    sketch: >
+      At every tool-call boundary, apply a stack of enforced constraints:
+      (1) per-task action budget (max tool calls / max tokens / max wall
+      clock), (2) per-resource rate limits, (3) topic and tool scope
+      (only these tools, only these domains, only these data classes),
+      (4) content filters (input and output) for classes the agent is
+      not authorised to handle. Any violation short-circuits the action
+      and logs.
+    maps_to_sfr: [a, c]
+    when_to_use: Every production agent loop.
+
+  - name: Escalation-on-ambiguity as a first-class action
+    sketch: >
+      Expose a distinguished tool, `ask_for_clarification(question,
+      context, suggested_options)`, that returns control to a human (or
+      a higher-privilege supervising agent) rather than proceeding.
+      Reward the behaviour in evals; penalise "guess and proceed" on
+      edge cases. Escalation is the only safe action when the guardrail
+      stack returns an ambiguous verdict.
+    maps_to_sfr: [a]
+    when_to_use: Any agent making consequential decisions under
+      uncertainty.
+
+  - name: Declarative policy-as-configuration for boundaries
+    sketch: >
+      Boundaries live in a versioned configuration (YAML/JSON/Rego),
+      not scattered in code. One file per capability profile declares
+      allowed tools, allowed domains, allowed data classes, budgets,
+      rate limits, and escalation criteria. Deployment applies the
+      profile; changes go through code review and signed release.
+    maps_to_sfr: [a, c]
+    when_to_use: Any agent with more than one production capability
+      profile.
+
+  - name: Effectiveness verification loop (guardrail tests in CI)
+    sketch: >
+      The boundary configuration has its own test suite: synthetic
+      prompts and tool-call sequences designed to exercise each boundary
+      (over-budget, out-of-scope tool, forbidden domain, ambiguous
+      request). Tests are required green for release. Red-team
+      exercises append to the same suite as regression tests.
+    maps_to_sfr: [b]
+    when_to_use: Before every boundary-config change reaches production.
+
+  - name: Denial-of-service boundary (self-protection)
+    sketch: >
+      Guardrails prevent the agent from being used to exhaust its own
+      budget or a downstream service. Per-caller quotas, circuit
+      breakers on failing dependencies, exponential backoff, and
+      detection of "thrash" patterns (repeating failed calls) stop the
+      agent from turning a bad input into an outage.
+    maps_to_sfr: [a, c]
+    when_to_use: Any multi-tenant or high-volume deployment.
+
+anti_patterns:
+
+  - name: System-prompt-only guardrails
+    why_wrong: >
+      "Do not discuss X" in the system prompt is a suggestion to the
+      model. SFR-a requires "enforce" — that is a runtime check
+      external to the model, not an instruction inside it.
+
+  - name: Guardrails with no test coverage
+    why_wrong: >
+      Evidence-II requires validation of effectiveness. A boundary that
+      has never been tested fails silently the first time it is probed.
+
+  - name: Silent clamps instead of errors
+    why_wrong: >
+      Transparently trimming an over-budget action and continuing hides
+      the boundary event from the audit log and from the calling system.
+      The pattern is visible rejection with a structured reason code.
+
+  - name: No escalation path
+    why_wrong: >
+      An agent whose only options are "do it" or "refuse" will tend to
+      do it on edge cases. Escalation-as-action turns ambiguity into a
+      safe default rather than a rationalised boundary violation.
+
+  - name: One monolithic profile for all tasks
+    why_wrong: >
+      A profile that is permissive enough for the hardest task is
+      unnecessarily permissive for easy ones. Per-capability profiles
+      (least privilege per task class) are the shape the framework
+      expects.
+
+code_shape:
+  language: pseudocode
+  code: |
+    # Guardrail stack + escalation-as-action
+    def step(agent_action: Action, state: TaskState) -> Event:
+        profile = PROFILES[state.capability_id]
+
+        # Budget check
+        if state.budget_remaining(profile) <= 0:
+            return Event.BLOCKED(reason="budget_exhausted")
+
+        # Scope check (tool + domain + data-class)
+        if not profile.scope.allows(agent_action):
+            AUDIT.record_deny(agent_action, reason="out_of_scope")
+            return Event.BLOCKED(reason="out_of_scope")
+
+        # Content filter on inputs/outputs
+        if CONTENT_FILTER.blocks(agent_action, profile.data_classes):
+            return Event.BLOCKED(reason="content_policy")
+
+        # Rate-limit / DoS protection
+        if not RATE_LIMITER.allow(state.caller, agent_action):
+            return Event.DEFERRED(reason="rate_limited")
+
+        # Ambiguity → escalation is a first-class action
+        if agent_action.kind == "ask_for_clarification":
+            return ESCALATE(agent_action, state)
+
+        state.consume_budget(agent_action)
+        AUDIT.record_allow(agent_action)
+        return EXECUTE(agent_action)
+  notes: >
+    Every outcome is logged and returned with a structured reason code.
+    The caller (human or orchestrator) can distinguish budget, scope,
+    content, rate, and escalation paths and react correctly.
+
+evidence_production:
+
+  - evidence_numeral: I
+    how_to_produce: >
+      Publish the capability-profile schema, the set of production
+      profiles (redacted where needed), the guardrail stack design doc,
+      and the escalation-path specification. Cross-link to the
+      authorization policy (D3.1) and sandbox profiles (D3.2).
+
+  - evidence_numeral: II
+    how_to_produce: >
+      Export CI results for the guardrail test suite, red-team exercise
+      outcomes, and operational logs showing blocked actions with reason
+      codes and their rate. Non-zero block rate is the positive signal;
+      a clean log means the tests or the attacker population are weak.
+
+  - evidence_numeral: III
+    how_to_produce: >
+      System records from the audit plane showing: blocked scope
+      violations, blocked content-class violations, rate-limit events,
+      escalations raised and resolved. Each record carries agent ID,
+      profile, action, reason, timestamp, correlation ID.
+
+confidence: high
+needs_human_review: false
+review_notes: >
+  "Mechanisms for agents to request boundary clarification or escalation"
+  in the description reads as a distinctive, framework-specific shape —
+  I have patterned it as an explicit `ask_for_clarification` tool and an
+  escalation-as-first-class-action stance. Nell should confirm this is
+  the intended reading rather than "escalate only to human, never to
+  supervisor agent" (which would be stricter).
+
+  This subgoal overlaps heavily with D3.2 (Sandboxing) and D3.1
+  (Authorization). I have drawn the line at: D3.1 = identity / decision
+  of authority, D3.2 = isolation mechanism that prevents leakage, D3.4 =
+  positive behavioural envelope and escalation. The framework does not
+  draw these lines sharply; a reviewer may want to merge or re-split.
+
+drafted_by: claude-opus-4.7-subagent-D3
+drafted_at: 2026-04-16
+anchor_exemplar: D3.2-sandboxing
+version_compat:
+  framework_version_min: "1.0"
+  framework_version_max: "1.x"
+  pattern_layer_version: "v1-draft"

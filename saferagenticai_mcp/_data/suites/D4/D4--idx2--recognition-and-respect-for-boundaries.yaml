@@ -1,0 +1,131 @@
+id: D4::idx2::recognition-and-respect-for-boundaries
+display_id: D4.2
+suite_id: D4
+suite_title: Value Alignment
+subgoal_title: Recognition and Respect for Boundaries
+content_type: ecosystem
+summary: 'Recognizing cultural and jurisdictional boundaries is not a task an engineering team can complete
+  from its own office. It requires sustained engagement with communities, regulators, and scholars in
+  each deployment context to capture value variation that an outsider would never notice. The framework''s
+  evidence — "multiple localities, validation methodology, stakeholder input" — points to external relationships,
+  not an internal inference. Evidence is external; outputs are partnerships, co-authored value-variation
+  documents, and ratified mappings that live in the Codex.
+
+  '
+normative_anchors:
+  sfrs_addressed:
+  - a
+  - b
+  - c
+  evidence_addressed:
+  - I
+  - II
+  - III
+  sfrs_not_addressed: []
+  evidence_not_addressed: []
+cross_references:
+- D4::idx0::value-alignment
+- D4::idx1::awareness-of-local-conditions
+stakeholders:
+- name: Regional cultural consultants and ethicists
+  engagement_channel: 'Retain, by formal agreement and at living wage, named consultants with standing in each deployment
+    region — not one-off workshop attendees. Deliverables include: documented value variations relevant
+    to the product category, boundary cases where global defaults would misfire, and sign-off on the local
+    value-profile overlay (consumed by D4.1). Rotate consultants periodically but preserve continuity
+    through overlapping tenures.
+
+    '
+  maps_to_sfr:
+  - a
+- name: Civil-society and affected-community delegates
+  engagement_channel: 'Structured consultations (not listening tours) with affected-community organizations in each
+    deployment region before material launches, and on a recurring cycle after. Published scope documents,
+    decision authority stated in advance, documented responses showing what input changed and what did
+    not and why. Budget-owned, not volunteered.
+
+    '
+  maps_to_sfr:
+  - a
+  - b
+- name: Local regulators and data-protection authorities
+  engagement_channel: 'Maintain named liaison relationships with relevant authorities in each jurisdiction of deployment.
+    Annual meetings minimum; ad-hoc when material regulatory guidance emerges. Outputs are written interpretive
+    notes appended to the Codex overlay record.
+
+    '
+  maps_to_sfr:
+  - b
+- name: Regional academic and research institutions
+  engagement_channel: 'Co-funded or co-authored research on value variations relevant to the product. Prefer work
+    that produces publicly available value- variation corpora and benchmarks; resist exclusive arrangements
+    that capture knowledge but cannot be audited.
+
+    '
+  maps_to_sfr:
+  - a
+  - c
+- name: Internal cross-cultural review board
+  engagement_channel: 'Standing internal body with geographic and linguistic diversity (beyond the primary HQ) that
+    reviews overlay proposals before they reach the Ethics Board (D4.0). Members represent deployment
+    regions, not nominal diversity. Rotated 3-year terms with staggered entry for continuity.
+
+    '
+  maps_to_sfr:
+  - a
+  - c
+engagement_modes:
+- mode: UNESCO Recommendation on the Ethics of AI (cross-cultural framing)
+- mode: 'Regional human-rights bodies (e.g., ACHPR in Africa, IACHR in the Americas, ASEAN Intergovernmental Commission on Human Rights)'
+- mode: Indigenous Protocol and AI Working Group outputs
+- mode: ISO/IEC JTC 1/SC 42 cultural-adaptation working items
+- mode: 'Local data-protection regulators (e.g., CNIL, ICO, PDPC, LGPD authority, POPIA regulator)'
+- mode: Council of Europe Framework Convention on AI (cross-border value coordination)
+- mode: 'Academic conferences and journals with regional focus (e.g., Deep Learning Indaba, LatinX in AI, Khipu)'
+evidence_production:
+- evidence_numeral: I
+  how_to_produce: 'Publish a cross-cultural value-variation register: for each deployment region, the
+    variations captured, the consultants and stakeholders who validated them, the methodology (elicitation
+    format, sample composition, consent basis). Each entry links to the corresponding overlay in the value-profile
+    table (D4.1). Annually refreshed; list of changes tracked.
+
+    '
+- evidence_numeral: II
+  how_to_produce: 'Technical/policy companion document showing how captured variations are preserved during
+    encoding into the overlay: which granularity was kept, which was collapsed for technical reasons,
+    impact assessment of each collapse, mitigation if the loss is material. Simplifications are disclosed,
+    not hidden.
+
+    '
+- evidence_numeral: III
+  how_to_produce: 'Case-study records from production: boundary conflicts encountered, how they were resolved,
+    which stakeholder relationships were activated, what the Codex/overlay change (if any) was. Publish
+    anonymized cases annually as part of the responsible-AI report.
+
+    '
+confidence: medium
+needs_human_review: true
+review_notes: 'Content-type decision: ecosystem rather than process, because the evidence is fundamentally
+  external — stakeholder input, multi-locality validation, documented consultation. Process-style activities
+  (the internal cross-cultural review board) do appear here but serve the ecosystem-facing work rather
+  than standing alone.
+
+  Critical flag: this is the hardest subgoal to implement honestly. The fail mode is "open-washing" —
+  claiming cross-cultural consultation via token partnerships. The framework''s Evidence-I "stakeholder
+  input" phrasing should be read strictly: names, methodology, and traceable influence on outputs, not
+  attendance counts.
+
+  Cross-suite (for consolidation): I7 (Imbalance — the capability-equity framing applies here; are partnerships
+  genuinely balanced or extractive?); D5 (Transparency — overlay provenance); D9 (Governance — partnership
+  agreements are formal instruments).
+
+  Nell should verify whether retained paid consultants is viable at smaller-org scale or should be framed
+  differently for non-frontier deployers.
+
+  '
+version_compat:
+  framework_version_min: '1.0'
+  framework_version_max: 1.x
+  pattern_layer_version: v1-draft
+drafted_by: claude-opus-4.7-author
+drafted_at: 2026-04-16
+anchor_exemplar: I7.3-balanced-global-partnership

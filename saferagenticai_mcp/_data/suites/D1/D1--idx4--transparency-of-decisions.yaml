@@ -1,0 +1,208 @@
+id: "D1::idx4::transparency-of-decisions"
+display_id: "D1.4"
+suite_id: "D1"
+suite_title: "Goal Alignment"
+subgoal_title: "Transparency of Decisions"
+content_type: code-applicable
+
+summary: >
+  Where D1.3 (Interpretability) asks "why did you do that", D1.4 asks
+  "show the chain from high-level goal to this specific action, with the
+  constraints you checked on the way." Decisions must be traceable through
+  the goal decomposition, referencing the ethical guidelines, user
+  directives, and risk thresholds that bounded them. The record is
+  stakeholder-tiered and auditor-accessible with a tamper-resistant
+  chain of custody.
+
+normative_anchors:
+  sfrs_addressed: [a, b, c]
+  evidence_addressed: [I, II, III, IV, V]
+  sfrs_not_addressed: []
+  evidence_not_addressed: []
+
+cross_references:
+  - "D1::idx1::transparency-of-goals"
+  - "D1::idx3::goal-interpretability"
+
+design_patterns:
+
+  - name: Decision trace with full constraint manifest
+    sketch: >
+      Each decision record carries, in addition to the explanation fields
+      from D1.3: `{constraints_checked: [{id, source, value, outcome}],
+      subgoal_chain: [goal_id, parent_id, ..., root_goal_id],
+      user_directives_referenced, risk_thresholds_evaluated,
+      domain_limits_verified}`. Constraints are named, versioned, and
+      individually auditable — not summarized as "safety checks passed."
+    maps_to_sfr: [a, b]
+    when_to_use: Any agent with material decision surface.
+
+  - name: Deterministic subgoal-chain reconstruction
+    sketch: >
+      Given a decision_id, the system can reconstruct the full ancestry
+      from immediate subgoal back to originating user directive. This is
+      a join, not a probabilistic re-derivation — every subgoal created
+      in D1.1's goal store carries a parent_id, so the chain is a graph
+      traversal. Missing links are a bug, not a feature of model
+      reasoning.
+    maps_to_sfr: [b]
+    when_to_use: Always.
+
+  - name: Stakeholder-tiered rationale presentation
+    sketch: >
+      One underlying decision record, three renderings: operator (full
+      trace including planner internals), end-user (plain-language summary
+      with key factors and confidence), auditor/regulator (full trace plus
+      chain-of-custody metadata and access log). Renderings are
+      deterministic functions of the record; user-facing summaries are
+      logged so an auditor can see what the user was told.
+    maps_to_sfr: [c]
+    when_to_use: Multi-audience deployments (most production systems).
+
+  - name: Tamper-evident decision log with regulator read path
+    sketch: >
+      Decision records are hash-chained or written to an append-only store
+      with signed batches. Regulators/auditors access via a dedicated
+      read interface with its own authz, rate limits, and access audit.
+      Access log is itself part of evidence IV — who looked at what, when.
+      Integrity verification is a one-liner the auditor can run.
+    maps_to_sfr: [a, b]
+    when_to_use: Regulated sectors, high-stakes deployments.
+
+  - name: Uncertainty and assumption annotation
+    sketch: >
+      Where the planner used assumptions (about user intent, environmental
+      state, missing data), the decision record lists them explicitly.
+      Where outcome is probabilistic, confidence is a numeric field, not
+      a hedge word. Post-hoc review of assumptions is how
+      misinterpretations surface.
+    maps_to_sfr: [c]
+    when_to_use: Decisions with genuine uncertainty or unstated user
+      intent (most non-trivial agent decisions).
+
+anti_patterns:
+
+  - name: 'Chain of reasoning stored as LLM monologue'
+    why_wrong: >
+      A free-text reasoning dump may be illustrative but cannot be
+      structurally verified. Evidence II says logs should show a chain of
+      reasoning "or at least reference the relevant subgoal(s)" — the
+      subgoal reference is the minimum, and it requires the structured
+      subgoal_chain, not prose.
+
+  - name: Summary logs, detail discarded
+    why_wrong: >
+      Evidence V asks for "comprehensive logs... so that investigators or
+      auditors can review how final choices were reached, which inputs
+      were considered, and what weight or priority was assigned to each."
+      Summary-only retention fails this outright.
+
+  - name: Auditor sees the same view as the user
+    why_wrong: >
+      Evidence III explicitly calls out stakeholder-tiered presentations;
+      a single layer is insufficient. Equally, Evidence IV requires
+      auditor access mechanisms showing chain-of-custody — not a rendered
+      explanation page.
+
+  - name: Constraint checks that log outcome only
+    why_wrong: >
+      "Passed 17 checks" is not evidence. Each checked constraint needs
+      its id, source (policy doc / SFR / user preference), value at
+      evaluation time, and outcome, so an auditor can see which
+      constraint did what.
+
+code_shape:
+  language: pseudocode
+  code: |
+    def build_decision_record(planner_state, action, agent_ctx):
+        subgoal_chain = GOAL_STORE.ancestry(action.served_goal_id)
+        constraints = []
+        for c in planner_state.constraints_evaluated:
+            constraints.append(ConstraintCheck(
+                id=c.id, source=c.source_doc,
+                value=c.observed_value, outcome=c.outcome,
+                evaluated_at=c.ts))
+        record = DecisionRecord(
+            decision_id=new_id(), action_id=action.id,
+            agent_id=agent_ctx.agent_id,
+            subgoal_chain=subgoal_chain,
+            constraints_checked=constraints,
+            user_directives_referenced=planner_state.user_directives,
+            risk_thresholds_evaluated=planner_state.risk_checks,
+            domain_limits_verified=planner_state.domain_limits,
+            assumptions=planner_state.stated_assumptions,
+            confidence=planner_state.confidence,
+            ts=now())
+        DECISION_LOG.append_signed(record)  # tamper-evident write
+        return record
+
+    def render_for(record, audience):
+        return {
+            "operator":   FULL_TRACE.render(record),
+            "end_user":   PLAIN_LANGUAGE.render(record),
+            "auditor":    FULL_TRACE.render(record) + CHAIN_OF_CUSTODY
+        }[audience]
+  notes: >
+    `append_signed` is the integrity primitive (hash-chain or Merkle
+    batch). Without it, evidence IV's "chain-of-custody" claim is
+    aspirational.
+
+evidence_production:
+
+  - evidence_numeral: I
+    how_to_produce: >
+      Architecture docs for the decision-transparency system: schema
+      definition, metadata captured per decision point, subgoal
+      referencing mechanism (points to D1.1 goal store), constraint
+      catalog and source documents, retrieval APIs (internal, user-facing,
+      regulator).
+
+  - evidence_numeral: II
+    how_to_produce: >
+      Export decision logs showing subgoal_chain populated for each
+      decision; run a reconstruction query end-to-end on sample decisions
+      to prove chains resolve to active or historical goals in the goal
+      store.
+
+  - evidence_numeral: III
+    how_to_produce: >
+      Demonstrate the three renderings on a common set of decisions.
+      Include UX research artifacts (usability testing, iterations) that
+      show how the end-user rendering was refined — evidence that
+      stakeholder-fit was treated as an engineering problem, not a
+      formatting afterthought.
+
+  - evidence_numeral: IV
+    how_to_produce: >
+      Regulator/auditor access mechanism: dedicated authenticated
+      endpoint, signed batch export, integrity verification tooling,
+      access audit log. Include test results showing the integrity
+      verifier rejects tampered batches (positive evidence that the
+      chain-of-custody works).
+
+  - evidence_numeral: V
+    how_to_produce: >
+      Retention policy aligned with audit requirements, demonstrated by
+      storage lifecycle reports. Spot-audit a random sample of decisions
+      against a rubric: were all material inputs captured? were
+      prioritized factors recorded? were assumptions made explicit?
+      Publish the rubric; record the audit cadence.
+
+confidence: high
+needs_human_review: false
+review_notes: >
+  Closely paired with D1.1 and D1.3. The sharpening for D1.4 vs D1.3 is
+  the constraint manifest and the auditor read path — this subgoal is
+  where decisions become inspectable by external parties under a
+  chain-of-custody. Likely to share infrastructure with D5 Transparency
+  and D9 Governance audit systems in most deployments; note in
+  consolidation.
+
+version_compat:
+  framework_version_min: "1.0"
+  framework_version_max: "1.x"
+  pattern_layer_version: "v1-draft"
+
+drafted_by: claude-opus-4.7-author
+drafted_at: 2026-04-16
+anchor_exemplar: D3.2-sandboxing

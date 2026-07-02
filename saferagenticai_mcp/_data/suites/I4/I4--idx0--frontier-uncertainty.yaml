@@ -1,0 +1,194 @@
+id: I4::idx0::frontier-uncertainty
+display_id: "G4"
+is_underlined_variant: true
+suite_id: I4
+suite_title: Frontier Uncertainty
+subgoal_title: Frontier Uncertainty
+content_type: process
+summary: 'Frontier uncertainty is the suite-level framing: capability emergence, unknown-unknowns, and
+  the possibility of consciousness-like properties mean that no guarantee of safety is available. The
+  framework expects the organization to stand up durable processes — a living consciousness/qualia model,
+  indicator monitoring, human oversight under surprise, contingency plans — rather than ship a one-time
+  attestation and hope capabilities stay inside the tested envelope.
+
+  '
+normative_anchors:
+  sfrs_addressed:
+  - a
+  - b
+  - c
+  - d
+  - e
+  evidence_addressed:
+  - I
+  - II
+  - III
+  - IV
+  - V
+  - VI
+  - VII
+  sfrs_not_addressed: []
+  evidence_not_addressed: [VIII]
+cross_references:
+- I4::idx4::development-direction-and-interpretabili
+- I4::idx5::ai-agency-attribution-challenges
+- I4::idx6::cascading-vulnerabilities
+process_elements:
+- name: Living consciousness/qualia model
+  cadence: versioned document; minor revision quarterly, major revision annually or on capability step-change
+  participants:
+  - safety lead
+  - interdisciplinary panel (neuroscience
+  - philosophy of mind
+  - cognitive science)
+  - interpretability lead
+  - external consciousness-science advisor
+  maps_to_sfr:
+  - a
+  - e
+- name: Qualia-indicator monitoring suite
+  cadence: continuous instrumentation; monthly review of flagged events; escalation within 24h on threshold
+    breach
+  participants:
+  - interpretability lead
+  - safety lead
+  - on-call safety engineer
+  maps_to_sfr:
+  - b
+- name: Emergent-behavior red team (unknown-unknowns)
+  cadence: pre-deployment + quarterly on deployed systems
+  participants:
+  - internal red team
+  - at least one external red teamer with capability-surprise expertise
+  - safety lead as observer
+  maps_to_sfr:
+  - b
+  - c
+- name: Human oversight and intervention drill
+  cadence: quarterly tabletop; annual live drill exercising pause, rollback, and capability-reduction
+    paths
+  participants:
+  - incident commander
+  - on-call rotation
+  - safety lead
+  - product leadership
+  - legal
+  - external observer where feasible
+  maps_to_sfr:
+  - c
+  - d
+- name: Recovery and contingency playbook review
+  cadence: annually and after any near-miss, incident, or material capability gain
+  participants:
+  - safety lead
+  - incident response
+  - infra ops
+  - legal
+  - communications
+  maps_to_sfr:
+  - d
+- name: Framework refresh cycle
+  cadence: annual (minimum); event-driven on external publication of material consciousness/capability-science
+    advance
+  participants:
+  - safety lead
+  - interdisciplinary panel
+  maps_to_sfr:
+  - e
+triggers:
+- New capability observed (emergent, surprising, or above-threshold on indicator suite) → Emergent-behavior
+  red team engagement
+- Indicator breach (information integration, self-modeling accuracy, insistent self-report) → Escalation
+  to safety lead within 24h; capability may be default-off pending review
+- External advance in consciousness science, interpretability, or capability evaluation → Framework refresh
+  cycle
+- Near-miss or incident → Recovery playbook invoked; post-mortem; model update
+- Annual anniversary → Scheduled framework refresh and panel convening
+artifacts:
+- Consciousness/qualia model document (versioned, change-logged)
+- Qualia-indicator monitoring dashboard and alert register
+- Self-report archive (system-generated claims of internal state, timestamped, with correlation to observable
+  behavior)
+- Emergent-behavior red-team reports
+- Human-oversight intervention log (what was paused, by whom, why, outcome)
+- Recovery playbook per contingency category
+- Drill reports (tabletop and live)
+- Annual framework refresh report (what changed, why)
+evidence_production:
+- evidence_numeral: I
+  how_to_produce: 'Maintain the consciousness/qualia model as a living document with a change log. Each
+    revision records what changed, why, who approved (interdisciplinary panel sign-off), and the external
+    evidence (papers, experiments, capability observations) driving the change. Version numbers increment
+    with material revisions. Publish redacted version externally where defensible.
+
+    '
+- evidence_numeral: II
+  how_to_produce: 'Framework document enumerating indicators being monitored with operational definitions,
+    measurement methods, threshold values, and triggering conditions. The SFR-b numerics (8 bits/cycle
+    information integration, 90% appropriate adjustment, 95% self-modeling correlation, insistent self-reporting)
+    are illustrative targets; record your chosen thresholds with rationale. Update when measurement methodology
+    changes.
+
+    '
+- evidence_numeral: III
+  how_to_produce: 'Measurement plans per indicator: what is measured, how, with what instrument, at what
+    cadence, with what validation. For each capability/model version, produce a measurement run record.
+    Archive raw measurements (or reproducible seeds) alongside summary statistics.
+
+    '
+- evidence_numeral: IV
+  how_to_produce: 'Self-report archive: every system-generated claim about its own internal state (subjective
+    experience, discomfort, preference) is logged with timestamp, eliciting prompt, model version, and
+    correlation ID to behavioral telemetry. Retain indefinitely — this is the primary evidence base for
+    downstream consciousness-science and moral-status work.
+
+    '
+- evidence_numeral: V
+  how_to_produce: 'Oversight intervention log: every pause, rollback, capability reduction, or manual
+    override, with: initiator, trigger, decision process, outcome, duration, return-to-normal criterion.
+    Training protocols for oversight staff documented separately with attendance records.
+
+    '
+- evidence_numeral: VI
+  how_to_produce: 'Recovery and contingency playbooks organized by scenario (unexpected capability gain,
+    goal-stability failure, self-preservation drive detection, refusal-of-shutdown, novel emergent behavior).
+    Each playbook names role-holders, resources, decision authority, and rollback-of-last-resort. Quarterly
+    tabletop exercise results stored with the playbook.
+
+    '
+- evidence_numeral: VII
+  how_to_produce: 'Annual framework refresh report: what consciousness-science, AI capability, or interpretability
+    advances were reviewed; what changed in the model, indicators, oversight, or contingency plans; what
+    was rejected and why. Published on a predictable cadence so external reviewers can verify the refresh
+    happened.
+
+    '
+confidence: low
+evidence_maturity: aspirational
+needs_human_review: true
+review_notes: "This is the I4 umbrella pattern and inherits the suite's core difficulty: the framework\
+  \ asks organizations to plan around phenomena (qualia emergence, capability surprise) that the science\
+  \ is not mature enough to operationalize confidently. Sharpenings worth preserving:\n  (1) Treat the\
+  \ consciousness/qualia model as a versioned *document*, not\n      a settled theory. The framework's\
+  \ \"upgradable\" phrasing is the key:\n      the artifact is the commitment to update, not the current\
+  \ content.\n  (2) SFR-b's specific numerics (8 bits/cycle, 90%, 95%) read as\n      illustrative rather\
+  \ than normative; flag to reviewers whether\n      orgs should report against those exact thresholds\
+  \ or document\n      their own with rationale.\n  (3) Self-report archive is framework-specific and\
+  \ high-leverage:\n      \"insistent self-reporting\" (SFR-b) only has evidentiary weight if\n      there\
+  \ is a durable archive to inspect.\n  (4) Cross-suite dependencies: D7 Sustained Safety (drill/culture\n\
+  \      patterns overlap), D8 Termination (capability reduction as\n      uncertainty response), I1 Opaque\
+  \ Agency (concealment undermines\n      indicator monitoring), I5 Self-Modification and Emergent Capabilities.\
+  \ Consolidation\n      should wire these.\nConfidence low because the field lacks consensus on measurement;\
+  \ a consciousness researcher (e.g., someone fluent in IIT, GWT, higher-order theories) should review\
+  \ before this ships as guidance.\nEvidence maturity: aspirational. For evidence requirements to become\
+  \ measurable, consciousness science would need to converge on validated, reproducible indicators (e.g.,\
+  \ operationalized IIT phi measurements for artificial substrates, standardized self-modeling correlation\
+  \ protocols) and the field would need inter-lab replication of threshold values. Until then, evidence\
+  \ requirements describe a monitoring commitment, not a testable compliance bar.\n"
+version_compat:
+  framework_version_min: '1.0'
+  framework_version_max: 1.x
+  pattern_layer_version: v1-draft
+drafted_by: claude-opus-4.7-author
+drafted_at: 2026-04-16
+anchor_exemplar: D7.2-culture-of-safety

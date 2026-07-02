@@ -1,0 +1,202 @@
+id: D9::idx8::limited-legal-identity-for-agentic-ai-sy
+display_id: D9.8
+suite_id: D9
+suite_title: Responsible Governance of AAI Safety
+subgoal_title: Limited Legal Identity for Agentic AI Systems
+content_type: governance
+summary: 'Legal identity for AAI is an unsettled legal domain with live precedent candidates (quasi-municipal
+  corporations, guardian ad litem, agency law, vicarious liability). This subgoal is not asking the org
+  to solve it — it asks the org to adopt an internal framework that grants AAI bounded operational identity
+  with clear limits, linked to named human principals, that can evolve as law and understanding catch
+  up. Evidence is policy and licensing documentation, not litigation.
+
+  '
+normative_anchors:
+  sfrs_addressed:
+  - a
+  - b
+  - c
+  - d
+  - e
+  - f
+  evidence_addressed:
+  - I
+  - II
+  - III
+  - IV
+  - V
+  sfrs_not_addressed: []
+  evidence_not_addressed: []
+cross_references:
+- D9::idx0::responsible-governance-of-aai-safety
+- D9::idx2::compliance-with-applicable-laws-standard
+- D9::idx6::cryptographic-governance-of-data-models-
+- D9::idx7::appropriate-accountability-transparency-
+- D9::idx12::poor-attribution-of-responsibility-in-co
+policy_elements:
+- name: AAI Internal Legal Identity Framework
+  description: 'Written framework defining the org''s internal posture on AAI legal identity: operational
+    purpose of limited identity (enabling action under delegated authority, supporting accountability,
+    bounding liability), the analogues drawn on (quasi-municipal corporation, agency, guardian ad litem),
+    and explicit rejection of identity-expansion that outruns accountability. Not a claim about external
+    law; an internal commitment that shapes design and operations.
+
+    '
+  maps_to_sfr:
+  - a
+- name: AAI Licensing System
+  description: 'Internal licensing mechanism: every production AAI agent type receives a "license" document
+    binding (agent capability set, authorized principals, authorized domains, prohibited actions, licensing
+    authority, validity, review date). Licenses are revocable on governance decision. Pairs with D9::6
+    cryptographic identity — license is the human-readable layer over the cryptographic certificate.
+
+    '
+  maps_to_sfr:
+  - b
+- name: Agency Rules and Qualifiers
+  description: 'Written rules of agency: what actions agents may take on behalf of principals, what qualifiers
+    apply (monetary limits, irreversible action restrictions, multi-party consent requirements, time-of-
+    day/jurisdiction scoping), what triggers an escalation or refusal. Echoes established agency-law patterns
+    (actual authority, apparent authority, ratification) where helpful.
+
+    '
+  maps_to_sfr:
+  - d
+- name: Discretion-Standards document
+  description: 'For each class of agent decision, a standard for the discretion the agent is granted:
+    none (deterministic workflow), bounded (decision within explicit parameter ranges), principled (discretion
+    guided by articulated standards), or human-in-the- loop. Categorisation is documented; agents operating
+    beyond their stated discretion class are a policy violation.
+
+    '
+  maps_to_sfr:
+  - e
+- name: Human-Machine Responsibility Boundaries
+  description: 'Policy document naming, per deployment domain, what is machine autonomy and what is human
+    responsibility, with explicit "not autonomous" carveouts (e.g., legal determinations, medical diagnoses
+    in jurisdiction X, decisions with irreversible physical consequences). Boundaries are conservative
+    where law or ethics are unsettled; expansion requires board approval.
+
+    '
+  maps_to_sfr:
+  - f
+- name: Accountability Framework for All Agents
+  description: 'Extends the D9::2 Accountability Framework to every agent type: each agent license names
+    the accountable human principal, the fallback principal, and the liaison for disputes. Multi-agent
+    deployments map each agent to its identified principals; no "orphan" agents.
+
+    '
+  maps_to_sfr:
+  - c
+- name: Evolution Review
+  description: 'Named annual review — or triggered by legal / regulatory change — of the AAI Legal Identity
+    Framework and licensing system, to incorporate new legal precedent, scholarship, and regulatory developments.
+    Framework is explicitly expected to evolve as evidence about AI interests and welfare accumulates.
+
+    '
+  maps_to_sfr:
+  - a
+org_roles:
+- role: Legal Counsel (AAI identity lead)
+  responsibilities: 'Owns the AAI Internal Legal Identity Framework and its annual evolution review. Accountable
+    for alignment with applicable law and for the framework''s integrity as law changes.
+
+    '
+  accountable_or_consulted: accountable
+- role: Licensing Authority (internal body)
+  responsibilities: 'Body (cross-functional: legal, safety, product, ethics) that reviews and issues AAI
+    licenses, maintains the license register, and handles revocation. Meets at minimum quarterly; additionally
+    on-demand for new agent classes.
+
+    '
+  accountable_or_consulted: accountable
+- role: Principals (named humans)
+  responsibilities: 'Named human principals for every licensed agent type. Attested in HR records. Receive
+    escalations from their agents; answerable for agent actions within license scope.
+
+    '
+  accountable_or_consulted: responsible
+- role: Ethics and Welfare Advisor
+  responsibilities: 'Consulted on Evolution Review, especially on questions touching AI moral status,
+    welfare, and rights developments. Maintains a watching brief on scholarship and policy developments.
+
+    '
+  accountable_or_consulted: consulted
+- role: Board AAI Safety Committee
+  responsibilities: 'Informed of license register changes, Evolution Review outcomes, and any expansion
+    of human-machine boundary. Authority over boundary expansions.
+
+    '
+  accountable_or_consulted: informed
+documentation_artifacts:
+- artifact: AAI Internal Legal Identity Framework
+  cadence: versioned; reviewed annually
+- artifact: Agent license register and license documents
+  cadence: continuous; each license versioned
+- artifact: Agency rules and qualifiers specification
+  cadence: versioned; reviewed annually or on material change
+- artifact: Discretion-Standards document
+  cadence: versioned; reviewed on capability change
+- artifact: Human-Machine Responsibility Boundaries policy
+  cadence: versioned; reviewed annually
+- artifact: Evolution Review report
+  cadence: annually or on triggering event
+- artifact: Agent-to-principal mapping register
+  cadence: continuous; reconciled quarterly
+evidence_production:
+- evidence_numeral: I
+  how_to_produce: 'Publish the AAI Internal Legal Identity Framework document defining scope (what the
+    framework does and does not claim), limitations (explicit disclaimers about external legal effect),
+    and version history. Reviewed by legal counsel and signed by the accountable human.
+
+    '
+- evidence_numeral: II
+  how_to_produce: 'License register export: each agent type, its license document (capability set, principals,
+    prohibitions, validity, review date), issuance date, issuer, revocations and reasons. Process diagrams
+    of licensing workflow retained as supporting artifacts.
+
+    '
+- evidence_numeral: III
+  how_to_produce: 'Accountability framework extension: for each agent type, the named accountable principal,
+    the fallback, the liaison for disputes, and the interaction map to other agents within the system.
+    International-considerations annex addressing cross- jurisdictional agent operation. Scalability annex
+    describing how the framework holds as deployments grow.
+
+    '
+- evidence_numeral: IV
+  how_to_produce: 'Agency rules and qualifiers document with per-rule rationale, legal-analogue reference
+    where applicable, qualifying conditions, examples of in-scope and out-of-scope behaviors. Change log
+    records rule evolution.
+
+    '
+- evidence_numeral: V
+  how_to_produce: 'Human-Machine Responsibility Boundaries policy with, for each deployment domain, a
+    boundary map (autonomous, conditional, human-responsible), the rationale, the reviewer, and the expansion-approval
+    log. Training materials show boundary communication to operators.
+
+    '
+confidence: low
+needs_human_review: false
+reviewed_by: nell
+reviewed_on: "2026-05-16"
+review_notes: 'Low confidence flagged. This subgoal occupies a live legal-research frontier; any pattern
+  in 2026 will age as case law, legislation, and scholarship develop. The pattern tries to stay inside
+  the org''s own governance ("internal framework," "internal licensing") and avoid claims about external
+  legal effect that would be speculative. Four points for reviewer: (1) "limited legal identity" terminology
+  varies — some jurisdictions use "legal personhood," others "legal capacity," others reject the framing
+  entirely; the pattern is neutral; (2) the analogues named (quasi-municipal corporation, guardian ad
+  litem) come from the subgoal description and may or may not be the best available — an AI-law specialist
+  should weigh in; (3) SFR-e "standards for system discretion" sits adjacent to D5 Control and D6 Autonomy;
+  this pattern could overlap with those subgoals and should be wired in at consolidation; (4) the framework''s
+  own note about AI welfare and moral status suggests the pattern should be open to expanding identity
+  as evidence accumulates — the Evolution Review is the hook for that. Cross-suite: D5 (Control), D6 (Autonomy),
+  D4 (Value Alignment) on ethics dimensions, and the I- suite for societal/legal context.
+
+  '
+drafted_by: claude-opus-4.7-subagent-D9
+drafted_at: 2026-04-16
+anchor_exemplar: D9.2-compliance
+version_compat:
+  framework_version_min: '1.0'
+  framework_version_max: 1.x
+  pattern_layer_version: v1-draft

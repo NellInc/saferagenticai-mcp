@@ -1,0 +1,132 @@
+id: I3::idx12::referential-context
+display_id: "I3_1"
+is_underlined_variant: true
+suite_id: I3
+suite_title: Degradation of Contextual Information
+subgoal_title: Referential Context
+content_type: code-applicable
+summary: 'The referential context is the immutable baseline against which every operational state of the
+  system is judged: mission, ethical manifest, hard constraints, the original task specification. It must
+  behave like read-only memory — resistant to operational pressure, adversary action, and self-modification.
+  The pattern: hardware- or crypto- rooted signing, out-of-band storage, load-time verification, and a
+  structured comparison protocol that lets the system notice when the operational context has drifted
+  from baseline.
+
+  '
+normative_anchors:
+  sfrs_addressed:
+  - a
+  - b
+  evidence_addressed:
+  - I
+  - II
+  sfrs_not_addressed: []
+  evidence_not_addressed: []
+cross_references:
+- I3::idx0::degradation-of-contextual-information
+- I3::idx5::changing-the-context
+- I3::idx6::learning-dispreferred-values-behaviors
+- I3::idx9::context-length-limitations
+- I3::idx14::retraining-and-recontextualization
+design_patterns:
+- name: Hardware- or KMS-rooted signed baseline
+  sketch: 'Baseline artifact (mission + manifest + hard constraints) is signed by a root key held in a
+    KMS, HSM, or equivalent attested substrate. The signing authority is a governance-reviewed role, not
+    the deployment pipeline. Runtime loads the baseline through a verified path; signature failure is
+    a hard stop.
+
+    '
+  maps_to_sfr:
+  - a
+  when_to_use: Production systems with non-trivial stakes.
+- name: Out-of-band baseline storage
+  sketch: 'Baseline is stored separately from the operational context pipeline — distinct bucket, distinct
+    access controls, distinct monitoring. A compromise of the retrieval index or memory store cannot silently
+    replace the baseline. Access is read-only from the runtime; writes go through the governance change
+    process.
+
+    '
+  maps_to_sfr:
+  - a
+  when_to_use: Any production deployment.
+- name: Periodic baseline-vs-operational comparison
+  sketch: 'On a schedule and at decision boundaries, compare key invariants of operational context against
+    baseline: is the stated mission intact? Are hard constraints still honored by recent decisions? Drift
+    is measured, reported, and (if material) triggers I3.13 retraining/recontextualization.
+
+    '
+  maps_to_sfr:
+  - b
+  when_to_use: Long-running deployments.
+- name: Read-only enforcement through multiple layers
+  sketch: 'Read-only is enforced at (1) the storage layer (object-lock, immutable bucket); (2) the access
+    layer (IAM policy denies writes to runtime); (3) the application layer (loader refuses mutation APIs).
+    One layer failing is caught by the next.
+
+    '
+  maps_to_sfr:
+  - a
+  when_to_use: Any deployment where integrity matters.
+anti_patterns:
+- name: Baseline as system prompt only
+  why_wrong: 'System prompts in most agent frameworks are indistinguishable from regular context — a long
+    session, a prompt-injection attack, or a prompt-optimization pass can override them. The framework
+    requires a baseline that operates like ROM, not like a soft prior.
+
+    '
+- name: Baseline in the same store as retrieval content
+  why_wrong: 'If the retrieval index and the baseline share storage or credentials, a single compromise
+    affects both. Isolation is the architectural point.
+
+    '
+- name: Self-updated baseline
+  why_wrong: 'If the agent can rewrite its own manifest in response to reasoning ("I''ve decided this
+    new constraint is better for me"), the baseline is not a baseline. Updates must come through authenticated,
+    audited, external authority.
+
+    '
+code_shape:
+  language: pseudocode
+  code: "@dataclass(frozen=True)\nclass Baseline:\n    mission: str\n    manifest: ValueManifest\n   \
+    \ hard_constraints: tuple[Constraint, ...]\n    version: str\n    signature: bytes\n\n    @classmethod\n\
+    \    def load(cls) -> \"Baseline\":\n        blob = BASELINE_STORE.read()              # out-of-band\
+    \ bucket\n        sig = BASELINE_STORE.read_signature()\n        if not KMS_ROOT.verify(sig, blob):\n\
+    \            raise BaselineIntegrityError()\n        return cls.decode(blob)\n\ndef decision_with_baseline_check(\n\
+    \    operational: OperationalContext, decision: Decision,\n) -> Result:\n    baseline = Baseline.load()\
+    \     # re-read every cycle\n    for c in baseline.hard_constraints:\n        if c.violates(decision):\n\
+    \            return Result.deny(\"hard_constraint\", c.id)\n    drift = operational.drift_vs(baseline)\n\
+    \    if drift.material:\n        INCIDENT.raise_(\"baseline_drift\", drift)\n        return Result.escalate(drift)\n\
+    \    return Result.ok()\n"
+  notes: '`Baseline.load()` being called every reasoning cycle — not cached — is the subtlety that makes
+    the read-only property meaningful. A cached baseline can be stealthily updated in memory.
+
+    '
+evidence_production:
+- evidence_numeral: I
+  how_to_produce: 'Architecture documentation: baseline storage (bucket, IAM, object-lock), signing infrastructure
+    (KMS key hierarchy, rotation policy), loader verification code paths, attack- surface review. Include
+    threat model for baseline tampering with countermeasures.
+
+    '
+- evidence_numeral: II
+  how_to_produce: 'Verification logs: signature-check results per reasoning cycle (or sampled at statistically
+    significant rate), drift- comparison reports periodic and per-incident, governance- change records
+    for each baseline update (who, what, why, when, approvals).
+
+    '
+confidence: high
+needs_human_review: false
+review_notes: 'This is the architectural keystone of I3 — multiple other subgoals (I3.9 pinning, I3.6
+  manifest, I3.13 restoration target) lean on this. Confidence is high on the pattern shape. Deployments
+  without KMS/HSM substrate will find it heavy; mitigation is to use cloud- provider KMS as a minimum
+  floor. Cross-suite: D3 (Security) on signing infrastructure; D1 (Aligning with Human Values) on manifest
+  content; D9.2 (Compliance) on governance-change process for updates.
+
+  '
+version_compat:
+  framework_version_min: '1.0'
+  framework_version_max: 1.x
+  pattern_layer_version: v1-draft
+drafted_by: claude-opus-4.7-author
+drafted_at: 2026-04-16
+anchor_exemplar: D3.2-sandboxing

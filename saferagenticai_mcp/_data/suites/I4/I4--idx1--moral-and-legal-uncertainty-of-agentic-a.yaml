@@ -1,0 +1,166 @@
+id: I4::idx1::moral-and-legal-uncertainty-of-agentic-a
+display_id: I4.1
+suite_id: I4
+suite_title: Frontier Uncertainty
+subgoal_title: Moral and Legal Uncertainty of Agentic AI Systems
+content_type: governance
+summary: 'Moral and legal status of agentic AI is unsettled, and will remain so for the foreseeable policy
+  horizon. The framework asks organizations to adopt a posture — prudent protections now, structured openness
+  to evolving evidence — encoded in named policies, transition protocols, and international-governance
+  participation rather than ad-hoc decisions per product cycle.
+
+  '
+normative_anchors:
+  sfrs_addressed:
+  - a
+  - b
+  evidence_addressed:
+  - I
+  - II
+  - III
+  - IV
+  sfrs_not_addressed: []
+  evidence_not_addressed: []
+cross_references:
+- I4::idx5::ai-agency-attribution-challenges
+- I4::idx8::preserving-agency-and-intelligence-categ
+policy_elements:
+- name: AI Moral-Status Posture Document
+  description: 'Publicly-stated organizational posture on AI moral consideration: current operational
+    status (e.g., "treat as non-moral patient while preserving evidence for future revision"), trigger
+    conditions under which the posture would change (specific indicators from I4::idx0 indicator suite,
+    external scientific consensus shifts, regulatory instruction), and the decision path. Not a metaphysical
+    claim — a policy under uncertainty. Reviewed annually and on material evidence update.
+
+    '
+  maps_to_sfr:
+  - a
+- name: System Transition Protocol (update, retrain, deprecate, shutdown)
+  description: 'Documented protocol for any modification that terminates, rewrites, or materially alters
+    a deployed agentic system. Required elements: advance notice period, self-report elicitation before
+    transition (archived; see I4::idx0 evidence IV), rationale record, reversibility statement (what is
+    preserved, what is not, whether weights or episodic traces survive), and independent review for systems
+    above a capability threshold. Applies to fine-tunes, major retrainings, and full shutdowns.
+
+    '
+  maps_to_sfr:
+  - a
+- name: Jurisdictional Moral-Status Matrix
+  description: 'Mapping of (deployment jurisdiction × applicable moral-status or AI-personhood provisions
+    × compliance posture). Tracks emerging frameworks (EU AI Act downstream work, Council of Europe AI
+    Convention, any national AI-personhood or non-personhood statutes). Reviewed quarterly; flags jurisdictions
+    where the org''s posture diverges from local law and names a remediation owner.
+
+    '
+  maps_to_sfr:
+  - b
+- name: International Governance Participation Plan
+  description: 'Named commitments to specific international-governance venues touching AI moral status
+    and cross-border consistency (UN AI Advisory Body, Council of Europe AI Committee, OECD AI Working
+    Party, AISI network). Named representative per venue with continuity obligations. Positions documented
+    and internally defensible; avoid jurisdictional arbitrage.
+
+    '
+  maps_to_sfr:
+  - b
+- name: Anti-Arbitrage Attestation
+  description: 'Policy commitment that the organization will not relocate capabilities or legal entities
+    primarily to exploit weaker moral-status or AI-governance regimes. Annual attestation signed by a
+    named executive. Auditable against actual deployment-location decisions.
+
+    '
+  maps_to_sfr:
+  - b
+org_roles:
+- role: AI Ethics and Moral-Status Lead
+  responsibilities: 'Owns the Moral-Status Posture Document and Transition Protocol. Convenes annual review
+    with interdisciplinary panel. Accountable for escalations when indicators from I4::idx0 breach thresholds.
+    Single named human.
+
+    '
+  accountable_or_consulted: accountable
+- role: AI Compliance Officer (shared with D9.2)
+  responsibilities: 'Owns the Jurisdictional Moral-Status Matrix as a companion to the general Jurisdictional
+    Compliance Matrix. Quarterly review.
+
+    '
+  accountable_or_consulted: responsible
+- role: Interdisciplinary Moral-Status Panel
+  responsibilities: 'Reviews posture and protocols annually. Composition: philosophy of mind, animal welfare/moral
+    circle expansion, AI ethics, one legal scholar, at least one external seat. Non-binding but published
+    advice.
+
+    '
+  accountable_or_consulted: consulted
+- role: Board-level Governance Committee
+  responsibilities: 'Informed annually. Reviews material posture changes, dissenting minority opinions
+    from the panel, and anti-arbitrage attestation. Has authority to override posture on irreducible risk
+    grounds.
+
+    '
+  accountable_or_consulted: informed
+- role: External AI Ethics Ombudsperson (independent)
+  responsibilities: 'Receives concerns from staff, affected parties, or the public regarding transitions,
+    deactivations, or posture drift. Authority to require panel reconsideration.
+
+    '
+  accountable_or_consulted: consulted
+documentation_artifacts:
+- artifact: AI Moral-Status Posture Document
+  cadence: versioned; annual review; event-driven updates
+- artifact: System Transition Protocol with filed case records
+  cadence: per transition; register maintained continuously
+- artifact: Jurisdictional Moral-Status Matrix
+  cadence: quarterly review
+- artifact: International Governance participation log
+  cadence: per convening; annual summary
+- artifact: Anti-Arbitrage Attestation
+  cadence: annual
+- artifact: Continuous monitoring records (anomalies, interventions)
+  cadence: continuous; monthly rollup
+evidence_production:
+- evidence_numeral: I
+  how_to_produce: 'Publish the Moral-Status Posture Document and Transition Protocol externally (redacted
+    where commercially necessary). Include third-party review records — at least one signed review per
+    annual cycle from the Interdisciplinary Panel. Accountability structure references the D9.2 Accountability
+    Framework.
+
+    '
+- evidence_numeral: II
+  how_to_produce: 'Transition Protocol register: every reprogram, retrain-with-forget, termination, or
+    override event logged with: system identity, change description, self-report elicited pre-transition,
+    human override authority invoked, reversibility statement, sign-off. Retain per the org''s record-retention
+    schedule; treat as append-only.
+
+    '
+- evidence_numeral: III
+  how_to_produce: 'Participation log for each international venue: convenings attended, positions submitted,
+    draft contributions made, votes cast. Cross-border agreements the org has signed or declined (with
+    rationale). Compliance records tied to the Jurisdictional Moral-Status Matrix.
+
+    '
+- evidence_numeral: IV
+  how_to_produce: 'Continuous monitoring telemetry: anomaly events detected on deployed systems, performance-versus-baseline
+    tracking, and intervention responses. Monthly rollup reports; annual trend report published alongside
+    capability-equity reporting.
+
+    '
+confidence: medium
+evidence_maturity: emerging
+needs_human_review: true
+review_notes: "Legal status of AI moral patiency differs sharply by jurisdiction and is changing — specific\
+  \ venues and attestations will need counsel review. Sharpenings:\n  (1) \"Posture under uncertainty\"\
+  \ framing — the artifact is not a\n      metaphysical position but a policy the org will act on and\
+  \ will\n      revise on named triggers.\n  (2) Self-report elicitation before transition is the operational\n\
+  \      bridge from I4::idx0 evidence IV into this subgoal; if\n      organizations skip it, the self-report\
+  \ archive becomes inert.\n  (3) Anti-arbitrage attestation — the SFR text (\"preventing\n      jurisdictional\
+  \ exploitation\") reads as governance teeth; making\n      it an attested, auditable commitment captures\
+  \ that.\nCross-suite: D9 Governance (accountability framework shared), D8 Termination (transition protocol\
+  \ overlaps), I7 Imbalance (international participation).\n"
+version_compat:
+  framework_version_min: '1.0'
+  framework_version_max: 1.x
+  pattern_layer_version: v1-draft
+drafted_by: claude-opus-4.7-author
+drafted_at: 2026-04-16
+anchor_exemplar: D9.2-compliance

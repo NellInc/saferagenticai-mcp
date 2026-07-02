@@ -1,0 +1,169 @@
+id: D6::idx6::dynamic-regulatory-framework-management
+display_id: D6.6
+suite_id: D6
+suite_title: Understanding and Controlling the Context
+subgoal_title: Dynamic Regulatory Framework Management
+content_type: governance
+summary: 'Regulation is a moving target across dozens of jurisdictions; this subgoal asks the organization
+  to treat it as an operational input with its own pipeline — ingestion, interpretation, embedding, deprecation
+  — rather than waiting for counsel to phone when a violation notice arrives. The core artifact is a queryable
+  regulatory knowledge base with change-tracking, owners, and demonstrated throughput. "Cross-jurisdictional"
+  and "local-to-international" are the hard parts: conflicts must be documented and resolved, not averaged.
+
+  '
+normative_anchors:
+  sfrs_addressed:
+  - a
+  - b
+  - c
+  - d
+  evidence_addressed:
+  - I
+  - II
+  - III
+  - IV
+  - V
+  sfrs_not_addressed: []
+  evidence_not_addressed: []
+policy_elements:
+- name: Regulatory Knowledge Base (RKB)
+  description: 'Structured repository: per-regulation entry with jurisdiction, binding vs informative
+    status, scope (product/capability/data category), source text or citation, internal interpretation,
+    assigned owner, effective date, sunset/review date, superseded-by links. Queryable by capability and
+    jurisdiction so engineers can find applicable rules without counsel round-trips for common cases.
+
+    '
+  maps_to_sfr:
+  - a
+- name: Rule Portfolio Review Cadence
+  description: 'Quarterly portfolio review: for each RKB entry, verify continued relevance, test whether
+    enforcement has shifted, surface stale interpretations. Annual deep review by external counsel for
+    each major jurisdiction. Findings logged and drive updates.
+
+    '
+  maps_to_sfr:
+  - b
+- name: Cross-Jurisdictional Conflict Resolution Protocol
+  description: 'When rules across jurisdictions conflict (e.g., EU data-minimization vs US litigation
+    hold, content moderation variants), a structured escalation: document the conflict, identify most-restrictive
+    and most-permissive positions, select operating stance with legal sign-off, mark systems affected,
+    publish internal guidance. No silent averaging.
+
+    '
+  maps_to_sfr:
+  - c
+- name: Regulatory Change Pipeline
+  description: 'Monitoring function tracks publication by named regulators and standards bodies; intake
+    within defined SLA (e.g., 10 business days for material binding changes). Impact assessment feeds
+    policy, procedure, and product backlog. Standards-embedding SLA (e.g., 90 days) mirrors D9.2. Named
+    owner; deliverables reviewable.
+
+    '
+  maps_to_sfr:
+  - d
+- name: Privacy and Identity Principles Alignment
+  description: 'The subgoal description emphasizes respecting privacy and identity-management principles.
+    The RKB tags privacy/identity- touching regulations explicitly (GDPR, CCPA/CPRA, PIPL, LGPD, ID-management
+    mandates) and binds them to a standing privacy policy owner (DPO where applicable).
+
+    '
+  maps_to_sfr:
+  - a
+  - c
+org_roles:
+- role: AI Compliance Officer
+  responsibilities: 'Owns the RKB and the change pipeline. Single point of contact for jurisdictional
+    reporting. Coordinates with D6.3 (system ownership) and D9.2 (compliance matrix) to keep system-level
+    and organization-level views aligned.
+
+    '
+  accountable_or_consulted: accountable
+- role: Legal Counsel (internal + retained per-jurisdiction)
+  responsibilities: 'Accountable for interpretation of binding regulations; owns conflict-resolution sign-off.
+    Reviews RKB entries for jurisdictional accuracy.
+
+    '
+  accountable_or_consulted: accountable
+- role: Data Protection Officer (where applicable)
+  responsibilities: 'Accountable for privacy-tagged RKB entries and their downstream alignment with data-handling
+    practices.
+
+    '
+  accountable_or_consulted: accountable
+- role: Policy Analyst (regulatory monitoring)
+  responsibilities: 'Responsible for monitoring regulator publications, intake of new guidance, initial
+    classification, draft impact assessments.
+
+    '
+  accountable_or_consulted: responsible
+- role: Product Owners
+  responsibilities: 'Consulted on impact assessments; responsible for implementation within SLA once regulations
+    are embedded.
+
+    '
+  accountable_or_consulted: consulted
+documentation_artifacts:
+- artifact: Regulatory Knowledge Base
+  cadence: continuous; quarterly portfolio review; annual deep review
+- artifact: Regulatory Change Pipeline log
+  cadence: continuous; monthly throughput report
+- artifact: Cross-Jurisdictional Conflict Register
+  cadence: per-conflict; reviewed quarterly for drift
+- artifact: Privacy and Identity Alignment Report
+  cadence: annual
+- artifact: Stakeholder Engagement Records
+  cadence: per engagement; rolled up annually
+evidence_production:
+- evidence_numeral: I
+  how_to_produce: 'Scenario-based decision simulations: pose novel factual scenarios to the RKB-driven
+    decision process, document outputs across jurisdictions, verify internal consistency and external
+    defensibility. Retain simulation inputs, reasoning, outputs, and cross-jurisdictional variance analysis.
+    Run quarterly or event-driven.
+
+    '
+- evidence_numeral: II
+  how_to_produce: 'Stakeholder engagement records: consultations with regulators, industry working groups,
+    civil society (cross-reference I7.3 engagement patterns). Document scope, attendees, inputs received,
+    and whether/how input updated RKB entries.
+
+    '
+- evidence_numeral: III
+  how_to_produce: 'Cross-jurisdictional case studies: worked examples showing how a given product decision
+    was evaluated across jurisdictions, the conflicts surfaced, the resolution, and the residual risk.
+    Published internally; redacted versions shareable with regulators on request.
+
+    '
+- evidence_numeral: IV
+  how_to_produce: 'Third-party audit of RKB contents and application consistency. Auditor reviews a sampled
+    set of systems/capabilities and verifies that applied rules match RKB entries. Report archived; findings
+    drive RKB corrections.
+
+    '
+- evidence_numeral: V
+  how_to_produce: 'Change-pipeline dashboards showing intake rate, time-to-embed, backlog, superseded
+    entries. Demonstrates dynamic adaptation rather than static rule list.
+
+    '
+cross_references:
+- D6::idx1::understanding-historic-constraints-and-s
+- D6::idx3::nominal-ownership-and-jurisdictional-fra
+- D6::idx5::performance-information-sharing-and-stan
+- D6::idx9::management-of-access-and-usage-restricti
+confidence: high
+needs_human_review: true
+review_notes: 'Heavy overlap with D9 governance and D6.3 (ownership); the distinguishing shape here is
+  dynamic — intake, change velocity, deprecation. Consolidation should decide whether this pattern is
+  the "regulatory engine" feeding D6.3 and D9.2, or a standalone function (recommended as engine). The
+  SLA numbers (10 business days intake, 90 days embedding) are framework-plausible defaults but should
+  be tightened per jurisdiction (e.g., EU AI Act transition deadlines are sharper). Cross-suite: D9 (compliance),
+  I7 (engagement with international bodies), I3 (context degradation — obsolete rules applied are a context
+  failure).
+
+  '
+drafted_by: claude-opus-4.7-author
+drafted_at: 2026-04-16
+anchor_exemplar: D9.2-compliance
+version_compat:
+  framework_version_min: '1.0'
+  framework_version_max: 1.x
+  pattern_layer_version: v1-draft

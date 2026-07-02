@@ -1,0 +1,131 @@
+id: I7::idx10::balanced-global-ai-partnership-framework
+display_id: I7.3
+suite_id: I7
+suite_title: Imbalance in AI Capabilities
+subgoal_title: Global AI Capability Disparities
+content_type: ecosystem
+summary: 'This subgoal is not something an organization implements alone — it is a posture the organization
+  takes toward the global AI landscape. The framework asks whether your org is contributing to capability
+  balance or compounding concentration. Evidence is external: partnerships you fund, resources you share,
+  oversight you participate in.
+
+  '
+normative_anchors:
+  sfrs_addressed:
+  - a
+  - b
+  - c
+  evidence_addressed:
+  - I
+  - II
+  - III
+  - IV
+  sfrs_not_addressed: []
+  evidence_not_addressed: []
+cross_references:
+- I6::avoiding-monopolistic-practices
+- D9::2
+- I1::race-dynamics-and-competition
+stakeholders:
+- name: Developing-nation AI ecosystems
+  engagement_channel: 'Establish named partnership programs with at least one university, government AI office, or
+    civil-society organization in each of several regions (e.g., Sub-Saharan Africa, South Asia, Latin
+    America). Patterns that work: compute-credit programs, fellowship pipelines with travel and relocation
+    funded, co-authored research with shared IP, shared language-resource corpora with local governance.
+
+    '
+  maps_to_sfr:
+  - a
+- name: Smaller peer organizations (startups, academic labs, public benefit entities)
+  engagement_channel: 'Make foundational artifacts (benchmarks, safety tooling, evaluation suites, training data
+    where legally shareable) available under permissive terms. Avoid "open-washing" — track actual uptake
+    and community contribution rather than download counts. Report annually on what''s been released,
+    usage, and community PRs merged.
+
+    '
+  maps_to_sfr:
+  - a
+  - b
+- name: International standards bodies (ISO/IEC JTC 1/SC 42, NIST, IEEE, OECD AI Working Party,
+    Council of Europe AI Committee, UN AI Advisory Body)
+  engagement_channel: 'Named participation on at least one working group per body where the org has material capability.
+    Participation is substantive (draft contributions, review rounds) not nominal. Maintain positions
+    that survive internal change — don''t rotate representatives without continuity.
+
+    '
+  maps_to_sfr:
+  - b
+  - c
+- name: Civil society, public interest advocates, affected communities
+  engagement_channel: 'Structured consultation before material deployments in sensitive domains (health, education,
+    justice, employment). Not listening tours: published consultation scope, decision authority, response
+    to input, and evidence of changes made. Budget and staff dedicated, not volunteered by product teams.
+
+    '
+  maps_to_sfr:
+  - b
+  - c
+- name: Capability-gap monitoring (internal function)
+  engagement_channel: 'Maintain an ongoing assessment of where the org''s products and services contribute to or
+    mitigate global capability imbalances. Output: annual "capability-equity report" published externally,
+    with metrics (compute shared, partnerships active, training-data licensed to developing-world researchers,
+    community-contributed work merged, fellowships awarded, standards-body influence exerted).
+
+    '
+  maps_to_sfr:
+  - c
+engagement_modes:
+- UN AI Advisory Body and Global Digital Compact processes
+- OECD AI Policy Observatory and Working Party on AI Governance
+- Council of Europe Framework Convention on AI
+- G7 Hiroshima AI Process and successor frameworks
+- ISO/IEC JTC 1/SC 42 — AI standards
+- 'NIST AI Safety Institute (and international counterparts: UK AISI, EU AI Office, Singapore IMDA, Japan
+  AISI, Canadian AISI)'
+- Partnership on AI
+- Frontier Model Forum (where applicable to org scale)
+- MLCommons for shared benchmarks
+- Regional AI cooperation frameworks (African Union Continental AI Strategy, ASEAN Guide on AI Governance)
+evidence_production:
+- evidence_numeral: I
+  how_to_produce: 'Annual partnership report enumerating: partner organization, program scope, resources
+    committed (compute hours, funds, staff time), duration, joint outputs (publications, released artifacts,
+    trained researchers). Retained and, where possible, published externally.
+
+    '
+- evidence_numeral: II
+  how_to_produce: 'Transparency measures documented in a single place: open-licensed artifact inventory,
+    audit reports (internal and external), records of resource-access requests granted and denied with
+    justification. Link from the org''s responsible-AI site and the D9.2 governance framework.
+
+    '
+- evidence_numeral: III
+  how_to_produce: 'Consultation records: meeting invitees (roles, affiliations), scope documents, written
+    input received, org''s response (including where input changed a decision and where it did not, with
+    reasoning). Not anonymized in aggregate — stakeholders who participated are identifiable with their
+    consent.
+
+    '
+- evidence_numeral: IV
+  how_to_produce: 'Capability-equity report (annual). Includes quantitative metrics (compute-hours shared,
+    fellowships awarded, standards-contributions accepted, partnerships active) and qualitative assessment
+    (where gaps identified, what was done, residual gap). Published externally — the framework''s spirit
+    requires accountability beyond the organization.
+
+    '
+confidence: medium
+needs_human_review: true
+review_notes: "Ecosystem patterns are the hardest to write without drifting into generic CSR language.\
+  \ Sharpenings worth preserving as subagents generalize:\n  (1) Evidence is external, not internal. Internal\
+  \ commitment docs\n      don't satisfy these subgoals; demonstrated outputs do.\n  (2) \"Open-washing\"\
+  \ anti-pattern — track actual uptake, not metrics\n      of availability.\n  (3) The standards-body\
+  \ and regulatory-liaison lists will age fast.\n      Subagents should default to \"named working group\
+  \ + named\n      representative with continuity\" rather than enumerate bodies\n      that may not exist\
+  \ in a year.\n  (4) Capability-gap monitoring as an internal function is a\n      framework-specific\
+  \ shape worth preserving (SFR-c asks for\n      \"dynamic assessment and correction systems\" — that's\
+  \ an\n      internal function, not just a one-time audit).\n\nNell and Ali should verify whether specific\
+  \ advocacy touchpoints should be named in the Pattern or abstracted. Naming bodies makes the pattern\
+  \ actionable today but ages fast; abstracting requires the reader to know the landscape.\n"
+drafted_by: claude-opus-4.7-author
+drafted_at: 2026-04-16
+anchor_exemplar: self

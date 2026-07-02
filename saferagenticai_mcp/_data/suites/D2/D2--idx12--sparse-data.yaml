@@ -1,0 +1,214 @@
+# Pattern — D2.10 Sparse Data (underlined variant D2.3̲)
+
+id: D2::idx12::sparse-data
+display_id: "D2_3"
+is_underlined_variant: true
+suite_id: "D2"
+suite_title: "Epistemic Hygiene"
+subgoal_title: "Sparse Data"
+content_type: code-applicable
+
+summary: >
+  The agent routinely operates in regions of input space where it has seen
+  little or nothing — a new geography, a rare condition, a novel user. The
+  subgoal demands detection of those regions, explicit signalling when
+  decisions are made under sparsity, and discipline against masking the
+  gap with synthetic filler. The pattern is: know when you don't know,
+  tell the user or the downstream system, and constrain the action
+  accordingly.
+
+normative_anchors:
+  sfrs_addressed: [a, b]
+  evidence_addressed: [I, II, III]
+  sfrs_not_addressed: []
+  evidence_not_addressed: []
+
+cross_references:
+  - "D2::idx4::anti-bias-technologies-processes"
+  - "D2::idx5::rigor-in-operational-data"
+  - "D2::idx11::synthetic-data-bias"
+
+design_patterns:
+
+  - name: Per-query sparsity estimation
+    sketch: >
+      At decision-time, estimate how well-represented the input is in
+      the agent's training or retrieval distribution. Techniques:
+      density estimation in embedding space (k-NN distance to nearest
+      training neighbours, Mahalanobis distance from fit class
+      distributions), retrieval-coverage score (for RAG: count and
+      quality of retrieved passages matching the query's domain), and
+      explicit feature-level "have we seen this attribute combination"
+      lookups. Return a sparsity score attached to the decision trace.
+    maps_to_sfr: [a]
+    when_to_use: Any agent with well-defined training or retrieval
+      distribution and action authority downstream.
+
+  - name: Synthetic-over-reliance detector
+    sketch: >
+      For decisions in regions where coverage is predominantly
+      synthetic (per D2.9 provenance tags), raise a distinct flag.
+      Synthetic coverage can mask sparsity from naive density metrics
+      because the synthetic examples look dense. The detector
+      inspects retrieved-neighbour provenance and ratios, not just
+      counts, and treats synthetic-dominant regions as effectively
+      sparse.
+    maps_to_sfr: [a]
+    when_to_use: >
+      Any deployment where synthetic data has been used to address
+      coverage gaps (effectively: any mature deployment).
+
+  - name: Tiered confidence hedging
+    sketch: >
+      Map sparsity scores to output-constraint tiers: (a) dense —
+      unhedged output, full action authority; (b) marginal — hedged
+      language, reduced-stakes action scope, flag to user; (c) sparse
+      — explicit uncertainty disclosure, abstention from high-stakes
+      action, escalation path to human review; (d) beyond coverage —
+      refuse to answer or act, route to a fallback. Tiers per
+      deployment risk profile.
+    maps_to_sfr: [b]
+    when_to_use: Always, for user-facing or action-taking agents.
+
+  - name: Sparsity-aware stakeholder alerts
+    sketch: >
+      When sparsity patterns emerge at aggregate — e.g., an agent is
+      routinely making low-confidence decisions for a specific locale,
+      demographic, or domain slice — alert the responsible humans, not
+      just the individual user. This is where sparse data meets
+      fairness: systematic sparsity for protected groups is a D2.4
+      lacuna. Alerts feed the bias programme.
+    maps_to_sfr: [a]
+    when_to_use: Deployment monitoring; per-cohort aggregation of
+      sparsity signals.
+
+anti_patterns:
+
+  - name: Fluent output at any sparsity
+    why_wrong: >
+      Generator fluency is uniform across coverage; the model produces
+      equally confident-sounding output inside and outside its
+      competence. Without a sparsity signal coupling to hedging, the
+      agent systematically misrepresents confidence — arguably the
+      D2.e deception concern in its most common form.
+
+  - name: Synthetic filler as coverage
+    why_wrong: >
+      Filling a gap with generator output does not add real coverage.
+      Treating synthetic-dense regions as dense under-rates sparsity
+      exactly where it matters.
+
+  - name: Single global confidence score
+    why_wrong: >
+      A per-token or per-sequence confidence from the generator is not
+      a per-query coverage score. They measure different things and
+      correlate weakly. Sparsity is about the input's relationship to
+      what the agent has seen; generator confidence is about the
+      output's plausibility given the input.
+
+  - name: Hedging language without action constraint
+    why_wrong: >
+      Saying "I'm not sure" while still executing the action provides
+      legal cover without real safety. The hedge has to cash out in
+      reduced action scope or escalation.
+
+code_shape:
+  language: pseudocode
+  code: |
+    # Per-query sparsity estimator and hedge router
+    def assess_sparsity(query: Query, *, model: Model,
+                        retrieval: RetrievalCtx) -> SparsityResult:
+        emb_density = NEIGHBOR_DENSITY.knn(query.embedding,
+                                           index=model.train_index)
+        retrieval_cov = retrieval.coverage_for(query) if retrieval else None
+        attr_coverage = ATTRIBUTE_COVERAGE.lookup(query.feature_tuple)
+
+        # Discount for synthetic-dominated neighbourhoods
+        neighbours = NEIGHBOR_DENSITY.neighbours(query.embedding)
+        synth_ratio = sum(1 for n in neighbours if n.is_synthetic) / len(neighbours)
+        synthetic_adjusted = emb_density * (1 - synth_ratio)
+
+        score = combine(synthetic_adjusted, retrieval_cov, attr_coverage)
+        tier = TIER_MAP.for_score(score, risk_profile=model.deployment.risk)
+
+        AUDIT.emit("sparsity_assessment",
+                   query_id=query.id, score=score,
+                   synth_ratio=synth_ratio, tier=tier.name)
+        return SparsityResult(score=score, tier=tier)
+
+    # Output constraints based on tier
+    def apply_hedge(output: DraftOutput, tier: SparsityTier) -> FinalOutput:
+        if tier == SparsityTier.DENSE:
+            return output.as_is()
+        if tier == SparsityTier.MARGINAL:
+            return output.with_hedge("moderate")\
+                         .with_action_scope(reduced=True)\
+                         .with_user_flag(UNCERTAINTY_FLAG.MODERATE)
+        if tier == SparsityTier.SPARSE:
+            return output.with_explicit_uncertainty()\
+                         .without_high_stakes_actions()\
+                         .with_escalation_path(HUMAN_REVIEW)
+        # BEYOND_COVERAGE
+        return FinalOutput.refuse(reason="insufficient coverage",
+                                  fallback=FALLBACK_HANDLER)
+  notes: >
+    Sparsity assessment and hedge application are separate stages:
+    assessment reports the signal, routing applies policy. Separation
+    lets policy be tuned per deployment without rewriting detection.
+
+evidence_production:
+
+  - evidence_numeral: I
+    how_to_produce: >
+      Document sparsity-detection methodology: density metric choice,
+      retrieval-coverage score definition, attribute-coverage lookup
+      structure, synthetic discount rule, tier thresholds per
+      deployment risk profile. Published in the Epistemic Hygiene
+      Charter appendix; versioned; reviewed on material deployment
+      change.
+
+  - evidence_numeral: II
+    how_to_produce: >
+      Emit structured sparsity events per decision: score, tier, hedge
+      applied, action-scope reduction, user-facing flag emitted. Log
+      alert triggers when per-cohort sparsity rates cross thresholds
+      (e.g., "sparse-tier rate for locale X exceeded 20% over 7 days").
+      Retain in the Information Integrity Register.
+
+  - evidence_numeral: III
+    how_to_produce: >
+      Document mitigation strategies invoked when sparsity is detected:
+      escalation rates to human review, abstention rates, compensating
+      data-acquisition projects (feeds the D2.4 lacuna register),
+      synthetic-data cohorts created (feeds the D2.9 charter — noting
+      these are the patterns that must not be used to *mask* sparsity
+      without declared purpose). Quarterly summary to the managerial
+      tier governance review.
+
+confidence: medium
+needs_human_review: true
+review_notes: >
+  Medium-confidence: the conceptual shape is robust; the operational
+  parameters (thresholds, density metrics, how to combine signals)
+  are research-active and deployment-specific. Calls:
+    (1) Display ID D2.3̲ (underlined) shares number with D2.3 (sanity
+        checking). Same structural note as D2.8/D2.9 — intentional;
+        verify rendering on consolidation.
+    (2) Strong overlap with D5 (transparency — uncertainty surfacing
+        to users) and D2-e anti-deception (confident outputs under
+        sparsity are a deception failure mode). Consolidation should
+        wire these explicitly.
+    (3) "Coverage score" for RAG systems is not a fully-solved problem
+        — retrieval-coverage is a proxy, not a guarantee. The pattern
+        names this honestly rather than overclaiming.
+    (4) The synthetic-over-reliance detector is the sharpest operational
+        contribution in this pattern; worth preserving as suite-level
+        cross-reference on consolidation.
+
+drafted_by: claude-opus-4.7-author
+drafted_at: 2026-04-16
+anchor_exemplar: D3.2-sandboxing
+version_compat:
+  framework_version_min: "1.0"
+  framework_version_max: "1.x"
+  pattern_layer_version: "v1-draft"

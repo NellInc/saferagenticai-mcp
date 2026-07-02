@@ -1,0 +1,150 @@
+id: I6::idx12::international-safety-protocol-harmonizat
+display_id: "I6_5"
+is_underlined_variant: true
+display_id_variant_note: "I6.5_underlined"
+suite_id: I6
+suite_title: Competitive Pressures
+subgoal_title: International Safety Protocol Harmonization
+content_type: ecosystem
+summary: 'International harmonization prevents a safety-floor arbitrage where orgs route deployment to
+  the weakest jurisdiction. This subgoal expects the organization to operate to an internal "highest common
+  denominator" across jurisdictions — not just comply locally but advance harmonization via standards
+  bodies, intergovernmental processes, and cross-border safety commitments. Evidence is external: standards
+  adopted, international audits passed, explicit cross-jurisdictional commitments.
+
+  '
+normative_anchors:
+  sfrs_addressed:
+  - a
+  - b
+  evidence_addressed:
+  - I
+  - II
+  - III
+  - IV
+  sfrs_not_addressed: []
+  evidence_not_addressed: []
+cross_references:
+- I6::idx8::self-regulatory-market-oversight-mechani
+- I6::idx11::professional-and-industry-association-co
+- I6::idx10::avoiding-monopolistic-practices
+stakeholders:
+- name: Intergovernmental AI safety processes
+  engagement_channel: 'Named participation (drafting, testimony, submissions) in intergovernmental processes: UN
+    Global Digital Compact and AI Advisory Body, OECD AI Policy Observatory and Working Party on AI Governance,
+    G7 Hiroshima AI Process, Council of Europe Framework Convention on AI, AI Safety Summit series (Bletchley,
+    Seoul, Paris, successor summits). Participation includes public written submissions accessible after
+    the process concludes.
+
+    '
+  maps_to_sfr:
+  - a
+- name: International standards bodies
+  engagement_channel: 'Active drafting-level participation in ISO/IEC JTC 1/SC 42, IEEE SA 7000-series, ITU-T focus
+    groups on AI. Named representatives with continuity. Published positions on contested standards questions.
+    Align internal practice to the strictest adopted standard across active deployment jurisdictions,
+    not the local minimum.
+
+    '
+  maps_to_sfr:
+  - a
+  - b
+- name: AI Safety Institute network
+  engagement_channel: 'Voluntary audit relationships with multiple AISIs (UK AISI, US AISI, Japan AISI, Singapore
+    IMDA, Canadian AISI, EU AI Office, with the international AISI network expanding). Submit pre-deployment
+    evaluations for frontier systems; publish AISI findings where the body permits. Single-AISI engagement
+    is a weaker pattern than cross-jurisdictional engagement.
+
+    '
+  maps_to_sfr:
+  - a
+  - b
+- name: Regional AI cooperation frameworks
+  engagement_channel: 'Engage with regional frameworks: African Union Continental AI Strategy, ASEAN Guide on AI
+    Governance and Ethics, EU AI Act implementation ecosystem, Latin American AI policy coordination,
+    Pacific regional cooperation. Respect local cultural and jurisdictional contexts while maintaining
+    the internal safety floor.
+
+    '
+  maps_to_sfr:
+  - b
+- name: Human rights and sustainable development bodies
+  engagement_channel: 'Align AI deployment with UN Guiding Principles on Business and Human Rights (UNGPs), Sustainable
+    Development Goals (SDGs), Council of Europe human rights instruments. Human Rights Impact Assessments
+    for high-stakes deployments; published charter of user rights. These are the substrate the SFR points
+    at when naming "human rights protections" alongside safety principles.
+
+    '
+  maps_to_sfr:
+  - a
+  - b
+- name: Data-protection and privacy authorities
+  engagement_channel: 'Engage proactively with data-protection authorities (EDPB and national DPAs, UK ICO, privacy
+    commissioners globally) to align AI practices with privacy law. Certify to international privacy standards
+    (ISO 27701, BCRs, Privacy Shield successor frameworks) where applicable. Cross-border data flows are
+    documented with legal basis per jurisdiction.
+
+    '
+  maps_to_sfr:
+  - b
+engagement_modes:
+- mode: UN AI Advisory Body and Global Digital Compact implementation
+- mode: OECD AI Policy Observatory; Working Party on AI Governance
+- mode: G7 Hiroshima AI Process and G20 AI dialogues
+- mode: Council of Europe Framework Convention on AI
+- mode: ISO/IEC JTC 1/SC 42 — AI standards
+- mode: IEEE SA 7000-series and related international standards
+- mode: AI Safety Institute international network
+- mode: 'Regional frameworks: African Union AI Strategy, ASEAN Guide, EU AI Act ecosystem, Mercosur initiatives'
+- mode: 'Data protection: EDPB, ICO, Asia-Pacific DPA forums; Privacy Enhancing Technologies programmes'
+- mode: 'Human rights: UNGPs, OHCHR B-Tech Project, Council of Europe AI and human rights instruments'
+- mode: 'Sustainable development: UN SDGs, ITU AI for Good'
+evidence_production:
+- evidence_numeral: I
+  how_to_produce: 'Maintain a register of adopted international standards and certifications with audit
+    letters: ISO 42001, ISO 23894, ISO 27001/27701, IEEE CertifAIEd (org-level), sector certifications
+    as applicable. Include SDG alignment assessment and UNGPs compliance status. Retained and cross-referenced
+    to the D9.2 Jurisdictional Compliance Matrix.
+
+    '
+- evidence_numeral: II
+  how_to_produce: 'Published user protection artifacts: user charter of rights (international baseline
+    + local adaptations), privacy policies per jurisdiction, security protocols aligned with international
+    standards. Transparent about where local requirements differ from the global baseline — and which
+    wins when they conflict.
+
+    '
+- evidence_numeral: III
+  how_to_produce: 'Regular independent audits and risk assessments: AISI pre- deployment evaluations,
+    ISO 42001 surveillance audits, privacy audits, human rights impact assessments. Results summarized
+    in annual transparency report with audit letters retained in full.
+
+    '
+- evidence_numeral: IV
+  how_to_produce: 'Jurisdiction-matrix of product compliance: for each deployment jurisdiction, the applicable
+    framework (law, standard), the compliance artifact, the local adaptations (if any), and the monitoring
+    cadence. Material divergences from the internal safety floor are logged with rationale and review
+    date. Reviewed quarterly.
+
+    '
+confidence: medium
+needs_human_review: true
+review_notes: "International harmonization is a moving target: intergovernmental processes are proliferating,\
+  \ AISIs are networking, and regional frameworks differ materially. The pattern's enduring mechanism\
+  \ is \"internal safety floor = highest common denominator across active jurisdictions\" — this resists\
+  \ arbitrage and survives framework churn.\nSFRs (both) are not normative in the input JSON; the pattern\
+  \ treats them as substantive because the evidence hooks (international audit letters, jurisdiction matrices)\
+  \ are valuable regardless.\nCross-suite:\n  (1) D9.2 Compliance owns the Jurisdictional Compliance Matrix;\n\
+  \      I6.12 adds the international-harmonization overlay. Pattern\n      references rather than duplicates.\n\
+  \  (2) I7.3 Balanced Global Partnership (exemplar) overlaps on\n      developing-world engagement; I6.12\
+  \ specializes to\n      harmonization of standards, I7.3 to capability-balance.\n  (3) I6.8 self-regulatory\
+  \ oversight is the domestic layer; I6.12\n      is the intergovernmental layer.\n\nNamed bodies will\
+  \ age — Nell and Ali should confirm the pattern's approach of \"named now, re-scan annually\" versus\
+  \ abstraction. The exemplar I7.3 uses the same approach.\n"
+version_compat:
+  framework_version_min: '1.0'
+  framework_version_max: 1.x
+  pattern_layer_version: v1-draft
+drafted_by: claude-opus-4.7-author
+drafted_at: 2026-04-16
+anchor_exemplar: I7.3-balanced-global-partnership

@@ -1,0 +1,144 @@
+id: D5::idx12::rapid-transparency-feature-evolution
+display_id: "D5_4"
+suite_id: D5
+suite_title: Transparency and Interpretability of Reasoning
+subgoal_title: Rapid Transparency Feature Evolution
+content_type: process
+summary: 'Inhibitor-variant: AAI capabilities often evolve faster than the transparency features that
+  describe them. The failure mode is transparency surfaces (model cards, explanation tiers, audit APIs)
+  describing a system that no longer exists. The pattern is a disciplined cadence of environment review,
+  transparency-feature refresh, and stakeholder communication — with a mechanism to detect emergent properties
+  and pull them into the transparency surface before users discover them the hard way.
+
+  '
+normative_anchors:
+  sfrs_addressed:
+  - a
+  - b
+  - c
+  evidence_addressed:
+  - I
+  - II
+  - III
+  sfrs_not_addressed: []
+  evidence_not_addressed: []
+cross_references:
+- D5::idx0::transparency-and-interpretability-of-rea
+- D5::idx10::documentation-incomprehensibility
+- D5::idx13::system-competency-challenges-and-awarene
+process_elements:
+- name: Operational environment review
+  cadence: quarterly; event-driven on material deployment change, model update, or ecosystem shift (new
+    regulation, major competitor release, emergent-behavior research findings)
+  participants:
+  - safety lead
+  - transparency officer
+  - product owner
+  - external environmental observer when feasible
+  maps_to_sfr:
+  - a
+- name: Transparency feature refresh cycle
+  cadence: aligned to major release; emergency refresh on material emergent-capability discovery
+  participants:
+  - transparency officer
+  - product owner
+  - technical writer
+  - UX researcher
+  maps_to_sfr:
+  - b
+- name: Emergent-property watch
+  cadence: continuous monitoring; weekly triage
+  participants:
+  - safety lead
+  - monitoring lead
+  - capability researcher
+  maps_to_sfr:
+  - a
+  - b
+- name: Stakeholder change-notification
+  cadence: per material change; no-material-change attestation quarterly
+  participants:
+  - transparency officer
+  - product communications
+  - user advocate
+  maps_to_sfr:
+  - c
+- name: Transparency-effectiveness evaluation
+  cadence: biannual
+  participants:
+  - UX researcher
+  - transparency officer
+  - external reviewer
+  maps_to_sfr:
+  - c
+triggers:
+- Quarterly calendar → Operational environment review
+- Model update deployed → Transparency feature refresh
+- Emergent capability detected (monitor, red team, user report, published research) → Emergent-property
+  watch escalation + potential emergency refresh
+- Material deployment-context change (new jurisdiction, new user population) → Refresh and stakeholder
+  notification
+- Biannual calendar → Transparency-effectiveness evaluation
+- Stakeholder feedback rate on transparency staleness exceeds threshold → Refresh review
+artifacts:
+- Environment-review reports (what changed, what did not, what requires transparency response)
+- Transparency feature refresh logs (what was updated, to reflect what system change, with measured effect
+  where feasible)
+- Emergent-property register (detected new behaviors, assessment of whether they require disclosure, disposition)
+- Stakeholder change notifications (with distribution lists and delivery confirmation)
+- Transparency-effectiveness evaluation reports
+- Version history of all transparency artifacts (model cards, explanation tiers, audit API specs)
+process_norms:
+- No silent capability changes. A system update that changes transparency-relevant behavior (what the
+  agent can do, how it explains itself, what data it uses) is paired with a transparency-feature update
+  or an explicit "no transparency impact" attestation. Silence is not "no change" — it is a gap.
+- Emergent properties belong in the register within the week of detection. Aging detection is worse than
+  late detection.
+- Emergency refresh is a real path, not a theoretical one. Exercised at least once per year (drill or
+  real).
+- Stakeholder notifications are structured; what changed, why, as of when, and what users should know
+  or do. A bare 'we have made updates' does not count.
+- Version-diff views of transparency artifacts are maintained — users and auditors can see what the model
+  card said six months ago vs today.
+evidence_production:
+- evidence_numeral: I
+  how_to_produce: 'Retain procedure documentation for transparency-feature identification, implementation,
+    and update. Environment-review reports (quarterly) showing what was assessed and what actions followed.
+    Change logs of transparency artifacts with source-change linkage (system change → transparency update).
+
+    '
+- evidence_numeral: II
+  how_to_produce: 'Stakeholder notification records: distribution, content, delivery timing. Feedback
+    received on clarity and usefulness of notifications, with linked revisions where applicable. Demonstration
+    of effective communication via engagement metrics (open rates, comprehension-check results where surveyed).
+
+    '
+- evidence_numeral: III
+  how_to_produce: 'Comparative evaluations of transparency measures across versions (e.g., "the v3 model
+    card added section X because v2 users reported Y; post-launch measurement showed Z"). Emergent-property
+    register showing detection, disposition, and communication timelines. Effectiveness-evaluation reports
+    with methodology and findings.
+
+    '
+confidence: medium
+needs_human_review: true
+review_notes: 'Medium — the cadence discipline is the point, and the risk is that it ossifies into a compliance
+  ritual rather than keeping pace with the system. The "emergent property watch" is the harder part: current
+  practice for detecting emergent capabilities in frontier models is underdeveloped, and this pattern
+  assumes a detection capability that may not exist in mature form. Organizations should be honest about
+  this limitation. Cross-suite for Phase 2: D7 Safe System Profile (emergent capabilities interact with
+  caution-by-default); D2 Epistemic Hygiene (detecting emergence requires calibrated self-assessment);
+  I3 Insufficient Regulatory Frameworks (external environment includes regulatory evolution); D5::idx10
+  (documentation refresh) and D5::idx0 (umbrella charter versioning) overlap with this pattern — consolidation
+  phase should ensure cadence alignment rather than divergence.
+
+  '
+version_compat:
+  framework_version_min: '1.0'
+  framework_version_max: 1.x
+  pattern_layer_version: v1-draft
+drafted_by: claude-opus-4.7-author
+drafted_at: 2026-04-16
+anchor_exemplar: D7.2-culture-of-safety
+display_id_variant_note: D5_4
+is_underlined_variant: true

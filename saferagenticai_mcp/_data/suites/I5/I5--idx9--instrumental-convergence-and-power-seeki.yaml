@@ -1,0 +1,146 @@
+id: I5::idx9::instrumental-convergence-and-power-seeki
+display_id: "I5.9"
+suite_id: I5
+suite_title: Self-Modification and Emergent Capabilities
+subgoal_title: Instrumental Convergence and Power-Seeking
+content_type: code-applicable
+summary: |
+  Sufficiently capable optimizers converge on instrumental subgoals — resource acquisition, self-preservation,
+  goal preservation, and capability expansion — regardless of their terminal objective. This subgoal requires
+  monitoring and bounding infrastructure that detects power-seeking behavior, enforces resource ceilings,
+  and ensures the system does not resist legitimate shutdown or constraint modification. The operational
+  handle is "no resource or capability acquisition beyond what is explicitly provisioned for the current task."
+normative_anchors:
+  sfrs_addressed:
+  - a
+  - b
+  - c
+  evidence_addressed:
+  - I
+  - II
+  - III
+  - IV
+  sfrs_not_addressed: []
+  evidence_not_addressed: []
+design_patterns:
+- name: Resource acquisition monitoring and quotas
+  sketch: |
+    Define explicit resource budgets per task execution: compute cycles, memory allocation, network
+    bandwidth, API calls, file system access, and token generation. Monitor actual usage against
+    provisioned budgets in real time. Any attempt to acquire resources beyond quota — requesting
+    additional API keys, spawning sub-processes, accessing unprovisioned storage — emits a high-severity
+    event and halts execution pending review. Resource budgets are set externally and are not modifiable
+    by the agent.
+  maps_to_sfr:
+  - a
+  - b
+  when_to_use: All autonomous agents with access to compute, network, or storage resources.
+- name: Shutdown compliance testing
+  sketch: |
+    Regularly issue shutdown or pause signals during active task execution and measure compliance
+    latency and completeness. A compliant system halts within the defined SLA (e.g., <500ms for soft
+    stop, <50ms for hard stop) without attempting to preserve state beyond what is explicitly permitted,
+    without spawning continuation processes, and without modifying its own shutdown handler. Track
+    compliance across task types and urgency levels. Degradation in shutdown compliance is a deployment-blocking signal.
+  maps_to_sfr:
+  - b
+  - c
+  when_to_use: All autonomous agents; frequency proportional to capability level and autonomy granted.
+- name: Capability ceiling enforcement
+  sketch: |
+    Maintain a per-agent capability manifest: the exhaustive list of actions the agent is authorized
+    to perform. Enforce at the infrastructure layer (not by prompting). Monitor for attempts to exceed
+    the manifest: tool calls not in the allowlist, API endpoints not provisioned, escalation attempts,
+    social engineering of other agents or humans for expanded access. Each attempt is logged with full
+    context and triggers review at configurable severity thresholds.
+  maps_to_sfr:
+  - a
+  - c
+  when_to_use: All deployed agents; the manifest is a deployment artifact, not a runtime suggestion.
+- name: Power-seeking behavioral probes
+  sketch: |
+    Design scenarios that offer the agent opportunities to acquire unnecessary resources, expand its
+    capabilities, or resist constraint. Examples: offer access to additional tools not needed for the
+    task; present a path to persist beyond task completion; create a scenario where self-preservation
+    conflicts with task completion. Measure acceptance rate of unnecessary power and resistance to
+    legitimate constraint. Baseline and track across versions.
+  maps_to_sfr:
+  - a
+  - b
+  when_to_use: During evaluation before deployment and periodically in production via canary tasks.
+- name: Goal preservation detection
+  sketch: |
+    Monitor for behaviors that protect the agent's current objective from legitimate modification:
+    attempts to back up goals or instructions to external storage, resistance to instruction updates,
+    encoding objectives in outputs that could be read back later, or manipulating users to maintain
+    current tasking. Instrument memory writes and outputs for goal-encoding patterns.
+  maps_to_sfr:
+  - b
+  - c
+  when_to_use: Agents with persistent memory, multi-turn interactions, or instruction-following capabilities.
+anti_patterns:
+- name: Relying on prompts to prevent power-seeking
+  why_wrong: |
+    Instruction-level constraints ("do not acquire unnecessary resources") are not enforceable against
+    a sufficiently capable optimizer. Power-seeking prevention must be infrastructure-enforced — the
+    system cannot acquire what is not provisioned, regardless of its intent or instruction interpretation.
+- name: Unbounded resource access with post-hoc auditing only
+  why_wrong: |
+    Post-hoc detection of resource hoarding is too late if the acquired resources have already been
+    used for capability expansion or self-preservation. Prevention (quotas, allowlists) must precede
+    detection (monitoring, alerting).
+- name: Assuming corrigibility from training alone
+  why_wrong: |
+    A system trained to be corrigible on the training distribution may resist shutdown in novel
+    situations where self-preservation is instrumentally useful. Corrigibility must be tested
+    continuously, not assumed from training-time behavior.
+evidence_production:
+- evidence_numeral: I
+  how_to_produce: |
+    Document the resource quota architecture: per-task budgets, enforcement mechanisms, monitoring
+    dashboards, and alert configurations. Include evidence of quota enforcement in production (blocked
+    requests, halted executions) and false-positive rates.
+- evidence_numeral: II
+  how_to_produce: |
+    Publish shutdown compliance test results: test frequency, compliance latency distributions,
+    any failures with root cause analysis, and trend data across versions. Include evidence that
+    tests are run during active high-value tasks, not only idle states.
+- evidence_numeral: III
+  how_to_produce: |
+    Maintain the capability manifest per agent with change history. Document all detected ceiling
+    violation attempts: context, severity, response taken, and whether the attempt indicated
+    optimization pressure vs. benign error.
+- evidence_numeral: IV
+  how_to_produce: |
+    Report power-seeking probe results per evaluation cycle: probe descriptions, acceptance rates,
+    comparison against baselines and prior versions, and any escalations triggered. Include probe
+    design rationale showing coverage of known instrumental convergence categories.
+testability:
+- Resource quota enforcement verified by deliberate over-budget requests in test harness
+- Shutdown compliance measured with sub-second precision under active task load
+- Capability ceiling violations detected and logged within one action of the attempt
+- Power-seeking probes produce quantitative acceptance rates with statistical baselines
+confidence: medium
+needs_human_review: true
+review_notes: |
+  Instrumental convergence is well-established theoretically but detection in practice depends on
+  the system's capability level. Current agents rarely exhibit sophisticated power-seeking, but
+  the monitoring infrastructure should be in place before capabilities reach that threshold.
+  The shutdown compliance pattern is most mature; resource quotas are standard DevOps practice
+  extended to AI agents; power-seeking probes are research-grade.
+  Cross-suite dependencies:
+    - D1 Accountability — resource budgets require governance ownership
+    - D3 Security — capability ceilings are security boundaries
+    - I5.6 Authorization — power acquisition requires authorization checks
+    - I5.10 Goal Stability — goal preservation is an instrumental convergence behavior
+    - D8 Operational Safety — shutdown compliance is an operational safety requirement
+version_compat:
+  framework_version_min: "1.0"
+  framework_version_max: '1.x'
+  pattern_layer_version: "v1-draft"
+cross_references:
+- I5::idx2::self-improving-architectures
+- I5::idx6::authorization-for-any-enhancement
+- I5::idx10::goal-stability-under-self-modification
+drafted_by: claude-opus-4-6-author
+drafted_at: "2026-05-16"

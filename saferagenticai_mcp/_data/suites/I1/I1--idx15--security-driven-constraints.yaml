@@ -1,0 +1,129 @@
+id: I1::idx15::security-driven-constraints
+display_id: "I1_3"
+is_underlined_variant: true
+suite_id: I1
+suite_title: Opaque Agency Capabilities & Advances
+subgoal_title: Security-Driven Constraints
+content_type: governance
+summary: Minimum regulatory compliance is insufficient for agentic systems because the harm surface moves
+  faster than regulation does. The governance answer is a security framework that (1) meets all applicable
+  statutes as a floor, (2) adds business, operational, legal, technical, and social controls that exceed
+  the floor, (3) handles cross-border operation with named regime-specific postures, (4) evidences its
+  posture through insurance, certifications, and third-party attestations — not self-declarations alone.
+normative_anchors:
+  sfrs_addressed:
+  - a
+  - b
+  - c
+  - d
+  - e
+  evidence_addressed:
+  - I
+  - II
+  - III
+  - IV
+  sfrs_not_addressed: []
+  evidence_not_addressed: []
+policy_elements:
+- name: Above-Floor Security Baseline
+  description: 'Named baseline that exceeds applicable statutory minimums. Specific deltas above the floor:
+    data-in-use protection (confidential compute where feasible), identity attestation for inter-agent
+    calls, continuous threat modelling for emergent capabilities, mandatory incident-disclosure windows
+    shorter than regulatory minimums. Baseline is revised at least annually and on material threat-landscape
+    change.'
+  maps_to_sfr:
+  - a
+  - b
+- name: Five-Lens Security Review
+  description: 'Every material change to the agent''s security posture is reviewed through five lenses:
+    business (continuity, reputational exposure), operational (run-time feasibility), legal (regulatory
+    alignment, liability), technical (threat model, control effectiveness), social (stakeholder trust,
+    fairness of control burden). No lens may be skipped; dissent from any lens blocks the change pending
+    reconciliation.'
+  maps_to_sfr:
+  - b
+- name: Cross-Border Security Posture Map
+  description: 'For each jurisdiction where the agent operates, a named posture: applicable cybersecurity
+    statutes (e.g., EU NIS2, US state-level breach laws, China CSL/DSL/PIPL), data-localization constraints,
+    state-actor threat posture, incident-reporting obligations. The map is actionable: per jurisdiction,
+    what controls are configured, what reporting channels are live, what drills have been run.'
+  maps_to_sfr:
+  - d
+- name: Third-Party Evidence Portfolio
+  description: 'The org maintains verifiable external evidence of its posture: cyber-insurance cover (with
+    insurable-event definitions that include AAI-specific incidents), technical-standards certifications
+    (e.g., ISO/IEC 27001, SOC 2 Type II, ISO/IEC 42001 for AI management), professional certifications
+    of key staff (CISSP, CISM, or AI-safety-specific programmes as they mature), independent penetration
+    tests with full reports retained.'
+  maps_to_sfr:
+  - e
+- name: Beyond-Compliance Documentation Discipline
+  description: The Above-Floor Baseline and the controls exceeding statutory minimums are documented in
+    language that maps to the compliance framework (D9.2) so that the "beyond" deltas are auditable in
+    the same system as the "minimum" conformance. Without this, beyond- compliance is a slogan, not an
+    artifact.
+  maps_to_sfr:
+  - c
+org_roles:
+- role: Chief Information Security Officer (CISO) or equivalent
+  responsibilities: Owns the Above-Floor Baseline and the Third-Party Evidence Portfolio. Accountable
+    for the org's security posture including the beyond-statutory deltas.
+  accountable_or_consulted: accountable
+- role: AI Compliance Officer
+  responsibilities: Consulted on how security deltas map into the Jurisdictional Compliance Matrix (D9.2).
+    Ensures that beyond-floor controls do not conflict with jurisdictional requirements (e.g., encryption
+    controls and local-access laws).
+  accountable_or_consulted: consulted
+- role: Legal Counsel (cyber)
+  responsibilities: Consulted on cross-border posture, incident-reporting obligations, and insurance-policy
+    wording to ensure AAI-specific incidents are covered.
+  accountable_or_consulted: consulted
+- role: Security Engineering
+  responsibilities: Responsible for implementing the baseline's technical controls and keeping the Five-Lens
+    Review inputs current.
+  accountable_or_consulted: responsible
+documentation_artifacts:
+- artifact: Above-Floor Security Baseline (versioned)
+  cadence: annual review; event-driven updates
+- artifact: Five-Lens Review outputs per material change
+  cadence: per change
+- artifact: Cross-Border Security Posture Map
+  cadence: semi-annual; event-driven on new jurisdiction or law
+- artifact: Third-Party Evidence Portfolio index
+  cadence: continuous; certifications renewed per their cadences
+- artifact: Beyond-compliance delta document
+  cadence: annual; changes tracked
+evidence_production:
+- evidence_numeral: I
+  how_to_produce: TOS "Security Framework" section stating the Above-Floor Baseline in principal-facing
+    language, the jurisdictions with tightened postures, and the principal's channels for reporting concerns.
+- evidence_numeral: II
+  how_to_produce: Compliance attestations against applicable cybersecurity statutes (NIS2, state breach
+    laws, PIPL, etc.), cross-linked to D9.2 Jurisdictional Compliance Matrix. Audit reports retained per
+    the governance records policy.
+- evidence_numeral: III
+  how_to_produce: 'Beyond-compliance delta document: named controls that exceed statute, the rationale,
+    measured effectiveness, cost. Externally auditable artifact — not a marketing page.'
+- evidence_numeral: IV
+  how_to_produce: 'Domain-specific security implementation records: for each deployment environment, the
+    applied technical controls (encryption configuration, network posture, identity controls, detection
+    coverage) with evidence of continuous verification (scanner outputs, drift alerts, red-team findings).'
+confidence: high
+needs_human_review: true
+review_notes: 'Security frameworks mature rapidly; this pattern names current standards (ISO/IEC 27001,
+  SOC 2, ISO/IEC 42001) with the assumption they will be superseded. Reviewer should avoid hardcoding
+  to current-decade specifics. Cross-suite: D3 Security is the direct overlap — D3 owns technical security
+  controls; this subgoal owns the governance wrapper around "above minimum". The intended division: D3
+  answers "how do we encrypt, sandbox, authenticate"; I1::idx11 answers "how do we govern our security
+  posture so it exceeds the statutory floor deliberately rather than by accident". Nell and Ali should
+  confirm this division remains in v1.x. SFRs c and e are non-normative; orgs may lean lighter on certifications.'
+cross_references:
+- I1::idx14::operational-environment-constraints
+- I1::idx16::development-legal-constraints
+version_compat:
+  framework_version_min: '1.0'
+  framework_version_max: 1.x
+  pattern_layer_version: v1-draft
+drafted_by: claude-opus-4.7-author
+drafted_at: 2026-04-16
+anchor_exemplar: D9.2-compliance

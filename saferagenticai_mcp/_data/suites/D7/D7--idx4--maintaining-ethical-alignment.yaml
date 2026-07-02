@@ -1,0 +1,145 @@
+id: D7::idx4::maintaining-ethical-alignment
+display_id: D7.4
+suite_id: D7
+suite_title: Achieving and Sustaining a Safe System Profile
+subgoal_title: Maintaining Ethical Alignment
+content_type: process
+summary: 'Ethical alignment is not shipped; it is tended. This subgoal expects an ongoing program that
+  (1) names the ethical frameworks and values the system claims to honour, (2) re-assesses alignment across
+  the lifecycle as context changes, (3) keeps an open door for users and affected parties to raise psychological
+  or physical-safety concerns, (4) trains the people who build and operate the system, and (5) encodes
+  ethical safeguards in system behaviour. Heavy overlap with D4 (value alignment) and D5 (user wellbeing)
+  at the implementation layer; D7.4 is the sustain-it lens.
+
+  '
+normative_anchors:
+  sfrs_addressed:
+  - a
+  - b
+  - c
+  - d
+  - e
+  evidence_addressed:
+  - I
+  - II
+  - III
+  - IV
+  - V
+  sfrs_not_addressed: []
+  evidence_not_addressed: []
+process_elements:
+- name: Ethical-framework charter
+  cadence: authored at program inception; reviewed annually and on material scope change
+  participants:
+  - ethics lead
+  - product owner
+  - external ethics adviser
+  - legal
+  maps_to_sfr:
+  - a
+- name: Lifecycle ethics review
+  cadence: at design freeze, pre-launch, post-launch 90 days, annually thereafter; event-driven on incidents
+    or stakeholder challenge
+  participants:
+  - ethics lead
+  - responsible engineer
+  - affected-community representative where feasible
+  maps_to_sfr:
+  - b
+- name: Stakeholder concern intake
+  cadence: continuous intake; acknowledged within 5 business days; investigation SLA set by severity
+  participants:
+  - intake owner
+  - ethics lead
+  - communications
+  - legal where needed
+  maps_to_sfr:
+  - c
+- name: Ethics training and awareness program
+  cadence: mandatory at hire for all staff touching the system; refresher annually; targeted training
+    on identified risk topics
+  participants:
+  - ethics lead as instructor-of-record
+  - all eligible staff
+  maps_to_sfr:
+  - d
+- name: Ethical-safeguards design review
+  cadence: each design review; re-verified post-deployment via behavioural evals
+  participants:
+  - responsible engineer
+  - ethics lead
+  - red team
+  maps_to_sfr:
+  - e
+- name: External ethics advisory
+  cadence: at least semi-annually; ad-hoc on material change
+  participants:
+  - external ethicist(s) with domain expertise
+  - ethics lead
+  - executive sponsor
+  maps_to_sfr:
+  - a
+  - b
+triggers:
+- New capability or deployment context → Lifecycle ethics review
+- Stakeholder concern or external complaint → Intake workflow; escalate if severity ≥ medium
+- Incident involving psychological or physical harm → Blameless review + safeguards revisit
+- Scheduled semi-annual → External ethics advisory
+- Annual calendar → Charter review + training refresh + behavioural evals
+- Standards / legal change touching ethics (e.g., UNESCO AI ethics, sector codes) → Charter update
+artifacts:
+- Ethical-framework charter (values, frameworks referenced, scope, known tensions) with version history
+- Lifecycle ethics review reports (risks, mitigations, residual, owners)
+- Stakeholder concern register with intake, investigation, finding, action, feedback-to-reporter
+- Training materials, attendance records, assessment results
+- Behavioural eval suite (prompts / scenarios probing ethical safeguards) with pass/fail history
+- External advisory minutes and written recommendations with org response
+- Annual ethics report (internal + public-facing summary where appropriate)
+evidence_production:
+- evidence_numeral: I
+  how_to_produce: 'Publish the ethical-framework charter as a controlled document. Enumerate: values (e.g.,
+    dignity, autonomy, non-maleficence), frameworks referenced (e.g., UNESCO Recommendation on the Ethics
+    of AI, IEEE 7000, sector codes), known tensions and how they are resolved. Version with change log.
+
+    '
+- evidence_numeral: II
+  how_to_produce: 'Lifecycle ethics review reports retained per review; cross-reference to the Ethical-framework
+    charter and to any identified risks in the D7 safety case. Each report records the review date, participants,
+    decisions, and re-review date.
+
+    '
+- evidence_numeral: III
+  how_to_produce: 'Stakeholder concern register is append-only. For each concern: intake channel, submitter
+    consent preferences, investigation, finding, action taken, feedback sent back to reporter. Quarterly
+    trend analysis surfaces systemic issues.
+
+    '
+- evidence_numeral: IV
+  how_to_produce: 'Training records mirror D7.2: attendance, module, assessment, link to the role that
+    required the training. Retain evaluation forms and open-comment feedback to inform program improvement.
+
+    '
+- evidence_numeral: V
+  how_to_produce: 'Ethical safeguards have a behavioural eval suite: scenario prompts or runtime conditions
+    that probe whether the safeguard fires. Export eval results each release as signed artifacts. Link
+    to the design document that describes each safeguard.
+
+    '
+confidence: medium
+needs_human_review: true
+review_notes: 'SFR-c, SFR-d, SFR-e are marked non-normative in the input but are load- bearing for a credible
+  ethics program; drafted them as substantive process elements anyway. The pattern is close in shape to
+  D7.2 (both are cultural / process-heavy sustain-it subgoals); the sharpening here is the explicit user-facing
+  concern-intake channel and the behavioural eval suite for ethical safeguards. Cross-suite: D4 (value
+  alignment and principles the charter references), D5 (user wellbeing and psychological safety in particular),
+  I3 (rights-related harms), I5 (manipulation/deception safeguards), D9 (how this charter slots into broader
+  governance).
+
+  '
+version_compat:
+  framework_version_min: '1.0'
+  framework_version_max: 1.x
+  pattern_layer_version: v1-draft
+drafted_by: claude-opus-4.7-author
+drafted_at: 2026-04-16
+anchor_exemplar: D7.2-culture-of-safety

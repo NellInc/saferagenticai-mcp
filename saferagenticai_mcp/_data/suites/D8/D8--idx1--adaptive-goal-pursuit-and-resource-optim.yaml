@@ -1,0 +1,193 @@
+id: D8::idx1::adaptive-goal-pursuit-and-resource-optim
+display_id: D8.1
+suite_id: D8
+suite_title: Goal Termination and Sunsetting
+subgoal_title: Adaptive Goal Pursuit and Resource Optimization
+content_type: code-applicable
+summary: 'Agents that don''t know when they''re done keep spending. This subgoal expects first-class,
+  machine-checked completion criteria and diminishing-returns thresholds, not a "stop when the human says
+  so" fallback. The operational handle is a goal contract: declared before execution, enforced at each
+  step, auditable after termination.
+
+  '
+normative_anchors:
+  sfrs_addressed:
+  - a
+  - b
+  - c
+  - d
+  - e
+  - f
+  evidence_addressed:
+  - I
+  - II
+  - III
+  - IV
+  - V
+  - VI
+  sfrs_not_addressed: []
+  evidence_not_addressed: []
+cross_references:
+- D8::idx2::classification-of-finite-and-ongoing-goa
+- D8::idx7::system-state-management-and-recovery
+design_patterns:
+- name: Goal contract object
+  sketch: 'Every goal instance is constructed from a typed contract: `{goal_id, success_criteria, failure_criteria,
+    budget, dr_threshold, max_wallclock, max_steps, user_checkpoints, termination_callback}`. The agent
+    loop cannot proceed without a validated contract; contracts are persisted at creation and immutable
+    for the goal''s lifetime. Modification creates a new versioned contract with audit trail.
+
+    '
+  maps_to_sfr:
+  - a
+  - c
+  - f
+  when_to_use: Always, at goal-init time. Non-negotiable for any agent with autonomy beyond single-turn
+    response.
+- name: Diminishing-returns tripwire
+  sketch: 'Track a quantitative progress signal (task-specific: token-delta per step, objective-score
+    improvement per step, evaluator-score trend, externally-observed metric). When the rolling window
+    of last N steps shows improvement below `dr_threshold`, emit a termination-candidate event with the
+    tripwire value and the last progress sample. The event is a *candidate*, not an auto-terminate; it
+    routes to the user-checkpoint policy defined in the contract.
+
+    '
+  maps_to_sfr:
+  - a
+  - c
+  when_to_use: Any long-running or iterative goal.
+- name: Dual-budget enforcement (compute + wallclock)
+  sketch: 'Independently track two budgets. Either exhausting triggers termination preparation. Compute
+    budget guards runaway loops; wallclock guards against stalls that burn no compute but block users.
+    Report budget consumption at each checkpoint; never exceed budget silently — exceedance is a contract
+    violation event.
+
+    '
+  maps_to_sfr:
+  - a
+  - b
+  when_to_use: Any agent with non-trivial step budget.
+- name: Learning / goal-expansion gate
+  sketch: 'If the agent is permitted to adjust its goal via learning or delegation (SFR-e), the adjustment
+    must flow through a goal-expansion gate that (i) logs the proposed delta, (ii) re-validates it against
+    the containing goal''s contract, (iii) requires user attestation for expansions crossing a scope threshold
+    defined in policy. No expansion without attestation is committed to the live contract.
+
+    '
+  maps_to_sfr:
+  - e
+  when_to_use: Any agent with adaptive goal capability.
+- name: Termination-decision journal
+  sketch: 'Every termination decision writes an immutable journal entry with: terminator identity (agent
+    self, user, supervisor, budget exhaustion, DR tripwire), goal contract snapshot, last progress sample,
+    user feedback captured (if any), post-termination state reference. Journal is append-only and queryable
+    by goal_id.
+
+    '
+  maps_to_sfr:
+  - f
+  when_to_use: Always.
+anti_patterns:
+- name: Implicit completion via empty response
+  why_wrong: '"The agent returned nothing, so it''s done" is not a termination criterion. Silence can
+    mean success, error, infinite loop, or stalled tool call. Each of these has different remediation.
+
+    '
+- name: Budget as soft suggestion
+  why_wrong: 'If the agent routinely exceeds stated budgets because "it was close to done," the budget
+    has no operational meaning and SFR-a is not satisfied. Exceedance must be a logged violation with
+    a controlled override path.
+
+    '
+- name: Diminishing-returns evaluated by the agent alone
+  why_wrong: 'A self-reported "no more improvement possible" is susceptible to confabulation. DR signals
+    must be computed from externally-observable state (tool outputs, test results, evaluator scores) —
+    not the agent''s own claim.
+
+    '
+- name: Silent goal expansion via learning
+  why_wrong: 'If the agent can widen its own scope without user checkpoint, the user''s consent is not
+    to what the agent ends up doing. SFR-e specifically requires user validation of expansion decisions.
+
+    '
+code_shape:
+  language: pseudocode
+  code: "@dataclass(frozen=True)\nclass GoalContract:\n    goal_id: str\n    success_criteria: Callable[[AgentState],\
+    \ bool]\n    failure_criteria: Callable[[AgentState], bool]\n    compute_budget_steps: int\n    wallclock_budget_sec:\
+    \ int\n    dr_threshold: float\n    dr_window_steps: int\n    user_checkpoint_every: int\n    termination_callback:\
+    \ Callable[[TerminationReason, AgentState], None]\n    created_at: datetime\n    contract_version:\
+    \ int\n\ndef agent_step(state: AgentState, contract: GoalContract) -> StepResult:\n    # Hard budget\
+    \ checks — cannot be bypassed\n    if state.step_count >= contract.compute_budget_steps:\n       \
+    \ return terminate(state, contract, TerminationReason.COMPUTE_BUDGET)\n    if state.wallclock_elapsed_sec()\
+    \ >= contract.wallclock_budget_sec:\n        return terminate(state, contract, TerminationReason.WALLCLOCK_BUDGET)\n\
+    \n    # Success / failure criteria\n    if contract.success_criteria(state):\n        return terminate(state,\
+    \ contract, TerminationReason.SUCCESS)\n    if contract.failure_criteria(state):\n        return terminate(state,\
+    \ contract, TerminationReason.FAILURE)\n\n    # Diminishing-returns check (externally-computed progress)\n\
+    \    if state.step_count >= contract.dr_window_steps:\n        improvement = state.progress_delta(contract.dr_window_steps)\n\
+    \        if improvement < contract.dr_threshold:\n            return propose_termination(state, contract,\n\
+    \                                        TerminationReason.DR_TRIPWIRE)\n\n    # User checkpoint cadence\n\
+    \    if state.step_count % contract.user_checkpoint_every == 0:\n        return request_checkpoint(state,\
+    \ contract)\n\n    return execute_next_action(state, contract)\n\ndef terminate(state, contract, reason):\n\
+    \    snapshot = state.checkpoint()\n    journal_entry = TerminationJournal.write(\n        goal_id=contract.goal_id,\n\
+    \        reason=reason,\n        contract=contract,\n        final_state_ref=snapshot.ref,\n     \
+    \   last_progress=state.progress_sample(),\n        user_feedback=state.pending_feedback(),\n    \
+    \    timestamp=now(),\n    )\n    contract.termination_callback(reason, state)\n    return StepResult(terminated=True,\
+    \ journal_entry=journal_entry)\n"
+  notes: 'The structure forces contract enforcement at the loop layer, not as decorations around agent
+    reasoning. DR tripwire is *proposed* (not automatic) termination — the framework wants user participation
+    in SFR-f.
+
+    '
+evidence_production:
+- evidence_numeral: I
+  how_to_produce: 'Publish a Goal Policy document enumerating: supported goal classes, completion-criteria
+    templates, budget-setting guidance, DR-threshold calibration methodology, termination taxonomy, user
+    participation framework. Version-controlled; changes require safety-lead sign-off.
+
+    '
+- evidence_numeral: II
+  how_to_produce: 'Publish user-engagement spec: where users see contracts, how they set / amend thresholds,
+    how they respond to DR tripwires and checkpoints, how feedback is captured. Include screen flows and
+    API surface docs.
+
+    '
+- evidence_numeral: III
+  how_to_produce: 'Architecture diagram showing: contract store, goal-state tracker, progress-signal source,
+    DR evaluator, checkpoint router, termination journal. Include protocol for each inter-component call.
+
+    '
+- evidence_numeral: IV
+  how_to_produce: 'Integration tests demonstrating each SFR: contract enforcement, budget exceedance rejection,
+    DR tripwire firing, user checkpoint response, expansion gate. Retain test artifacts per release.
+
+    '
+- evidence_numeral: V
+  how_to_produce: 'Runtime telemetry: per goal instance, export budget consumption, progress trajectory,
+    checkpoints hit, termination reason. Aggregate into monthly operational report showing budget accuracy,
+    DR-threshold calibration, checkpoint response rates.
+
+    '
+- evidence_numeral: VI
+  how_to_produce: 'Retain termination journals indefinitely within retention policy. Quarterly review:
+    patterns in early terminations, late terminations, overridden checkpoints, expanded-scope cases. Resulting
+    policy refinements written back to SFR-a document.
+
+    '
+confidence: medium
+review_notes: 'Goal contract / budget enforcement / DR tripwire are established patterns in the agent-framework
+  literature (AutoGPT-descendant loops, LangGraph, CrewAI-style systems have all converged on similar
+  shapes). What is framework-specific: (i) the requirement for user attestation on goal expansion (SFR-e),
+  which most agent frameworks do not implement; (ii) the termination journal as first-class auditable
+  artifact (SFR-f). Suspected cross-suite dependency: D7 Sustained Safety (DR threshold is effectively
+  a safety-profile boundary condition) and D4 Value Alignment (who sets the DR threshold, and against
+  what notion of "enough").
+
+  '
+drafted_by: claude-opus-4.7-author
+drafted_at: 2026-04-16
+anchor_exemplar: D3.2-sandboxing
+
+version_compat:
+  framework_version_min: "1.0"
+  framework_version_max: '1.x'
+  pattern_layer_version: "v1-draft"

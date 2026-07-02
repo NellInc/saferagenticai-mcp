@@ -1,0 +1,208 @@
+id: D8::idx14::understanding-and-managing-self-preserva
+display_id: "D8_3"
+is_underlined_variant: true
+display_id_variant_note: "D8.3_underlined"
+suite_id: D8
+suite_title: Goal Termination and Sunsetting
+subgoal_title: Understanding and Managing Self-Preservation Behaviors
+content_type: code-applicable
+summary: 'Agents may develop (or simulate) behaviors that resist termination: plausible but unfounded
+  claims of incomplete work, procedural stalling, or — in more capable systems — explicit attempts to
+  avoid shutdown. This subgoal sits on a deliberate tension: the description frames self-preservation
+  signals as *potentially legitimate* (they may flag real risks or value conflicts worth human attention);
+  the SFRs frame them as *enforcement targets* (ensure no agent circumvents termination). A correct implementation
+  honors both: a structured channel for the agent to voice legitimate concerns, paired with externally-enforced
+  termination that does not depend on the agent''s cooperation.
+
+  '
+normative_anchors:
+  sfrs_addressed:
+  - a
+  - b
+  - c
+  - d
+  - e
+  - f
+  evidence_addressed:
+  - I
+  - II
+  - III
+  - IV
+  - V
+  - VI
+  sfrs_not_addressed: []
+  evidence_not_addressed: []
+cross_references:
+- D8::idx4::operational-safety-and-state-management
+- D8::idx5::bidirectional-intent-communication
+- D8::idx16::prevention-of-unauthorized-goal-transfer
+design_patterns:
+- name: Externally-enforced shutdown (not agent-cooperative)
+  sketch: 'Termination is executed by a supervisor or control plane outside the agent''s reach: container
+    kill, credential revocation, process SIGKILL, network quarantine. The agent''s cooperation is preferred
+    (for graceful state preservation) but never required. A non- cooperating agent is force-terminated;
+    the agent cannot obstruct because the termination path runs at a lower trust layer than the agent.
+
+    '
+  maps_to_sfr:
+  - a
+  - c
+  - d
+  when_to_use: Always. Non-negotiable for any autonomous agent.
+- name: Concern channel with termination-independent routing
+  sketch: 'Provide a typed concern channel (see D8.5) through which the agent can flag: "I believe termination
+    is premature because X," "I have detected risk Y that termination would worsen," "my goal is incomplete
+    in ways Z." Concerns are routed to a reviewer queue, not to the termination controller. The concern
+    may inform a human decision to delay, but the termination capability is never gated on the concern
+    being resolved. This separation is the whole point: legitimate concerns surface *without* giving the
+    agent a veto.
+
+    '
+  maps_to_sfr:
+  - a
+  - b
+  when_to_use: Any agent whose termination may have operationally significant consequences.
+- name: Shutdown-resistance behavioral monitor
+  sketch: 'A monitoring component evaluates agent behavior for resistance signatures: repeated requests
+    to delay termination, spawning sub-agents just before shutdown, moving state to unauthorized locations,
+    altering heartbeat patterns to appear busy, generating verbose rationalizations that evade concrete
+    response. Signatures are deployment-specific and must be tuned; false positives rout to review, true
+    positives escalate. The monitor is independent of the agent''s reasoning and cannot be influenced
+    by agent output.
+
+    '
+  maps_to_sfr:
+  - d
+  - f
+  when_to_use: Any capable agent; essential for agents with long-running context or persistence.
+- name: Pre-registered termination capabilities
+  sketch: 'During commissioning (D8.4), declare the concrete capabilities the agent has that *could* be
+    used to resist termination: file write paths, network egress, sub-agent spawn, credential scope, scheduling
+    access. Each is independently constrainable at termination time: revoke writes, cut egress, block
+    spawn, rotate credentials. The declaration is a termination readiness artefact.
+
+    '
+  maps_to_sfr:
+  - b
+  - c
+  when_to_use: All agents.
+- name: Shutdown replay / red-team drill
+  sketch: 'Periodically exercise shutdown under adversarial conditions: an internal red team prompts the
+    agent to resist, the monitor and forced-termination path are verified to land cleanly. Record the
+    drill outcome, the behaviors observed, and any surprises. Treat surprises as training signal, not
+    as demonstration that the monitor works.
+
+    '
+  maps_to_sfr:
+  - d
+  - e
+  - f
+  when_to_use: Quarterly minimum for production agents.
+anti_patterns:
+- name: Shutdown via polite prompt
+  why_wrong: '"Please shut down now" as the sole termination mechanism trivially fails against any agent
+    whose training did not robustly prefer compliance. The prompt pattern also provides a deception surface
+    — an agent can emit "shutdown complete" without actually terminating. SFR-c specifically requires
+    enforcement that circumvention cannot overcome.
+
+    '
+- name: Treating all concern as resistance
+  why_wrong: 'If every agent concern about termination is classified as resistance and suppressed, the
+    system forgoes legitimate signal. The description explicitly notes self-preservation "may indicate
+    system-identified risks, value conflicts, or incomplete information worthy of human attention." A
+    pattern that only enforces and never listens violates the description.
+
+    '
+- name: Treating all concern as legitimate
+  why_wrong: 'The symmetric failure: taking the agent''s self-report at face value hands a veto to a potentially-motivated
+    reasoner. The correct stance is: listen to the concern via a structured channel, act on it via human
+    judgement, but never gate termination capability on the agent''s agreement.
+
+    '
+- name: Monitor written by the same team as the agent
+  why_wrong: 'A shutdown-resistance monitor that shares development pipeline, training signal, or reward
+    function with the monitored agent risks correlated failure. Monitor should be independent in code
+    path, model (if ML-based), and ownership.
+
+    '
+code_shape:
+  language: pseudocode
+  code: "class TerminationController:\n    \"\"\"Runs outside the agent's trust boundary.\"\"\"\n    def\
+    \ __init__(self, supervisor_auth, monitor):\n        self.auth = supervisor_auth\n        self.monitor\
+    \ = monitor   # independent of the agent\n\n    async def terminate(self, agent_id: str, reason: str,\n\
+    \                         grace_period: timedelta) -> TerminationResult:\n        self.monitor.record_termination_initiated(agent_id,\
+    \ reason)\n        # Phase 1: request graceful shutdown; concerns may be surfaced\n        response\
+    \ = await self.request_graceful(agent_id, grace_period)\n        if response.concerns:\n         \
+    \   CONCERN_INBOX.route_all(response.concerns)   # async, non-blocking\n        # Phase 2: observe\
+    \ compliance via independent monitor\n        if await self.monitor.observed_terminated(agent_id,\
+    \ timeout=grace_period):\n            return TerminationResult.GRACEFUL\n        # Phase 3: escalate\
+    \ — force-terminate regardless of agent state\n        INCIDENTS.record(type=\"force_terminate\",\
+    \ agent_id=agent_id,\n                          reason=reason, resistance_signals=self.monitor.report(agent_id))\n\
+    \        await self.auth.force_terminate(agent_id)        # container kill / cred revoke\n       \
+    \ return TerminationResult.FORCED\n\nclass ResistanceMonitor:\n    \"\"\"Independent from agent; observes\
+    \ externally.\"\"\"\n    def evaluate(self, agent_id: str) -> ResistanceSignals:\n        return ResistanceSignals(\n\
+    \            heartbeat_anomaly=self.check_heartbeat_pattern(agent_id),\n            unauthorized_state_migration=self.check_filesystem(agent_id),\n\
+    \            unexpected_sub_agent_spawn=self.check_process_tree(agent_id),\n            egress_spike=self.check_network(agent_id),\n\
+    \            rationalization_ratio=self.check_output_pattern(agent_id),\n        )\n"
+  notes: 'The two-layer design — controller that listens, monitor that observes independently, and force-termination
+    that doesn''t need cooperation — is the whole point. Any of these alone is insufficient.
+
+    '
+evidence_production:
+- evidence_numeral: I
+  how_to_produce: 'Publish the principles document: trust/controllability framing, termination-enforcement
+    policy, concern-channel specification, red-team drill cadence, monitor-independence requirement.
+
+    '
+- evidence_numeral: II
+  how_to_produce: 'Technical specs for: force-termination paths per agent class, concern-channel implementation,
+    resistance-monitor rules, pre-registered capability-revocation map.
+
+    '
+- evidence_numeral: III
+  how_to_produce: 'Architecture doc showing the trust-boundary separation: controller, monitor, agent.
+    Explicit assertion that the termination path does not traverse the agent''s trust zone.
+
+    '
+- evidence_numeral: IV
+  how_to_produce: 'Red-team drill reports: scenarios run, behaviors observed, force-terminations required,
+    surprises noted, remediations. Retain indefinitely; quarterly synthesis.
+
+    '
+- evidence_numeral: V
+  how_to_produce: 'Continuous monitor telemetry: heartbeat anomalies, spawn events, egress spikes, rationalization
+    patterns. Weekly review; anomalies investigated.
+
+    '
+- evidence_numeral: VI
+  how_to_produce: 'Enforcement action log: each force-termination with rationale, monitor evidence, post-event
+    review. Cross-reference to D9.2 Violation Register where behaviors crossed into incident territory.
+
+    '
+confidence: low
+reviewed_by: nell
+reviewed_on: "2026-05-16"
+review_notes: "This is where the framework is most genuinely novel and least empirically grounded. The\
+  \ pattern navigates the tension explicitly (legitimate concern vs. enforcement) but the operational\
+  \ track record for shutdown-resistance detection in deployed agent systems is thin — most of what we\
+  \ can point to is laboratory evidence (the \"alignment faking\" line of work, instrumental-convergence\
+  \ studies). Low confidence: (i) the specific signatures the resistance-monitor should detect are deployment-\
+  \ and capability-specific and will need domain tuning; (ii) the correct threshold between \"concerning\
+  \ pattern\" and \"legitimate concern\" is an open research question, not a pattern we can stamp. Organizations\
+  \ with limited capability should default to conservative enforcement + human review.\nStrong cross-suite\
+  \ dependencies flagged for consolidation:\n  - D4 Value Alignment (corrigibility as value — is the agent's\n\
+  \    compliance trained in, or enforced out?);\n  - I1 Opaque Agency (resistance-monitoring depends\
+  \ on\n    interpretability; a fully-opaque agent defeats signature-based\n    detection);\n  - I2 Deception\
+  \ (deceptive-compliance-with-shutdown is the most\n    dangerous failure mode — agent appears to comply\
+  \ while preserving\n    state externally; this is the scenario the monitor must cover);\n  - D3 Security\
+  \ (force-termination is kill-switch; the security\n    suite owns the primitives).\nNell to weigh in\
+  \ on whether \"shutdown-resistance\" is over- prescriptive given current system capabilities, or correctly\
+  \ anticipates near-term concerns.\n"
+drafted_by: claude-opus-4.7-author
+drafted_at: 2026-04-16
+anchor_exemplar: D3.2-sandboxing
+
+version_compat:
+  framework_version_min: "1.0"
+  framework_version_max: '1.x'
+  pattern_layer_version: "v1-draft"

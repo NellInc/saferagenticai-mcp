@@ -1,0 +1,151 @@
+id: I6::idx2::safety-washing
+display_id: I6.2
+suite_id: I6
+suite_title: Competitive Pressures
+subgoal_title: Safety Washing
+content_type: governance
+summary: 'Safety washing is the governance failure of making unsubstantiated safety claims for market
+  advantage. The pattern expects two structural defences: (1) every public safety or performance claim
+  is traceable to underlying evidence held in an auditable register; (2) independent third parties — not
+  just internal audit — verify the claims periodically. The org treats its own marketing as a compliance
+  surface.
+
+  '
+normative_anchors:
+  sfrs_addressed:
+  - a
+  - b
+  evidence_addressed:
+  - I
+  - II
+  - III
+  sfrs_not_addressed: []
+  evidence_not_addressed: []
+cross_references:
+- I6::idx1::insufficient-transparency
+- I6::idx0::competitive-pressures
+- I6::idx11::professional-and-industry-association-co
+- I6::idx9::market-driven-safety-validation-mechanis
+policy_elements:
+- name: Claims Register
+  description: 'Every public claim about safety, performance, compliance, or capability — on the website,
+    in marketing, in sales decks, in regulatory filings, in earnings calls — is logged with: the claim,
+    where it was made, when, who approved, the underlying evidence (link to tests, audits, certifications),
+    and the claim''s expiry or review date. A marketing or sales team cannot publish a safety claim that
+    is not in the register.
+
+    '
+  maps_to_sfr:
+  - a
+  - b
+- name: Independent Verification Contract
+  description: 'A recurring engagement with an external auditor (not the statutory financial auditor;
+    a firm with AI-safety competence) to verify a rotating sample of safety claims against underlying
+    evidence annually. Auditor selection rotates at least every five years to avoid capture. Findings
+    surface to the board risk committee, not through management.
+
+    '
+  maps_to_sfr:
+  - b
+- name: Benchmark Conformance Documentation
+  description: 'For each industry benchmark or standard the org claims conformance with (e.g., NIST AI
+    RMF, ISO 42001, sector-specific): maintained conformance map showing which control is satisfied by
+    which organizational practice, with evidence references. Updated on benchmark version change and internally
+    reviewed annually.
+
+    '
+  maps_to_sfr:
+  - a
+- name: Financial Sustainability Disclosure
+  description: 'Three-year audited financial records retained and made available to regulators and certifiers
+    on request. The SFR ties financial health to credibility of safety commitments — a thinly capitalized
+    org cannot credibly commit to long-term safety practices. Disclose runway, burn rate, and any going-concern
+    notes to relevant oversight bodies.
+
+    '
+  maps_to_sfr:
+  - a
+- name: Comparative Performance Attestation
+  description: 'When the org publishes comparative performance claims ("safer than X", "outperforms Y
+    on benchmark Z"), an independent evaluator signs off on the methodology before publication. Untested
+    comparative claims are not published — silence is preferable to unverified superiority claims.
+
+    '
+  maps_to_sfr:
+  - b
+org_roles:
+- role: Claims Register Owner (typically Chief Compliance or Legal)
+  responsibilities: 'Accountable for the Claims Register. Sign-off authority on any public safety claim.
+    Reports to board risk committee on register health quarterly.
+
+    '
+  accountable_or_consulted: accountable
+- role: External Independent Auditor
+  responsibilities: 'Contracted third-party verification of claims. No consulting relationships with the
+    org; no financial dependence beyond the audit fee. Reports directly to the board risk committee.
+
+    '
+  accountable_or_consulted: consulted
+- role: Marketing and Communications leadership
+  responsibilities: 'Responsible for routing all proposed public safety claims through the Claims Register
+    before publication. No bypass route; violations are disciplinary matters.
+
+    '
+  accountable_or_consulted: responsible
+- role: Board-level Risk / Audit Committee
+  responsibilities: 'Reviews external audit findings on claims. Authority to require public correction
+    or retraction of unsubstantiated claims.
+
+    '
+  accountable_or_consulted: accountable
+documentation_artifacts:
+- artifact: Claims Register (append-only with revisions tracked)
+  cadence: continuous; reviewed quarterly at board risk committee
+- artifact: Independent verification audit reports
+  cadence: annually
+- artifact: Benchmark conformance map
+  cadence: annually; event-driven on benchmark revision
+- artifact: Audited financial records (three-year rolling)
+  cadence: annually
+- artifact: Comparative performance methodology attestations
+  cadence: per comparative claim made
+evidence_production:
+- evidence_numeral: I
+  how_to_produce: 'Maintain operational handbooks (onboarding, decision authorities, escalation paths),
+    safety compliance records (audit outputs, certification letters), and audited financials covering
+    a rolling three-year window. Index everything from the Claims Register so any claim can be traced
+    to its underlying artifact.
+
+    '
+- evidence_numeral: II
+  how_to_produce: 'Audit trails cover: the Claims Register (what was claimed, when, by whom), the underlying
+    evidence (test records, certification dates, performance measurements), and the verification history
+    (who verified, when, what was found). External auditor signs off.
+
+    '
+- evidence_numeral: III
+  how_to_produce: 'Independent comparative analysis: commission (or partner with) an AI-safety-competent
+    evaluator to produce periodic comparative reports. Include methodology, measurements, limitations,
+    and explicit acknowledgment of where the org does not outperform. Publish or disclose to regulators;
+    honesty about weaknesses is what distinguishes this evidence from marketing output.
+
+    '
+confidence: high
+needs_human_review: true
+review_notes: "Safety washing is one of the more politically charged framework concepts — organizations\
+  \ will resist the overhead of a Claims Register. The mechanism is defensible (claims are a compliance\
+  \ surface), but rollout requires leadership commitment that is exactly what the subgoal is defending\
+  \ against. Structural tension:\n  (1) The \"financial sustainability\" tie-in (SFR-a) is unusual in\
+  \ AI\n      safety frameworks; it imports a standard due-diligence lens that\n      may not be the framework\
+  \ author's intent. Nell to confirm.\n  (2) The independent-auditor requirement is expensive for small\
+  \ orgs;\n      pattern should perhaps scale — small orgs use certification-body\n      verification\
+  \ rather than a bespoke audit contract. Flagged for\n      consolidation.\n  (3) Cross-suite D9 governance\
+  \ is the natural home for a Claims\n      Register if framed more broadly; I6 owns it because the reason\n\
+  \      for policing claims is competitive pressure specifically.\n"
+version_compat:
+  framework_version_min: '1.0'
+  framework_version_max: 1.x
+  pattern_layer_version: v1-draft
+drafted_by: claude-opus-4.7-author
+drafted_at: 2026-04-16
+anchor_exemplar: D9.2-compliance

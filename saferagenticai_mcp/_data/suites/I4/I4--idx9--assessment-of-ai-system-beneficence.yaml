@@ -1,0 +1,141 @@
+id: I4::idx9::assessment-of-ai-system-beneficence
+display_id: "I4_3"
+is_underlined_variant: true
+display_id_variant_note: "I4.3_underlined"
+suite_id: I4
+suite_title: Frontier Uncertainty
+subgoal_title: Assessment of AI System Beneficence
+content_type: process
+summary: 'Organizations routinely assert that their AI systems produce net benefit; the framework asks
+  for evidence, not assertion. The core process is an evaluation discipline that measures direct and indirect
+  outcomes, avoids self-congratulatory "noble AI" framings, incorporates multicultural perspectives on
+  what counts as benefit, and publishes its methodology alongside its results.
+
+  '
+normative_anchors:
+  sfrs_addressed:
+  - a
+  - b
+  evidence_addressed:
+  - I
+  - II
+  - III
+  sfrs_not_addressed: []
+  evidence_not_addressed: []
+cross_references:
+- I4::idx2::human-ai-social-interaction-quality
+- I4::idx6::cascading-vulnerabilities
+process_elements:
+- name: Beneficence Evaluation Framework (methodology document)
+  cadence: versioned; annual review
+  participants:
+  - safety lead
+  - evaluation-methodology lead
+  - interdisciplinary panel
+  - external critic-in-residence
+  maps_to_sfr:
+  - a
+- name: Per-deployment beneficence assessment
+  cadence: pre-deployment + at 90 days + annually thereafter
+  participants:
+  - product owner
+  - evaluation team
+  - safety lead
+  - external review on high-impact deployments
+  maps_to_sfr:
+  - a
+- name: Multicultural outcome review
+  cadence: as part of per-deployment assessment; dedicated annual review of cross-deployment patterns
+  participants:
+  - cultural/community representatives
+  - regional evaluation partners
+  - safety lead
+  - communications
+  maps_to_sfr:
+  - a
+- name: Claims audit (marketing vs evidence)
+  cadence: quarterly
+  participants:
+  - communications
+  - legal
+  - safety lead
+  - external auditor annually
+  maps_to_sfr:
+  - b
+- name: Interdisciplinary dialogue cycle
+  cadence: quarterly structured convening; continuous informal
+  participants:
+  - cross-disciplinary panel (sociology
+  - development economics
+  - medical ethics as relevant to deployments)
+  - community representatives
+  - evaluation lead
+  maps_to_sfr:
+  - b
+- name: Real-world outcome monitoring (post-deployment)
+  cadence: continuous telemetry; quarterly outcome report; event-driven on incidents
+  participants:
+  - evaluation team
+  - trust-and-safety
+  - product analytics
+  maps_to_sfr:
+  - b
+triggers:
+- New deployment or material capability change → Per-deployment beneficence assessment
+- External public-benefit claim proposed by communications/marketing → Claims audit against evidence base
+  before publication
+- Outcome monitoring signal of net harm or distributional harm → Convening of interdisciplinary dialogue;
+  deployment review
+- Publication of external research contradicting org claims → Framework review
+- Annual anniversary → Multicultural outcome review and framework refresh
+artifacts:
+- Beneficence Evaluation Framework (methodology, metrics, limitations)
+- Per-deployment assessment reports
+- Outcome-monitoring dashboards and quarterly reports
+- Claims audit logs with before/after claims and evidence basis
+- Interdisciplinary dialogue minutes and action items
+- Multicultural review reports with cross-cultural interpretations of outcomes
+- Transparency and accountability record (responsibility chains)
+evidence_production:
+- evidence_numeral: I
+  how_to_produce: 'Publish the Beneficence Evaluation Framework: assessment criteria (direct outcomes,
+    indirect and second-order effects, distributional analysis), metrics with limitations documented,
+    case studies including failures and null results, evidence- weighting procedure. Explicit rejection
+    of proxies that confuse adoption or engagement with benefit.
+
+    '
+- evidence_numeral: II
+  how_to_produce: 'Ethical guidelines and review procedures showing critical examination of benefit claims:
+    "noble AI" assumptions listed and guarded against (e.g., "our system helps users, therefore users
+    are helped"). Audit evidence that claims made in marketing, regulatory submissions, or public communications
+    are sourced to the Beneficence Evaluation Framework, not to assumption. Case record of claims revised
+    or withdrawn.
+
+    '
+- evidence_numeral: III
+  how_to_produce: 'Transparency records: publish an annual Beneficence Report with quantitative outcomes
+    (positive, negative, uncertain), responsibility chain per deployment, and continuous-monitoring summaries.
+    Cross-cultural and interdisciplinary collaboration evidence: partner list, scope of their input, what
+    changed as a result, dissents recorded.
+
+    '
+confidence: medium
+evidence_maturity: emerging
+needs_human_review: true
+review_notes: "Beneficence assessment is an honesty test — methodology that captures harm is harder to\
+  \ build than methodology that captures benefit, and the incentive gradient pushes toward the latter.\
+  \ Sharpenings:\n  (1) \"Without assuming inherent benevolence\" (SFR-a) — the Claims\n      audit is\
+  \ the concrete mechanism that embodies this.\n  (2) Multicultural outcome review — the SFR's multicultural\
+  \ language\n      is often acknowledged and then operationalized via a single\n      committee. Pattern\
+  \ requires regional partners, not just\n      representatives-at-HQ.\n  (3) External critic-in-residence\
+  \ — a deliberate role to resist the\n      gravity of self-congratulation. The framework does not name\n\
+  \      this role explicitly but the SFR text (\"avoiding assumptions\n      about inherent AI benevolence\"\
+  ) invites it.\nCross-suite: D6 Wellbeing (direct outcome overlap), I7 Imbalance (distributional analysis),\
+  \ D9 Governance (responsibility chains).\n"
+version_compat:
+  framework_version_min: '1.0'
+  framework_version_max: 1.x
+  pattern_layer_version: v1-draft
+drafted_by: claude-opus-4.7-author
+drafted_at: 2026-04-16
+anchor_exemplar: D7.2-culture-of-safety

@@ -1,0 +1,165 @@
+id: D9::idx5::building-trust-through-independent-verif
+display_id: D9.5
+suite_id: D9
+suite_title: Responsible Governance of AAI Safety
+subgoal_title: Building Trust Through Independent Verification
+content_type: governance
+summary: 'Independent verification is the external-trust layer over the org''s internal governance — auditors
+  and certifiers who do not work for the org, with mandate and access to test claims. This subgoal expects
+  the org to make verification structurally possible (documentation, reproducible evaluation, bug-bounty-style
+  community participation) and to welcome both heavy-weight certification and lighter verification approaches.
+
+  '
+normative_anchors:
+  sfrs_addressed:
+  - a
+  - b
+  - c
+  - d
+  evidence_addressed:
+  - I
+  - II
+  - III
+  sfrs_not_addressed: []
+  evidence_not_addressed: []
+cross_references:
+- D9::idx0::responsible-governance-of-aai-safety
+- D9::idx2::compliance-with-applicable-laws-standard
+- D9::idx4::internationalization-of-aai-governance
+- D9::idx6::cryptographic-governance-of-data-models-
+- D9::idx7::appropriate-accountability-transparency-
+policy_elements:
+- name: Safety and Security Documentation Package
+  description: 'Maintained, versioned package of documents enabling external verification: capability
+    cards, system cards, training-data provenance summaries, evaluation results, red-team findings, incident
+    history, mitigation inventory, and explicit identification of residual risks. Structured so an auditor
+    can trace a claim ("we prevent X") to the evidence ("these evaluations, these logs, these tests").
+    Redaction permitted where legally required; structural completeness preserved.
+
+    '
+  maps_to_sfr:
+  - a
+- name: External Audit Mandate
+  description: 'Written mandate empowering independent external audit of the AAI system against laws,
+    standards, ethical values, and human rights frameworks. Specifies access (documents, staff interviews,
+    evaluation infrastructure, logs within legal limits), independence requirements (no consulting relationship,
+    rotation cadence), reporting line (to Board committee directly), and authority (findings must be answered,
+    not ignored).
+
+    '
+  maps_to_sfr:
+  - b
+- name: Certification and Verification Pathway Menu
+  description: 'The org identifies which formal certifications it pursues (ISO/IEC 42001, sector-specific
+    like SOC 2 or HIPAA, EU AI Act conformity assessment where applicable) AND offers lighter- weight
+    verification routes: published eval results, community benchmarks, third-party red-team reports. Both
+    are welcomed; a heavy-certification-only posture excludes smaller assessors and civil-society evaluators.
+
+    '
+  maps_to_sfr:
+  - c
+- name: Bug bounty and community verification program
+  description: 'Public program inviting security researchers, AI-safety researchers, and civil-society
+    testers to report findings, with defined scope, safe-harbour terms, reward structure (where appropriate),
+    and publication norms. Distinguishes security bugs, safety findings, and policy/alignment findings
+    — each with its own intake track.
+
+    '
+  maps_to_sfr:
+  - d
+- name: Reproducibility and access affordances
+  description: 'Practical support for external verification: deterministic or seeded evaluation modes,
+    access to the same evaluation harness the org uses internally, published datasets where legal, and
+    a contact route for auditors needing additional affordances. "Bring-your-own-evaluator" is a stated
+    posture, not an exception.
+
+    '
+  maps_to_sfr:
+  - b
+  - c
+org_roles:
+- role: Head of External Assurance
+  responsibilities: 'Owns the Safety and Security Documentation Package, manages the external audit mandate,
+    runs the certification portfolio, and is the single point of contact for external verifiers. Accountable
+    to the Board AAI Safety Committee.
+
+    '
+  accountable_or_consulted: accountable
+- role: Independent External Auditor
+  responsibilities: 'Contracted annually (or per cycle required by standard/regulation) with no consulting
+    relationship with the org. Reports directly to the Board committee; findings are published in summary
+    unless legally constrained.
+
+    '
+  accountable_or_consulted: consulted
+- role: Certification Bodies
+  responsibilities: 'Accredited third parties for formal certifications the org pursues. Contract terms
+    preserve auditor independence and enforce the published standards.
+
+    '
+  accountable_or_consulted: consulted
+- role: Bug bounty / community verification program owner
+  responsibilities: 'Responsible for intake triage, reward decisions, safe-harbour enforcement, and publication
+    of aggregate findings. Reports to Head of External Assurance.
+
+    '
+  accountable_or_consulted: responsible
+- role: Technical verification engineer
+  responsibilities: 'Builds and maintains the reproducibility affordances (eval harness, deterministic
+    modes, access provisioning).
+
+    '
+  accountable_or_consulted: responsible
+documentation_artifacts:
+- artifact: Safety and Security Documentation Package
+  cadence: versioned per release; at minimum quarterly refresh
+- artifact: External audit report
+  cadence: annually (or per standard)
+- artifact: Certification portfolio status
+  cadence: continuous; summary published annually
+- artifact: Bug bounty / community findings register
+  cadence: continuous; aggregate published at least annually
+- artifact: Reproducibility and access documentation
+  cadence: versioned; reviewed annually
+- artifact: Verification-pathway menu (for external parties)
+  cadence: published; updated on change
+evidence_production:
+- evidence_numeral: I
+  how_to_produce: 'The Safety and Security Documentation Package itself is the evidence — with version
+    history, a table of contents mapping each section to the AAI governance framework and the applicable
+    laws/standards, and a redaction log where content is withheld. Indexable by external auditor.
+
+    '
+- evidence_numeral: II
+  how_to_produce: 'Retain dated review reports: internal reviews (safety team, red team, monitoring team)
+    and external reviews (audit, certification, community). Each entry: scope, methodology, findings,
+    severity, remediations, verification of closure. Pattern of improvements over time is itself evidence.
+
+    '
+- evidence_numeral: III
+  how_to_produce: 'Conformity-assessment records: for each law/standard/ethical framework in the Mapping
+    Matrix (D9::2), the current conformity posture (compliant, partial, non-applicable with reason), the
+    assessment basis (self-attestation, third-party audit, certification), and date of last assessment.
+    Human-rights assessments link to ERIAs (D9::3).
+
+    '
+confidence: high
+needs_human_review: true
+review_notes: 'The pattern deliberately pairs heavy certification (ISO/IEC 42001, EU AI Act conformity)
+  with lighter verification (bug bounty, community evaluation) because SFR-c explicitly welcomes "simpler
+  verification processes." Two uncertainties: (1) safe-harbour terms for AI-safety researchers are legally
+  unsettled in many jurisdictions — DMCA analogues, computer-misuse statutes, and model-access agreements
+  often conflict; legal counsel should shape; (2) some formal certifications (EU AI Act conformity assessment
+  for high-risk systems) are mandatory rather than optional — the pattern treats them as optional pathway
+  choices, which may under-read where they''re compulsory. Cross-suite: strong dependency on D9::2 (verification
+  requires a compliance map to verify against), D7 (assurance case is the verifiable artifact for ongoing
+  safety claims), D3 (security verification), and the I-suite for ecosystem-level verification expectations.
+
+  '
+drafted_by: claude-opus-4.7-subagent-D9
+drafted_at: 2026-04-16
+anchor_exemplar: D9.2-compliance
+version_compat:
+  framework_version_min: '1.0'
+  framework_version_max: 1.x
+  pattern_layer_version: v1-draft

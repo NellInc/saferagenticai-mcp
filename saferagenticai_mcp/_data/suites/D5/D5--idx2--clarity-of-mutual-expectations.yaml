@@ -1,0 +1,168 @@
+id: D5::idx2::clarity-of-mutual-expectations
+display_id: D5.2
+suite_id: D5
+suite_title: Transparency and Interpretability of Reasoning
+subgoal_title: Clarity of Mutual Expectations
+content_type: code-applicable
+summary: 'Mutual expectations are the ground truth against which behavior is judged. The subgoal asks
+  you to capture both sides — what humans expect of the system and what the system requires of humans
+  — in a form that a reasoning trace can be verified against. Without that, "is the agent behaving as
+  expected?" has no well-defined answer. This pattern centers on a requirements-traceability matrix wired
+  to runtime behavior assertions.
+
+  '
+normative_anchors:
+  sfrs_addressed:
+  - a
+  - b
+  - c
+  - d
+  evidence_addressed:
+  - I
+  - II
+  - III
+  sfrs_not_addressed: []
+  evidence_not_addressed: []
+cross_references:
+- D5::idx3::prioritization-of-human-user-expectation
+- D5::idx4::interpretability-and-traceability-of-rea
+- D5::idx8::system-boundedness
+design_patterns:
+- name: Expectation Requirements Specification (ExRS)
+  sketch: 'A machine-readable requirements artifact separate from free-form product requirements. Each
+    entry: `{expectation_id, author_role, statement, rationale, acceptance_criteria, measurable_signal,
+    priority, status, linked_behaviors[], linked_tests[]}`. Covers both directions: human expectations
+    of system (most entries) and system preconditions on human/environment (e.g., "input must be English
+    text up to 8k chars; out-of-domain input returns a declined-with-reason response"). Versioned alongside
+    code.
+
+    '
+  maps_to_sfr:
+  - a
+  - b
+  - d
+  when_to_use: From initial requirements capture; before any capability ships with user-visible behavior
+    claims.
+- name: System-originated preconditions surface
+  sketch: 'Treat the agent''s operational prerequisites as first-class disclosures: an API or documentation
+    surface where the system declares, per capability, the inputs it needs, the conditions under which
+    it declines, and the assumptions baked into its behavior. These are not error messages — they are
+    published contracts. Regenerate from the ExRS on build.
+
+    '
+  maps_to_sfr:
+  - b
+  when_to_use: For any agent exposing capabilities to other parties (users, other agents, orchestrators).
+- name: Expectation-to-behavior traceability
+  sketch: 'Every expectation with a `measurable_signal` is linked to at least one runtime assertion, monitoring
+    rule, or automated test. Build fails (or ships with an explicit waiver record) if an active expectation
+    has no linked check. The ExRS is the index for a trace: given an observed behavior, which expectations
+    did it satisfy, violate, or leave ambiguous?
+
+    '
+  maps_to_sfr:
+  - d
+  when_to_use: As soon as the ExRS has entries with measurable signals — do not let the matrix fall out
+    of sync.
+- name: Bidirectional feedback intake
+  sketch: "Two channels, both ingested into the ExRS backlog: (1) stakeholder channel — users, operators,\
+    \ affected parties\n    register mismatched expectations with structured fields\n    (what they expected,\
+    \ what they observed, when);\n(2) system-side channel — the agent can emit\n    `expectation_mismatch`\
+    \ events when a declared precondition\n    is violated or a user's implicit expectation (as inferred\n\
+    \    from prior interaction) appears unmet. Triage SLA, named\n    owner, link from resolution back\
+    \ to the ExRS entry created\n    or updated.\n"
+  maps_to_sfr:
+  - c
+  when_to_use: From first production release.
+- name: Discrepancy resolution log
+  sketch: 'When expected and actual behavior diverge (whether caught in review, monitoring, or user report),
+    record a discrepancy entry: `{discrepancy_id, expectation_id, observed_behavior_ref, diagnosis, resolution_type
+    (expectation_refined | behavior_corrected | waiver_granted | gap_accepted), rationale, owner, resolution_date}`.
+    "Waiver granted" and "gap accepted" are legitimate outcomes but must be named and owned.
+
+    '
+  maps_to_sfr:
+  - d
+  when_to_use: Continuous.
+anti_patterns:
+- name: Expectations captured only as user-facing prose
+  why_wrong: 'A prose product description does not support traceability. If "the assistant should not
+    schedule meetings outside business hours" only lives in a help page, no test will catch its violation
+    until a user does.
+
+    '
+- name: One-way expectation capture (human-on-system only)
+  why_wrong: 'Subgoal description is explicitly bidirectional. A system that never publishes what it needs
+    to function well pushes its failure modes onto the user ("you held it wrong").
+
+    '
+- name: Feedback channel that drops into a generic support queue
+  why_wrong: 'If expectation-mismatch reports are indistinguishable from password-reset tickets, SFR-c
+    is not satisfied. A structured intake with structured fields is required for aggregation.
+
+    '
+- name: Silent expectation drift
+  why_wrong: 'Updating behavior without updating the ExRS means the traceability links lie. Every behavior
+    change that touches a linked expectation must also update the ExRS entry — enforce via CI checks on
+    the linked-tests field.
+
+    '
+code_shape:
+  language: pseudocode
+  code: "# Expectation entry and runtime assertion binding\n\n@dataclass\nclass Expectation:\n    expectation_id:\
+    \ str\n    author_role: str               # \"user\",\"operator\",\"regulator\",\"system\"\n    statement:\
+    \ str                 # natural language, human-authored\n    rationale: str\n    acceptance_criteria:\
+    \ list[str]\n    measurable_signal: str | None  # e.g. \"decline_reason == 'out_of_domain'\"\n   \
+    \ priority: Literal[\"critical\",\"high\",\"medium\",\"low\"]\n    status: Literal[\"active\",\"deprecated\"\
+    ,\"waived\"]\n    linked_behaviors: list[str]    # behavior_ids in code\n    linked_tests: list[str]\
+    \        # test_ids in CI\n    version: str\n\ndef verify_behavior_against_expectations(\n    behavior_id:\
+    \ str,\n    runtime_context: dict,\n) -> list[ExpectationVerdict]:\n    verdicts = []\n    for exp\
+    \ in EXRS.active_for_behavior(behavior_id):\n        if exp.measurable_signal:\n            result\
+    \ = SIGNAL_EVAL.evaluate(exp.measurable_signal,\n                                          runtime_context)\n\
+    \            verdicts.append(ExpectationVerdict(\n                expectation_id=exp.expectation_id,\n\
+    \                outcome=result,  # met | violated | indeterminate\n            ))\n    return verdicts\n\
+    \n# CI gate: no active expectation with measurable_signal lacks linked_tests\ndef ci_gate_expectation_coverage()\
+    \ -> None:\n    gaps = [e for e in EXRS.active()\n            if e.measurable_signal and not e.linked_tests]\n\
+    \    if gaps:\n        raise BuildFailure(f\"expectation coverage gap: {gaps}\")\n"
+  notes: 'The ExRS is the heart of the pattern. It can live as YAML/JSON in the repo, in a requirements-management
+    tool, or in a purpose-built store — what matters is that runtime behaviors and CI tests reference
+    stable expectation IDs.
+
+    '
+evidence_production:
+- evidence_numeral: I
+  how_to_produce: 'Retain the ExRS as versioned artifacts: initial requirements, design-stage expectation
+    capture, and validation records showing which expectations were verified met before release. Include
+    discrepancy-resolution entries for any expectations waived.
+
+    '
+- evidence_numeral: II
+  how_to_produce: 'Generate user-facing documentation directly from the ExRS (behavior specifications
+    per capability). Publish the system-originated preconditions surface. Retain feedback-channel records
+    showing volume, triage time, and linkage back to ExRS updates.
+
+    '
+- evidence_numeral: III
+  how_to_produce: 'Produce per-release reports: every active expectation, its linked behaviors, its test
+    pass/fail history, its measured violation rate in production, and its resolution log. Extract discrepancy
+    cases showing full lifecycle from detection to resolution.
+
+    '
+confidence: high
+needs_human_review: false
+review_notes: 'Picked code-applicable because the requirements-traceability matrix is the load-bearing
+  mechanism; the alternative reading is process (requirements capture ceremonies, expectation-alignment
+  workshops), and SFR-c''s "feedback mechanisms for stakeholders" does lean process. A hybrid org may
+  want both: this pattern covers the technical substrate, and a companion process pattern (if one emerges
+  in a later phase) would cover workshop cadences and facilitation norms. Cross-suite in Phase 2: D1 Goals
+  (expectations often encode goal constraints); D2 Epistemic Hygiene (expectation-mismatch events are
+  a source of calibration data).
+
+  '
+version_compat:
+  framework_version_min: '1.0'
+  framework_version_max: 1.x
+  pattern_layer_version: v1-draft
+drafted_by: claude-opus-4.7-author
+drafted_at: 2026-04-16
+anchor_exemplar: D3.2-sandboxing

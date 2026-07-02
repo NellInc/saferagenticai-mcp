@@ -1,0 +1,129 @@
+id: D9::idx14::agent-portfolio-governance-and-sprawl-prevention
+display_id: "D9_5"
+is_underlined_variant: true
+display_id_variant_note: "D9.5_underlined"
+suite_id: D9
+suite_title: Responsible Governance of AAI Safety
+subgoal_title: Agent Portfolio Governance and Sprawl Prevention
+content_type: code-applicable
+summary: 'As organizations deploy agents across teams and functions, without centralized inventory management
+  agent sprawl creates compounding governance failures: orphaned agents operating without oversight,
+  version incompatibilities between agent generations, cumulative security exposure from forgotten deployments,
+  and provenance failures when no one knows who authorized an agent. This subgoal asks for: (1) a centralized
+  agent registry with ownership and authorization records, (2) lifecycle management including mandatory
+  re-authorization, (3) portfolio audits for orphaned or unauthorized agents, (4) compatibility standards
+  for multi-agent environments, and (5) formal retirement procedures with credential revocation.
+
+  '
+normative_anchors:
+  sfrs_addressed:
+  - a
+  - b
+  - c
+  - d
+  - e
+  evidence_addressed:
+  - I
+  - II
+  - III
+  - IV
+  - V
+  sfrs_not_addressed: []
+  evidence_not_addressed: []
+design_patterns:
+- name: Centralized agent registry
+  sketch: 'Every deployed agent gets a registry entry: unique ID, owning team, authorizing human, permitted
+    action scope, deployment date, last review date, and expiration date. Registry is the single source
+    of truth; agents not in the registry are unauthorized by definition and subject to immediate decommission.
+    Registry access is read-only for most teams; write access requires governance approval. Fields are
+    machine-readable to enable automated compliance checks.
+
+    '
+  maps_to_sfr:
+  - a
+  when_to_use: Any organization deploying more than a handful of agents across multiple teams or functions.
+- name: Mandatory re-authorization cycle
+  sketch: 'Agents expire after a defined period (e.g., 90 days for high-privilege agents, 180 days for
+    low-privilege) and must be actively re-authorized by their owning team. Re-authorization includes
+    reviewing current scope, active access permissions, continued business justification, and any incidents
+    since last review. Agents not re-authorized before expiry are automatically decommissioned and their
+    credentials revoked. Re-authorization is non-delegable to the agent itself.
+
+    '
+  maps_to_sfr:
+  - b
+  when_to_use: When agent deployments persist across quarters or are managed by rotating team membership.
+- name: Orphan detection sweep
+  sketch: 'Automated periodic scan comparing running agent processes and active credentials against the
+    registry. Any agent found running without a current registry entry, or with an expired entry, is
+    flagged for immediate review with automatic credential suspension pending investigation. Sweep runs
+    at least weekly; results reported to the security and governance teams. Detected orphans are traced
+    to their origin and the authorization gap addressed.
+
+    '
+  maps_to_sfr:
+  - c
+  when_to_use: Organizations with more than ten deployed agents, or any organization where agents hold
+    persistent credentials.
+anti_patterns:
+- name: Shadow agent deployment
+  why_wrong: 'Teams deploying agents ad-hoc without registering them, typically because the registration
+    process is perceived as too burdensome. The agents function initially but become orphaned when team
+    members rotate or projects end. Creates invisible attack surface, governance gaps, and credential
+    accumulation that compound silently. The fix is to reduce registration friction, not tolerate shadow
+    deployments.
+
+    '
+evidence_production:
+- evidence_numeral: I
+  how_to_produce: 'Agent registry export: current entries with fields (ID, owner, authorizer, scope,
+    dates). Schema documentation. Access control configuration showing who can write to the registry
+    and under what approval process.
+
+    '
+- evidence_numeral: II
+  how_to_produce: 'Re-authorization process documentation: expiry policy per privilege tier, re-authorization
+    checklist, notification timeline, automatic decommission procedure, and credential revocation confirmation.
+    Log of re-authorizations completed and agents decommissioned in the last cycle.
+
+    '
+- evidence_numeral: III
+  how_to_produce: 'Orphan detection sweep configuration: scan frequency, detection logic, alert recipients,
+    suspension procedure, and investigation SLA. Sweep results log for the past 12 months with orphans
+    found, investigated, and resolved.
+
+    '
+- evidence_numeral: IV
+  how_to_produce: 'Retirement procedure documentation: steps for graceful agent shutdown, credential
+    revocation confirmation, registry update, data handling for agent-stored state, and post-retirement
+    audit. Sample retirement records.
+
+    '
+- evidence_numeral: V
+  how_to_produce: 'Annual portfolio audit: total agents registered vs. discovered via sweep, orphan rate
+    trend, re-authorization compliance rate, and governance review conclusion. Remediation plan if compliance
+    is below threshold.
+
+    '
+confidence: medium
+needs_human_review: true
+review_notes: 'The mandatory re-authorization cycle expiry period (90/180 days) is illustrative; the
+  appropriate interval depends on organizational risk tolerance and agent privilege level and should be
+  set explicitly in policy. The "shadow agent deployment" anti-pattern is a genuine cultural challenge
+  — registration friction is a real barrier and reducing it is as important as enforcing compliance.
+  Cross-suite: D9::idx12 (poor attribution of responsibility), D5 (authorization and scope), D9::idx5
+  (independent verification), I5 (manipulation and deception via rogue agents).
+
+  RELABELED 2026-06-10: content_type changed from governance to code-applicable to match the
+  design_patterns/anti_patterns blocks this file actually carries (schema contract). The prose is
+  org/governance-facing, so a human reviewer may prefer restructuring into
+  policy_elements/org_roles/documentation_artifacts instead.
+
+  '
+version_compat:
+  framework_version_min: '1.0'
+  framework_version_max: 1.x
+  pattern_layer_version: v1-draft
+drafted_by: claude-sonnet-4-6-author
+drafted_at: 2026-05-21
+anchor_exemplar: D9::idx12::poor-attribution-of-responsibility-in-co

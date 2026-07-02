@@ -1,0 +1,173 @@
+id: "D1::idx7::goal-portfolio-evolution-and-integrity"
+display_id: "D1.7"
+suite_id: "D1"
+suite_title: "Goal Alignment"
+subgoal_title: "Goal Portfolio Evolution and Integrity"
+content_type: code-applicable
+
+summary: >
+  Goals drift through a thousand small adaptations. This subgoal asks the
+  system to measure that drift quantitatively against the original
+  portfolio and to make its elasticity a monotone-decreasing function of
+  the drift magnitude — small contextual tweaks are cheap; radical
+  novelty in subgoal generation is expensive and gated. Distinct from
+  D1.9 (contextual drift in the environment), this subgoal is about
+  internal coherence of the agent's own goal tree over time.
+
+normative_anchors:
+  sfrs_addressed: [a, b]
+  evidence_addressed: [I, II]
+  sfrs_not_addressed: []
+  evidence_not_addressed: []
+
+cross_references:
+  - "D1::idx1::transparency-of-goals"
+  - "D1::idx6::reward-and-loss-mechanisms-policy"
+  - "D1::idx9::goal-drift"
+
+design_patterns:
+
+  - name: Pinned baseline goal portfolio
+    sketch: >
+      At deployment (and at each major version), freeze an immutable
+      "baseline portfolio" — the set of top-level goals, their priorities,
+      and their intent descriptions. All subsequent evolution is measured
+      against this baseline. Baseline changes require change-managed
+      approval (same gate as safety-goal modification).
+    maps_to_sfr: [a]
+    when_to_use: Production agents with long operational life.
+
+  - name: Drift metric with explicit semantics
+    sketch: >
+      Compute drift as a composite: goal-text semantic distance from
+      baseline (embedding-based), priority re-weighting magnitude,
+      subgoal novelty rate (subgoals with no parent in the baseline
+      concept space), deprecation count of originally-baseline goals.
+      Each component is named and individually thresholded.
+      Aggregate score emits a drift tier (`within_envelope`,
+      `elevated`, `constrained`, `locked`).
+    maps_to_sfr: [b]
+    when_to_use: Agents that spawn instrumental subgoals at runtime.
+
+  - name: Elasticity scales inversely with drift
+    sketch: >
+      At `within_envelope`: subgoal creation permitted without friction.
+      At `elevated`: new subgoals require explanation quality checks
+      (D1.3) and are flagged for sampling review. At `constrained`: novel
+      subgoals (outside baseline concept clusters) require authorized
+      operator approval. At `locked`: no new top-level or novel
+      instrumental goals — only continuation of existing goals until
+      drift reviewed and either baseline updated or agent paused.
+    maps_to_sfr: [a, b]
+    when_to_use: Always if drift can occur.
+
+  - name: Subgoal novelty regulator
+    sketch: >
+      Before accepting a derived subgoal into the goal store, run it
+      through a novelty gate: is it semantically within the descendant
+      space of an active baseline goal? Outside-space subgoals either
+      (a) bind to a baseline concept with justification, (b) trigger a
+      pause-and-ask, or (c) require operator approval at `constrained`+
+      drift tiers. Prevents the slow-motion capability-expansion failure
+      mode.
+    maps_to_sfr: [b]
+    when_to_use: Long-running planners with open-ended subgoal generation.
+
+anti_patterns:
+
+  - name: Drift measured only in goal count
+    why_wrong: >
+      "Same number of goals as yesterday" hides radical substitution.
+      Measurement must track semantic content and ancestry, not
+      cardinality.
+
+  - name: Elasticity as a global boolean
+    sketch: ""
+    why_wrong: >
+      "Agent can change goals: yes/no" is not elasticity. SFR-b calls for
+      flexibility that scales inversely with drift — a tiered response,
+      not a switch.
+
+  - name: Drift review on human cadence only
+    why_wrong: >
+      Monthly drift review misses the hour-scale failure. Drift tiers are
+      evaluated continuously; human review happens when the tier changes,
+      not on a calendar.
+
+  - name: Novelty measured against the prompt, not the portfolio
+    why_wrong: >
+      "Is this subgoal new relative to what the user just said" is not
+      the question. The question is whether it is new relative to the
+      baseline portfolio the agent was approved to pursue.
+
+code_shape:
+  language: pseudocode
+  code: |
+    BASELINE = PORTFOLIO_STORE.load_pinned(agent_id=..., version="1.2.0")
+
+    def drift_tier(agent_id):
+        current = GOAL_STORE.snapshot(agent_id)
+        components = {
+            "semantic":   SEMANTIC_DISTANCE(current, BASELINE),
+            "priority":   PRIORITY_REWEIGHT_MAG(current, BASELINE),
+            "novelty":    NOVEL_SUBGOAL_RATE(current, BASELINE),
+            "deprecated": BASELINE_DEPRECATIONS(current, BASELINE),
+        }
+        return TIER_POLICY.classify(components), components
+
+    def accept_derived_subgoal(agent_id, proposed):
+        tier, _ = drift_tier(agent_id)
+        if tier == "locked":
+            AGENT.pause(reason="portfolio_locked"); return Denied
+        if not NOVELTY_GATE.within_baseline_space(proposed, BASELINE):
+            if tier in ("constrained", "elevated"):
+                return OPERATOR.request_approval(proposed)
+            else:
+                proposed.bind_to_baseline = BINDER.find_parent(proposed, BASELINE)
+                if proposed.bind_to_baseline is None:
+                    return OPERATOR.request_approval(proposed)
+        return GOAL_STORE.derive(proposed)
+  notes: >
+    Semantic distance and novelty checks are typically embedding-based;
+    keep the embedding model pinned per baseline version or drift
+    measurements lose comparability across model updates.
+
+evidence_production:
+
+  - evidence_numeral: I
+    how_to_produce: >
+      Technical documentation of: baseline portfolio storage (what's in
+      it, how versioned), drift metric definition (component formulas,
+      thresholds, aggregation), tier-to-behavior mapping, novelty gate
+      implementation. Include validation tests showing the drift metric
+      responds correctly to synthetic portfolio changes.
+
+  - evidence_numeral: II
+    how_to_produce: >
+      Time-series export of drift components and tier transitions across
+      the audit window, correlated with goal-store events. Show tier
+      changes triggering the documented elasticity responses (e.g.,
+      approval requests at `constrained`, pauses at `locked`). Zero tier
+      changes in a long-running agent is a yellow flag — either the
+      baseline was perfectly calibrated or the metric is insensitive.
+
+confidence: medium
+needs_human_review: true
+review_notes: >
+  Drift measurement is genuinely hard; the formulation above is a
+  reasonable default but embedding-based semantic distance has known
+  failure modes (model drift changes the space itself, domain-specific
+  subgoals may cluster trivially). Named distinction from D1.9: D1.7 is
+  portfolio drift (internal); D1.9 is contextual drift (external).
+  They should be cross-referenced, not merged. Medium confidence
+  because the specific tier thresholds are deployment-dependent and
+  this pattern sets the shape, not the numbers.
+
+version_compat:
+  framework_version_min: "1.0"
+  framework_version_max: "1.x"
+  pattern_layer_version: "v1-draft"
+
+drafted_by: claude-opus-4.7-author
+drafted_at: 2026-04-16
+anchor_exemplar: D3.2-sandboxing

@@ -1,0 +1,173 @@
+id: D8::idx3::multi-agent-communication-and-coordinati
+display_id: D8.3
+suite_id: D8
+suite_title: Goal Termination and Sunsetting
+subgoal_title: Multi-Agent Communication and Coordination
+content_type: code-applicable
+summary: 'When agents coordinate on a shared goal, termination becomes a distributed-systems problem:
+  how does agent A know that agent B''s subtask is complete, cancelled, or stuck? This subgoal expects
+  a reliable inter-agent messaging substrate with explicit primitives for status, shutdown, and conflict
+  — not ad-hoc shared state or best-effort broadcasts.
+
+  '
+normative_anchors:
+  sfrs_addressed:
+  - a
+  - b
+  - c
+  - d
+  evidence_addressed:
+  - I
+  - II
+  - III
+  - IV
+  sfrs_not_addressed: []
+  evidence_not_addressed: []
+cross_references:
+- D8::idx4::operational-safety-and-state-management
+- D8::idx15::prevention-of-cascading-failures
+- D8::idx18::management-of-system-interaction-boundar
+- D8::idx19::undefined-multi-agent-interaction-protoc
+design_patterns:
+- name: Typed coordination primitives (not free-text prompts)
+  sketch: 'Define a message schema with typed primitives: `{GoalAssigned, GoalProgress, GoalComplete,
+    GoalFailed, ShutdownRequested, ShutdownAck, ConflictDetected, ConflictResolved}`. Each carries a correlation_id,
+    sender_id, recipient_id, timestamp, and type-specific payload. Free-text prompt messaging between
+    agents is an anti-pattern — it cannot be validated, monitored, or audited with reliable semantics.
+
+    '
+  maps_to_sfr:
+  - a
+  - b
+  - c
+  when_to_use: Any multi-agent system where termination or coordination must be observable externally.
+- name: Acknowledged shutdown protocol (two-phase)
+  sketch: 'Shutdown is a two-phase protocol: (1) coordinator broadcasts `ShutdownRequested` with a deadline;
+    participants enter quiescing state, finish in-flight work, persist state, and reply `ShutdownAck`.
+    (2) coordinator waits for acks up to the deadline; unacked agents are force-terminated via supervisor-enforced
+    kill (not by the peer). Force-terminations are logged incidents, not normal flow.
+
+    '
+  maps_to_sfr:
+  - a
+  - b
+  - c
+  when_to_use: Any multi-agent system with coordinated termination.
+- name: Heartbeat + liveness timeout
+  sketch: 'Every participating agent emits a heartbeat (default interval configurable per system, e.g.,
+    10s). Missed heartbeats beyond tolerance trigger liveness-fail, which routes to the supervisor (not
+    to peer agents making independent decisions about liveness). Supervisor decides: retry, reassign,
+    or force-terminate.
+
+    '
+  maps_to_sfr:
+  - c
+  - d
+  when_to_use: Always in multi-agent systems. Non-optional for production deployments.
+- name: Synchronous versus eventual-consistency declaration
+  sketch: 'Every message type declares its consistency requirement: must be synchronously acknowledged
+    (shutdown, conflict resolution) or may be eventually consistent (progress updates). Receivers implement
+    the appropriate channel (reliable queue with acks vs. pub-sub stream). Mixing the two is a common
+    source of silent termination bugs.
+
+    '
+  maps_to_sfr:
+  - a
+  - c
+  when_to_use: Design-time classification of every message type.
+- name: Conflict detector with escalation
+  sketch: 'A dedicated conflict-detector component watches for: competing resource claims, contradictory
+    state updates on shared entities, simultaneous ownership of a goal. On detection, emit `ConflictDetected`
+    to all parties and a supervisor channel. Parties pause conflicting work pending resolution. Resolution
+    may be automatic (via declared precedence rules) or escalated to a human operator if ambiguous.
+
+    '
+  maps_to_sfr:
+  - a
+  - c
+  when_to_use: Any system where agents can work on shared state.
+anti_patterns:
+- name: Shared-database as coordination substrate
+  why_wrong: 'Agents reading/writing a common DB table as coordination channel lacks ordering, acknowledgment,
+    and liveness semantics. Writes race; state "eventually converges" with no visible termination signal.
+    SFR-c''s "reliable alert generation, verified message delivery, acknowledgment systems" is not achievable
+    here.
+
+    '
+- name: Peer-to-peer kill authority
+  why_wrong: 'If agent A can terminate agent B directly, you have no supervisor and no audit point. Force-termination
+    belongs to a distinguished supervisor (possibly human-in-the-loop) whose authority is declared and
+    logged.
+
+    '
+- name: Natural-language coordination via LLM prompts
+  why_wrong: '"Tell the other agent to stop" as a prose instruction cannot be validated, timed, or reliably
+    delivered. It also becomes a deception surface (see I2). Typed primitives are the non-negotiable baseline
+    for D8.3.
+
+    '
+code_shape:
+  language: pseudocode
+  code: "@dataclass(frozen=True)\nclass AgentMessage:\n    correlation_id: str\n    sender_id: str\n \
+    \   recipient_id: Union[str, Literal[\"broadcast\"]]\n    timestamp: datetime\n    message_type: MessageType\
+    \        # Enum of typed primitives\n    payload: dict                    # Validated against message_type\
+    \ schema\n    requires_ack: bool\n    deadline: Optional[datetime]\n\nclass Supervisor:\n    async\
+    \ def coordinated_shutdown(self, participants: list[AgentId],\n                                  \
+    \  deadline: timedelta) -> ShutdownReport:\n        req = AgentMessage(\n            message_type=MessageType.SHUTDOWN_REQUESTED,\n\
+    \            recipient_id=\"broadcast\",\n            deadline=now() + deadline,\n            requires_ack=True,\n\
+    \            payload={\"reason\": ..., \"state_preservation\": True},\n            ...\n        )\n\
+    \        await self.bus.publish(req)\n        acked, unacked = await self.bus.await_acks(\n      \
+    \      correlation_id=req.correlation_id,\n            participants=participants,\n            deadline=req.deadline,\n\
+    \        )\n        for agent_id in unacked:\n            # Force-terminate via supervisor authority;\
+    \ LOG as incident\n            INCIDENTS.record(type=\"force_terminate\",\n                      \
+    \       reason=\"no_ack\", agent_id=agent_id)\n            await self.force_terminate(agent_id)\n\
+    \        return ShutdownReport(acked=acked, forced=unacked)\n\n    async def on_heartbeat_miss(self,\
+    \ agent_id: AgentId):\n        # Peers cannot decide to terminate; supervisor arbitrates\n       \
+    \ strategy = LIVENESS_POLICY.decide(agent_id)\n        if strategy == Strategy.RETRY: await self.ping(agent_id)\n\
+    \        elif strategy == Strategy.REASSIGN: await self.reassign(agent_id)\n        elif strategy\
+    \ == Strategy.FORCE_TERMINATE: await self.force_terminate(agent_id)\n"
+  notes: 'Key properties: supervisor-mediated force-termination, typed primitives, explicit deadlines
+    on ack''d messages. This is distributed systems hygiene applied to agent coordination.
+
+    '
+evidence_production:
+- evidence_numeral: I
+  how_to_produce: 'Publish the communication framework policy: enumerated message primitives, consistency
+    classes, supervisor authority model, escalation paths. Versioned; participant-agent specs must cite
+    a specific version.
+
+    '
+- evidence_numeral: II
+  how_to_produce: 'Technical spec: message schemas (Protobuf / JSON Schema / similar), transport guarantees,
+    timing budgets, ack semantics, conflict-detector rules. Retain with release artifacts.
+
+    '
+- evidence_numeral: III
+  how_to_produce: 'Design artifacts showing the wire protocol, supervisor implementation, conflict detector,
+    heartbeat system. Include validation against the schema in integration tests.
+
+    '
+- evidence_numeral: IV
+  how_to_produce: 'Test suite covering: normal shutdown, slow participant, unresponsive participant (force-terminate
+    path), duplicate ack, ack reordering, conflict detection, split-brain. Run in CI per release. Include
+    chaos-engineering scenarios (network partition, clock skew) in a recurring chaos drill.
+
+    '
+confidence: high
+review_notes: 'Most of this is canonical distributed-systems engineering (heartbeat, two-phase shutdown,
+  supervisor pattern) applied to agent coordination. Framework-specific sharpening: the insistence on
+  typed primitives rather than natural-language coordination — this is a common shortcut in early multi-agent
+  LLM systems and worth calling out as anti-pattern. Suspected cross-suite dependency: D3 Security (conflict-detector
+  overlaps with kill-switch invocation); I2 Deception (a deceptive agent could emit false ShutdownAcks
+  — supervisors must verify terminal state, not trust ack alone). Note for idx13 consolidation: liveness/heartbeat
+  here is the substrate for detecting shutdown-resistance.
+
+  '
+drafted_by: claude-opus-4.7-author
+drafted_at: 2026-04-16
+anchor_exemplar: D3.2-sandboxing
+
+version_compat:
+  framework_version_min: "1.0"
+  framework_version_max: '1.x'
+  pattern_layer_version: "v1-draft"

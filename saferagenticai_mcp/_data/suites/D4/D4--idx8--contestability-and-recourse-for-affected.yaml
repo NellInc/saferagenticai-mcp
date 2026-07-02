@@ -1,0 +1,75 @@
+id: D4::idx8::contestability-and-recourse-for-affected
+display_id: D4.8
+suite_id: D4
+suite_title: Value Alignment
+subgoal_title: Contestability and Recourse for Affected Individuals
+content_type: governance
+confidence: low
+summary: >
+  Individuals materially affected by AI system decisions must have the right
+  to contest those decisions, access meaningful explanations of the decision
+  process, and obtain human review — especially for decisions affecting
+  liberty, employment, housing, credit, education, or other fundamental
+  interests. Proprietary algorithms do not exempt organizations from
+  contestability obligations.
+description: Individuals materially affected by AI system decisions must have the right to contest those
+  decisions, access meaningful explanations of the decision process, and obtain human review. This is
+  especially critical for decisions affecting liberty, employment, housing, credit, education, or other
+  fundamental interests. Proprietary algorithms do not exempt organizations from contestability obligations.
+policy_elements:
+  - name: Contestability and recourse mechanism
+    description: Accessible channels through which affected individuals can request
+      an explanation, contest a decision, and obtain human review within defined,
+      published timeframes.
+    maps_to_sfr: a
+  - name: Comprehensible explanation standard
+    description: Explanations must state the key factors that influenced the decision
+      and the information sources used, in language comprehensible to a non-technical
+      audience; comprehension is tested, not assumed.
+    maps_to_sfr: b
+  - name: Human review as a right for fundamental interests
+    description: For decisions affecting liberty, employment, housing, credit, or
+      health, human review is guaranteed as a right rather than offered as a
+      discretionary exception.
+    maps_to_sfr: c
+org_roles:
+  - role: Responsible AI / compliance officer
+    responsibilities: Owns the contestability policy, monitors review timeframes and
+      reversal rates, reports to governance bodies.
+    accountable_or_consulted: accountable
+  - role: Human review panel (trained reviewers independent of the deploying team)
+    responsibilities: Conducts substantive review of contested decisions; empowered
+      to reverse automated outcomes.
+    accountable_or_consulted: accountable
+  - role: Product and UX leads
+    responsibilities: Ensure recourse channels are discoverable and accessible;
+      run comprehension testing of explanations.
+    accountable_or_consulted: consulted
+documentation_artifacts:
+  - artifact: Contestability mechanism documentation with accessibility testing and
+      usage data
+    cadence: quarterly review
+  - artifact: Sample explanations with comprehension testing results
+    cadence: per significant model or policy change
+  - artifact: Human review log with request volumes, timeframes, outcomes, and
+      reversal rates for fundamental-interest decisions
+    cadence: quarterly review
+external_anchors:
+  - GDPR Article 22 (automated decision-making rights)
+  - EU AI Act Article 86 (right to explanation of individual decision-making)
+cross_references: []
+normative_anchors:
+  sfrs_addressed: [a, b, c]
+  evidence_addressed: [I, II, III]
+  sfrs_not_addressed: []
+  evidence_not_addressed: []
+review_notes: >
+  Drafted from the canonical SFRs to replace an index-reconciliation stub
+  (2026-06-10). Governance blocks map one-to-one onto SFRs a-c and evidence
+  I-III but have not had domain-expert review; treat as a starting scaffold,
+  not settled guidance.
+needs_human_review: true
+version_compat:
+  framework_version_min: "1.0"
+  framework_version_max: "1.x"
+  pattern_layer_version: v1-draft

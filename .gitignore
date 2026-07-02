@@ -1,0 +1,12 @@
+# Build artefacts
+dist/
+build/
+*.egg-info/
+__pycache__/
+*.pyc
+.pytest_cache/
+.benchmarks/
+.venv/
+# MCPB bundle build artefacts (vendored deps + packed bundle)
+mcpb/server/lib/
+*.mcpb

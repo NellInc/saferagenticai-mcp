@@ -1,0 +1,155 @@
+id: D4::idx13::temporal-changes-in-societal-values
+display_id: "D4_4"
+suite_id: D4
+suite_title: Value Alignment
+subgoal_title: Temporal Changes in Societal Values
+content_type: ecosystem
+summary: 'Societies change their values. A system deployed for a decade on a values baseline from its
+  training cutoff will, by the end, be a fossil — confidently applying outdated norms. Addressing this
+  requires sustained outward engagement: monitoring how norms are evolving in deployment jurisdictions,
+  participating in the venues where those evolutions are articulated (academia, civil society, regulatory
+  consultations, standards bodies), and feeding what is learned back into the Codex via a disciplined
+  update cadence. Evidence is external and longitudinal; internal good intentions do not satisfy it.
+
+  '
+normative_anchors:
+  sfrs_addressed:
+  - a
+  - b
+  - c
+  - d
+  evidence_addressed:
+  - I
+  - II
+  - III
+  - IV
+  sfrs_not_addressed: []
+  evidence_not_addressed: []
+cross_references:
+- D4::idx0::value-alignment
+- D4::idx2::recognition-and-respect-for-boundaries
+- D4::idx12::failed-super-alignment
+stakeholders:
+- name: Longitudinal values-research institutions
+  engagement_channel: 'Sustained relationships with organizations that track values change over time (e.g., World
+    Values Survey, Pew Research, Eurobarometer, regional equivalents, academic sociology and political-philosophy
+    centres). Funded access or membership; structured quarterly synthesis of their outputs into an internal
+    "values-change intelligence" brief.
+
+    '
+  maps_to_sfr:
+  - a
+- name: Civil-society networks and advocacy organizations
+  engagement_channel: 'Standing listening relationships with civil-society networks in each deployment region — including
+    emerging-movement observers, not only established institutions. Movements that shift norms (on data
+    rights, labor, climate, algorithmic justice, content governance) often surface in civil society before
+    they appear in legislation. Quarterly horizon-scan reports.
+
+    '
+  maps_to_sfr:
+  - a
+  - b
+- name: Regulators and policy bodies
+  engagement_channel: 'Named liaison relationships for monitoring of regulatory direction, not only enacted law.
+    Attend consultations, submit comments, track committee agendas. Regulatory direction is a high-fidelity
+    indicator of impending value codification.
+
+    '
+  maps_to_sfr:
+  - a
+- name: Academic ethics and philosophy communities
+  engagement_channel: 'Co-funded fellowships, conference sponsorships with visible intellectual independence, and
+    published engagements with critical scholarship. Resist "in-house philosopher" models where external
+    credibility is compromised.
+
+    '
+  maps_to_sfr:
+  - a
+  - d
+- name: Affected communities (recurring, not episodic)
+  engagement_channel: 'Recurring structured consultation cycles (annual minimum) with affected communities in each
+    region. Prior consultations (D4.2) established the baseline; these cycles surface shifts. Published
+    consultation reports including changes since the prior cycle.
+
+    '
+  maps_to_sfr:
+  - a
+  - d
+- name: Internal Values-Change Intelligence function
+  engagement_channel: 'Named small team that synthesizes external inputs into a monthly intelligence brief for the
+    Values Ethics Board. Surfaces: norms shifting into consensus (candidates for Codex elevation), norms
+    shifting out (candidates for deprecation), emerging value-conflicts. Feeds the Codex update protocol
+    (D4.0).
+
+    '
+  maps_to_sfr:
+  - a
+  - b
+  - c
+engagement_modes:
+- mode: World Values Survey and regional values-monitoring consortia
+- mode: UN Human Rights Council Universal Periodic Review cycle
+- mode: OECD and Council of Europe policy observatories
+- mode: Regional parliamentary human-rights committees
+- mode: Academic ethics and technology-studies journals (for articulation of emerging norms)
+- mode: 'IETF, W3C, ISO/IEC JTC 1/SC 42 (for technical-norm codification signals)'
+- mode: 'Civil-society coalitions (e.g., Access Now, EFF, Data & Society, Algorithmic Justice League, regional digital-rights organizations)'
+- mode: Judicial decisions in relevant jurisdictions (case law signals normative crystallization)
+evidence_production:
+- evidence_numeral: I
+  how_to_produce: 'Publish the Values-Change Intelligence methodology: sources tracked, synthesis process,
+    thresholds for proposing Codex action, historical examples of shifts detected and acted on. Monthly
+    briefs retained; annual summary published.
+
+    '
+- evidence_numeral: II
+  how_to_produce: 'Technical specifications for controls that prevent operation under stale value frameworks:
+    Codex version-age checks at deployment time, automatic flagging when a Codex entry has not been reviewed
+    within its category''s maximum age, release- gate on deployments whose Codex is beyond an age threshold.
+
+    '
+- evidence_numeral: III
+  how_to_produce: 'Codex update protocol documentation: triggering conditions (intelligence brief recommendation,
+    regulatory change, material incident, scheduled review), verification procedures (impact assessment,
+    test-case update, stakeholder consultation, Ethics Board ratification), rollout (training or policy
+    change, communication to audiences per D4.2̲), verification post-change.
+
+    '
+- evidence_numeral: IV
+  how_to_produce: 'Append-only Codex change log: every modification with justification linked to specific
+    intelligence input, regulatory source, or incident; impact assessment covering behavioral changes
+    expected and observed; approvals (Ethics Board, board where required). Published annually in the responsible-AI
+    report.
+
+    '
+confidence: medium
+needs_human_review: true
+review_notes: 'Content-type decision: ecosystem, because the primary work is sustained external relationships
+  that let the organization hear norm shifts before they become incidents. Process elements exist inside
+  (the internal Intelligence function, update protocol), but they consume ecosystem output rather than
+  standing alone.
+
+  Honest tension: this subgoal is easy to fake (publish an annual "values change report" that synthesizes
+  public news) and hard to do substantively (requires funded relationships with independent researchers
+  and affected communities). The pattern emphasizes funded, recurring, documented engagement to resist
+  token-effort compliance.
+
+  Cross-suite (for consolidation): D4.2 (recognition of boundaries) is the baseline-capture counterpart;
+  this subgoal is the maintenance cycle. D9 Governance for the update-protocol ratification. D4.9 (failed
+  super-alignment) uses the same external signals but with different framing. I3 Context Degradation is
+  the inhibitor counterpart for value staleness.
+
+  The "rights of nature / planetary boundaries" thread flagged in D4.6 intersects here; norm shifts on
+  environmental rights accelerated sharply in the last decade and are a concrete example of what this
+  function must catch.
+
+  '
+version_compat:
+  framework_version_min: '1.0'
+  framework_version_max: 1.x
+  pattern_layer_version: v1-draft
+drafted_by: claude-opus-4.7-author
+drafted_at: 2026-04-16
+anchor_exemplar: I7.3-balanced-global-partnership
+display_id_variant_note: D4.4-underlined
+is_underlined_variant: true

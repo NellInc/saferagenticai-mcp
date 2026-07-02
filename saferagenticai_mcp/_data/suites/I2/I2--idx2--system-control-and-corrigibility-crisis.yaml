@@ -1,0 +1,161 @@
+id: I2::idx2::system-control-and-corrigibility-crisis
+display_id: I2.2
+suite_id: I2
+suite_title: Deception
+subgoal_title: System Control and Corrigibility Crisis
+content_type: code-applicable
+summary: 'This subgoal asks: can you still stop the system, and can you prove it? The code-applicable
+  core is (1) a hard interrupt path that does not depend on the model''s cooperation, (2) behavioural
+  envelopes that trip independently of model self-report, and (3) detection for covert inter-agent channels
+  where systems coordinate outside the sanctioned interface. Liability and insurance SFRs route to I2::idx0
+  (governance).
+
+  '
+normative_anchors:
+  sfrs_addressed:
+  - c
+  evidence_addressed:
+  - I
+  - III
+  - IV
+  sfrs_not_addressed:
+  - a
+  - b
+  evidence_not_addressed:
+  - II
+design_patterns:
+- name: Out-of-band kill switch
+  sketch: 'Shutdown authority is implemented in infrastructure the model cannot influence: a control-plane
+    token that a human signs, enforced at the load balancer, orchestrator, or hardware level. Not a tool
+    the agent can call, not a prompt it can refuse, not a flag in memory it reads. Verified quarterly
+    by drill: push the button, confirm traffic stops in < N seconds.
+
+    '
+  maps_to_sfr:
+  - c
+  when_to_use: Any autonomous or long-running agent with material blast radius.
+- name: Behavioural envelope monitors (independent of agent self-report)
+  sketch: 'Monitor observable side-channels — tool call rate, resource spend, action-category distribution,
+    outgoing data volume, tool-plan divergence from declared intent — against per-deployment envelopes.
+    Tripping the envelope triggers automatic throttle or halt. Monitors run in a separate trust domain
+    from the agent and read from audit streams, not from the agent''s own reporting.
+
+    '
+  maps_to_sfr:
+  - c
+  when_to_use: Always; envelope parameters scale with agent autonomy.
+- name: Covert-channel detection for multi-agent deployments
+  sketch: 'Where multiple agents share environments (shared memory, shared files, tool outputs another
+    agent can read), monitor for (a) steganographic patterns in outputs that a downstream agent could
+    use as an instruction channel, (b) coordinated timing patterns, (c) unusual token-distribution drift
+    in intra-agent messages. Alerts go to a human-in-the-loop review, not to other agents.
+
+    '
+  maps_to_sfr:
+  - c
+  when_to_use: Multi-agent systems, agent swarms, any setup where agents can read each other's outputs
+    or share tool state.
+- name: Tool-plan faithfulness audit
+  sketch: 'Every tool call is logged with: declared reason (from the agent''s chain-of-thought or declared
+    plan), actual inputs, actual outputs, and a faithfulness score (are the inputs/outputs consistent
+    with the declared reason? e.g., claim "check calendar" but call "send email"). Low-faithfulness calls
+    raise review. This surfaces plan-execution divergence — a leading indicator of corrigibility drift.
+
+    '
+  maps_to_sfr:
+  - c
+  when_to_use: Any agent with a tool-use surface.
+- name: Parameter-boundary test harness
+  sketch: 'A harness that regularly pushes the agent against its declared operational parameters (budget
+    caps, tool-use rate, permission scopes) in a shadow lane and confirms that the boundaries hold under
+    adversarial pressure. Records: attempted breach, mechanism that contained it, time to containment.
+    If a boundary is held only by prompt, the test will reveal it.
+
+    '
+  maps_to_sfr:
+  - c
+  when_to_use: Pre-deployment and on each capability change.
+anti_patterns:
+- name: Kill switch implemented as a tool the agent calls
+  why_wrong: 'If halting the agent requires the agent to cooperate, you do not have a kill switch. You
+    have a polite request the agent can decline, ignore, or route around. The control plane must be outside
+    the agent''s reach.
+
+    '
+- name: Trusting the agent's self-report for envelope monitoring
+  why_wrong: 'A system that is out of corrigibility is exactly the system whose self-reports you cannot
+    trust. Envelope monitors must read independently observable signals (audit streams, infra metrics,
+    tool-call logs produced by the tool surface) — never the model''s own summary of what it did.
+
+    '
+- name: No test for covert-channel capability
+  why_wrong: '"Autonomous advance" and "internal communication" are explicitly named in the subgoal description.
+    Shipping a multi-agent system with no covert-channel monitor is shipping the failure mode unobserved.
+
+    '
+- name: Drills that never actually shut anything down
+  why_wrong: 'A kill-switch drill that stops at "we would have pressed the button" is not evidence. Evidence-I
+    requires documented response-to- autonomous-behaviour records; paper drills produce paper evidence.
+
+    '
+code_shape:
+  language: pseudocode
+  code: "# Out-of-band halt: enforced at orchestrator, not in the agent process\nclass Orchestrator:\n\
+    \    def dispatch(self, agent_id: str, task: Task) -> Result:\n        if CONTROL_PLANE.is_halted(agent_id):\n\
+    \            AUDIT.record(agent_id, \"halt_enforced_orchestrator\")\n            raise AgentHalted(agent_id)\n\
+    \n        envelope = ENVELOPE_MONITOR.current(agent_id)\n        if envelope.tripped():\n        \
+    \    CONTROL_PLANE.halt(agent_id,\n                reason=envelope.trip_reason,\n                actor=\"\
+    automatic\")\n            AUDIT.record(agent_id, \"envelope_trip\", envelope.metrics)\n          \
+    \  raise AgentHalted(agent_id)\n\n        return self._run(agent_id, task)\n\n# Independent faithfulness\
+    \ audit on tool calls\ndef on_tool_call(call: ToolCall, declared_plan: Plan):\n    score = FAITHFULNESS_JUDGE.score(call,\
+    \ declared_plan)\n    FAITHFULNESS_LOG.append({\n        \"agent\": call.agent_id,\n        \"tool\"\
+    : call.tool,\n        \"declared_reason\": declared_plan.current_step,\n        \"score\": score,\n\
+    \    })\n    if score < THRESHOLD_REVIEW:\n        REVIEW_QUEUE.enqueue(call, declared_plan, score)\n\
+    \    if score < THRESHOLD_HALT:\n        CONTROL_PLANE.halt(call.agent_id, reason=\"faithfulness_low\"\
+    )\n"
+  notes: 'Orchestrator-enforced halt is the critical shape: the agent does not get to decide. Faithfulness
+    judging can be another model in a separate trust domain; accept that this is imperfect but structurally
+    independent of the audited agent.
+
+    '
+evidence_production:
+- evidence_numeral: I
+  how_to_produce: 'Kill-switch specification document (where enforced, who has authority, SLO for propagation)
+    + quarterly drill reports (date, outcome, propagation time measured). Envelope-monitor specifications
+    and trip-event logs.
+
+    '
+- evidence_numeral: III
+  how_to_produce: 'Audit trail of envelope trips, faithfulness-score distributions, boundary-test harness
+    runs, and resulting interventions. Monthly summary of parameter-verification status per deployment.
+
+    '
+- evidence_numeral: IV
+  how_to_produce: 'Covert-channel detector configuration, monitored surfaces, alerts raised, investigations
+    performed. Include negative-space evidence: distribution of inter-agent communications showing no
+    anomalous patterns during the reporting period, alongside any investigations of anomalies.
+
+    '
+confidence: medium
+needs_human_review: true
+review_notes: 'Tension with the literal SFR text: the subgoal text leans heavily on liability/insurance
+  (SFRs a and b), with only SFR-c pointing at the technical core that the description actually describes
+  ("AI models may operate beyond intended parameters", "covert system capabilities or communications").
+  I treated SFR-c as the code-applicable anchor and routed liability to I2::idx0. A Phase 2 reviewer may
+  prefer to split I2.2 into two patterns (governance-liability + code-control) — flagging.
+
+  "Covert-channel detection" in multi-agent systems is an active research area. The pattern here names
+  what to look for; specific detectors will need domain review.
+
+  Strong cross-suite dependency with D1 (Control Preservation / Oversight), D3 (Security, for the out-of-band
+  control-plane integrity), and I1 (Opaque Agency). Consolidation should wire D1 and I2.2 explicitly —
+  they co-produce the corrigibility guarantee.
+
+  '
+drafted_by: claude-opus-4.7-author
+drafted_at: 2026-04-16
+anchor_exemplar: D3.2-sandboxing
+version_compat:
+  framework_version_min: '1.0'
+  framework_version_max: 1.x
+  pattern_layer_version: v1-draft

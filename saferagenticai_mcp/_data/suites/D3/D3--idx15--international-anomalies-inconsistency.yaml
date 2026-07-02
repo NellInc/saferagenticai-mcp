@@ -1,0 +1,177 @@
+# D3.5 (underlined variant) — International Anomalies/Inconsistency
+# Note: display_id "D3.5" collides with non-underlined "D3.5 Dynamic Intervention" (idx5).
+# Distinct subgoals; use full `id` to disambiguate.
+
+id: D3::idx15::international-anomalies-inconsistency
+display_id: "D3_5"
+is_underlined_variant: true
+suite_id: "D3"
+suite_title: "Security"
+subgoal_title: "International Anomalies/Inconsistency"
+content_type: governance
+
+summary: >
+  The same AAI system operates under divergent cybersecurity regimes
+  (EU NIS2 / AI Act, US sectoral rules, China CSL/DSL/PIPL, India DPDPA,
+  UK CMA/CBPR, and more). This subgoal is governance because the primary
+  deliverables are a jurisdictional matrix, an adaptable policy set, and
+  named liaisons — not code. The engineering layer then reads the
+  jurisdictional matrix and applies per-region runtime configuration.
+
+normative_anchors:
+  sfrs_addressed: [a, b]
+  evidence_addressed: [I, II]
+  sfrs_not_addressed: []
+  evidence_not_addressed: []
+
+cross_references:
+  - "D3::idx0::security"
+  - "D3::idx7::secure-profile-for-agentic-ai"
+
+policy_elements:
+
+  - name: Cybersecurity Jurisdictional Matrix
+    description: >
+      Living mapping of (deployment region × data class × capability ×
+      applicable cybersecurity regime × enforcement authority × reporting
+      obligation × timeline). Maintained by a named owner; reviewed
+      quarterly and on material regulatory development. Complements the
+      D9.2 Jurisdictional Compliance Matrix but is specifically scoped to
+      cybersecurity and data-protection security obligations.
+    maps_to_sfr: [a]
+
+  - name: Regional Security Baseline Policy
+    description: >
+      A tiered policy: a global baseline (the maximum common denominator
+      of controls required anywhere the system operates) plus per-region
+      overlays that add stricter requirements where a jurisdiction demands
+      them. The runtime configuration system reads this policy to choose
+      effective controls at deployment time. Never ratchet the global
+      baseline *down* for a permissive jurisdiction.
+    maps_to_sfr: [b]
+
+  - name: Cross-Border Incident Reporting Playbook
+    description: >
+      Differentiated reporting requirements per jurisdiction (e.g., GDPR
+      72h, NIS2 24h early warning, sectoral variants, criminal-law
+      obligations). Playbook covers: which authority, what window, what
+      content, preserved state, legal hold, translation, language of
+      submission. Drilled alongside D3.5 incident drills.
+    maps_to_sfr: [b]
+
+  - name: Regulatory Intelligence and Horizon-Scanning Function
+    description: >
+      Dedicated intake for regulatory developments: monitoring of
+      authority publications, legislative tracking services, trade
+      associations, and international standards bodies. New developments
+      assessed for material impact within a defined SLA; material ones
+      trigger matrix updates and implementation tasks. Evidence is the
+      change log of the matrix and the remediation tickets spawned.
+    maps_to_sfr: [a, b]
+
+  - name: Data-Localisation and Cross-Border Transfer Controls
+    description: >
+      Policy and implementation for data residency: which data classes
+      are allowed to cross which borders, under what legal basis
+      (adequacy decision, SCCs, local exemption), with what technical
+      enforcement (geo-fenced storage, region-scoped inference
+      endpoints, encryption-in-transit with controlled key location).
+      Reviewed when adequacy decisions change or model inference
+      topology moves.
+    maps_to_sfr: [b]
+
+org_roles:
+
+  - role: Cybersecurity Regulatory Lead (single accountable human)
+    responsibilities: >
+      Owns the Cybersecurity Jurisdictional Matrix, coordinates with
+      the broader compliance function (D9.2), signs off on the Regional
+      Security Baseline, and reports to board on regulatory posture.
+    accountable_or_consulted: accountable
+
+  - role: Regional Liaisons (per major region)
+    responsibilities: >
+      Named contacts for each material region (EU, UK, US, China, India,
+      etc.) who maintain relationships with authorities, track national
+      developments, and translate regulatory expectation into engineering
+      requirement. Continuity of tenure is important — rotation without
+      handover is a liability.
+    accountable_or_consulted: responsible
+
+  - role: Privacy and Data Protection Officer
+    responsibilities: >
+      Owns data-localisation and cross-border transfer controls; DPO role
+      mandated by several jurisdictions.
+    accountable_or_consulted: consulted
+
+  - role: External Counsel (per-jurisdiction panel)
+    responsibilities: >
+      Consulted on novel or ambiguous developments; retainer relationships
+      established in major jurisdictions rather than reactive hiring.
+    accountable_or_consulted: consulted
+
+  - role: Board-level Risk Committee
+    responsibilities: >
+      Informed of jurisdictional posture quarterly and on material
+      enforcement action or regulatory shift.
+    accountable_or_consulted: informed
+
+documentation_artifacts:
+
+  - artifact: Cybersecurity Jurisdictional Matrix
+    cadence: "quarterly review; event-driven on regulatory development"
+
+  - artifact: Regional Security Baseline Policy
+    cadence: "versioned; re-attested annually and on matrix change"
+
+  - artifact: Cross-Border Incident Reporting Playbook
+    cadence: "per regulator; reviewed on law change; drilled annually"
+
+  - artifact: Regulatory intelligence log
+    cadence: "continuous"
+
+  - artifact: Data-transfer inventory (per data class × region)
+    cadence: "continuous; reviewed semi-annually"
+
+evidence_production:
+
+  - evidence_numeral: I
+    how_to_produce: >
+      Publish (internally or publicly as appropriate) the Cybersecurity
+      Jurisdictional Matrix, the regulatory intelligence log for the
+      period, and the change log showing matrix updates and their
+      upstream triggers. Include the horizon-scanning function spec.
+
+  - evidence_numeral: II
+    how_to_produce: >
+      Produce the Regional Security Baseline Policy with its per-region
+      overlays, the cross-border incident reporting playbook, the data-
+      transfer inventory, and audit records showing that region-specific
+      controls are actually applied at runtime (sample audit of a
+      deployment matching its regional overlay).
+
+confidence: high
+needs_human_review: true
+review_notes: >
+  Named regulatory regimes (GDPR, NIS2, EU AI Act, PIPL, DSL, DPDPA,
+  etc.) are as-of-early-2026 and will age. Legal counsel input is
+  essential before organisations rely on this pattern; it is a starting
+  orientation, not a substitute for current regulatory advice.
+
+  Heavy overlap with D9.2 (Compliance) governance. Boundary drawn:
+  D9.2 = overall compliance regime; D3.12 = cybersecurity-and-security-
+  data-protection cut specifically. Reviewer may wish to merge or
+  tighten the split.
+
+  Cross-suite hypothesis (not added as cross_reference): I4 (Unintended
+  Consequences) likely carries patterns for international coordination
+  failures; I7 (Capability Imbalance) carries the standards-body
+  ecosystem engagement that feeds this subgoal's intelligence function.
+
+drafted_by: claude-opus-4.7-subagent-D3
+drafted_at: 2026-04-16
+anchor_exemplar: D9.2-compliance
+version_compat:
+  framework_version_min: "1.0"
+  framework_version_max: "1.x"
+  pattern_layer_version: "v1-draft"

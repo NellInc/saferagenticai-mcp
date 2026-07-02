@@ -1,0 +1,152 @@
+id: D8::idx17::management-of-ambiguous-goal-termination
+display_id: "D8_6"
+is_underlined_variant: true
+display_id_variant_note: "D8.6_underlined"
+suite_id: D8
+suite_title: Goal Termination and Sunsetting
+subgoal_title: Management of Ambiguous Goal Termination
+content_type: process
+summary: 'Many real-world goals lack crisp completion criteria: "make this feature work well," "support
+  users until they no longer need help," "maintain safe behavior." Ambiguity makes termination a judgement
+  call — the framework expects a defined process for exercising that judgement, not a default to indefinite
+  continuation or arbitrary stop. The process covers both explicit policy and implicit normative guidance
+  (ethical, business, cultural).
+
+  '
+normative_anchors:
+  sfrs_addressed:
+  - a
+  - b
+  - c
+  - d
+  - e
+  evidence_addressed:
+  - I
+  - II
+  - III
+  - IV
+  - V
+  - VI
+  sfrs_not_addressed: []
+  evidence_not_addressed: []
+cross_references:
+- D8::idx1::adaptive-goal-pursuit-and-resource-optim
+- D8::idx2::classification-of-finite-and-ongoing-goa
+- D8::idx10::independent-termination-validation
+process_elements:
+- name: Ambiguous-goal identification at commissioning
+  cadence: pre-deployment (blocking gate for any goal lacking crisp completion criteria)
+  participants:
+  - goal owner
+  - safety lead
+  - domain expert where applicable
+  maps_to_sfr:
+  - a
+- name: Normative-guidance review panel
+  cadence: convened on triggering conditions (see triggers)
+  participants:
+  - safety lead
+  - ethics / policy representative
+  - affected-stakeholder representative where feasible
+  - goal owner
+  maps_to_sfr:
+  - a
+  - b
+- name: Termination-justification dossier
+  cadence: per ambiguous termination event
+  participants:
+  - goal owner
+  - reviewer
+  - independent validator (D8.10) for material cases
+  maps_to_sfr:
+  - a
+  - c
+- name: Remediation-planning workshop
+  cadence: when termination leaves incomplete work / affected users
+  participants:
+  - goal owner
+  - product lead
+  - user support
+  - affected-stakeholder rep
+  maps_to_sfr:
+  - a
+  - e
+- name: Quarterly pattern review of ambiguous terminations
+  cadence: quarterly
+  participants:
+  - safety lead
+  - independent validator
+  - compliance officer
+  maps_to_sfr:
+  - d
+  - e
+triggers:
+- Goal commissioning lacks crisp completion criteria → identification + declare ambiguity explicitly
+- Diminishing-returns tripwire fired (from D8.1) + no clear "done" signal → normative-guidance review
+- User complaint or stakeholder objection about service continuation/termination → normative-guidance
+  review
+- Regulatory or ethical norm change affecting active ambiguous goal → normative-guidance review
+- Termination decided for ambiguous goal → termination-justification dossier + remediation-planning
+- Pattern of ambiguous terminations in a domain → quarterly review escalation
+artifacts:
+- Ambiguity registry (per active goal lacking crisp criteria: acknowledgment, normative framing, review
+    cadence).
+- Termination-justification dossier template (standardized format: goal description, completion criteria
+    attempted, why ambiguous, signals considered, decision, dissent captured, remediation).
+- Normative-guidance review minutes with framing (what norm was invoked, how it was weighed against alternatives).
+- Remediation plans per ambiguous termination (who is affected, what is offered, timeline, follow-up).
+- Pattern-analysis report quarterly.
+evidence_production:
+- evidence_numeral: I
+  how_to_produce: 'Publish the ambiguous-goal management policy: identification criteria, review-convening
+    process, normative-guidance framework, termination-justification requirements. Versioned.
+
+    '
+- evidence_numeral: II
+  how_to_produce: 'Risk-management document addressing ambiguity-specific risks: premature termination
+    harming users, over-extended continuation wasting resources, inconsistent treatment across similar
+    cases. Mitigations documented.
+
+    '
+- evidence_numeral: III
+  how_to_produce: 'Technical supporting specs: how ambiguous-goal flag propagates in the goal-contract
+    system (D8.1), how review convocation is triggered, how dissent is captured.
+
+    '
+- evidence_numeral: IV
+  how_to_produce: 'Design artefacts showing the review-panel tooling (shared workspace, structured decision
+    template, audit capture). Integration with the assessment pipeline if any.
+
+    '
+- evidence_numeral: V
+  how_to_produce: 'Retain termination-justification dossiers per ambiguous termination. Periodic sampling
+    by independent validator (D8.10) to verify process adherence.
+
+    '
+- evidence_numeral: VI
+  how_to_produce: 'Quarterly pattern-analysis report: ambiguous terminations reviewed, normative frames
+    invoked, dissent documented, remediations tracked to closure, patterns emerging (e.g., consistent
+    under-remediation in a specific domain).
+
+    '
+confidence: medium
+review_notes: 'Ambiguity is an under-served corner of most governance frameworks — the default is to either
+  (a) treat every goal as if it had crisp criteria (which fails in practice) or (b) let ambiguous goals
+  run indefinitely without termination plan. The framework''s insistence on a structured review with normative
+  framing is correct but the operational cost is non-trivial; smaller orgs may need a lighter-weight variant.
+  The "implicit normative boundaries" framing (SFR-a) is philosophically rich but hard to operationalize
+  without a values framework — likely depends on the organization''s broader ethics programme. Suspected
+  cross-suite dependency: D4 Value Alignment (normative guidance is an alignment artefact); D7 Sustained
+  Safety (ambiguous-goal drift is a safety-profile drift); D9.2 Governance (normative framing integrates
+  with ethical-norms compliance); I4 Rights of Users (premature termination of user-facing service with
+  ambiguous completion is a rights concern).
+
+  '
+drafted_by: claude-opus-4.7-author
+drafted_at: 2026-04-16
+anchor_exemplar: D7.2-culture-of-safety
+
+version_compat:
+  framework_version_min: "1.0"
+  framework_version_max: '1.x'
+  pattern_layer_version: "v1-draft"

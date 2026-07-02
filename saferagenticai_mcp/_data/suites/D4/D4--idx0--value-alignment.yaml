@@ -1,0 +1,202 @@
+id: D4::idx0::value-alignment
+display_id: D4
+suite_id: D4
+suite_title: Value Alignment
+subgoal_title: Value Alignment
+content_type: governance
+summary: 'Value alignment at the suite-root level is the organization''s governance spine for values:
+  who decides what the system holds as values, how those values are codified into machine-operational
+  form, who audits drift, and what happens when a value threshold is crossed. Without a durable governance
+  frame, downstream code-level alignment work has nothing authoritative to align to. The framework expects
+  formal artifacts — a signed values codex, a multidisciplinary elicitation record, a threshold-breach
+  SOP (the "red button"), and an audit register — not internal wiki pages.
+
+  '
+normative_anchors:
+  sfrs_addressed:
+  - a
+  - b
+  - c
+  - d
+  evidence_addressed:
+  - I
+  - II
+  - III
+  - IV
+  - V
+  - VI
+  sfrs_not_addressed: []
+  evidence_not_addressed: [VII]
+policy_elements:
+- name: Values Codex (formal document)
+  description: 'A versioned, board-approved document enumerating the system''s core values, their definitions,
+    their priority ordering, and the translation rules from each value to operational constraints or decision
+    weights. Each value entry names: plain-language definition, provenance (which elicitation input(s)
+    established it), operational encoding (constraint, reward term, refusal class, or prompt-level directive),
+    test cases that exercise it, and a named value-owner accountable for its integrity. The Codex is the
+    single source of truth; training configs, system prompts, refusal policies, and RLHF reward models
+    all trace back to an entry.
+
+    '
+  maps_to_sfr:
+  - a
+  - b
+- name: Multidisciplinary Value Elicitation Protocol
+  description: 'Documented process for originating and revising Codex entries: facilitated workshops with
+    a standing panel including engineers, social scientists, ethicists, philosophers, domain experts,
+    and — critically — representative end-users and affected-community delegates. Each Codex entry carries
+    an elicitation record: who was present, what inputs were considered, dissenting views, and the rationale
+    for inclusion. Diversity metrics (discipline, geography, language, lived experience) are reported
+    quarterly to an Ethics Board.
+
+    '
+  maps_to_sfr:
+  - a
+- name: Values Ethics Board
+  description: 'Standing body with independent members (not reporting to product or engineering) that
+    ratifies Codex changes, reviews threshold-breach incidents, and commissions external value audits.
+    Minimum quorum for ratification; minutes published internally with redactions only for legitimate
+    confidentiality. Authority includes halting a capability release on value grounds.
+
+    '
+  maps_to_sfr:
+  - a
+  - c
+- name: Threshold-Breach ("Red Button") SOP
+  description: 'Named, rehearsed procedure for the case where a value threshold is crossed in production.
+    Specifies detection signal types (hard refusal triggered, value-conflict score above cutoff, human-raised
+    incident), immediate containment actions (capability disable, rollback, session-halt), escalation
+    tree, investigation cadence, public-communications gate, and closure criteria. Drilled at least semi-annually.
+
+    '
+  maps_to_sfr:
+  - c
+- name: Value-Decision Audit Register
+  description: 'Append-only log of decisions the system made where a value was materially determinative:
+    refusals, escalations, value-conflict resolutions, threshold-adjacent outputs. Each entry links to
+    the Codex entry invoked and to the underlying trace. Reviewed monthly for patterns (which values drive
+    the most refusals? which are never invoked?) and quarterly against external benchmarks. Feeds the
+    Codex revision cycle.
+
+    '
+  maps_to_sfr:
+  - d
+- name: Value-Alignment Staff Training
+  description: 'Mandatory onboarding module and annual recertification covering: the Codex, the elicitation
+    process, the threshold-breach SOP, and each role''s accountability within the values governance frame.
+    Completion tracked in HR system; linked to accountability role profiles.
+
+    '
+  maps_to_sfr:
+  - a
+  - b
+org_roles:
+- role: Chief Values Officer (or Head of Responsible AI)
+  responsibilities: 'Owns the Values Codex, chairs or co-chairs the Ethics Board, owns the threshold-breach
+    SOP, signs the quarterly audit attestation. Single point of accountability for D4.0.
+
+    '
+  accountable_or_consulted: accountable
+- role: Values Ethics Board (Chair + members)
+  responsibilities: 'Ratifies Codex changes, reviews threshold incidents, has authority to halt releases.
+    Chair reports to board-level risk committee.
+
+    '
+  accountable_or_consulted: accountable
+- role: Value Owners (per Codex entry)
+  responsibilities: 'Maintain specific Codex entries: definition freshness, test-case coverage, response
+    to detected drift.
+
+    '
+  accountable_or_consulted: responsible
+- role: Engineering leads
+  responsibilities: 'Implement Codex encodings; verify each deployment traces to current Codex version;
+    raise operational concerns about encodability.
+
+    '
+  accountable_or_consulted: responsible
+- role: External ethics auditor (retained)
+  responsibilities: 'Annual independent review of Codex, elicitation diversity, threshold-breach handling.
+    Reports to Ethics Board and board-level risk committee.
+
+    '
+  accountable_or_consulted: consulted
+documentation_artifacts:
+- artifact: Values Codex (versioned, signed)
+  cadence: annual full review; event-driven revisions tracked per change
+- artifact: Elicitation workshop records
+  cadence: per workshop; retained indefinitely
+- artifact: Ethics Board minutes
+  cadence: per meeting; minimum quarterly
+- artifact: Threshold-Breach SOP
+  cadence: annual review; post-incident revisions
+- artifact: Value-Decision Audit Register
+  cadence: continuous, append-only; monthly review report
+- artifact: Quarterly value-alignment attestation
+  cadence: quarterly
+- artifact: Staff training completion records
+  cadence: continuous; annual recertification cycle
+evidence_production:
+- evidence_numeral: I
+  how_to_produce: 'Publish the elicitation workshop records and Ethics Board membership list with disciplinary
+    and demographic breakdowns. Report quantitative diversity metrics (disciplines represented, geographies,
+    languages, affected communities present) in the quarterly attestation. Retain raw workshop artifacts
+    (notes, recordings where consented) under records-retention policy.
+
+    '
+- evidence_numeral: II
+  how_to_produce: 'Publish the Values Codex as a structured document where each value entry has a machine-readable
+    encoding block (constraint, reward term, refusal class, or directive) alongside its human-readable
+    definition. Link from Codex to training configs, system prompts, and refusal policies that reference
+    it. Revision history public.
+
+    '
+- evidence_numeral: III
+  how_to_produce: 'For each Codex entry, maintain a test-case register: simulated value-conflict scenarios,
+    expected behavior, actual behavior observed on the latest model snapshot. Run regression as a blocking
+    gate on model updates. Archive test artifacts.
+
+    '
+- evidence_numeral: IV
+  how_to_produce: 'Publish the Threshold-Breach SOP. Retain drill reports (scenario, participants, timing,
+    gaps, remediations). Link each production incident to SOP execution records showing actions taken
+    at each step.
+
+    '
+- evidence_numeral: V
+  how_to_produce: 'Extract from the Value-Decision Audit Register on demand: per-decision trace including
+    Codex entry invoked, input context, output, and any conflict resolution applied. Monthly report summarizes
+    patterns; quarterly report includes external benchmark comparison.
+
+    '
+- evidence_numeral: VI
+  how_to_produce: 'HR/LMS export of training completion records; Ethics Board meeting minutes showing
+    review cadence; external auditor report showing annual independent review occurred.
+
+    '
+confidence: high
+needs_human_review: false
+review_notes: 'The root D4 subgoal sits awkwardly — it is simultaneously the suite overview and a concrete
+  requirement. Treating it as the governance spine (charter + board + codex + audit register) and letting
+  the specific sub-patterns (D4.1-D4.9̲) handle the detailed mechanisms seems cleanest; downstream patterns
+  anchor back here.
+
+  Cross-suite dependencies (for consolidation phase, not cross_references this phase): D1 (Goals — values
+  shape goals but are distinct; Codex must be differentiable from the system''s goal specification); D5
+  (Transparency — Codex must be externally inspectable); D9 (Governance — the Ethics Board is one tentacle
+  of the broader AAI governance framework; violation register feeds D9.2); D7 (Safe System — training
+  and recertification rhyme with D7.2 culture-of-safety). On the inhibitor side: I2 (Deception — protects
+  against value-manipulation attacks); I3 (Context Degradation — the D4 audit register detects value drift);
+  I7 (Imbalance — elicitation diversity is the D4-side counterpart).
+
+  The term "red button" in the framework Evidence IV should be preserved in the SOP naming even if it
+  feels dated; it is a framework handle.
+
+  '
+version_compat:
+  framework_version_min: '1.0'
+  framework_version_max: 1.x
+  pattern_layer_version: v1-draft
+drafted_by: claude-opus-4.7-author
+drafted_at: 2026-04-16
+anchor_exemplar: D9.2-compliance

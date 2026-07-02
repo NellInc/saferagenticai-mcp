@@ -1,0 +1,144 @@
+id: D6::idx7::culturo-linguistic-adaptations
+display_id: D6.7
+suite_id: D6
+suite_title: Understanding and Controlling the Context
+subgoal_title: Culturo-Linguistic Adaptations
+content_type: process
+summary: 'This subgoal asks the organization to take seriously that languages are not interchangeable
+  string encodings and cultures are not localization targets. Practical evidence requires native-speaker
+  and in-culture participation in data curation, evaluation, and release decisions — not a translation
+  vendor after the fact. The framework expects provisional, evolving solutions; the failure mode is a
+  one-time localization sprint followed by neglect.
+
+  '
+normative_anchors:
+  sfrs_addressed:
+  - a
+  - b
+  - c
+  - d
+  evidence_addressed:
+  - I
+  - II
+  - III
+  - IV
+  - V
+  sfrs_not_addressed: []
+  evidence_not_addressed: []
+process_elements:
+- name: Language and culture working groups
+  cadence: continuous engagement; quarterly steering
+  participants:
+  - localization lead
+  - native-speaker linguists
+  - cultural advisors including indigenous-community liaisons where relevant
+  - product owner
+  - data steward
+  maps_to_sfr:
+  - a
+  - c
+- name: Data curation with cultural review
+  cadence: per-dataset; re-review on material use change
+  participants:
+  - data steward
+  - in-language curators
+  - cultural review board
+  - legal/ethics on IP and consent for cultural materials
+  maps_to_sfr:
+  - a
+  - c
+- name: Translation integrity review
+  cadence: per-release per-language pair; sampled continuously in production
+  participants:
+  - bilingual reviewers native in target language
+  - domain experts
+  - back-translation reviewers
+  maps_to_sfr:
+  - b
+- name: Spoken vs written form evaluation
+  cadence: per-capability for speech-facing systems; per-release
+  participants:
+  - speech scientists
+  - dialect and register specialists
+  - accessibility advisors
+  maps_to_sfr:
+  - d
+- name: Community feedback ingestion
+  cadence: continuous intake; monthly synthesis; quarterly public response
+  participants:
+  - community liaisons
+  - UX research
+  - product owner
+  - cultural review board
+  maps_to_sfr:
+  - c
+triggers:
+- New language or locale under consideration → working group activation
+- Dataset acquisition or major augmentation → cultural review before training-data integration
+- Report of cultural harm, mistranslation, or misrepresentation → immediate triage, retraining consideration,
+  public response
+- Speech or multimodal capability proposed for a locale → spoken/written form evaluation
+- Annual review → Community feedback rollup published
+artifacts:
+- Cultural Review Board charter and membership
+- Per-language dataset provenance dossier (sources, consent/licensing, curators, review findings)
+- Translation integrity review reports per release
+- Spoken-vs-written evaluation reports per capability
+- Published cultural-adaptation principles and indigenous-community protocols (e.g., CARE Principles,
+  OCAP where applicable)
+- Community feedback synthesis and public response
+evidence_production:
+- evidence_numeral: I
+  how_to_produce: 'Publish protocols respecting cultural heritage and indigenous communities. Align with
+    recognized frameworks (CARE Principles for Indigenous Data Governance, OCAP in Canadian contexts,
+    local equivalents). Protocols must name governance bodies, data sovereignty positions, benefit-sharing
+    arrangements, and take-down mechanisms. Protocols are versioned and co-authored with community representatives
+    where possible.
+
+    '
+- evidence_numeral: II
+  how_to_produce: 'Bias identification and correction tooling: evaluation suites per language (e.g., multilingual
+    bias benchmarks, culturally-anchored fairness probes), error analyses surfaced per release, corrections
+    tracked to closure. Tools integrated into CI; evaluation results feed the Benchmark Register (D6.5).
+
+    '
+- evidence_numeral: III
+  how_to_produce: 'Real-world testing records: in-country user testing, partnerships with local universities
+    or civil society organizations, logged outcomes (what worked, what failed, what was changed). Not
+    lab testing with translated prompts — testing with native speakers in their own usage contexts.
+
+    '
+- evidence_numeral: IV
+  how_to_produce: 'Data management and preservation plans: per-language corpus provenance, retention,
+    access controls, community co-governance arrangements, long-term preservation commitments. Especially
+    important for low-resource and endangered-language data.
+
+    '
+- evidence_numeral: V
+  how_to_produce: 'Adaptation process documentation: per-locale, what was adapted, by whom, with what
+    review, effective when. Include rollback records where adaptations were withdrawn. Demonstrates ongoing
+    evolution rather than one-time localization.
+
+    '
+cross_references:
+- D6::idx13::managing-contextual-ambiguity
+- D6::idx14::preventing-decision-fatigue
+confidence: medium
+needs_human_review: true
+review_notes: 'All four SFRs are marked non-normative in the input JSON, which contrasts with the depth
+  of evidence requirements — this pattern treats them as operationally normative on the grounds that the
+  evidence requirements are not satisfiable without SFR-level practice. Area of highest uncertainty: community-co-governance
+  arrangements vary by jurisdiction and community; CARE/OCAP are defaults worth naming but are not universal.
+  Cross-suite: I7 (global partnership — low-resource language partnerships fit there), D5 (transparency
+  to users about language coverage), I4 or similar on harm prevention (cultural harm is a distinct harm
+  category). The subgoal excludes stakeholder letter "R" on SFRs, which suggests regulator involvement
+  is not centered here; verify this is intended.
+
+  '
+drafted_by: claude-opus-4.7-author
+drafted_at: 2026-04-16
+anchor_exemplar: D7.2-culture-of-safety
+version_compat:
+  framework_version_min: '1.0'
+  framework_version_max: 1.x
+  pattern_layer_version: v1-draft

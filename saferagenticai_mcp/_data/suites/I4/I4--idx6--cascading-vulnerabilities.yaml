@@ -1,0 +1,148 @@
+id: I4::idx6::cascading-vulnerabilities
+display_id: I4.6
+suite_id: I4
+suite_title: Frontier Uncertainty
+subgoal_title: Cascading Vulnerabilities
+content_type: process
+summary: 'In a dense AI-integrated deployment, a local failure can propagate into a systemic event. The
+  framework asks organizations to plan as part of an interdependent landscape: dependency mapping, sector-level
+  coordination, cross-border harmonization, and explicit protections for decision-making paths and populations
+  that cannot absorb cascade damage.
+
+  '
+normative_anchors:
+  sfrs_addressed:
+  - a
+  - b
+  evidence_addressed:
+  - I
+  - II
+  - III
+  - IV
+  sfrs_not_addressed: []
+  evidence_not_addressed: []
+cross_references:
+- I4::idx3::poor-ai-system-production-and-replicatio
+- I4::idx4::development-direction-and-interpretabili
+process_elements:
+- name: Dependency and blast-radius mapping
+  cadence: versioned; quarterly review; event-driven on new integration or customer-sector entry
+  participants:
+  - safety lead
+  - infra/SRE
+  - product leadership
+  - customer solutions
+  - legal
+  maps_to_sfr:
+  - a
+- name: Critical-sector protection review
+  cadence: pre-deployment for any sector designated critical (healthcare, finance, energy, elections,
+    emergency services, food/water systems); annual thereafter
+  participants:
+  - sector expert
+  - safety lead
+  - legal
+  - regulator liaison where applicable
+  maps_to_sfr:
+  - a
+- name: Human-in-the-loop preservation audit
+  cadence: quarterly; per-capability at deployment
+  participants:
+  - safety lead
+  - product owner
+  - trust-and-safety
+  - legal
+  maps_to_sfr:
+  - a
+- name: Cross-border coordination and incident-response exercise
+  cadence: annual minimum; joint exercise with at least one peer organization or industry body
+  participants:
+  - incident commander
+  - safety lead
+  - legal
+  - communications
+  - external exercise partners
+  maps_to_sfr:
+  - b
+- name: Vulnerable-population impact assessment
+  cadence: pre-deployment + annual; event-driven on incident affecting vulnerable users
+  participants:
+  - safety lead
+  - community representatives
+  - legal
+  - accessibility lead
+  maps_to_sfr:
+  - b
+- name: Contagion monitoring and circuit-breaker drill
+  cadence: continuous monitoring; quarterly drill
+  participants:
+  - SRE
+  - safety lead
+  - on-call rotation
+  - external observer annually
+  maps_to_sfr:
+  - a
+triggers:
+- New customer sector entered, or new critical-infrastructure integration → Dependency map update; critical-sector
+  review
+- Automation ratio change reducing human decision points → Human- in-the-loop preservation audit
+- Anomaly signal with multi-tenant or multi-system blast radius → Circuit-breaker activation; incident
+  response
+- Incident affecting vulnerable population disproportionately → Impact assessment refresh; stakeholder
+  notification
+- Peer-organization disclosure of novel cascade vulnerability → Review and remediation
+artifacts:
+- Dependency and blast-radius maps (system × customer × sector × downstream-criticality)
+- Critical-sector protection reviews and sign-offs
+- Human-agency preservation checklists and audit results
+- Cross-border incident-response playbooks and exercise reports
+- Vulnerable-population impact assessments
+- Contagion-monitoring dashboard and circuit-breaker drill reports
+- Stakeholder communications log (incident notifications, advisories)
+evidence_production:
+- evidence_numeral: I
+  how_to_produce: 'Maintain vulnerability-management documentation as a suite: risk assessments per capability
+    with cascade-specific scenarios, contingency plans by scenario category (e.g., authentication outage,
+    content moderation failure at scale, tool-call cascade through shared infrastructure), governance
+    framework specifying roles and response authorities. Link to D3 Security patterns.
+
+    '
+- evidence_numeral: II
+  how_to_produce: 'Human-agency preservation case studies: documented deployments where the design intentionally
+    preserved human decision points despite automation pressure. Ethical guidelines enforced through the
+    Human-in-the-loop preservation audit; results tied to deployment approvals.
+
+    '
+- evidence_numeral: III
+  how_to_produce: 'Security protocols: incident-response runbooks with cross-border coordination steps
+    (customer notifications, regulator liaisons, peer-org notifications under MOUs), audit records of
+    exercises run, and continuous-adaptation records showing how emerging threats (e.g., multi-agent coordination
+    failures, tool-injection patterns) have been incorporated.
+
+    '
+- evidence_numeral: IV
+  how_to_produce: 'Transparency and accountability: stakeholder-communications log (customer advisories,
+    public disclosures, regulator notifications), vulnerable-population impact-assessment archive, evidence
+    of protective measures (e.g., degraded-mode behavior that preserves safety floors for vulnerable users
+    during cascade events).
+
+    '
+confidence: medium
+evidence_maturity: established
+needs_human_review: true
+review_notes: "Cascading-failure planning is familiar from SRE/resilience engineering but the framework\
+  \ asks for sector and population specificity that generic resilience practice misses. Sharpenings:\n\
+  \  (1) Critical-sector protection as a named review step — prevents\n      cascade planning from treating\
+  \ all deployments as equal.\n  (2) Human-in-the-loop preservation *audit* (not just claim) — SFR-a\n\
+  \      explicitly requires \"preventing erosion of human agency\", and\n      erosion is a slow trend,\
+  \ not an event.\n  (3) Cross-border exercise with a peer — SFR-b's \"harmonized\n      cross-border\
+  \ protections\" needs real coordination, not policy\n      symmetry.\nCross-suite: D3 Security (direct\
+  \ overlap — cascade failures are often security events), D7 Sustained Safety (drill culture), I3 Complexity\
+  \ (complexity drives cascade risk), I7 Imbalance (concentration amplifies cascade impact).\n"
+version_compat:
+  framework_version_min: '1.0'
+  framework_version_max: 1.x
+  pattern_layer_version: v1-draft
+drafted_by: claude-opus-4.7-author
+drafted_at: 2026-04-16
+anchor_exemplar: D7.2-culture-of-safety

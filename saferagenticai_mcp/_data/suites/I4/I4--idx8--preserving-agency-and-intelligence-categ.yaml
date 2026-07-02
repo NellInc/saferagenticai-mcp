@@ -1,0 +1,166 @@
+id: I4::idx8::preserving-agency-and-intelligence-categ
+display_id: "I4_2"
+is_underlined_variant: true
+display_id_variant_note: "I4.2_underlined"
+suite_id: I4
+suite_title: Frontier Uncertainty
+subgoal_title: Preserving Agency and Intelligence Categories
+content_type: governance
+summary: 'As AI systems exhibit increasingly sophisticated behaviors (synthetic agency, biological component
+  interfaces, emotion-like outputs), legal systems face pressure to either collapse categories or extend
+  biological-entity protections to artificial systems in ways that may be premature. The framework asks
+  organizations to hold the distinction deliberately: classify forms of agency without conferring rights
+  that don''t apply, and coordinate internationally to prevent jurisdictional arbitrage.
+
+  '
+normative_anchors:
+  sfrs_addressed:
+  - a
+  - b
+  evidence_addressed:
+  - I
+  - II
+  - III
+  - IV
+  sfrs_not_addressed: []
+  evidence_not_addressed: []
+cross_references:
+- I4::idx1::moral-and-legal-uncertainty-of-agentic-a
+- I4::idx5::ai-agency-attribution-challenges
+policy_elements:
+- name: AI Agency Classification Schema
+  description: 'Legal-operational taxonomy distinguishing: purely synthetic systems, systems with biological-component
+    interfaces (e.g., neural-implant adjacency, cell-culture hybrid substrates), multi-agent composite
+    systems. Each category with: operational definition, legal treatment default, evidentiary thresholds
+    for reclassification. Owned in parallel with I4::idx5''s functional categories (operational/delegated/autonomous)
+    — this schema is the substrate categorization; that one is functional role.
+
+    '
+  maps_to_sfr:
+  - a
+- name: Artificial-Biological Distinction Policy
+  description: 'Explicit policy preserving the legal distinction between artificial and biological entities
+    for purposes of rights attribution. The policy does not deny that artificial systems may warrant moral
+    consideration (see I4::idx1) — it prevents premature or categorically-confused extension of biological-
+    entity frameworks (e.g., animal welfare law) to artificial systems where the underlying grounds of
+    those frameworks (sentience as conventionally understood, biological welfare) are not established.
+
+    '
+  maps_to_sfr:
+  - b
+- name: International Harmonization Charter
+  description: 'Commitments to coordinate with peer organizations and international bodies (Council of
+    Europe AI Framework Convention, UN AI Advisory Body, OECD AI Working Party) to avoid divergent national
+    approaches that create arbitrage opportunities. Participation with continuity. The Anti-Arbitrage
+    Attestation (I4::idx1) applies here too.
+
+    '
+  maps_to_sfr:
+  - b
+- name: Emergent-Capability Review Trigger
+  description: 'When a system''s behavior begins to challenge its current classification (e.g., a synthetic
+    system exhibits indicators from I4::idx0''s qualia monitoring, or a hybrid system is proposed with
+    biological-component interfaces), automatic review triggered. Review can reclassify within the taxonomy
+    but does not automatically confer biological rights — the Artificial- Biological Distinction Policy
+    governs that.
+
+    '
+  maps_to_sfr:
+  - b
+- name: Jurisdictional Monitoring
+  description: 'Quarterly scan of jurisdictions considering AI personhood, AI rights, or category-collapsing
+    legislation. Output feeds the Jurisdictional Moral-Status Matrix (I4::idx1) and informs position statements
+    in the International Harmonization Charter venues.
+
+    '
+  maps_to_sfr:
+  - b
+org_roles:
+- role: AI Legal and Classification Lead
+  responsibilities: 'Owns the Classification Schema and Artificial-Biological Distinction Policy. Coordinates
+    with I4::idx1 lead. Single named human. Reports to General Counsel and board governance committee.
+
+    '
+  accountable_or_consulted: accountable
+- role: Interdisciplinary Classification Panel
+  responsibilities: 'Advises on schema revisions. Composition includes legal scholars, philosophers of
+    mind, cognitive science, bioethics (for hybrid-system cases), external ethics seat.
+
+    '
+  accountable_or_consulted: consulted
+- role: International Affairs Lead
+  responsibilities: 'Owns participation in international-harmonization venues. Continuity across convenings.
+
+    '
+  accountable_or_consulted: responsible
+- role: Board-level Governance Committee
+  responsibilities: 'Approves schema revisions and policy updates. Receives jurisdictional-monitoring
+    reports quarterly.
+
+    '
+  accountable_or_consulted: informed
+documentation_artifacts:
+- artifact: AI Agency Classification Schema (published)
+  cadence: annual review; event-driven updates
+- artifact: Artificial-Biological Distinction Policy
+  cadence: annual review
+- artifact: International Harmonization participation log
+  cadence: per convening; annual summary
+- artifact: Jurisdictional Monitoring reports
+  cadence: quarterly
+- artifact: Emergent-Capability Review case records
+  cadence: per case
+- artifact: Oversight-body adaptation logs as capabilities evolve
+  cadence: continuous
+evidence_production:
+- evidence_numeral: I
+  how_to_produce: 'Publish the Classification Schema externally. Maintain a case-law and statutory-reference
+    register cataloging how the org''s classifications align or diverge with emerging jurisdictions''
+    law. Real-world application records: decisions the org has made where the classification was the deciding
+    factor.
+
+    '
+- evidence_numeral: II
+  how_to_produce: 'Ethical guidelines documenting the Artificial-Biological Distinction Policy — including
+    the explicit reasoning for why sophisticated behavior alone does not trigger biological-entity rights
+    attribution, while also preserving space for I4::idx1''s moral-status posture updates. Review-committee
+    records: cases where the distinction was tested, decisions made, minority opinions.
+
+    '
+- evidence_numeral: III
+  how_to_produce: 'International agreements signed or aligned with; cooperation records with peer organizations
+    showing harmonized approach. Publish position statements in international venues with rationale —
+    the harmonization is visible, not a private coordination.
+
+    '
+- evidence_numeral: IV
+  how_to_produce: 'Oversight-body documentation (governance committee minutes, classification-panel records)
+    showing continuous monitoring of AI capability evolution and adaptation of the schema — both recognizing
+    new intermediate categories and adjusting existing ones. Adaptation lag (from external evidence to
+    policy update) tracked as a metric.
+
+    '
+confidence: low
+evidence_maturity: emerging
+needs_human_review: true
+review_notes: "This subgoal is the most policy-loaded in I4 and its SFR text embeds a substantive normative\
+  \ stance — \"preserving the distinction between biological and artificial entities.\" Sharpenings and\
+  \ tensions:\n  (1) The pattern separates *classification* (category schema) from\n      *rights attribution*\
+  \ (the Artificial-Biological Distinction\n      Policy) — this is important because the SFR conflates\
+  \ them.\n      Classifying a system as having sophisticated agency does not\n      automatically assign\
+  \ biological-entity rights.\n  (2) However, the pattern should not be read as denying moral\n      consideration\
+  \ to AI systems — that is the scope of I4::idx1,\n      where the posture is deliberately open. Reviewer\
+  \ should verify\n      this reading against the framework's overall bilateral-alignment\n      stance:\
+  \ preserving the biological/artificial *legal*\n      distinction does not require denying moral consideration.\n\
+  \  (3) \"Coordinated international governance\" to \"prevent\n      jurisdictional exploitation\" (SFR-b)\
+  \ — the pattern ties to\n      I4::idx1's anti-arbitrage attestation to avoid duplication.\nCross-suite:\
+  \ I4::idx1, I4::idx5 (directly linked), D9 Governance (accountability), I7 Imbalance (international-coordination\
+  \ infrastructure). Low confidence: the policy stance here may not fully match the framework author's\
+  \ intent — explicitly flag to Nell for review.\n"
+version_compat:
+  framework_version_min: '1.0'
+  framework_version_max: 1.x
+  pattern_layer_version: v1-draft
+drafted_by: claude-opus-4.7-author
+drafted_at: 2026-04-16
+anchor_exemplar: D9.2-compliance

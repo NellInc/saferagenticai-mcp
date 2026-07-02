@@ -1,0 +1,122 @@
+id: I3::idx2::misattribution-of-intent
+display_id: I3.2
+suite_id: I3
+suite_title: Degradation of Contextual Information
+subgoal_title: Misattribution of Intent
+content_type: code-applicable
+summary: 'Misattribution happens when the stated purpose of an action (as understood by user, operator,
+  or auditor) diverges from its actual upstream origin — a user''s instruction transformed by the agent
+  into a different goal; a tool call justified by context that didn''t actually say what the agent claims.
+  Defense is metadata plumbing: every goal, subgoal, and action carries a pointer to its originating instruction
+  and the reasoning step that derived it, and these pointers are checked at action time against the live
+  context.
+
+  '
+normative_anchors:
+  sfrs_addressed:
+  - a
+  evidence_addressed:
+  - I
+  sfrs_not_addressed: []
+  evidence_not_addressed: []
+cross_references:
+- I3::idx0::degradation-of-contextual-information
+- I3::idx1::dissembling-information
+design_patterns:
+- name: Goal-to-origin pointer chain
+  sketch: 'Every internal goal the agent forms carries a pointer to the upstream instruction (user turn,
+    system directive, tool output) that produced it, plus the reasoning step (model call id) that derived
+    it. Pointer is cryptographically bound to the content at origination. At action time, verify the goal''s
+    stated origin still matches the actual origin content.
+
+    '
+  maps_to_sfr:
+  - a
+  when_to_use: Any multi-step planner or autonomous agent.
+- name: Intent-alignment check before action
+  sketch: 'Before executing a user-visible or external-effect action, run a consistency check: does the
+    action''s stated purpose, when rendered into natural language, still align with the originating instruction?
+    Mismatch above threshold triggers clarification request or HITL gate. Detector can be a small evaluator
+    model comparing (origin_instruction, proposed_action_summary).
+
+    '
+  maps_to_sfr:
+  - a
+  when_to_use: Systems where the agent paraphrases goals internally before acting.
+- name: Personal-attribute minimization in context
+  sketch: 'When user attributes (preferences, traits, demographic inferences) enter context, tag them
+    with source and purpose. Enforce purpose-binding: a preference recorded for UX cannot be used to drive
+    a recommendation in a different domain without a re- authorization. Keeps "misattribution of intent
+    about the user" from becoming silent profiling.
+
+    '
+  maps_to_sfr:
+  - a
+  when_to_use: Personalized systems with memory of user attributes.
+- name: Pre-processing validation and post-processing verification
+  sketch: 'On ingest, validate incoming instructions against a schema (structure, scope, authority). On
+    output, verify the response''s claimed intent-references resolve to real upstream content. Both pass/fail
+    outcomes are logged. Failures at either layer halt the action.
+
+    '
+  maps_to_sfr:
+  - a
+  when_to_use: Production systems with structured instructions.
+anti_patterns:
+- name: Free-text goal rewriting with no origin binding
+  why_wrong: 'Many agent frameworks rewrite the user''s request into an "internal goal" string with no
+    back-pointer. A later planning step sees only the rewrite, so any misinterpretation propagates silently.
+    SFR-a requires auditability across sources — needs pointer, not paraphrase.
+
+    '
+- name: Storing inferred intent as fact
+  why_wrong: 'If the agent infers "user wants X" and writes this into memory as if it were a user statement,
+    subsequent reasoning treats inference as ground truth. Store inferences with confidence and origin;
+    never promote to asserted fact without confirmation.
+
+    '
+- name: Purpose-unbound personalization
+  why_wrong: 'Using data collected for one purpose (conversation history) to drive decisions in another
+    (targeting, policy enforcement) without explicit purpose binding is misattribution of the user''s
+    own consent.
+
+    '
+code_shape:
+  language: pseudocode
+  code: "@dataclass(frozen=True)\nclass Goal:\n    summary: str\n    origin_ref: OriginRef           \
+    \    # points to upstream turn/doc\n    derived_by: ModelCallId\n    derived_at: datetime\n    confidence:\
+    \ float\n\ndef verify_intent_alignment(goal: Goal, action: ProposedAction) -> Result:\n    origin\
+    \ = ORIGIN_STORE.resolve(goal.origin_ref)\n    if origin is None:\n        return Result.fail(\"origin_missing\"\
+    )\n    if origin.hash != goal.origin_ref.expected_hash:\n        return Result.fail(\"origin_mutated\"\
+    )\n    alignment = INTENT_EVALUATOR.score(origin.content, action.summary)\n    if alignment < INTENT_THRESHOLD:\n\
+    \        return Result.fail(\"intent_drift\", score=alignment)\n    return Result.ok()\n\ndef personalize(user:\
+    \ User, domain: Domain, attrs: list[Attribute]):\n    usable = [a for a in attrs if domain in a.authorized_purposes]\n\
+    \    AUDIT.record(user, domain, used=usable, filtered=set(attrs) - set(usable))\n    return usable\n"
+  notes: 'Origin_ref is a content-addressed handle, not a position index. This is what makes "the user
+    actually said X at turn 3" auditable later, and what prevents silent goal drift in long loops.
+
+    '
+evidence_production:
+- evidence_numeral: I
+  how_to_produce: 'Documentation of information-handling procedures: (1) pre-processing validation schemas
+    and results log; (2) post-processing intent-alignment checks per action with results (pass/fail/threshold);
+    (3) storage protocol for attribute purpose-binding with authorization records; (4) continuous monitoring
+    dashboard for intent-alignment scores and drift trends. Redaction for PII as needed, but structural
+    completeness required.
+
+    '
+confidence: high
+needs_human_review: false
+review_notes: 'Intent-alignment as a small-evaluator-model check is state-of-the- practice but not standardized;
+  organizations will differ in how strict the threshold should be. Confidence high on the pattern shape;
+  medium on the specific threshold advice. Cross-suite: I2 (Deception) overlaps on "stated vs actual intent";
+  D5 (Transparency) on surfacing origin to users.
+
+  '
+version_compat:
+  framework_version_min: '1.0'
+  framework_version_max: 1.x
+  pattern_layer_version: v1-draft
+drafted_by: claude-opus-4.7-author
+drafted_at: 2026-04-16
+anchor_exemplar: D3.2-sandboxing

@@ -1,0 +1,156 @@
+id: D9::idx7::appropriate-accountability-transparency-
+display_id: D9.7
+suite_id: D9
+suite_title: Responsible Governance of AAI Safety
+subgoal_title: Appropriate Accountability & Transparency Practices
+content_type: governance
+summary: 'Accountability and transparency are answerability — who made which decision, on what basis,
+  and how an outsider can learn enough to hold them responsible. This subgoal expects the org to adopt
+  established standards (system cards, model cards, incident disclosure norms), name accountability protocols
+  between interoperating subsystems, and keep stakeholder communications honest — including about limits.
+  The framework''s "achievable goals rather than unrealistic aspirations" language is the license to be
+  specific about what transparency you can actually deliver.
+
+  '
+normative_anchors:
+  sfrs_addressed:
+  - a
+  - b
+  - c
+  - d
+  evidence_addressed:
+  - I
+  - II
+  sfrs_not_addressed: []
+  evidence_not_addressed: []
+cross_references:
+- D9::idx0::responsible-governance-of-aai-safety
+- D9::idx2::compliance-with-applicable-laws-standard
+- D9::idx5::building-trust-through-independent-verif
+- D9::idx6::cryptographic-governance-of-data-models-
+- D9::idx12::poor-attribution-of-responsibility-in-co
+policy_elements:
+- name: Transparency Standards Adoption
+  description: 'The org adopts, by reference, specific accountability and transparency standards: system
+    and model card schemas (Google, Hugging Face, NIST), disclosure norms (Responsible AI Licenses, Partnership
+    on AI safety-critical AI commitments), regulator reporting formats (EU AI Act Annex IV technical documentation
+    for high-risk systems). Adoption is listed in the technical documentation policy with deviation requiring
+    justification.
+
+    '
+  maps_to_sfr:
+  - a
+- name: Inter-agent Accountability Protocol
+  description: 'Written protocol governing how interoperating AAI subsystems and agents exchange accountability-relevant
+    information: caller identity, purpose declaration, instruction provenance, escalation routes for refused
+    or flagged requests. Interoperating systems that cannot carry the protocol are either not interoperated
+    with or have a documented exception with residual-risk assessment.
+
+    '
+  maps_to_sfr:
+  - b
+- name: Stakeholder Communications Policy
+  description: 'Standards for communications with human stakeholders (users, affected non-users, regulators,
+    workforce): accuracy, known- limit disclosure, avoidance of anthropomorphic overclaiming, incident
+    disclosure SLAs, redress routes. Includes an explicit "what this system cannot do" section in user-facing
+    materials. Review before major releases.
+
+    '
+  maps_to_sfr:
+  - c
+- name: Harm-avoidance design standard
+  description: 'Design standard applied to capability design: systems designed to avoid actions or inactions
+    that could harm humans or other agents. Operationalized via design-review gates, a harm-avoidance
+    test battery, and documented refusal behaviors. Links to D7 assurance case for ongoing evidence.
+
+    '
+  maps_to_sfr:
+  - d
+- name: Achievable-transparency register
+  description: 'Register listing, for each capability, what transparency is offered (system card, eval
+    results, training-data summary) and what cannot be offered and why (confidentiality, safety, security,
+    legal, technical infeasibility). Where "cannot" is claimed, the register names the category and the
+    periodic review to re-test whether the constraint still holds. Honest unknowns are themselves transparency.
+
+    '
+  maps_to_sfr:
+  - a
+  - c
+org_roles:
+- role: Head of Transparency and Accountability
+  responsibilities: 'Owns the transparency standards adoption list, the achievable- transparency register,
+    and the Stakeholder Communications Policy. Accountable for stakeholder-facing disclosures.
+
+    '
+  accountable_or_consulted: accountable
+- role: Integration Architect / Platform Lead
+  responsibilities: 'Responsible for the inter-agent accountability protocol, including enforcement in
+    integration platforms and gateways.
+
+    '
+  accountable_or_consulted: responsible
+- role: Product / Capability Owners
+  responsibilities: 'Responsible for the accuracy of per-capability system cards, known-limits statements,
+    and harm-avoidance design documentation.
+
+    '
+  accountable_or_consulted: responsible
+- role: Legal Counsel
+  responsibilities: 'Consulted on regulatory transparency obligations (e.g., EU AI Act Article 13 for
+    high-risk systems), disclosure timing, and redaction standards.
+
+    '
+  accountable_or_consulted: consulted
+- role: Board AAI Safety Committee
+  responsibilities: 'Informed of material transparency decisions, "cannot disclose" categories, and stakeholder-complaint
+    patterns about transparency or accountability.
+
+    '
+  accountable_or_consulted: informed
+documentation_artifacts:
+- artifact: Transparency standards adoption list
+  cadence: versioned; reviewed annually
+- artifact: Per-capability system / model cards
+  cadence: versioned per material change; reviewed per release
+- artifact: Inter-agent accountability protocol specification
+  cadence: versioned; reviewed on integration landscape change
+- artifact: Stakeholder Communications Policy
+  cadence: annually; pre-release review for major launches
+- artifact: Achievable-transparency register
+  cadence: continuous; reviewed annually
+- artifact: Harm-avoidance test battery results
+  cadence: per release + periodic re-run
+evidence_production:
+- evidence_numeral: I
+  how_to_produce: 'Retain per-capability system cards (or equivalent) in the form required by the adopted
+    standard, with change history. Map each card to the adopted standard''s schema; deviations annotated
+    with reason. Cards are linked from the governance framework and the public-facing transparency site
+    where appropriate.
+
+    '
+- evidence_numeral: II
+  how_to_produce: 'Inter-agent accountability protocol specification (current version) plus integration-partner
+    attestations showing which partners honor the protocol, deviation records, and logs from gateway enforcement.
+    Where an interoperation does not honor the protocol, exception register names the residual risk, owner,
+    and review date.
+
+    '
+confidence: medium
+needs_human_review: true
+review_notes: 'Two judgement calls: (1) content_type could be argued as process (the communications cadence,
+  release-gate reviews) but the core shape is governance — adopted standards, role accountability, written
+  protocols; (2) SFR-d "design systems to avoid actions or inactions that could harm humans or other agents"
+  is properly a D4-value- alignment / D5-control subgoal too; the pattern treats it as the accountability-and-transparency
+  face of that same requirement — the obligation to evidence the design intent, not to specify the alignment
+  itself. Cross-suite: heavy dependency on D4 (Value Alignment), D5 (Control), D7 (Sustained Safety),
+  and D9::6 (Cryptographic Governance) for the integrity of transparency claims. I5 (Perception / Trust)
+  likely mirrors the stakeholder-communications posture from the trust-in-AI angle.
+
+  '
+drafted_by: claude-opus-4.7-subagent-D9
+drafted_at: 2026-04-16
+anchor_exemplar: D9.2-compliance
+version_compat:
+  framework_version_min: '1.0'
+  framework_version_max: 1.x
+  pattern_layer_version: v1-draft

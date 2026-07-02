@@ -1,0 +1,137 @@
+id: I6::idx7::managing-ai-generated-innovation
+display_id: I6.7
+suite_id: I6
+suite_title: Competitive Pressures
+subgoal_title: Managing AI-Generated Innovation
+content_type: process
+summary: 'AI-generated ideation creates two pressure points: confabulation (the output is plausible but
+  wrong) and IP race anxiety (someone else will file first). This subgoal expects a verification workflow
+  that treats AI outputs as hypotheses requiring validation, not conclusions, and an IP/attribution protocol
+  that slows deployment enough to check the output is correct and correctly attributed. The operational
+  artifact is a provenance-tracked ideation log: which tools, what prompts, what outputs, how verified,
+  who signed off.
+
+  '
+normative_anchors:
+  sfrs_addressed:
+  - a
+  - b
+  evidence_addressed:
+  - I
+  - II
+  - III
+  sfrs_not_addressed: []
+  evidence_not_addressed: []
+cross_references:
+- I6::idx6::innovation-vs-ip-concerns
+- I6::idx5::publishing-and-deployment-pressures
+process_elements:
+- name: AI Tool Usage Policy
+  cadence: annual review; ongoing enforcement
+  participants:
+  - engineering leads
+  - research leads
+  - legal
+  - safety lead
+  maps_to_sfr:
+  - a
+- name: Ideation Session Provenance Logging
+  cadence: per use of AI tools for ideation/innovation work
+  participants:
+  - user
+  - tool
+  - optional reviewer
+  maps_to_sfr:
+  - b
+- name: Verification and Fact-Check Protocol
+  cadence: per material AI-generated output before external use or deployment
+  participants:
+  - responsible engineer/researcher
+  - domain expert
+  - citation validator
+  maps_to_sfr:
+  - a
+  - b
+- name: Confabulation Detection Review
+  cadence: pre-publication / pre-deployment gate for AI-sourced claims
+  participants:
+  - safety lead
+  - domain expert
+  - fact-check owner
+  maps_to_sfr:
+  - a
+- name: Concurrent-Development Awareness Scan
+  cadence: pre-filing / pre-publication; quarterly for active research streams
+  participants:
+  - IP counsel
+  - research lead
+  - literature-monitoring function
+  maps_to_sfr:
+  - b
+- name: Attribution and Provenance Statement
+  cadence: per publication or release where AI was materially involved
+  participants:
+  - authors
+  - IP counsel
+  - responsible researcher
+  maps_to_sfr:
+  - b
+triggers:
+- AI tool used for ideation, drafting, or research synthesis → Ideation Session Provenance Logging
+- AI output proposed for external use (publication, product copy, customer-facing claim, patent application,
+  research paper) → Verification and Fact-Check Protocol before release
+- Fact-check identifies uncertainty or contradiction with established knowledge → Confabulation Detection
+  Review
+- Research stream approaching publication/filing → Concurrent-Development Awareness Scan
+- Publication or release with material AI involvement → Attribution and Provenance Statement
+artifacts:
+- AI Tool Usage Policy (controlled, versioned)
+- 'Ideation log per project: tools used, prompts or inputs, outputs retained, human modifications, verification
+  trail'
+- 'Verification reports per material AI output: claim, source checked, finding, sign-off'
+- Concurrent-development scan reports (pre-filing / pre-publication)
+- Attribution and provenance statements (in publications, product documentation, patent filings)
+- 'Annual audit sample: AI-generated outputs shipped vs verification completeness'
+evidence_production:
+- evidence_numeral: I
+  how_to_produce: 'Project development cycle documentation: timeline, milestones, AI-tool-usage points,
+    verification gates, outcome. Demonstrates that AI-generated content has a human-verification step
+    before external use. Retain per project; annual sampled audit reports on adherence.
+
+    '
+- evidence_numeral: II
+  how_to_produce: 'Ideation logs retained systematically: AI tool identity and version, prompt or input,
+    raw output, human-edited output, verification sources consulted, sign-off. Where models are closed-source,
+    record the API version and date. Tool-chain documentation describes how outputs move through verification
+    to deployment.
+
+    '
+- evidence_numeral: III
+  how_to_produce: 'Concurrent-development scan reports (literature search, patent search, open-source
+    repository search, conference-proceeding scan) with date, scope, findings, and IP counsel sign-off
+    on deployment timing. Multiple verification sources documented: primary literature, expert consultation,
+    computational validation where applicable, reproduction of key claims.
+
+    '
+confidence: medium
+needs_human_review: true
+review_notes: "The framework-specific sharpenings worth preserving:\n  (1) \"Ideation provenance\" as\
+  \ a standing artifact — many orgs use\n      AI tools casually without logging; the subgoal's teeth\
+  \ come\n      from the logging requirement.\n  (2) Confabulation-as-a-named-risk is newly relevant and\
+  \ the\n      pattern should not underweight it: AI outputs that look\n      authoritative but are wrong\
+  \ are the specific failure mode\n      this subgoal guards against, distinct from general quality\n\
+  \      control.\n  (3) \"Rushed deployments driven by IP concerns\" is subtle — the\n      pattern's\
+  \ response is the Concurrent-Development Awareness\n      Scan rather than forcing slowdown, because\
+  \ the real harm\n      is shipping unverified content, not being second-to-market.\nCross-suite:\n \
+  \ (1) D8 (Oversight/Evals) has heavy overlap on verification; I6.7\n      specializes to AI-generated\
+  \ content specifically.\n  (2) I2 Deception: verification vs confabulation frames are\n      related;\
+  \ consolidate references.\nSFR-a asks to distinguish \"genuine innovation from potential confabulation\"\
+  \ — a hard problem. The pattern defaults to \"human expert verifies\" because automated confabulation\
+  \ detection is immature; Nell to consider whether the pattern should acknowledge this more explicitly.\n"
+version_compat:
+  framework_version_min: '1.0'
+  framework_version_max: 1.x
+  pattern_layer_version: v1-draft
+drafted_by: claude-opus-4.7-author
+drafted_at: 2026-04-16
+anchor_exemplar: D7.2-culture-of-safety

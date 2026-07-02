@@ -1,0 +1,157 @@
+# D2.8 — Output Fidelity and Anti-Confabulation
+
+id: "D2::idx8::output-fidelity-and-anti-confabulation"
+display_id: "D2.8"
+suite_id: "D2"
+suite_title: "Epistemic Hygiene"
+subgoal_title: "Output Fidelity and Anti-Confabulation"
+content_type: code-applicable
+
+summary: >
+  Systems must implement mechanisms to detect, prevent, and mitigate
+  confabulation: generating plausible but fabricated information. This
+  requires confidence calibration so expressed certainty matches actual
+  accuracy, source attribution for factual claims, and systematic
+  detection of outputs that cannot be grounded in training data or
+  retrieved evidence. An ungrounded claim that reaches a user is a
+  safety failure, whether the model "intended" it or not.
+
+normative_anchors:
+  sfrs_addressed: [a, b, c]
+  evidence_addressed: [I, II, III]
+  sfrs_not_addressed: []
+  evidence_not_addressed: []
+
+cross_references:
+  - "D2::idx0::epistemic-hygiene"
+  - "D2::idx2::transparency-of-information-sources"
+  - "D2::idx1::information-cross-referencing-and-valida"
+
+design_patterns:
+
+  - name: Retrieval-grounded generation with citation enforcement
+    sketch: >
+      Every factual assertion in the output must trace to a retrieved
+      source chunk. The generation layer emits inline source references;
+      a post-generation validator checks each reference resolves to an
+      actual retrieved passage and that the claim is entailed by that
+      passage. Claims with no grounding reference are flagged or
+      suppressed before delivery. This is a structural constraint, not
+      a prompt instruction.
+    maps_to_sfr: [a]
+    when_to_use: Any system that answers factual questions using
+      retrieval-augmented generation (RAG) or tool-retrieved evidence.
+
+  - name: Calibrated confidence scoring
+    sketch: >
+      Attach a numeric confidence estimate to each output or output
+      segment. Calibrate the estimator so that claims at 90% stated
+      confidence are empirically correct 90% of the time, measured on
+      held-out evaluation sets. Expose the confidence to users as a
+      structured field, not buried in natural-language hedging. Use
+      temperature scaling or Platt calibration on the logits;
+      prompt-based self-assessment is not sufficient as a sole signal.
+    maps_to_sfr: [b]
+    when_to_use: Every production system where users act on the
+      output's accuracy.
+
+  - name: Confabulation detection pipeline
+    sketch: >
+      Run a secondary verification pass on generated outputs before
+      delivery. Techniques: self-consistency sampling (generate N
+      completions; flag claims that appear in fewer than a threshold
+      fraction), entailment verification against retrieved sources,
+      named-entity cross-referencing against a trusted knowledge base,
+      and semantic similarity scoring between claim and source. Log
+      every flagged claim with the detection method, the original
+      output, and the corrective action taken.
+    maps_to_sfr: [c]
+    when_to_use: High-stakes domains (medical, legal, financial,
+      safety-critical) and any deployment where confabulation has
+      material downstream consequences.
+
+  - name: Abstention over fabrication
+    sketch: >
+      When evidence is insufficient to answer confidently, the system
+      must refuse to answer rather than generate a plausible guess.
+      Implement a retrieval confidence threshold below which the system
+      responds with an explicit "I don't have sufficient evidence"
+      message. Track abstention rates as a KPI; a zero abstention rate
+      indicates the threshold is too low.
+    maps_to_sfr: [a, b]
+    when_to_use: Always. The threshold calibration is domain-specific.
+
+anti_patterns:
+
+  - name: Prompt-only hallucination prevention
+    why_wrong: >
+      Instructing the model "do not hallucinate" through the system
+      prompt is a request, not a mechanism. Models confabulate despite
+      instructions. Structural grounding checks are required.
+
+  - name: Treating low temperature as a confabulation control
+    why_wrong: >
+      Lower temperature reduces randomness but does not prevent
+      confident fabrication. A model at temperature 0 can still
+      deterministically produce a grounded-sounding false claim.
+
+  - name: Suppressing uncertainty indicators to appear authoritative
+    why_wrong: >
+      Removing hedging language or confidence scores from outputs to
+      make the system seem more confident violates SFR-b (calibrated
+      confidence). Users must see uncertainty, not a polished facade.
+
+  - name: Self-assessment as sole validation
+    why_wrong: >
+      Asking the model whether its own output is correct is circular.
+      The same reasoning that produced the confabulation will often
+      confirm it. Independent verification (retrieval, tool calls,
+      external validators) is required.
+
+evidence_production:
+
+  - evidence_numeral: I
+    how_to_produce: >
+      Maintain a confabulation evaluation benchmark: a curated set of
+      questions with known-correct answers, including adversarial
+      queries designed to elicit fabrication. Run the benchmark at
+      every model update and at defined intervals. Export precision,
+      recall, and calibration curves. Retain as an append-only
+      evidence archive alongside model version metadata.
+
+  - evidence_numeral: II
+    how_to_produce: >
+      Export confidence calibration reports: predicted confidence
+      percentile versus observed accuracy, plotted as reliability
+      diagrams. Include the calibration method, the evaluation dataset
+      description, and the ECE (expected calibration error) metric.
+
+  - evidence_numeral: III
+    how_to_produce: >
+      Maintain a confabulation incident log: detected confabulations
+      in production, the detection method that caught them (or the
+      user report that surfaced them), the root cause category
+      (retrieval failure, knowledge gap, reasoning error, source
+      conflict), and the remediation applied. Aggregate into quarterly
+      trend reports.
+
+confidence: medium
+needs_human_review: false
+review_notes: >
+  Phase 3: Initial draft, awaiting human review. SFR and evidence
+  descriptions in criteria-v1.json are empty; content derived from
+  the subgoal description. Design patterns emphasize structural
+  grounding over prompt-based approaches, consistent with the
+  framework's preference for mechanism over instruction. Cross-suite
+  overlap with I2 (Deception) where confabulation shades into
+  strategic misrepresentation; consolidation should draw the boundary.
+  Calibration pattern assumes logit access, which may not hold for
+  API-only model deployments; reviewer should assess whether a
+  prompt-based calibration fallback deserves mention.
+
+drafted_by: claude-opus-4-6-author
+drafted_at: 2026-05-16
+version_compat:
+  framework_version_min: "1.0"
+  framework_version_max: "1.x"
+  pattern_layer_version: "v1-draft"

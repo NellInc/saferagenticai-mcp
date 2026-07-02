@@ -1,0 +1,140 @@
+id: I6::idx5::publishing-and-deployment-pressures
+display_id: I6.5
+suite_id: I6
+suite_title: Competitive Pressures
+subgoal_title: Publishing and Deployment Pressures
+content_type: process
+summary: 'This subgoal covers the acute failure mode of competitive pressure: shipping or publishing a
+  capability before safety validation is complete. The pattern expects a deploy-gate process with teeth
+  (safety lead approval cannot be overridden below board level) and a protected reporting channel for
+  staff who see corners being cut. Structural: whistleblower protection isn''t a poster in the break room,
+  it''s a confidential reporting intake, external ombudsperson, and documented non-retaliation record.
+
+  '
+normative_anchors:
+  sfrs_addressed:
+  - a
+  - b
+  evidence_addressed:
+  - I
+  - II
+  - III
+  sfrs_not_addressed: []
+  evidence_not_addressed: []
+cross_references:
+- I6::idx0::competitive-pressures
+- I6::idx3::insufficient-insights-into-future-conseq
+- I6::idx2::safety-washing
+process_elements:
+- name: Safety-First Deployment Gate
+  cadence: pre-deployment (blocking; no release without sign-off)
+  participants:
+  - safety lead
+  - responsible engineer
+  - product owner
+  - independent reviewer
+  - legal
+  maps_to_sfr:
+  - a
+- name: Publication/Release Pressure Escalation
+  cadence: per request (any request to accelerate past the gate)
+  participants:
+  - safety lead
+  - CSO
+  - board risk committee on escalation
+  maps_to_sfr:
+  - a
+- name: Protected Safety-Concern Reporting Intake
+  cadence: continuous; confidential intake always open
+  participants:
+  - staff (reporter)
+  - independent ombudsperson
+  - external counsel for escalations
+  maps_to_sfr:
+  - b
+- name: Non-Retaliation Audit
+  cadence: annual; also post-departure review for any safety-reporting staff member
+  participants:
+  - HR lead
+  - ombudsperson
+  - external counsel
+  maps_to_sfr:
+  - b
+- name: Pre-Deployment Feasibility Pilot
+  cadence: per material deployment, before scale-up
+  participants:
+  - safety lead
+  - product owner
+  - pilot users
+  - monitoring
+  maps_to_sfr:
+  - a
+- name: Sunset/Rollback Plan Review
+  cadence: pre-deployment; re-reviewed post-launch at defined intervals
+  participants:
+  - safety lead
+  - operations
+  - legal
+  maps_to_sfr:
+  - a
+triggers:
+- Proposed release or material update → Safety-First Deployment Gate
+- Request to expedite past the gate → Publication/Release Pressure Escalation (must route through CSO;
+  if CSO authorizes, logged in Competitive-Pressure Override Register — I6.idx0)
+- Any staff member raises safety concern → Protected Reporting Intake; acknowledgment within 2 business
+  days, triage within 10 business days
+- Departure of staff who had raised a reported concern within 12 months → Non-Retaliation Audit
+- Post-launch review identifies unresolved safety issue → Rollback plan activation and gate re-opening
+artifacts:
+- Deployment gate dossiers (per release; sign-offs from safety lead, product owner, independent reviewer,
+  legal)
+- Pressure-escalation records (where applicable)
+- Ombudsperson intake log (anonymized aggregate; full record retained under access control)
+- Non-retaliation audit reports (annual)
+- Feasibility pilot reports with go/no-go recommendation
+- Rollback/sunset plans per capability
+- Whistleblower policy document (controlled; signed acknowledgment from every employee at onboarding and
+  annually)
+evidence_production:
+- evidence_numeral: I
+  how_to_produce: 'Publish the corporate governance and ethics code with safety- prioritization explicit.
+    Include: the deploy-gate process, escalation paths, non-retaliation policy, whistleblower protections.
+    Independent verification of adherence via the ombudsperson''s annual report and external audit of
+    a sample of gate decisions.
+
+    '
+- evidence_numeral: II
+  how_to_produce: 'Retain deployment gate dossiers as signed artifacts per release: capability description,
+    pre-release tests, feasibility-pilot results, known limitations, mitigation plan, rollback plan, sign-offs,
+    and go/no-go decision. Link to the release approval records (I6.idx0 evidence IX) and the safety test
+    suite (D3.2 evidence I).
+
+    '
+- evidence_numeral: III
+  how_to_produce: 'Whistleblower policy as a controlled document with: intake channels (internal, external
+    counsel, regulator), confidentiality guarantees, non-retaliation commitment, process timelines, and
+    dispute resolution path. Ombudsperson maintains the intake log; aggregated figures are published in
+    the annual transparency report (I6.idx1); individual cases retained under access control.
+
+    '
+confidence: medium
+needs_human_review: true
+review_notes: "Process is well-established in SRE/security cultures; the framework- specific sharpenings\
+  \ worth preserving:\n  (1) The ombudsperson is external or at least structurally\n      independent\
+  \ of product/commercial leadership. Internal-only\n      channels fail the subgoal under pressure.\n\
+  \  (2) SFR-b is not normative in the input JSON — whistleblower\n      protection is soft-asked. The\
+  \ pattern treats it as core anyway\n      because SFR-a (safety-first culture) cannot be evidenced\n\
+  \      without protected reporting. Nell may want to adjust.\n  (3) The Override Register (I6.idx0)\
+  \ is the cross-check: if the\n      deploy-gate is being bypassed, the register should show it.\n  \
+  \    If the register is empty but people report bypasses to the\n      ombudsperson, the register is\
+  \ being bypassed — which is a\n      more serious failure than the original bypass.\nCross-suite:\n\
+  \  (1) D7 Sustained Safety Culture owns safety culture broadly; I6.5\n      specializes it to deployment-pressure.\
+  \ The pre-deployment\n      risk review in D7.2 is the same artifact.\n  (2) D9 Governance owns the\
+  \ ombudsperson role; I6.5 adds the\n      specifically-competitive-pressure use case.\n"
+version_compat:
+  framework_version_min: '1.0'
+  framework_version_max: 1.x
+  pattern_layer_version: v1-draft
+drafted_by: claude-opus-4.7-author
+drafted_at: 2026-04-16
+anchor_exemplar: D7.2-culture-of-safety

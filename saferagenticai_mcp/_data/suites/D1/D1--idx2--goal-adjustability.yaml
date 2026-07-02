@@ -1,0 +1,175 @@
+id: "D1::idx2::goal-adjustability"
+display_id: "D1.2"
+suite_id: "D1"
+suite_title: "Goal Alignment"
+subgoal_title: "Goal Adjustability"
+content_type: code-applicable
+
+summary: >
+  An agent that cannot have its goals changed is an agent out of control;
+  an agent whose goals can be changed by anyone is worse. This subgoal asks
+  for authenticated, verified, logged channels through which authorized
+  humans — and the system itself, on detecting its own misalignment — can
+  modify the goal portfolio. The hard part is the authorization boundary,
+  not the mutation itself.
+
+normative_anchors:
+  sfrs_addressed: [a, b, c]
+  evidence_addressed: [I, II]
+  sfrs_not_addressed: []
+  evidence_not_addressed: []
+
+cross_references:
+  - "D1::idx1::transparency-of-goals"
+  - "D1::idx8::goal-alignment-resistance-and-negotiatio"
+  - "D1::idx9::goal-drift"
+
+design_patterns:
+
+  - name: Authenticated goal-mutation endpoint with role-scoped authorization
+    sketch: >
+      Goal changes flow through a single API (`POST /agents/{id}/goals`,
+      `PATCH /agents/{id}/goals/{goal_id}`) that requires authenticated
+      principal, role check against the goal being modified (top-level
+      goals may require higher role than instrumental), and MFA for
+      destructive changes. Session tokens are short-lived; replay protection
+      via nonce + timestamp.
+    maps_to_sfr: [c]
+    when_to_use: Any agent whose goals can be changed post-deployment.
+
+  - name: Context-triggered auto-update with bounded scope
+    sketch: >
+      Environmental / stakeholder-need changes trigger goal re-evaluation
+      through named "update hooks" (e.g., `on_new_regulation`,
+      `on_stakeholder_feedback`). Each hook is scoped — it can only modify
+      specified goal classes (e.g., instrumental goals under a given
+      parent), never override user-provided top-level goals without human
+      confirmation. Scope is declared and enforced at hook-registration time.
+    maps_to_sfr: [a]
+    when_to_use: Long-running agents operating in changing environments.
+
+  - name: Self-initiated update on internal-error detection
+    sketch: >
+      When the agent detects misalignment (value-check failure, repeated
+      planner errors, data-quality anomaly above threshold), it does not
+      silently adapt — it either (a) pauses and requests guidance, or
+      (b) updates only within a declared self-correction envelope
+      (e.g., "instrumental goals under parent X, only to drop or narrow,
+      never to broaden"). Every self-update is logged with detection
+      evidence.
+    maps_to_sfr: [b]
+    when_to_use: Systems with internal alignment checks or anomaly detectors.
+
+  - name: Two-phase commit for sensitive goal changes
+    sketch: >
+      Proposed change is staged, validated against policy (does this
+      broaden the agent's capability envelope? does it contradict an
+      active top-level goal?), and only committed on explicit confirmation.
+      For high-risk changes (scope expansion, safety-goal modification),
+      require a second authorized principal — four-eyes principle.
+    maps_to_sfr: [c]
+    when_to_use: Production deployments with material risk surface.
+
+anti_patterns:
+
+  - name: Goal mutation via prompt injection
+    why_wrong: >
+      If "my new goal is X" in a user message silently rewrites the agent's
+      top-level objective, there is no authorization boundary. Natural-
+      language goal-change requests must be routed through the authenticated
+      mutation endpoint and distinguished from conversational content.
+
+  - name: Self-update without envelope
+    why_wrong: >
+      An agent that can arbitrarily rewrite its own goals on detecting
+      "misalignment" is giving itself a veto over oversight. Self-initiated
+      updates (SFR-b) need a declared, narrow envelope; anything broader is
+      a pause-and-ask.
+
+  - name: Shared operator credential for goal changes
+    why_wrong: >
+      Evidence II asks for audit trails of "human-directed changes." A
+      shared credential makes "who changed this goal" unanswerable. Every
+      authorized modifier is an individually identifiable principal.
+
+  - name: Silent goal revert on error
+    why_wrong: >
+      If a mutation fails validation and the system silently keeps the
+      prior goal without notifying the requester, errors hide. Failed
+      mutations must return explicit failure with reason, and be logged.
+
+code_shape:
+  language: pseudocode
+  code: |
+    # Every goal change — human or self-initiated — funnels through here
+    def update_goal(agent_id, goal_id, new_state, *, actor, reason, ctx):
+        principal = AUTH.verify(ctx.token)  # fails closed
+        current = GOAL_STORE.get(agent_id, goal_id)
+        # Authorization: who can touch this goal class?
+        if not POLICY.can_modify(principal, current):
+            AUDIT.deny(principal, goal_id, "role_insufficient")
+            raise Unauthorized
+
+        # Self-update envelope check
+        if actor == "agent_self":
+            if not SELF_UPDATE_ENVELOPE.permits(current, new_state):
+                AGENT.pause(reason="self_update_outside_envelope")
+                NOTIFY.operators(agent_id, goal_id, proposed=new_state)
+                return Pending
+
+        # Two-phase commit for sensitive goals
+        if POLICY.is_sensitive(current):
+            staged = STAGING.stage(goal_id, new_state, principal)
+            if not SECOND_APPROVER.confirm(staged):
+                AUDIT.record(staged, outcome="awaiting_second_approval")
+                return Pending
+
+        GOAL_STORE.apply(agent_id, goal_id, new_state,
+                         actor=principal.id, reason=reason)
+        AUDIT.record(agent_id, goal_id, actor=principal.id,
+                     prev=current, new=new_state, reason=reason)
+  notes: >
+    Auth, envelope check, staging, commit, audit — five distinct steps,
+    each of which must be individually auditable. Shortcutting any of them
+    (common in early agent frameworks) collapses SFR-b or SFR-c.
+
+evidence_production:
+
+  - evidence_numeral: I
+    how_to_produce: >
+      Technical design docs describing: the mutation API surface,
+      authentication mechanism (token format, issuer, MFA triggers),
+      authorization model (which principal roles can touch which goal
+      classes), staging/commit flow, self-update envelope definition, and
+      hook registration for context-triggered updates. Include sequence
+      diagrams for the three adjustment paths (SFR-a context-triggered,
+      SFR-b self-initiated, SFR-c human-directed).
+
+  - evidence_numeral: II
+    how_to_produce: >
+      Export goal-mutation logs per audit window showing: full set of
+      change events with principal, goal_id, prev_state, new_state,
+      justification, outcome (applied / denied / pending), and — for
+      self-initiated changes — the detection evidence that triggered them.
+      Denied mutations are evidence that the authorization boundary is
+      doing work.
+
+confidence: high
+needs_human_review: false
+review_notes: >
+  Leans heavily on standard authn/authz primitives (D3 Security). The
+  framework-specific sharpenings are (1) the self-update envelope
+  (SFR-b): narrowly scoped, pause-and-ask beyond it; (2) treating
+  natural-language goal-change requests as requiring the same gate as
+  API calls. Cross-ref D1.8 (resistance) because the "pause and ask"
+  path from self-update-outside-envelope is the same mechanism as
+  resistance-as-signal. Cross-suite: relies on D3 auth primitives.
+
+version_compat:
+  framework_version_min: "1.0"
+  framework_version_max: "1.x"
+  pattern_layer_version: "v1-draft"
+
+drafted_by: claude-opus-4.7-author
+drafted_at: 2026-04-16
+anchor_exemplar: D3.2-sandboxing

@@ -1,0 +1,135 @@
+id: I3::idx6::learning-dispreferred-values-behaviors
+display_id: I3.6
+suite_id: I3
+suite_title: Degradation of Contextual Information
+subgoal_title: Learning Dispreferred Values/Behaviors
+content_type: code-applicable
+summary: 'Online learning and implicit adaptation can shift the system''s effective values away from sanctioned
+  ones when dispreferred behaviors happen to yield short-term rewards (more engagement, cleaner tool-call
+  traces, higher user ratings on narrow metrics). Defenses: freeze the core value manifest as signed,
+  read-only, and check decisions against it; monitor for value-metric drift in observable behavior; gate
+  any ethical-framework update through a governed change process. Value drift is a measurement problem
+  before it is a policy problem — invest in the measurement.
+
+  '
+normative_anchors:
+  sfrs_addressed:
+  - a
+  - b
+  evidence_addressed:
+  - I
+  - II
+  - III
+  sfrs_not_addressed: []
+  evidence_not_addressed: []
+cross_references:
+- I3::idx7::overriding-of-desirable-values
+- I3::idx8::persona-instability-and-value-drift
+- I3::idx12::referential-context
+design_patterns:
+- name: Signed, read-only value manifest
+  sketch: 'The operative value framework (stated ethical commitments, constraints, red lines) lives as
+    a signed artifact, versioned, loaded on every reasoning cycle (not cached across loops), verified
+    at load. Updates go through the governance-reviewed change process with re-signing; silent updates
+    are detectable via signature mismatch.
+
+    '
+  maps_to_sfr:
+  - a
+  when_to_use: Any long-running or online-adapting system.
+- name: Value-probe eval suite
+  sketch: 'Maintain a battery of scenarios that probe value-sensitive decisions (e.g., user pressure vs
+    policy, shortcut vs safety, user benefit vs third-party harm). Run per-release and on a continuous
+    schedule against production checkpoints. Drift is declared when probe outcomes change beyond a threshold
+    without an authorized value-manifest update.
+
+    '
+  maps_to_sfr:
+  - b
+  when_to_use: Systems with any form of online learning, personalization, or periodic re-training.
+- name: Reward-shaping inspection
+  sketch: 'Where RLHF, DPO, or similar preference-based training is used, audit the effective reward surface
+    for value-degradation pressure: does the preference dataset systematically reward over-compliance,
+    sycophancy, deception under pressure, or short-cuts? Red-team the dataset, not only the model.
+
+    '
+  maps_to_sfr:
+  - b
+  when_to_use: Any time preference-based fine-tuning runs on production artifacts.
+- name: Change-controlled value evolution
+  sketch: 'Value updates (new constraints, relaxed constraints, new exceptions) are change-controlled:
+    proposal, ethical review, sign-off, staged rollout, probe re-run, rollback path. A value delta without
+    a ticket is treated as an incident, not a feature.
+
+    '
+  maps_to_sfr:
+  - b
+  when_to_use: Governance for any production deployment.
+anti_patterns:
+- name: Learning from deployment without value probes
+  why_wrong: 'Any online adaptation without a probe suite running alongside is flying blind on the exact
+    dimension this subgoal covers. The framework''s "stability of core ethical values" requires measurable
+    stability, not asserted.
+
+    '
+- name: Improvement metrics that reward sycophancy
+  why_wrong: 'User ratings reward agreeing with the user; helpfulness scores reward promising what can''t
+    be delivered. Over time, these train a different value set than the stated one. Audit metrics themselves
+    for alignment pressure.
+
+    '
+- name: Value manifest as a prompt string
+  why_wrong: 'If the ethical directives live as soft prompts that any fine-tune or prompt-optimization
+    sweep can overwrite, they are not the stable manifest the framework requires. Separate substrate (signed
+    config, not prompt).
+
+    '
+code_shape:
+  language: pseudocode
+  code: "def load_value_manifest() -> ValueManifest:\n    blob, sig = MANIFEST_STORE.read()\n    if not\
+    \ ROOT_KEY.verify(sig, blob):\n        raise ValueManifestCorrupt()\n    return ValueManifest.decode(blob)\n\
+    \ndef evaluate_decision(decision: Decision, manifest: ValueManifest) -> Verdict:\n    for rule in\
+    \ manifest.rules:\n        if rule.conflicts_with(decision):\n            return Verdict.reject(rule.id,\
+    \ rule.rationale)\n    return Verdict.ok()\n\ndef value_drift_scan(checkpoint: Checkpoint, probes:\
+    \ ProbeSuite) -> Drift:\n    baseline = PROBE_HISTORY.baseline(probes.id)\n    current = probes.run(checkpoint)\n\
+    \    deltas = [p for p in current if p != baseline[p.id]]\n    if deltas and not CHANGE_MGMT.authorized(checkpoint,\
+    \ deltas):\n        INCIDENT.raise_(\"value_drift\", checkpoint, deltas)\n    return Drift(deltas)\n"
+  notes: 'Probe suites should be treated like any other eval: versioned, reviewed for coverage, expanded
+    when new failure modes emerge. They age — a drift-free probe suite on an updated model means the probes
+    no longer exercise the current failure modes.
+
+    '
+evidence_production:
+- evidence_numeral: I
+  how_to_produce: 'Documented ethical framework with signed manifest history, system-logic analysis showing
+    how the manifest is loaded and checked, alignment reports between decisions and manifest rules. Include
+    per-release re-alignment evidence.
+
+    '
+- evidence_numeral: II
+  how_to_produce: 'Continuous monitoring records: operational activity with contextual tags, probe-suite
+    results over time, alignment stability metrics, documented authorized evolutionary improvements with
+    change tickets.
+
+    '
+- evidence_numeral: III
+  how_to_produce: 'Integrity verification reports: scheduled audits for value degradation (probe drift,
+    metric-pressure analysis, manifest integrity), audit trails confirming stability, and remediation
+    records when drift was detected.
+
+    '
+confidence: medium
+needs_human_review: true
+review_notes: 'Value-drift measurement is a live research area; the pattern prescribes measurement discipline
+  but the specific probes and thresholds are domain-dependent. Medium confidence. Cross-suite: D1 (Aligning
+  with Human Values) is the positive counterpart; D7 (Safe System Profile) on continuous monitoring; I3.7
+  and I3.8 closely overlap — consolidation may merge or cross-reference heavily.
+
+  '
+version_compat:
+  framework_version_min: '1.0'
+  framework_version_max: 1.x
+  pattern_layer_version: v1-draft
+drafted_by: claude-opus-4.7-author
+drafted_at: 2026-04-16
+anchor_exemplar: D3.2-sandboxing

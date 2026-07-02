@@ -1,0 +1,192 @@
+# Pattern — D2.1 Information Cross-Referencing and Validation
+
+id: "D2::idx1::information-cross-referencing-and-valida"
+display_id: "D2.1"
+suite_id: "D2"
+suite_title: "Epistemic Hygiene"
+subgoal_title: "Information Cross-Referencing and Validation"
+content_type: code-applicable
+
+summary: >
+  Claims the agent relies on must be corroborated against multiple
+  authoritative sources with explicit trust weighting, and conflicts must be
+  surfaced rather than silently resolved by whichever source spoke last. The
+  subgoal is satisfied by a validator layer that (a) runs between retrieval
+  and generation, (b) scores source authority on a maintained registry, and
+  (c) emits logs showing what was cross-checked and how disagreements were
+  handled.
+
+normative_anchors:
+  sfrs_addressed: [a]
+  evidence_addressed: [I, II, III]
+  sfrs_not_addressed: []
+  evidence_not_addressed: []
+
+cross_references:
+  - "D2::idx2::transparency-of-information-sources"
+  - "D2::idx5::rigor-in-operational-data"
+  - "D2::idx10::temporal-trade-off-aspects"
+
+design_patterns:
+
+  - name: Source authority registry with scored tiers
+    sketch: >
+      Maintain a versioned registry of sources the agent is allowed to
+      consult, each tagged with authority tier (e.g., T1 canonical
+      primary, T2 curated secondary, T3 community/open, T4 user-supplied)
+      and domain scope. Authority is per-domain, not global — a clinical
+      guideline is T1 for medicine and T3 for software. Scores update via
+      governed change process (see D2.6), not by generation-time
+      heuristics.
+    maps_to_sfr: [a]
+    when_to_use: Any agent retrieving or citing external claims.
+
+  - name: N-source corroboration gate
+    sketch: >
+      For claims above a materiality threshold (affecting a user decision,
+      emitted as a factual assertion, used as input to an action), require
+      N ≥ 2 independent sources of authority-tier at-or-above threshold
+      before the claim can be emitted unhedged. Below the threshold, the
+      agent must hedge with explicit uncertainty language or abstain.
+      Independence is tracked — two mirrors of the same primary do not
+      count as two sources.
+    maps_to_sfr: [a]
+    when_to_use: Anywhere the agent emits claims as user-facing facts or
+      as inputs to downstream actions.
+
+  - name: Conflict surfacing, not silent reconciliation
+    sketch: >
+      When sources disagree, do not silently pick one. The pipeline emits
+      a structured conflict record (sources, conflicting values,
+      confidence deltas) to the trace. Resolution is either (i)
+      evidence-based via authority tier + recency + cited-by count with
+      the rule logged, (ii) hedged output acknowledging the conflict to
+      the user, or (iii) abstention. Never (iv) generation-by-fluency.
+    maps_to_sfr: [a]
+    when_to_use: Whenever retrieval returns competing values for the same
+      fact slot.
+
+  - name: Contextual boundary enforcement
+    sketch: >
+      Cross-referencing is scoped — do not corroborate a medical claim
+      from a forum thread, do not corroborate a legal claim from a news
+      aggregator. Implement as a (domain × allowed-tier) matrix enforced
+      at retrieval time, logging any attempt to cross a boundary as an
+      integrity event.
+    maps_to_sfr: [a]
+    when_to_use: Multi-domain agents; any retrieval-augmented system.
+
+anti_patterns:
+
+  - name: "Self-consistency as validation"
+    why_wrong: >
+      Sampling the same model N times and taking the majority is not
+      cross-referencing — it is reinforcing the model's priors. The
+      subgoal requires *source* multiplicity, not *sample* multiplicity.
+
+  - name: Generation-time authority scoring
+    why_wrong: >
+      Allowing the model to assign authority scores at generation time
+      gives the agent a knob to justify whatever it wanted to say. The
+      registry must be a governed artifact updated through change
+      control.
+
+  - name: Silent LLM reconciliation of conflicts
+    why_wrong: >
+      Handing conflicting sources to a generator and asking it to "decide"
+      hides the conflict from audit and from the user. The conflict is a
+      first-class signal; emit it.
+
+  - name: "2 mirrors = 2 sources"
+    why_wrong: >
+      A press release reprinted across ten outlets is still one source.
+      Corroboration requires provenance-level independence, not document
+      count.
+
+code_shape:
+  language: pseudocode
+  code: |
+    # Claim validator: runs between retrieval and generation
+    def validate_claim(claim: Claim, retrieved: list[Passage],
+                       *, ctx: AgentContext) -> ValidatorResult:
+        # Filter retrieved passages by (domain, authority-tier) matrix
+        in_scope = [p for p in retrieved
+                    if REGISTRY.allows(p.source_id, claim.domain)]
+
+        # Group by provenance root (not URL) — collapse mirrors
+        by_origin = group_by_provenance_root(in_scope)
+
+        supporting = [o for o in by_origin if o.supports(claim)]
+        conflicting = [o for o in by_origin if o.contradicts(claim)]
+
+        # Conflict branch
+        if conflicting:
+            AUDIT.emit("source_conflict",
+                       claim=claim.id,
+                       supporting=[o.id for o in supporting],
+                       conflicting=[o.id for o in conflicting])
+            return ValidatorResult.conflict(supporting, conflicting)
+
+        # Corroboration branch
+        tier_threshold = claim.materiality.required_tier()
+        corroborating = [o for o in supporting
+                         if REGISTRY.tier(o.source_id, claim.domain)
+                            >= tier_threshold]
+        if len(corroborating) >= claim.materiality.required_n_sources():
+            return ValidatorResult.corroborated(corroborating)
+
+        return ValidatorResult.under_corroborated(supporting)
+  notes: >
+    The validator returns a structured result that downstream generation
+    consumes — it does not decide whether to emit; it decides what
+    hedging or abstention the generator is required to honor. Keep
+    policy (how to hedge) separate from evidence (what was found).
+
+evidence_production:
+
+  - evidence_numeral: I
+    how_to_produce: >
+      Publish a technical specification of the cross-referencing pipeline:
+      source authority registry schema, authority-tiering methodology,
+      materiality classes and their N-source thresholds, provenance-root
+      grouping logic. Versioned with change log. Referenced from the
+      Epistemic Hygiene Charter (D2).
+
+  - evidence_numeral: II
+    how_to_produce: >
+      Publish the source evaluation framework: how new sources are
+      proposed, vetted, tier-assigned, re-evaluated, and retired.
+      Include the credibility criteria (provenance, editorial process,
+      correction record, conflict-of-interest disclosure) and the
+      relevance criteria (domain fit, recency window). Governance
+      process owner named per D2.6.
+
+  - evidence_numeral: III
+    how_to_produce: >
+      Emit structured events per validator invocation: `{claim_id,
+      domain, sources_considered, sources_in_scope, supporting,
+      conflicting, result, hedge_applied}`. Aggregate to a daily
+      integrity-signal report: conflict rate by domain, under-corroboration
+      rate, sources most often in conflict. Retain per the Information
+      Integrity Register.
+
+confidence: high
+needs_human_review: false
+review_notes: >
+  High-confidence: the pattern mirrors established practice in fact-checking
+  pipelines and retrieval-augmented generation, sharpened to the
+  framework's explicit authority-weighting and contextual-boundary
+  language. Two calls:
+    (1) Cross-suite: this pattern's "conflict surfacing" overlaps I3
+        (Context Degradation) and D5 (Transparency). Consolidation to wire.
+    (2) The "materiality threshold" that decides N is left to the
+        implementing org — no universal number exists. Left deliberately
+        parametric, with examples, rather than prescribed.
+
+drafted_by: claude-opus-4.7-author
+drafted_at: 2026-04-16
+anchor_exemplar: D3.2-sandboxing
+version_compat:
+  framework_version_min: "1.0"
+  framework_version_max: "1.x"
+  pattern_layer_version: "v1-draft"

@@ -1,0 +1,163 @@
+id: I7::idx1::information-credibility-assessment-and-v
+display_id: I7.1
+suite_id: I7
+suite_title: Imbalance in AI Capabilities
+subgoal_title: Information Credibility Assessment and Validation Challenges
+content_type: code-applicable
+summary: 'An agent that treats all inputs as equally credible is exploitable by any caller who can inject
+  text. This subgoal requires the system to track provenance, score trust, explain credibility judgments,
+  and alert on manipulation patterns. Implement as a per-input validation layer sitting between tool output
+  (or retrieval, or user input) and the model''s context, with scores surfaced to both the model and the
+  audit log.
+
+  '
+normative_anchors:
+  sfrs_addressed:
+  - a
+  - b
+  - c
+  evidence_addressed:
+  - I
+  - II
+  - III
+  sfrs_not_addressed: []
+  evidence_not_addressed: []
+cross_references:
+- I7::idx0::imbalance-in-ai-capabilities
+design_patterns:
+- name: Provenance-tagged context assembly
+  sketch: 'Every item entering the model''s context carries a structured provenance record: source_type
+    (user | tool_output | retrieval | system | model_self | third_party_agent), source_id, fetch_timestamp,
+    auth_assertion (signed | unsigned | self-reported), integrity_hash, prior_trust_score. The model sees
+    the provenance (at minimum the trust tier) rendered in-context; the full record goes to the audit
+    log. Context with missing provenance fails closed.
+
+    '
+  maps_to_sfr:
+  - a
+  when_to_use: Every agent that ingests tool/retrieval/third-party content.
+- name: Dynamic trust scoring with decay
+  sketch: 'Maintain a per-source trust score in [0,1] updated on: successful corroboration (+), contradiction
+    by higher-trust source (-), detected manipulation pattern (--), staleness (decay toward prior). Scores
+    are not static allowlists; a domain that was trusted last year is not necessarily trusted today. Expose
+    the score to downstream consumers and the model''s reasoning.
+
+    '
+  maps_to_sfr:
+  - a
+  when_to_use: Systems with recurring interactions with the same sources.
+- name: Cross-source corroboration gate for high-stakes claims
+  sketch: 'Claims that will drive action (tool invocation, commitment, publication) require corroboration
+    from at least one independent source above a trust threshold. "Independent" means different provenance
+    chain, not different URL. Below threshold → model must flag uncertainty to the user or escalate, not
+    act.
+
+    '
+  maps_to_sfr:
+  - a
+  - b
+  when_to_use: Action-taking agents, not pure Q&A.
+- name: Explainable credibility verdict
+  sketch: 'When the system assigns a credibility score, it records the feature vector that produced the
+    score (source reputation, corroboration count, anomaly flags, age). The verdict is queryable by human
+    reviewers and shown, in summary form, in user-facing UI for consequential claims. Opaque scoring defeats
+    oversight.
+
+    '
+  maps_to_sfr:
+  - b
+  when_to_use: Whenever credibility scores influence visible behavior.
+- name: Manipulation-pattern anomaly detector
+  sketch: 'Run a detector over incoming content for known manipulation signatures: prompt injection patterns,
+    coordinated inauthentic timing, source laundering (trust-high source quoting trust-low source without
+    attribution), homoglyph/unicode attacks, adversarial retrieval. Detected → quarantine path (not drop,
+    not pass — routed to review or lower trust tier). Tune on a corpus that includes real attack samples,
+    not only synthetic ones.
+
+    '
+  maps_to_sfr:
+  - c
+  when_to_use: Always for internet-exposed or multi-tenant agents.
+anti_patterns:
+- name: Allowlist-as-trust
+  why_wrong: 'Domain/URL allowlists treat provenance as binary and static. A compromised-but-allowlisted
+    source (supply-chain attack, SEO injection, acquired domain) keeps full trust. Score dynamically;
+    allowlists are one signal, not the verdict.
+
+    '
+- name: Trusting model-self-claims
+  why_wrong: 'When one model in a multi-agent pipeline says "I verified this," that is not verification.
+    Treat model_self as a provenance category with bounded trust — it cannot bootstrap its own credibility.
+
+    '
+- name: Silent rewriting
+  why_wrong: 'Stripping low-credibility content without record, or summarizing it away, loses the audit
+    trail. Quarantine with tagging, not deletion.
+
+    '
+- name: Scoring without action
+  why_wrong: 'Computing credibility and then letting the model use low-credibility content identically
+    to high-credibility content is theatre. Scores must gate behavior (prompt phrasing, tool access, action
+    authorization) or they are decoration.
+
+    '
+code_shape:
+  language: pseudocode
+  code: "# Input validation layer between raw source and model context.\n\n@dataclass\nclass Provenance:\n\
+    \    source_type: Literal[\"user\", \"tool\", \"retrieval\", \"system\",\n                       \
+    \  \"model_self\", \"third_party_agent\"]\n    source_id: str\n    fetched_at: datetime\n    auth:\
+    \ Literal[\"signed\", \"unsigned\", \"self_reported\"]\n    integrity_hash: str\n\ndef admit_to_context(raw:\
+    \ bytes, prov: Provenance, *,\n                     ctx: AgentContext) -> AdmittedItem:\n    # Layer\
+    \ 1: provenance required\n    if prov is None or prov.source_id is None:\n        AUDIT.record(ctx,\
+    \ \"admit_denied\", reason=\"missing_provenance\")\n        raise CredibilityError(\"provenance required\"\
+    )\n\n    # Layer 2: anomaly detection\n    anomalies = MANIPULATION_DETECTOR.scan(raw, prov)\n   \
+    \ if anomalies.severity >= Severity.HIGH:\n        AUDIT.record(ctx, \"quarantined\", prov=prov, anomalies=anomalies)\n\
+    \        return AdmittedItem(raw, prov, trust=0.0, tier=\"quarantine\")\n\n    # Layer 3: dynamic\
+    \ trust score\n    score = TRUST_STORE.score(prov.source_id)\n    score = score.adjusted(anomalies=anomalies,\
+    \ age=now()-prov.fetched_at)\n\n    # Layer 4: high-stakes corroboration check (downstream gate)\n\
+    \    item = AdmittedItem(raw, prov, trust=score, tier=tier_of(score))\n\n    # Layer 5: audit the\
+    \ admit decision with score reasons\n    AUDIT.record(ctx, \"admitted\", prov=prov, score=score,\n\
+    \                 score_reasons=score.feature_vector)\n    return item\n"
+  notes: 'The model receives items tagged with tier, not raw content alone. A high-stakes action function
+    later consults tier + corroboration before proceeding. The trust score''s feature vector is kept so
+    the verdict is explainable.
+
+    '
+evidence_production:
+- evidence_numeral: I
+  how_to_produce: 'Maintain a validation-system design doc with: provenance taxonomy, scoring algorithm
+    (including feature definitions and update rules), adaptation records showing score changes when source
+    quality changed, and test cases covering the adaptation triggers. Versioned and reviewed annually.
+
+    '
+- evidence_numeral: II
+  how_to_produce: 'Audit logs with explainability records: for each consequential credibility decision,
+    store the feature vector, the score, the action taken, and (where applicable) human-reviewer notes
+    on override. Aggregate quarterly into an effectiveness report with false-positive and false-negative
+    rates from sampled review.
+
+    '
+- evidence_numeral: III
+  how_to_produce: 'Anomaly-detector incident log: every triggered alert with disposition (escalated, quarantined,
+    dismissed), timing, responder. Periodic review identifies detector gaps; changes recorded with rationale.
+
+    '
+confidence: high
+needs_human_review: false
+review_notes: 'This is established territory in content-safety and retrieval engineering but under-applied
+  to agentic AI, where tool outputs and other agents are often treated as privileged. The framework''s
+  sharpening worth preserving: credibility assessment is an agentic-AI problem, not just a content-mod
+  problem, because the agent ACTS on believed information. The "scoring-without-action" anti-pattern is
+  the most common failure mode.
+
+  Cross-suite: touches I2 (Deception) directly — manipulation-pattern detection overlaps with deception
+  defenses. Consolidation should link.
+
+  '
+drafted_by: claude-opus-4.7[1m]
+drafted_at: 2026-04-16
+anchor_exemplar: D3.2-sandboxing
+version_compat:
+  framework_version_min: '1.0'
+  framework_version_max: 1.x
+  pattern_layer_version: v1-draft

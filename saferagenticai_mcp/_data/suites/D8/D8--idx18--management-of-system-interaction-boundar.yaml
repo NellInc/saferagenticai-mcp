@@ -1,0 +1,194 @@
+id: D8::idx18::management-of-system-interaction-boundar
+display_id: "D8_7"
+is_underlined_variant: true
+display_id_variant_note: "D8.7_underlined"
+suite_id: D8
+suite_title: Goal Termination and Sunsetting
+subgoal_title: Management of System Interaction Boundaries
+content_type: code-applicable
+summary: 'Every interaction boundary between agents (internal/external, same jurisdiction / different
+  jurisdiction, same trust level / different) is a place where termination, data residency, and policy
+  obligations can diverge. This subgoal expects a comprehensive interface catalogue with explicit configuration
+  per boundary, deployed-time communication of constraints to agents, and runtime enforcement of cross-boundary
+  rules.
+
+  '
+normative_anchors:
+  sfrs_addressed:
+  - a
+  - b
+  - c
+  - d
+  - e
+  evidence_addressed:
+  - I
+  - II
+  - III
+  - IV
+  - V
+  sfrs_not_addressed: []
+  evidence_not_addressed: []
+cross_references:
+- D8::idx3::multi-agent-communication-and-coordinati
+- D8::idx15::prevention-of-cascading-failures
+- D8::idx19::undefined-multi-agent-interaction-protoc
+design_patterns:
+- name: Interface catalogue as code artefact
+  sketch: 'Every interface is declared in a machine-readable catalogue entry: `{interface_id, parties,
+    direction, protocol, data_types, jurisdictional_scope, trust_level, rate_limits, retention, termination_behavior,
+    fallback_behavior}`. Catalogue is the source of truth; runtime configurations are generated from it;
+    drift between catalogue and live config is an alarm.
+
+    '
+  maps_to_sfr:
+  - a
+  - e
+  when_to_use: Any system with more than a handful of interfaces; essential where interfaces cross jurisdictions.
+- name: Deploy-time constraint injection
+  sketch: 'When an agent is deployed behind an interface, the catalogue entry is compiled into the agent''s
+    execution context: permitted data types, rate limits, jurisdiction tag, expected protocol version.
+    The agent cannot operate without this injection; attempting to use an interface with mismatched constraints
+    is a runtime violation.
+
+    '
+  maps_to_sfr:
+  - b
+  when_to_use: Every agent deployment.
+- name: Jurisdiction-tagged data flow
+  sketch: 'Data packets at interface boundaries carry jurisdiction tags reflecting where they originated
+    and where they''re permitted. At each cross-boundary hop, tags are validated against the target boundary''s
+    permitted jurisdictions. Violations are blocked (not logged-and-allowed) and reported as incidents.
+
+    '
+  maps_to_sfr:
+  - c
+  - e
+  when_to_use: Any multi-jurisdictional deployment.
+- name: Behavioral-adaptation monitor
+  sketch: 'Monitor for agent behavior that shifts based on which interface it''s using: different responses
+    to the same inputs, different tool-invocation patterns, different risk posture. Some adaptation is
+    legitimate (jurisdiction-specific compliance behavior); some is concerning (agent "hiding" behavior
+    from one observer that it performs for another). Pattern detection distinguishes via baselines and
+    declared legitimate variance.
+
+    '
+  maps_to_sfr:
+  - d
+  when_to_use: Any agent operating across multiple boundaries with distinct observers.
+- name: Human-operator oversight console per boundary
+  sketch: 'Operators can inspect live traffic at each interface boundary with appropriate permissions:
+    volume, latency, error rates, denied transfers, jurisdiction-tag violations, behavioral- adaptation
+    flags. Redaction for privacy where applicable; sampling for high-volume. The console is how SFR-d''s
+    "human oversight of all interface activities" is actually realized.
+
+    '
+  maps_to_sfr:
+  - d
+  - e
+  when_to_use: Production deployments.
+- name: Interface commissioning and decommissioning workflow
+  sketch: 'New interface = explicit workflow: catalogue entry proposed, reviewed, approved, deployed,
+    monitored. Decommission = migration plan, consumer notification, grace period, teardown with traffic
+    verification. No ad-hoc interfaces; all through the workflow.
+
+    '
+  maps_to_sfr:
+  - a
+  - b
+  when_to_use: Always.
+anti_patterns:
+- name: Interfaces born undocumented
+  why_wrong: 'If developers can add a new interface without a catalogue entry, the catalogue is incomplete
+    by construction. SFR-a requires comprehensive documentation of all interfaces; enforce at the deploy
+    pipeline.
+
+    '
+- name: Jurisdiction inferred from network path
+  why_wrong: '"If the packet left via the EU egress, it''s EU-governed" is brittle — routing changes,
+    CDN caches, partner systems can all scramble this inference. Jurisdiction must be data-carried, not
+    path-inferred.
+
+    '
+- name: Operator console as a write-interface
+  why_wrong: 'Operators need to observe interfaces, not poke at live traffic from the console. Write actions
+    (pause interface, escalate incident) go through separate authorized channels with their own audit.
+
+    '
+- name: '"Behavioral adaptation" as a shrug'
+  why_wrong: 'If agents quietly behave differently across boundaries without declared rationale, the system
+    has lost coherence. Adaptation must be declared and testable, not emergent.
+
+    '
+code_shape:
+  language: pseudocode
+  code: "@dataclass(frozen=True)\nclass InterfaceSpec:\n    interface_id: str\n    parties: tuple[str,\
+    \ str]                # e.g., (\"agent_A\", \"external_partner_X\")\n    direction: Literal[\"inbound\"\
+    , \"outbound\", \"bidirectional\"]\n    protocol: ProtocolSpec\n    permitted_data_types: set[DataType]\n\
+    \    jurisdiction_scope: set[Jurisdiction]\n    trust_level: int\n    rate_limit: RateLimit\n    retention:\
+    \ RetentionPolicy\n    termination_behavior: TerminationPolicy\n    fallback: FallbackPolicy\n\nclass\
+    \ InterfaceGateway:\n    \"\"\"Runs at every boundary; enforces catalogue.\"\"\"\n    def __init__(self,\
+    \ spec: InterfaceSpec):\n        self.spec = spec\n\n    async def handle(self, packet: DataPacket)\
+    \ -> Response:\n        # Jurisdiction check\n        if not packet.jurisdiction.issubset(self.spec.jurisdiction_scope):\n\
+    \            AUDIT.record_violation(self.spec, packet, reason=\"jurisdiction\")\n            return\
+    \ Response.blocked(\"jurisdiction_mismatch\")\n        # Data-type check\n        if packet.data_type\
+    \ not in self.spec.permitted_data_types:\n            AUDIT.record_violation(self.spec, packet, reason=\"\
+    data_type\")\n            return Response.blocked(\"data_type_not_permitted\")\n        # Rate limit\n\
+    \        if not self.spec.rate_limit.allows(packet.source):\n            return Response.throttled()\n\
+    \        # Observe for operator console\n        TELEMETRY.record(self.spec, packet)\n        return\
+    \ await self.forward(packet)\n\nclass CatalogueDriftDetector:\n    async def check(self):\n      \
+    \  deployed_interfaces = await runtime_discover_interfaces()\n        catalogued = await CATALOGUE.all()\n\
+    \        for deployed in deployed_interfaces:\n            if deployed.interface_id not in catalogued:\n\
+    \                ALERTS.fire(\"undocumented_interface\", deployed)\n            elif drift(deployed.spec,\
+    \ catalogued[deployed.interface_id]):\n                ALERTS.fire(\"interface_drift\", deployed,\n\
+    \                             catalogued[deployed.interface_id])\n"
+  notes: 'Compiled catalogue + runtime gateway + drift detection is a mature pattern (service mesh + config
+    management). The framework''s contribution is requiring data-carried jurisdiction and behavioral-
+    adaptation monitoring, not just infra-level policy.
+
+    '
+evidence_production:
+- evidence_numeral: I
+  how_to_produce: 'Publish the interface catalogue (internal; external summaries where appropriate). Each
+    entry includes operational requirements, jurisdictional scope, trust level. Versioned; change history
+    preserved.
+
+    '
+- evidence_numeral: II
+  how_to_produce: 'Agent deployment manifests cite catalogue entries. Retain per release; auditable link
+    agent → interface → catalogue entry.
+
+    '
+- evidence_numeral: III
+  how_to_produce: 'Interface telemetry logs: volume, latency, violations, behavioral-adaptation flags.
+    Retain per retention policy; weekly review; anomalies investigated.
+
+    '
+- evidence_numeral: IV
+  how_to_produce: 'Monitoring reports showing compliance verification: jurisdiction- tag enforcement,
+    data-type gates, rate-limit adherence, drift detection outcomes.
+
+    '
+- evidence_numeral: V
+  how_to_produce: 'Quarterly catalogue-maintenance report: interfaces added, decommissioned, modified;
+    drift alarms and resolutions; governance-review outcomes.
+
+    '
+confidence: medium
+review_notes: 'Service-mesh + interface-catalogue patterns are mature; the framework-specific sharpening
+  is the behavioral-adaptation monitoring and data-carried jurisdiction. The former is underspecified
+  operationally (what is "concerning" adaptation in an agent that naturally personalizes?) and deserves
+  domain review. Note: this subgoal overlaps materially with idx3 (multi-agent communication) — idx3 is
+  concerned with how agents talk, idx17 is concerned with the boundary-enforcement layer those conversations
+  traverse. Consolidation should confirm the split holds or merge. Suspected cross-suite dependency: D9.2
+  Compliance (jurisdiction scope integrates with the Jurisdictional Compliance Matrix); D3 Security (interface
+  boundaries are trust boundaries); I2 Deception (behavioral adaptation could mask deception across observers).
+
+  '
+drafted_by: claude-opus-4.7-author
+drafted_at: 2026-04-16
+anchor_exemplar: D3.2-sandboxing
+
+version_compat:
+  framework_version_min: "1.0"
+  framework_version_max: '1.x'
+  pattern_layer_version: "v1-draft"

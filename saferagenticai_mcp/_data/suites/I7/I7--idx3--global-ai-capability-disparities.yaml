@@ -1,0 +1,140 @@
+id: I7::idx3::global-ai-capability-disparities
+display_id: I7.3
+suite_id: I7
+suite_title: Imbalance in AI Capabilities
+subgoal_title: Global AI Capability Disparities
+content_type: ecosystem
+summary: 'This subgoal targets the national- and organizational-scale capability gap: developing nations
+  and smaller entities have limited access to compute, frontier models, and AI talent. An org cannot solve
+  global inequity, but it can either compound or mitigate it through how it prices, licenses, collaborates,
+  and participates in cooperation frameworks. Evidence is external — resources actually flowed, partnerships
+  actually active, capabilities actually transferred — not internal commitment statements.
+
+  '
+normative_anchors:
+  sfrs_addressed:
+  - a
+  - b
+  - c
+  evidence_addressed:
+  - I
+  - II
+  - III
+  - IV
+  sfrs_not_addressed: []
+  evidence_not_addressed: []
+cross_references:
+- I7::idx10::balanced-global-ai-partnership-framework
+- I7::idx2::limited-multilingual-and-cultural-equity
+- I7::idx0::imbalance-in-ai-capabilities
+stakeholders:
+- name: Developing-nation governments and AI strategy offices
+  engagement_channel: 'Technology-transfer agreements that are enforceable, not MOUs that expire quietly. Structure:
+    specified model or framework transferred, named licensee, training for named personnel, support SLA,
+    review clause. Avoid "trickle-down": pairing a prestige announcement with nothing the receiving side
+    can actually deploy. Published summaries of what was committed and what was delivered, annual.
+
+    '
+  maps_to_sfr:
+  - a
+- name: Universities and research labs in under-resourced regions
+  engagement_channel: 'Structural access programs: compute-grant programs with allocations sized to meaningful research
+    (not demo-scale), model-access tiers that do not require commercial rates, co-authorship policies
+    that credit local researchers as leads where they lead. Track uptake and published outputs; drop programs
+    that produce only marketing without research output.
+
+    '
+  maps_to_sfr:
+  - a
+  - b
+- name: Smaller AI organizations (startups, public-benefit, academic spinouts)
+  engagement_channel: 'Tiered access to foundational capability: lower-priced API tiers for verified small orgs,
+    shared evaluation infrastructure, access to pre-training or fine-tuning infrastructure on grant terms.
+    Guard against exploitation: the tier should not come with data-rights clauses that extract value from
+    the smaller org.
+
+    '
+  maps_to_sfr:
+  - a
+  - b
+- name: Export-control and dual-use governance bodies
+  engagement_channel: 'Active engagement with export-control regimes (Wassenaar, BIS, EU dual-use) to distinguish
+    between compute/model exports that would worsen security concentrations and those that would reduce
+    disparities. Public positions, written submissions during consultation periods, and internal policy
+    that does not blanket-ban exports to entire regions in ways that entrench capability gaps. Cross-ref
+    D9 governance for compliance with applicable controls.
+
+    '
+  maps_to_sfr:
+  - b
+- name: Internal capability-gap assessment function
+  engagement_channel: 'Named team publishes an annual capability-equity assessment: where the org''s pricing, licensing,
+    and partnership posture narrowed or widened access gaps in the preceding year, with forward-looking
+    adjustments. Not marketing — reviewed by an external panel including representatives from receiving
+    regions. Cross-ref D9.2 accountability framework for the accountable human.
+
+    '
+  maps_to_sfr:
+  - c
+engagement_modes:
+- mode: UN AI Advisory Body and Global Digital Compact capacity-building work
+- mode: UNESCO Recommendation on the Ethics of AI — implementation tracking
+- mode: 'World Bank and regional development banks (AfDB, ADB, IADB) AI capacity-building initiatives'
+- mode: 'African Union Continental AI Strategy and regional AI bodies (Smart Africa, ASEAN AI Governance, CAF)'
+- mode: OECD.AI Policy Observatory (expert network contribution)
+- mode: GPAI (Global Partnership on AI) working groups on responsible AI and commercialization
+- mode: Bilateral development cooperation (national AI-for-development programs)
+evidence_production:
+- evidence_numeral: I
+  how_to_produce: 'Annual partnership report enumerating each active partnership: partner, scope, compute
+    or funding committed, duration, joint outputs (publications, trained researchers, deployed systems,
+    released artifacts). Published externally where confidentiality allows; available to independent reviewers
+    otherwise.
+
+    '
+- evidence_numeral: II
+  how_to_produce: 'Transparency and accountability register: published oversight mechanisms, audit reports
+    (internal and external), documented cases where exploitation was prevented or remedied (e.g., contractual
+    protections for smaller partners invoked).
+
+    '
+- evidence_numeral: III
+  how_to_produce: 'Stakeholder consultation records: who was consulted, scope of input sought, written
+    input received, org''s response. Particular attention to whether consultations reached developing-nation
+    and smaller-entity stakeholders, not only well-resourced civil society.
+
+    '
+- evidence_numeral: IV
+  how_to_produce: 'Capability-equity impact assessment (annual), reviewed by external panel. Includes
+    quantitative metrics (compute shared, researchers trained, partnerships active by region, fellowship
+    outputs) and a frank qualitative assessment of residual gaps. Published.
+
+    '
+confidence: medium
+needs_human_review: true
+review_notes: 'This subgoal strongly overlaps with I7.3-underlined (idx10) — both target global capability
+  equity and international partnership. The difference the JSON implies: idx3 emphasizes national-scale
+  disparities and technology transfer; idx10 emphasizes balanced-alliance governance and preventing dominant-entity
+  exploitation. I''ve tried to keep idx3 oriented to transfer/access and leave alliance-governance shape
+  to idx10. Consolidation should decide whether to collapse or keep distinct.
+
+  Anti-vague discipline: every pattern here names a verifiable artifact (annual report, published summary,
+  external panel review, enforceable agreement). Patterns that would read "engage with the Global South"
+  are excluded on purpose.
+
+  Cross-suite: D9 (governance) is the compliance backbone for export-control engagement. I6 (Competitive
+  Pressures / Monopolistic Practices) is the adversarial counterpart. I1 (Race Dynamics) tension: capability
+  transfer can accelerate race dynamics if structured carelessly — flag this in consolidation.
+
+  "Technology transfer" has historical baggage (development economics, colonial patterns). Nell may want
+  to reframe some language toward "capability sharing" or "co-development" rather than "transfer," which
+  implies a one-way flow.
+
+  '
+drafted_by: claude-opus-4.7[1m]
+drafted_at: 2026-04-16
+anchor_exemplar: I7.3-balanced-global-partnership
+version_compat:
+  framework_version_min: '1.0'
+  framework_version_max: 1.x
+  pattern_layer_version: v1-draft

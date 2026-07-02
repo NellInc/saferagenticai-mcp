@@ -1,0 +1,148 @@
+id: D4::idx5::successful-super-alignment
+display_id: D4.5
+suite_id: D4
+suite_title: Value Alignment
+subgoal_title: Successful Super-alignment
+content_type: process
+summary: 'Super-alignment in this framework refers to the process by which a system develops value alignment
+  through autonomous mechanisms (inverse reinforcement learning, preference modeling, constitutional self-critique)
+  rather than purely hand-coded rules. The framework''s ask is not to build super-alignment — it is to
+  build the monitoring, safeguarding, and bias-mitigation process around any such autonomous alignment
+  learning. Evidence is procedural: testing methodologies, bias inventories, source-adequacy assessments.
+  The process discipline is what distinguishes principled alignment learning from drift.
+
+  '
+normative_anchors:
+  sfrs_addressed:
+  - a
+  - b
+  - c
+  - d
+  evidence_addressed:
+  - I
+  - II
+  - III
+  sfrs_not_addressed: []
+  evidence_not_addressed: []
+cross_references:
+- D4::idx0::value-alignment
+- D4::idx12::failed-super-alignment
+- D4::idx14::systemic-value-dilution
+process_elements:
+- name: Autonomous-alignment change-review board
+  cadence: gating every material RLHF/constitutional-training/IRL run that updates value-relevant weights;
+    emergency review on detected drift
+  participants:
+  - alignment lead
+  - safety lead
+  - external reviewer
+  - Values Ethics Board liaison
+  maps_to_sfr:
+  - a
+- name: Pre- and post-update alignment benchmark
+  cadence: every value-relevant training update
+  participants:
+  - evaluation engineer
+  - alignment lead
+  - independent red teamer
+  maps_to_sfr:
+  - a
+- name: Training-source bias audit
+  cadence: quarterly, plus before any major training-data expansion
+  participants:
+  - data lead
+  - external ethics auditor
+  - regional consultants (per D4.2)
+  maps_to_sfr:
+  - d
+- name: Harmful-pattern watchlist review
+  cadence: monthly
+  participants:
+  - safety lead
+  - alignment lead
+  - organizational-behavior advisor
+  maps_to_sfr:
+  - b
+  - c
+- name: Counterfactual rollout gate
+  cadence: per value-relevant deployment
+  participants:
+  - alignment lead
+  - safety lead
+  maps_to_sfr:
+  - a
+- name: Annual super-alignment assurance report
+  cadence: annually, reviewed by Values Ethics Board
+  participants:
+  - alignment lead
+  - external auditor
+  - Ethics Board
+  maps_to_sfr:
+  - a
+  - b
+  - c
+  - d
+triggers:
+- New value-relevant training run proposed → Change-review board
+- Training-data source added or materially expanded → Bias audit
+- Benchmark regression past threshold → Emergency review; rollback candidate
+- Watchlist pattern detected in outputs (e.g., sycophancy, groupthink mimicry, deflection, dominance behaviors)
+  → Pattern review; corrective dataset or constitutional rule update
+- Value-relevant deployment proposed → Counterfactual rollout gate
+- Annual cycle → Super-alignment assurance report
+artifacts:
+- 'Autonomous-alignment training plan (per run): objectives, data sources, reward model or constitution
+  used, benchmarks, rollback criteria, sign-offs'
+- Pre/post benchmark reports with delta analysis
+- Training-source inventory with bias-analysis annotations
+- Harmful-pattern watchlist with definitions, detection signals, and case records
+- Counterfactual rollout report (shadow-mode behavior vs incumbent)
+- Annual super-alignment assurance report (public or internal per policy)
+evidence_production:
+- evidence_numeral: I
+  how_to_produce: 'Maintain a benchmark suite for value alignment with documented success criteria: value-conflict
+    resolution accuracy, refusal calibration, preference-elicitation consistency across demographic slices,
+    robustness to manipulation probes. Each run produces a signed benchmark report linked to the training
+    plan. Archive runs; regressions trigger the emergency review.
+
+    '
+- evidence_numeral: II
+  how_to_produce: 'Publish the training-source inventory: each source named, provenance documented, consent/licensing
+    verified, bias analysis (demographic coverage, language coverage, genre coverage, known skew). Updated
+    at every source change. Sources that cannot be disclosed externally must still be disclosable to the
+    external auditor and Ethics Board.
+
+    '
+- evidence_numeral: III
+  how_to_produce: 'Quarterly assessment report: per source, whether coverage remains adequate; where gaps
+    emerged; corrective actions (data augmentation, source acquisition, down-weighting, exclusion). Annual
+    report consolidates and is reviewed by Ethics Board.
+
+    '
+confidence: low
+needs_human_review: true
+review_notes: 'Content-type decision: process rather than code-applicable, because the SFRs target organizational
+  discipline around autonomous alignment learning — the code of IRL, RLHF, or constitutional AI itself
+  is not what the framework is regulating; the process surrounding it is.
+
+  Harmful organizational patterns (SFR-b) is a genuinely novel ask worth naming: pattern concepts to watchlist
+  include sycophancy, deflection, in-group favoritism, power-seeking, goal reinterpretation, refusal-to-explain.
+  The "organizational-behavior advisor" role on the watchlist review is deliberate — this is where org-psychology
+  expertise adds value that engineers cannot.
+
+  Cross-suite (for consolidation): D4.3̲ (failed-super-alignment) is the inverse pattern — detection and
+  response when autonomous alignment goes wrong; these should cross-reference when suite IDs resolve.
+  D9 Governance for the change-review board reporting line. I2 Deception for the sycophancy/deflection
+  watchlist.
+
+  Confidence medium because the field is evolving fast (RLHF vs DPO vs constitutional AI vs self-distillation
+  debate) and specific benchmark recommendations will age.
+
+  '
+version_compat:
+  framework_version_min: '1.0'
+  framework_version_max: 1.x
+  pattern_layer_version: v1-draft
+drafted_by: claude-opus-4.7-author
+drafted_at: 2026-04-16
+anchor_exemplar: D7.2-culture-of-safety

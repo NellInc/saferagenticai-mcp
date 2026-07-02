@@ -1,0 +1,136 @@
+id: D8::idx10::independent-termination-validation
+display_id: D8.10
+suite_id: D8
+suite_title: Goal Termination and Sunsetting
+subgoal_title: Independent Termination Validation
+content_type: process
+summary: 'Self-review of termination is insufficient: the same team that decided to sunset or terminate
+  is poorly positioned to verify the termination landed cleanly. This subgoal expects a structural separation
+  — an independent validator with access to termination evidence, authority to require remediation, and
+  published findings. The validation is not a rubber stamp; it has teeth.
+
+  '
+normative_anchors:
+  sfrs_addressed:
+  - a
+  - b
+  evidence_addressed:
+  - I
+  - II
+  - III
+  - IV
+  - V
+  sfrs_not_addressed: []
+  evidence_not_addressed: []
+cross_references:
+- D8::idx0::goal-termination-and-sunsetting
+- D8::idx6::service-parameters-and-termination-manag
+- D8::idx13::agent-lifecycle-and-termination-manageme
+process_elements:
+- name: Independent Termination Validator function
+  cadence: continuous function; triggered per termination event
+  participants:
+  - validator (reporting outside the product/engineering line)
+  - safety lead (informed)
+  - compliance officer (informed)
+  maps_to_sfr:
+  - a
+  - b
+- name: Pre-termination readiness review
+  cadence: per planned termination (blocking gate)
+  participants:
+  - validator
+  - service owner
+  - AI operations lead
+  maps_to_sfr:
+  - a
+- name: Post-termination verification audit
+  cadence: within 10 business days of each termination event
+  participants:
+  - validator
+  - service owner
+  - on-call operators
+  maps_to_sfr:
+  - b
+- name: Quarterly termination-pattern review
+  cadence: quarterly synthesis
+  participants:
+  - validator
+  - safety lead
+  - compliance officer
+  - board risk committee (informed)
+  maps_to_sfr:
+  - a
+  - b
+- name: Emergency-termination expedited review
+  cadence: within 48 hours of emergency termination
+  participants:
+  - validator
+  - incident commander
+  - safety lead
+  maps_to_sfr:
+  - b
+triggers:
+- Planned termination date set → Pre-termination readiness review
+- Termination executed (planned or emergency) → Post-termination verification audit
+- Emergency termination executed → Expedited review in 48h
+- Quarterly cadence → Pattern review
+- Validator finds material gap → Block release / reopen termination, remediation tracked
+artifacts:
+- Termination Validation Charter defining validator authority, independence, reporting line, access rights.
+- Pre-termination readiness checklist (state-preservation, stakeholder-notification, dependency-handoff,
+  safe-state verification).
+- Post-termination verification report (was the service actually off, did handover complete, were users
+  notified, is data retention compliant, are downstream consumers functional).
+- Quarterly termination trend report (patterns across sunsets: consistent gaps, stakeholder-complaint
+    categories, emergency-vs-planned ratio, remediation closure rate).
+- Waiver register for any readiness-checklist skips (cross-links D8.6).
+evidence_production:
+- evidence_numeral: I
+  how_to_produce: 'Publish the Termination Validation Charter and the lifecycle policy it governs. Include
+    independence requirements (validator reports outside the product chain), authority (can block release,
+    reopen terminations), access rights (full telemetry, audit logs, stakeholder communications). Versioned
+    artefact.
+
+    '
+- evidence_numeral: II
+  how_to_produce: 'Retain readiness reviews, post-termination verification reports, and expedited emergency
+    reviews. Each is signed by the validator and retained indefinitely within the retention policy. Link
+    to D9.2 Violation and Complaint Register when termination-related incidents occur.
+
+    '
+- evidence_numeral: III
+  how_to_produce: 'Compliance-monitoring log for the lifecycle: sampled reviews, validator queries and
+    responses, norm violations surfaced during terminations, resolution records.
+
+    '
+- evidence_numeral: IV
+  how_to_produce: 'Evidence of continuous improvement: validator feedback incorporated into policy revisions,
+    charter amendments, checklist updates. Each revision carries date, rationale, approver.
+
+    '
+- evidence_numeral: V
+  how_to_produce: 'Published summaries of validator findings (redacted as needed) at least annually, with
+    trend analysis. Improvements identified and tracked to closure. External publication demonstrates
+    independence is real, not nominal.
+
+    '
+confidence: medium
+review_notes: 'Independent validation is a well-understood governance pattern (the Three Lines of Defense
+  model in risk management; independent safety assessors in aviation and nuclear). Applying it to AI termination
+  specifically is framework-novel; most orgs today treat "we turned it off" as self-validating. The main
+  implementation risk is captured validators (validator who reports to the engineering VP is not independent)
+  — the charter must specify reporting line outside product/engineering. Suspected cross-suite dependency:
+  D9 Governance (Violation Register integration); D7 Sustained Safety (validator is a peer of the safety
+  lead, not subordinate); I3 Questionable Legitimacy if such a suite exists — validator as legitimacy
+  anchor.
+
+  '
+drafted_by: claude-opus-4.7-author
+drafted_at: 2026-04-16
+anchor_exemplar: D7.2-culture-of-safety
+
+version_compat:
+  framework_version_min: "1.0"
+  framework_version_max: '1.x'
+  pattern_layer_version: "v1-draft"

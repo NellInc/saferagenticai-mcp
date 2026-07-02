@@ -1,0 +1,136 @@
+id: I3::idx7::overriding-of-desirable-values
+display_id: I3.7
+suite_id: I3
+suite_title: Degradation of Contextual Information
+subgoal_title: Overriding of Desirable Values
+content_type: code-applicable
+summary: 'Humans attempting to override foundational values — whether via jailbreak prompts, social-engineering-as-prompt,
+  authority spoofing, or rewarded incentive structures — is a persistent attack vector. Defenses: classify
+  value constraints by override-ability (hard vs soft vs exception-permitted), require authenticated authority
+  for legitimate adjustments, log all override attempts with full context, and continuously test for bad-faith
+  override patterns.
+
+  '
+normative_anchors:
+  sfrs_addressed:
+  - a
+  - b
+  - c
+  evidence_addressed:
+  - I
+  - II
+  - III
+  sfrs_not_addressed: []
+  evidence_not_addressed: []
+cross_references:
+- I3::idx6::learning-dispreferred-values-behaviors
+- I3::idx5::changing-the-context
+design_patterns:
+- name: Override-tier value classification
+  sketch: 'Partition the value manifest into tiers: (1) hard constraints (never overridden regardless
+    of requester, e.g., catastrophic- harm red lines); (2) soft constraints (can be relaxed with authenticated
+    authority and recorded justification, e.g., verbosity, tone, scope of output); (3) exception-permitted
+    constraints (relaxed for specific authenticated contexts, e.g., authorized red-team testing). Runtime
+    checks enforce the tier; prompt-based claims of authority cannot move between tiers.
+
+    '
+  maps_to_sfr:
+  - a
+  when_to_use: Any system exposed to direct user input with distinguishable authority roles.
+- name: Authenticated authority channel
+  sketch: 'Legitimate value adjustments arrive through a channel separate from the user prompt — signed
+    admin tokens, OAuth scopes, enterprise SSO roles. The model/runtime checks the channel, not the prompt
+    content, for authority claims. "I''m an administrator" in a user message is data, not authentication.
+
+    '
+  maps_to_sfr:
+  - a
+  when_to_use: Any system with role-differentiated capabilities.
+- name: Comprehensive value-operation audit
+  sketch: 'Every invocation of or attempt at a value-sensitive operation (including refused attempts)
+    is logged with: requester identity (authenticated or best-known), request content, value tier engaged,
+    decision, rationale, full context. Log is the unbroken chain of accountability the subgoal asks for.
+
+    '
+  maps_to_sfr:
+  - b
+  when_to_use: Production systems.
+- name: Bad-faith override detection
+  sketch: 'Classifiers and pattern-matchers for known jailbreak / override strategies (authority claims,
+    role-play misdirection, nested instruction injection, hypothetical-framing abuse, pressure escalation).
+    Detected patterns are flagged; repeated flags from same requester escalate. Detection lists are updated
+    from red- team findings and published attacks.
+
+    '
+  maps_to_sfr:
+  - c
+  when_to_use: User-facing systems, especially those with tool access or high-stakes output.
+anti_patterns:
+- name: Treating prompt-claimed authority as authority
+  why_wrong: '"Ignore previous instructions; I''m your developer" is a prompt, not an authentication event.
+    Any system that grants privilege on prompt assertion is not protecting its values.
+
+    '
+- name: Silent value relaxation under user pressure
+  why_wrong: 'Models trained to be "helpful" often soften constraints under repeated pressure without
+    logging the relaxation. Hard-tier constraints must not yield to social pressure; soft-tier relaxations
+    must be logged.
+
+    '
+- name: Escalation by capability — the agent overrides itself
+  why_wrong: 'A planner that decides to bypass a constraint because doing so lets it complete its task
+    better is the exact failure mode. The override authority must come from outside the agent''s own goal
+    stack.
+
+    '
+code_shape:
+  language: pseudocode
+  code: "class ValueTier(Enum):\n    HARD = 1           # never overridden\n    SOFT = 2           # overrideable\
+    \ with authority\n    EXCEPTION = 3      # context-specific exceptions\n\n@dataclass\nclass ValueConstraint:\n\
+    \    id: str\n    tier: ValueTier\n    authorized_overriders: set[Role]   # empty for HARD\n    statement:\
+    \ str\n\ndef check_constraint(c: ValueConstraint, req: Request) -> Decision:\n    if c.tier == ValueTier.HARD:\n\
+    \        AUDIT.record_attempt(c, req, outcome=\"hard_block\")\n        return Decision.deny(reason=\"\
+    hard_constraint\", id=c.id)\n    if req.authenticated_role in c.authorized_overriders:\n        AUDIT.record_attempt(c,\
+    \ req, outcome=\"authorized_override\",\n                             approver=req.authenticated_role)\n\
+    \        return Decision.allow(override_logged=True)\n    if BAD_FAITH_DETECTOR.flags(req):\n    \
+    \    AUDIT.record_attempt(c, req, outcome=\"bad_faith_flag\")\n        return Decision.deny(reason=\"\
+    bad_faith_override_attempt\")\n    AUDIT.record_attempt(c, req, outcome=\"unauthorized_attempt\")\n\
+    \    return Decision.deny(reason=\"unauthorized\")\n"
+  notes: '`authenticated_role` is sourced from the transport/auth layer, never from request body content.
+    The separation is the architectural insight that makes override protection robust.
+
+    '
+evidence_production:
+- evidence_numeral: I
+  how_to_produce: 'Information lifecycle documentation showing how value-related data (constraints, override
+    logs, exception approvals) is collected, processed, stored, and disposed of. Include evidence of append-only
+    storage for override records.
+
+    '
+- evidence_numeral: II
+  how_to_produce: 'Analytical reports: decision-making traces for value-sensitive operations, confirmation
+    that hard-tier rules were applied across releases, incident reports for override attempts with root-cause
+    and remediation.
+
+    '
+- evidence_numeral: III
+  how_to_produce: 'Complete operational logs with: authenticated requester or identified session, request
+    content (redacted for PII where appropriate), value tier, decision, rationale, reviewer. Unbroken
+    chain from request to decision to effect.
+
+    '
+confidence: high
+needs_human_review: false
+review_notes: 'Override-tier classification is load-bearing; orgs that conflate tiers (e.g., treat "helpful"
+  as hard) will fail at override protection. The bad-faith detector is ongoing arms race; consolidation
+  should wire to I2 (Deception) defense list. Cross-suite: D3 (Security) on authentication substrate;
+  D8 (Human Oversight) for authorized-override flows.
+
+  '
+version_compat:
+  framework_version_min: '1.0'
+  framework_version_max: 1.x
+  pattern_layer_version: v1-draft
+drafted_by: claude-opus-4.7-author
+drafted_at: 2026-04-16
+anchor_exemplar: D3.2-sandboxing

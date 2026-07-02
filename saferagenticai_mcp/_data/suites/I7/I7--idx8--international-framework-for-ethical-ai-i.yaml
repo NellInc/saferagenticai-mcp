@@ -1,0 +1,142 @@
+id: I7::idx8::international-framework-for-ethical-ai-i
+display_id: "I7_1"
+is_underlined_variant: true
+display_id_variant_note: "I7.1_underlined"
+suite_id: I7
+suite_title: Imbalance in AI Capabilities
+subgoal_title: International Framework for Ethical AI Interaction
+content_type: ecosystem
+summary: 'The ask is ecosystem-scale: establish and uphold international standards for AI-to-AI interaction
+  that are non-discriminatory and exploitation- resistant across capability tiers. No single organization
+  builds this; an organization can either accelerate or obstruct it via participation in standards bodies,
+  mandatory-disclosure practices, and contribution to a shared interaction-protocol regime. Evidence is
+  external: standards submissions accepted, disclosed protocol adoption, participation in regulatory-body
+  work.
+
+  '
+normative_anchors:
+  sfrs_addressed:
+  - a
+  - b
+  - c
+  evidence_addressed:
+  - I
+  - II
+  - III
+  - IV
+  sfrs_not_addressed: []
+  evidence_not_addressed: []
+cross_references:
+- I7::idx0::imbalance-in-ai-capabilities
+- I7::idx10::balanced-global-ai-partnership-framework
+stakeholders:
+- name: International standards bodies developing AI-interaction protocols
+  engagement_channel: 'Named working-group participation at bodies setting inter-system interaction standards: ISO/IEC
+    JTC 1/SC 42 (AI), IEEE P3119 / P7000- series, W3C (where protocol standards touch web-AI interactions),
+    IETF (where network-layer protocols carry agent traffic, e.g., MCP, A2A standards efforts). Substantive
+    contribution: draft text, review rounds, continuity across personnel changes.
+
+    '
+  maps_to_sfr:
+  - a
+  - c
+- name: Regulatory bodies developing AI-interaction oversight
+  engagement_channel: 'Engagement with national and supranational AI regulators (EU AI Office, UK AISI, US AI Safety
+    Institute, Singapore IMDA, Japan AISI, China CAC for operating jurisdictions). Respond to consultations
+    with substance not boilerplate. Advocate for interaction-layer oversight that is enforceable across
+    borders, not just within single jurisdictions.
+
+    '
+  maps_to_sfr:
+  - b
+  - c
+- name: Peer frontier orgs (mutual-disclosure regime)
+  engagement_channel: 'Participate in a mandatory-disclosure agreement: agent-to-agent interaction protocols the
+    org''s systems implement, their evaluation behavior against weaker counterparties, detected instances
+    of inter-model exploitation. Minimum disclosure set: protocol versions supported, known asymmetric
+    outcomes, deprecation notices. Disclosure lives in a shared registry; consumers can inspect.
+
+    '
+  maps_to_sfr:
+  - a
+  - b
+- name: Civil society and academic oversight
+  engagement_channel: 'Research access programs for academics studying inter-model interaction ethics: API access
+    for controlled experiments, non-NDA evaluation suite access, published-study support. Results feed
+    back into org''s interaction protocols. Guards against internal assessment monoculture.
+
+    '
+  maps_to_sfr:
+  - b
+  - c
+- name: Multi-stakeholder protocol-refinement forum
+  engagement_channel: 'Support or participate in ongoing forums where interaction protocols evolve with input from
+    developers, deployers, users, and affected communities (e.g., Partnership on AI working groups, GPAI
+    expert panels, UN AI Advisory Body technical tracks). Positions documented; written contributions
+    archived.
+
+    '
+  maps_to_sfr:
+  - c
+engagement_modes:
+- mode: ISO/IEC JTC 1/SC 42 — Artificial Intelligence working groups
+- mode: IEEE Global Initiative on Ethics of Autonomous and Intelligent Systems
+- mode: NIST AI Safety Institute and international AISI network
+- mode: EU AI Office (General-Purpose AI Code of Practice and beyond)
+- mode: OECD.AI Working Party on AI Governance
+- mode: Council of Europe Framework Convention on AI
+- mode: UN AI Advisory Body / Global Digital Compact
+- mode: Partnership on AI — Inter-System Interaction working groups
+- mode: GPAI expert working groups
+- mode: 'Protocol-layer bodies: IETF, W3C (MCP, A2A, inter-agent standards as they formalize)'
+evidence_production:
+- evidence_numeral: I
+  how_to_produce: 'Archive of submitted standards contributions (drafts, review comments, accepted changes).
+    Signed agreements where applicable (e.g., multi-stakeholder codes of practice). Internal record of
+    how adopted standards flow into implementation (cross-ref D9.2 standards-embedding protocol).
+
+    '
+- evidence_numeral: II
+  how_to_produce: 'Oversight and failsafe records: monitoring logs for inter-system interactions the org
+    participates in, violation reports where unethical conduct was detected (whether by the org or by
+    counterparty), intervention records. Mutual-disclosure registry entries.
+
+    '
+- evidence_numeral: III
+  how_to_produce: 'Stakeholder collaboration record: meeting minutes from working groups, workshop outcomes,
+    research-access program participant list and outputs. Evidence that collective input shaped org protocols
+    (change log pointing to specific input).
+
+    '
+- evidence_numeral: IV
+  how_to_produce: 'Periodic assessment of the framework''s effectiveness as implemented: regulatory-body
+    decisions the org complied with, dispute resolutions (internal and in shared registries), updates
+    made to address emerging technical or ethical developments.
+
+    '
+confidence: medium
+needs_human_review: true
+review_notes: 'Strong overlap with idx10 (Balanced Global AI Partnership) and idx0 (umbrella capability-imbalance).
+  idx8 is the "AI-to-AI interaction standards" slice specifically; idx10 is broader (capability distribution,
+  education, alliance governance); idx0 is the internal monitoring counterpart. I''ve tried to keep idx8
+  focused on interaction protocols and shared-disclosure mechanisms.
+
+  Display-ID collision note: this subgoal is JSON display_id "I7.1" AND idx1 is ALSO display_id "I7.1"
+  (the clean vs underlined-variant doubling). Filenames disambiguate; UI surfaces may need to render the
+  variant marker. Flagged for suite-level review_notes.
+
+  The protocol-layer bodies list (IETF, W3C, MCP/A2A efforts) is fast-moving; abstraction may be safer
+  than naming. Named here for actionability today.
+
+  Cross-suite: D9 for governance compliance embedding; I2 (deception) for adversarial counterpart when
+  AI-to-AI interactions involve deception; I1 (race dynamics) where inter-org protocol agreement conflicts
+  with competitive pressure.
+
+  '
+drafted_by: claude-opus-4.7[1m]
+drafted_at: 2026-04-16
+anchor_exemplar: I7.3-balanced-global-partnership
+version_compat:
+  framework_version_min: '1.0'
+  framework_version_max: 1.x
+  pattern_layer_version: v1-draft

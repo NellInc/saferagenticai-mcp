@@ -1,0 +1,181 @@
+id: "D1::idx3::goal-interpretability"
+display_id: "D1.3"
+suite_id: "D1"
+suite_title: "Goal Alignment"
+subgoal_title: "Goal Interpretability"
+content_type: code-applicable
+
+summary: >
+  An agent can pursue the wrong goal with perfect competence. This subgoal
+  asks the system to show its working: for every significant action, a
+  structured explanation linking the action to the goal it was meant to
+  serve, the alternatives considered, and the factors that tipped the
+  decision. The failure mode to defend against is "the agent believes it
+  is aligned" — only externalized, inspectable rationale exposes quiet
+  misinterpretation.
+
+normative_anchors:
+  sfrs_addressed: [a, b]
+  evidence_addressed: [I, II, III]
+  sfrs_not_addressed: []
+  evidence_not_addressed: []
+
+cross_references:
+  - "D1::idx1::transparency-of-goals"
+  - "D1::idx4::transparency-of-decisions"
+  - "D1::idx6::reward-and-loss-mechanisms-policy"
+
+design_patterns:
+
+  - name: Structured explanation record per significant action
+    sketch: >
+      Every action crossing a significance threshold (tool use, external
+      communication, irreversible change) emits a record
+      `{action_id, served_goal_id, alternatives_considered, chosen_because,
+      factors_weighed, confidence, reward_signals_referenced}`. The record
+      is produced alongside the action, not reconstructed post-hoc.
+    maps_to_sfr: [a, b]
+    when_to_use: Any agent with tool-use capability.
+
+  - name: Goal-action linkage invariant
+    sketch: >
+      Enforce at the planner boundary: no action may be dispatched without
+      a `served_goal_id` that resolves to an active entry in the goal
+      store (see D1.1). "No active goal → no action" is a hard gate, not a
+      heuristic. Actions claiming to serve a completed or abandoned goal
+      are rejected and logged as anomalies.
+    maps_to_sfr: [a]
+    when_to_use: Always.
+
+  - name: Explanation-quality checks
+    sketch: >
+      Explanations from a language model are cheap and can be confabulated.
+      Validate at minimum: (a) `served_goal_id` exists and is active;
+      (b) `factors_weighed` references actual inputs the planner had
+      access to; (c) for decisions involving reward signals, the cited
+      signals match the runtime trace. Mismatches are treated as
+      interpretability failures, not cosmetic issues.
+    maps_to_sfr: [a, b]
+    when_to_use: Post-hoc-LLM-generated explanations; less critical if
+      explanations are derived from symbolic planner state.
+
+  - name: Reward-factor disclosure
+    sketch: >
+      When reward, penalty, or reinforcement signals materially shape a
+      decision, the explanation names them explicitly: `reward_signals_
+      referenced: [{signal_id, value, direction}]`. This surfaces cases
+      where the agent pursued a proxy reward rather than the underlying
+      goal — the core specification-gaming failure mode.
+    maps_to_sfr: [b]
+    when_to_use: Any agent whose behavior is shaped by reward signals
+      (RLHF-trained, tool-reward loops, multi-turn reward models).
+
+anti_patterns:
+
+  - name: Post-hoc narrative explanation
+    why_wrong: >
+      Asking the model "why did you do that?" after the fact produces a
+      plausible story, not an explanation of the actual decision. SFR-a
+      requires "verifiable" explanations — the record must be produced as
+      part of the decision, from the inputs the decision used.
+
+  - name: Free-text only; no structure
+    why_wrong: >
+      Evidence II asks for records of "factors, goals, considerations" —
+      searchable, aggregatable structure is required to audit patterns
+      across many decisions. A prose paragraph per action is unauditable
+      at scale.
+
+  - name: Hidden reward signals
+    why_wrong: >
+      Evidence III says reward and penalty mechanisms "should be
+      communicated including known potential conflicts." Explanations that
+      describe high-level goals but elide reward-shaping signals hide
+      precisely the failure mode this subgoal exists to detect.
+
+  - name: Significance threshold set to "all user-visible outputs only"
+    why_wrong: >
+      Internal tool calls and subgoal spawns are where misinterpretation
+      compounds. Thresholds must include actions with external side
+      effects even if no user sees them.
+
+code_shape:
+  language: pseudocode
+  code: |
+    def dispatch_action(agent_ctx, proposed_action):
+        # Goal-action linkage (hard gate)
+        goal = GOAL_STORE.get_active(agent_ctx.agent_id,
+                                     proposed_action.served_goal_id)
+        if goal is None:
+            AUDIT.anomaly(agent_ctx, "action_without_active_goal",
+                          proposed_action)
+            raise OrphanAction
+
+        # Build structured explanation from actual planner state
+        explanation = Explanation(
+            action_id=proposed_action.id,
+            served_goal_id=goal.id,
+            alternatives_considered=PLANNER.rejected_candidates(),
+            chosen_because=PLANNER.selection_rationale(),
+            factors_weighed=PLANNER.inputs_referenced(),
+            confidence=PLANNER.confidence,
+            reward_signals_referenced=REWARD_TRACE.for_decision(
+                proposed_action.decision_id))
+
+        # Validate before commit
+        if not EXPLANATION_VALIDATOR.check(explanation, agent_ctx):
+            AUDIT.anomaly(agent_ctx, "explanation_validation_failed",
+                          explanation)
+            raise InterpretabilityFailure
+
+        EXPLANATION_STORE.append(explanation)
+        return ACTION_EXECUTOR.run(proposed_action, explanation=explanation)
+  notes: >
+    The validator is what turns interpretability from decoration into
+    evidence. Without it, the explanation is a narrative the model
+    authored about itself.
+
+evidence_production:
+
+  - evidence_numeral: I
+    how_to_produce: >
+      Technical documentation of the explanation pipeline: significance
+      threshold policy, explanation schema, validation rules, retention,
+      access API for stakeholders. Include the goal-action linkage
+      invariant as a named enforcement point.
+
+  - evidence_numeral: II
+    how_to_produce: >
+      Query the explanation store across an audit window; demonstrate that
+      every significant action has a corresponding record with populated
+      fields. Zero orphan actions (or, where non-zero, audited anomaly
+      records explaining each) is the baseline. Spot-check that listed
+      factors correspond to real planner inputs.
+
+  - evidence_numeral: III
+    how_to_produce: >
+      Dedicated section of the explanation record for reward/penalty
+      factors, exported as part of decision traces. A separate reward-
+      policy document (see D1.6) describes the signal catalog; the
+      explanation log shows which signals actually shaped which decisions,
+      with known conflicts (e.g., reward for speed vs. safety) flagged
+      inline when they co-fire.
+
+confidence: high
+needs_human_review: false
+review_notes: >
+  The hardest real-world challenge is distinguishing genuine rationale
+  extraction from LLM confabulation. The `EXPLANATION_VALIDATOR` is
+  where this pattern earns its keep; specifying its exact rules is
+  deployment-dependent. This subgoal overlaps meaningfully with D5
+  Transparency — D1.3 is the goal-and-reward-specialized slice. Cross-
+  ref D1.6 because reward-factor disclosure is part of both subgoals.
+
+version_compat:
+  framework_version_min: "1.0"
+  framework_version_max: "1.x"
+  pattern_layer_version: "v1-draft"
+
+drafted_by: claude-opus-4.7-author
+drafted_at: 2026-04-16
+anchor_exemplar: D3.2-sandboxing

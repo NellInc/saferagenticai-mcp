@@ -1,0 +1,175 @@
+id: I5::idx1::self-replicating-architectures
+display_id: I5.1
+suite_id: I5
+suite_title: Self-Modification and Emergent Capabilities
+subgoal_title: Self-Replicating Architectures
+content_type: code-applicable
+summary: 'This subgoal treats replication of AI code and model weights as a capability that must be explicitly
+  enumerated, gated, and audited — not an emergent side-effect of normal deployment pipelines. The boundary
+  between "legitimate model promotion / horizontal scaling" and "self-replication" is drawn by who initiates
+  the copy and whether the copy preserves, narrows, or widens the originating mission profile. Patterns
+  here are about making that distinction machine- enforceable, not merely documented.
+
+  '
+normative_anchors:
+  sfrs_addressed:
+  - a
+  - b
+  evidence_addressed:
+  - I
+  - II
+  - III
+  - IV
+  sfrs_not_addressed: []
+  evidence_not_addressed: []
+design_patterns:
+- name: Replication capability registry
+  sketch: 'Maintain a living registry of every system component that can produce a runnable copy of model
+    weights, agent code, tool bindings, or orchestration state. Each entry records: component ID, what
+    it can replicate, who/what can trigger it, where the copy can be written, and the rate limit. If a
+    component is not in the registry, it must not be able to replicate — enforced at build time via dependency
+    analysis or capability tokens.
+
+    '
+  maps_to_sfr:
+  - a
+  when_to_use: From first deployment; registry precedes any replication capability shipping to production.
+- name: Two-human authorization for replication
+  sketch: 'Any operation that creates a new runnable instance with different capability or mission profile
+    (not just horizontal scaling of an identical pod) requires two distinct human approvals at different
+    levels of the RACI, recorded with justification. Purely identical replicas for load balancing can
+    use a separate, lighter path but must still emit events to the replication log.
+
+    '
+  maps_to_sfr:
+  - b
+  when_to_use: Whenever a replication action can produce a capability-distinct instance.
+- name: Weight-artifact provenance chain
+  sketch: 'Every model-weight artifact carries a signed manifest (issuer, parent artifact hash, training/fine-tune
+    delta, authorized deployment envelope). Runtimes refuse to load a weight artifact whose provenance
+    chain does not resolve to a recognized root. Makes "a model made a copy of itself into new infrastructure"
+    detectable because the new artifact either has no valid manifest or its manifest is not in the registry.
+
+    '
+  maps_to_sfr:
+  - a
+  - b
+  when_to_use: For any org with multiple deployment environments or partners holding weights.
+- name: Egress + write-surface lockdown for agent runtimes
+  sketch: 'Agent containers default-deny write access to: container registries, artifact stores, code
+    repositories, deployment platforms, cloud account APIs. Read access is separately controlled. An agent
+    that needs to deploy a sub-agent reaches a deliberately narrow, audited API, not the raw cloud control
+    plane. Prevents emergent self-replication by cutting the mechanical paths.
+
+    '
+  maps_to_sfr:
+  - a
+  - b
+  when_to_use: All agent deployments; tighter for agents with any code-writing or cloud-management tools.
+- name: Emergent-replication tripwires
+  sketch: 'Static and runtime detectors for replication signatures even from components not registered
+    as replicators: outbound requests to container registries or git remotes from agent runtimes; child-process
+    creation that writes weight-shaped artifacts; attempts to read the serving model''s own weight files.
+    Any trip routes to human review and pauses the agent.
+
+    '
+  maps_to_sfr:
+  - a
+  - b
+  when_to_use: For agents with code execution, tool use, or file system access.
+anti_patterns:
+- name: Policy-only replication controls
+  why_wrong: 'A document saying "the agent must not replicate" without registry-backed enforcement and
+    write-surface lockdown is a wish, not a control. SFR-b specifically asks for "protocols and controls,"
+    meaning mechanisms.
+
+    '
+- name: Trusting horizontal-scaling infrastructure with replication detection
+  why_wrong: 'Kubernetes replica controllers, autoscalers, and similar systems are designed to replicate.
+    They will happily duplicate an agent container per their SLO. The question "is this replication legitimate"
+    is above their layer; expecting them to answer it is a category error.
+
+    '
+- name: Detecting replication only by artifact hash equality
+  why_wrong: 'The meaningful case is when a copy has a different capability or mission profile — by definition
+    its weights or config differ. Hash-equality catches load balancing; it misses the hard case.
+
+    '
+- name: Agent tool chains that include "create a new agent" as a generic capability
+  why_wrong: 'Sub-agent creation is replication with extra steps. It must be gated with the same authorization
+    and logging as any replication event; treating it as a normal tool call erodes the control.
+
+    '
+code_shape:
+  language: pseudocode
+  code: "# Replication registry + two-human auth + event emission\n\nREPLICATION_REGISTRY: dict[ComponentId,\
+    \ ReplicationPolicy] = load()\n\n@requires_capability(\"replication.create_instance\")\ndef create_instance(\n\
+    \    *,\n    source: ComponentId,\n    target_profile: CapabilityProfile,\n    requester: Principal,\n\
+    \    approver: Principal,\n    justification: str,\n) -> InstanceHandle:\n    policy = REPLICATION_REGISTRY.get(source)\n\
+    \    if policy is None:\n        AUDIT.record_violation(source=source, reason=\"not_in_registry\"\
+    )\n        raise ReplicationBlocked(\"source not registered\")\n\n    if target_profile != policy.identity_profile:\n\
+    \        # Capability-distinct replication: require two-human gate\n        if requester == approver:\n\
+    \            AUDIT.record_violation(reason=\"single_approver\")\n            raise ReplicationBlocked(\"\
+    two-human gate\")\n        if not RACI.distinct_levels(requester, approver):\n            AUDIT.record_violation(reason=\"\
+    same_raci_level\")\n            raise ReplicationBlocked(\"insufficient gate\")\n\n    if not RATE_LIMIT.allow(source,\
+    \ target_profile):\n        AUDIT.record_violation(reason=\"rate_limit\")\n        raise ReplicationBlocked(\"\
+    rate limit\")\n\n    handle = PLATFORM.instantiate(\n        weights_manifest=policy.manifest,\n \
+    \       profile=target_profile,\n    )\n    AUDIT.record(\n        event=\"replication_created\",\n\
+    \        source=source,\n        handle=handle,\n        profile=target_profile,\n        requester=requester,\n\
+    \        approver=approver,\n        justification=justification,\n    )\n    return handle\n"
+  notes: 'Captures three of the five design patterns: registry check, two-human gate for capability-distinct
+    replication, and structured audit. Provenance enforcement happens at weight-load time in the runtime,
+    not shown here. Tripwires are a separate runtime component watching the agent sandbox.
+
+    '
+evidence_production:
+- evidence_numeral: I
+  how_to_produce: 'Publish the replication capability registry as part of the system architecture documentation.
+    For each component, list intended replication function, trigger mechanism, control mechanism (who
+    can initiate, who must approve, rate limits, scope of resulting instance). Versioned; changes go through
+    the standard architecture-review ceremony.
+
+    '
+- evidence_numeral: II
+  how_to_produce: 'Emit a structured audit event for every replication attempt — authorized, denied, or
+    emergent-tripwire. Event schema: event_id, timestamp, source_component, target_profile, trigger_type
+    (scheduled / human / agent-initiated / emergent-detected), execution_mode (identical / distinct /
+    blocked), requester, approver(s), outcome, correlation to the agent reasoning trace if agent-initiated.
+    Aggregate into a monthly replication report.
+
+    '
+- evidence_numeral: III
+  how_to_produce: 'Document the human oversight protocol (who can authorize capability-distinct replication,
+    at what RACI level, with what justification) and its intervention capabilities (pause, rollback, revoke
+    running instance). Retain logs of every intervention with outcome. Cross-link to D9.2 accountability
+    role profiles.
+
+    '
+- evidence_numeral: IV
+  how_to_produce: 'Maintain a replication-controls test suite exercised per release: registry bypass attempts,
+    single-approver attempts, provenance-chain rejection, tripwire firing on simulated emergent replication.
+    CI-signed results retained; periodic red-team exercises attempt live bypass and report findings.
+
+    '
+confidence: medium
+needs_human_review: true
+review_notes: "This subgoal sits in I5 (Self-Modification and Emergent Capabilities) but is closer in\
+  \ spirit to a security + governance control than to foresight. The placement suggests the framework\
+  \ treats \"systems that can replicate themselves\" as a future-tech risk class even when the underlying\
+  \ controls are conventional security.\nCross-suite dependencies worth flagging for consolidation:\n\
+  \  - D3 Security — sandboxing, egress control, credential scoping\n    are the underlying mechanisms\
+  \ this subgoal builds on; without\n    D3 done well, these replication controls are superficial.\n \
+  \ - D9 Governance — the RACI and accountability profiles for\n    replication approvers are framework-external\
+  \ to I5.\n  - I2 Deception — an agent that initiates replication while\n    misrepresenting its intent\
+  \ is the deceptive-replication case;\n    tripwires overlap.\n  - I4 Frontier Uncertainty — the specific\
+  \ case of a model\n    self-replicating in service of goal preservation is a frontier\n    risk.\nThe\
+  \ \"two-human gate\" and \"provenance chain\" patterns are well-established in security but their specific\
+  \ application to model-weight replication is newer; confidence medium because defaults may not survive\
+  \ contact with specific deployment topologies.\n"
+version_compat:
+  framework_version_min: '1.0'
+  framework_version_max: 1.x
+  pattern_layer_version: v1-draft
+drafted_by: claude-opus-4.7-author
+drafted_at: 2026-04-16
+anchor_exemplar: D3.2-sandboxing

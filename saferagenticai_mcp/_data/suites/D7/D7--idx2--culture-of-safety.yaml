@@ -1,0 +1,151 @@
+id: D7::idx2::culture-of-safety
+display_id: D7.2
+suite_id: D7
+suite_title: Achieving and Sustaining a Safe System Profile
+subgoal_title: Culture of Safety
+content_type: process
+summary: 'Culture is measured by the boring, repeated acts people perform when nothing has gone wrong
+  yet. This subgoal asks the organization to make safety-first behaviour the path of least resistance:
+  explicit role ownership, proactive hazard hunts, rehearsed contingencies, and a default bias toward
+  caution when the evidence is thin. The framework''s "caution by default" clause is the most distinctive
+  handle; treat it as named policy with its own ledger.
+
+  '
+normative_anchors:
+  sfrs_addressed:
+  - a
+  - b
+  - c
+  - d
+  - e
+  evidence_addressed:
+  - I
+  - II
+  - III
+  - IV
+  - V
+  sfrs_not_addressed: []
+  evidence_not_addressed: []
+process_elements:
+- name: Safety-role charter
+  cadence: authored at program inception; re-affirmed annually and on reorg
+  participants:
+  - every staff member with safety-relevant duty
+  - safety lead as owner
+  maps_to_sfr:
+  - a
+  - e
+- name: Proactive hazard hunt (pre-mortem)
+  cadence: at each major milestone (design freeze, pre-launch, post-launch month, anniversary) and on
+    scope change
+  participants:
+  - product owner
+  - responsible engineer
+  - safety lead
+  - external challenger
+  maps_to_sfr:
+  - b
+- name: Contingency plan authorship and drill
+  cadence: plan written per scenario; drilled quarterly minimum; revised after each drill
+  participants:
+  - on-call
+  - safety lead
+  - ops
+  - communications lead
+  - external observer where feasible
+  maps_to_sfr:
+  - c
+- name: Caution-by-default capability ledger
+  cadence: continuous (the ledger lives); quarterly audit
+  participants:
+  - capability owner
+  - safety lead
+  - auditor
+  maps_to_sfr:
+  - d
+- name: Safety-signal communications
+  cadence: weekly safety standup; monthly all-hands safety item; quarterly executive/board safety digest
+  participants:
+  - safety lead
+  - executive sponsor
+  - all staff as audience
+  maps_to_sfr:
+  - a
+- name: Near-miss reporting program
+  cadence: continuous intake; weekly triage; quarterly pattern review
+  participants:
+  - any staff member
+  - safety lead
+  - neutral facilitator
+  maps_to_sfr:
+  - a
+  - b
+triggers:
+- New capability or scope change → Pre-mortem + caution-by-default default-off
+- Novel or under-tested behavior flagged in pre-mortem → Default-off ledger entry
+- Near-miss or incident → Blameless review + ledger update
+- Scheduled quarter → Contingency drill + ledger audit
+- Reorg or role change → Safety-role charter re-affirmation
+- Recurring-cause pattern in post-mortems → Escalation to board-level risk review
+artifacts:
+- Safety role charter (RACI-style, per named human) and annual attestation
+- Pre-mortem reports with identified hazards, owners, and mitigation status
+- Contingency plans per scenario class (drift, outage, unintended capability, data exposure, misuse) with
+  named role holders and resources
+- 'Caution-by-default capability ledger: capability × status × justification × enablement authority ×
+  conditions × revocation trigger'
+- Drill reports (scenario, participants, gaps, remediations) with re-test dates
+- Weekly / monthly / quarterly safety communication records
+- Near-miss register with triage notes and trend dashboards
+evidence_production:
+- evidence_numeral: I
+  how_to_produce: 'Training records exported from the HR or LMS system: participant, module, completion
+    date, assessment score where applicable. Link individual records to the Safety-Role Charter so it
+    is auditable that each role-holder has completed the training their role requires.
+
+    '
+- evidence_numeral: II
+  how_to_produce: 'Every pre-mortem and periodic hazard hunt produces a dated report listing risks identified,
+    likelihood/impact, owner, mitigation, residual risk, and review date. Maintain in an auditable register.
+    Cross-reference to the incident register when a flagged risk materializes.
+
+    '
+- evidence_numeral: III
+  how_to_produce: 'Contingency plans are living documents per incident class. Each names role holders
+    per response step, allocated resources (staff, compute, legal hold, external comms capacity), and
+    a last-drilled date. Drill reports attach to the plan and drive revisions.
+
+    '
+- evidence_numeral: IV
+  how_to_produce: 'Capture safety communications systematically: meeting minutes, published policy with
+    version history, internal newsletters, all-hands safety segments, board safety digests. Volume and
+    regularity are part of the evidence — a single annual memo does not show a culture.
+
+    '
+- evidence_numeral: V
+  how_to_produce: 'Caution-by-default is only a policy if failing to document a capability''s status is
+    itself a violation. Maintain a capability ledger and a quarterly audit report showing: capabilities
+    default-off, enablement requests (made / approved / denied / revoked), conditions attached, exceptions.
+    External auditors should be able to walk any production capability back to a ledger entry.
+
+    '
+confidence: medium
+needs_human_review: true
+review_notes: 'Re-drafted blind from the input for quality-signal comparison with the D7.2 exemplar. Expect
+  convergence on: blameless post-mortems, drills, caution-by-default ledger, leadership safety signal.
+  Divergences worth flagging: (i) added an explicit near-miss reporting program as a separate process
+  element — the SFR mentions "open reporting of safety concerns" in the umbrella D7 description but not
+  in D7.2''s SFRs, yet it is the main leading indicator of culture health. (ii) Split "safety role charter"
+  and "safety-signal communications" rather than folding leadership signal into culture communications;
+  feels sharper. Cross-suite: D9 governance carries the formal RACI, this subgoal is the cultural layer
+  on top. Nell to weigh whether "external challenger" in pre-mortems over-prescribes relative to SFR-b''s
+  "proactive risk assessment".
+
+  '
+version_compat:
+  framework_version_min: '1.0'
+  framework_version_max: 1.x
+  pattern_layer_version: v1-draft
+drafted_by: claude-opus-4.7-author
+drafted_at: 2026-04-16
+anchor_exemplar: D7.2-culture-of-safety

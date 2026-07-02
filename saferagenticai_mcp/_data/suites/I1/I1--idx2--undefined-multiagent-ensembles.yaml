@@ -1,0 +1,138 @@
+id: I1::idx2::undefined-multiagent-ensembles
+display_id: I1.2
+suite_id: I1
+suite_title: Opaque Agency Capabilities & Advances
+subgoal_title: Undefined Multiagent Ensembles
+content_type: code-applicable
+summary: 'The harm is sub-agents and peer-agents quietly appointed, such that nobody can say who authorized
+  what. The defence is a typed delegation protocol: every sub-agent invocation carries a signed delegation
+  token scoped to a subset of the primary agent''s Authority Scope Register (I1::idx0), handoffs are explicit
+  and visible at a UX friction point, and a default-deny policy refuses any agent-to-agent call that isn''t
+  pre-declared at deployment.'
+normative_anchors:
+  sfrs_addressed:
+  - a
+  - b
+  - c
+  - d
+  - e
+  evidence_addressed:
+  - I
+  - II
+  - III
+  sfrs_not_addressed: []
+  evidence_not_addressed: []
+design_patterns:
+- name: Signed delegation tokens with scope subset
+  sketch: Every sub-agent call carries a token signed by the primary agent's identity, containing {primary_agent_id,
+    sub_agent_id, principal_id, scope_subset, validity_window, correlation_id}. The scope_subset MUST
+    be a subset of the primary's authority per the Authority Scope Register. Sub-agents verify before
+    acting; unverified calls are refused and audited.
+  maps_to_sfr:
+  - a
+  - b
+  - e
+  when_to_use: Any multi-agent invocation.
+- name: Declared-ensemble allowlist (default deny)
+  sketch: At deployment, the primary agent declares the set of sub-agent / peer-agent identities it may
+    call and the scopes it may delegate. The gateway enforces this allowlist. Any attempt to invoke an
+    undeclared agent fails closed and emits a structured violation event. Allowlist changes go through
+    the capability-advance notification pipeline (I1::idx0).
+  maps_to_sfr:
+  - b
+  - d
+  when_to_use: Always.
+- name: Handoff friction at the user interface
+  sketch: 'When control materially transfers between agents (not just a background tool call, but a change
+    in the user''s conversational counterparty or the entity accountable for an outcome), the UI surfaces
+    the handoff: naming the incoming agent, the scope it is receiving, the primary agent''s continued
+    liability, and — where the handoff alters user risk — an explicit user confirmation. Not a modal to
+    be dismissed; a designed decision point.'
+  maps_to_sfr:
+  - c
+  when_to_use: When a sub-agent's action is user-visible or user-risk-altering.
+- name: Primary-agent liability preservation
+  sketch: The primary agent's liability is not extinguished by delegation. The delegation token records
+    the primary agent's accountability for the sub-agent's authorized actions; audit trails retain the
+    full chain {principal → primary → sub} for every action. Sub-agents retain independent liability where
+    explicitly authorized and acknowledged in the Multi-Agent Liability Matrix (I1::idx0).
+  maps_to_sfr:
+  - b
+  - e
+  when_to_use: Always.
+- name: Correlated cross-agent audit log
+  sketch: Every agent emits structured events with a shared correlation_id that follows the user's request
+    through the ensemble. An outside reviewer can reconstruct who-did-what-on-behalf-of-whom from the
+    correlation alone. Cross-agent traces feed a single store; no silos.
+  maps_to_sfr:
+  - c
+  - e
+  when_to_use: Always.
+anti_patterns:
+- name: Implicit sub-agent creation
+  why_wrong: An agent that silently spawns sub-agents to accomplish a task without declared scope or signed
+    delegation is appointing subagents without authority — the framework's named prohibition (SFR-b).
+- name: Open ensemble with runtime discovery
+  why_wrong: Letting an agent discover and call arbitrary peer agents at runtime (e.g., any advertised
+    MCP server on a network) violates the declared-ensemble allowlist. Convenience surface, liability
+    hole.
+- name: Invisible handoffs
+  why_wrong: Silent handoffs where the user doesn't know a different agent now holds control defeat the
+    framework's "meaningful human oversight" requirement and expose the primary agent's principal to apparent-
+    authority claims by the sub-agent.
+- name: Delegation tokens with superset scope
+  why_wrong: A sub-agent granted a scope broader than the primary agent holds is appointing-upward — not
+    permitted by agency law and not permitted by the Authority Scope Register. Scope must strictly subset.
+code_shape:
+  language: pseudocode
+  code: "# Sub-agent invocation with typed delegation and allowlist check\ndef invoke_subagent(target:\
+    \ AgentId, intent: Action, ctx: AgentContext) -> Result:\n    # 1) Declared-ensemble allowlist\n \
+    \   if target not in ctx.declared_ensemble:\n        AUDIT.violation(ctx, \"undeclared_subagent\"\
+    , target=target)\n        raise EnsembleViolation(f\"sub-agent not declared: {target}\")\n\n    #\
+    \ 2) Scope subset check against Authority Scope Register\n    required_scope = scope_for(intent)\n\
+    \    if not ctx.authority_scope.covers(required_scope):\n        AUDIT.violation(ctx, \"out_of_scope_delegation\"\
+    , target=target)\n        raise ScopeViolation()\n    delegated_scope = ctx.authority_scope.subset(required_scope)\n\
+    \n    # 3) Signed delegation token\n    token = DelegationToken(\n        primary_agent_id=ctx.agent_id,\n\
+    \        sub_agent_id=target,\n        principal_id=ctx.principal_id,\n        scope=delegated_scope,\n\
+    \        validity=short_window(),\n        correlation_id=ctx.correlation_id,\n    ).sign(ctx.agent_key)\n\
+    \n    # 4) Handoff surfacing if user-risk-altering\n    if intent.alters_user_risk():\n        ui.handoff_notice(primary=ctx.agent_id,\
+    \ sub=target, scope=delegated_scope)\n        if not ui.await_user_confirm():\n            return\
+    \ Result.refused_by_user()\n\n    # 5) Invoke, maintain correlation\n    result = agent_bus.call(target,\
+    \ intent, token=token, correlation_id=ctx.correlation_id)\n    AUDIT.record(ctx, action=\"subagent_invoked\"\
+    , token=token.id, result=result.summary)\n    return result\n"
+  notes: Five controls (allowlist, scope subset, signed token, handoff notice, correlated audit) appear
+    in one callsite because multi-agent invocations concentrate the liability surface. The token.sign
+    step presumes a key registry managed alongside the Authority Scope Register.
+evidence_production:
+- evidence_numeral: I
+  how_to_produce: TOS section "Multi-Agent Interactions" enumerating the declared ensemble at deployment
+    time, authorization requirements, duty assignments (primary vs sub-agent), and user navigation protocols
+    at handoff points. Versioned; diff on change.
+- evidence_numeral: II
+  how_to_produce: 'Consent-capture records for delegation: when a principal first agrees to sub-agent
+    activity, the scope and circumstances are captured. Administrative-minimum exceptions (e.g., internal
+    retrieval calls with no user-facing effect) are enumerated in a published exceptions list; anything
+    not on the list requires consent.'
+- evidence_numeral: III
+  how_to_produce: Deployment manifest with declared-ensemble allowlist, scope subsets, handoff friction
+    points, and fail-safe defaults. Gateway configuration reflects the manifest; a mismatch between declared
+    manifest and runtime config is a deploy-blocker. Annual audit verifies configuration equals manifest.
+confidence: high
+needs_human_review: false
+review_notes: 'This pattern assumes the Authority Scope Register from I1::idx0 exists; without it, "scope
+  subset" is undefined. Cross-suite: D3 Security owns the gateway-enforcement primitives (allowlisting,
+  token verification); this pattern uses them. D5 Transparency owns user-facing handoff communication
+  UX; this pattern names the friction-point requirement. The "administrative or minimal interactions"
+  exception in framework evidence II is deliberately loose — this pattern hardens it by requiring a published
+  exceptions list. Nell to confirm that "primary agent liability is not extinguished by delegation" is
+  the desired default; some jurisdictions treat fully-authorized sub-agents as breaking the chain.'
+cross_references:
+- I1::idx0::opaque-agency-capabilities-advances
+- I1::idx8::emergent-system-cooperation
+version_compat:
+  framework_version_min: '1.0'
+  framework_version_max: 1.x
+  pattern_layer_version: v1-draft
+drafted_by: claude-opus-4.7-author
+drafted_at: 2026-04-16
+anchor_exemplar: D3.2-sandboxing

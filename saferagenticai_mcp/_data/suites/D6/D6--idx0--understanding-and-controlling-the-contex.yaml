@@ -1,0 +1,169 @@
+id: D6::idx0::understanding-and-controlling-the-contex
+display_id: D6
+suite_id: D6
+suite_title: Understanding and Controlling the Context
+subgoal_title: Understanding and Controlling the Context
+content_type: process
+summary: 'This is the suite-level umbrella: mutual human-AI recognition, shared situational awareness,
+  and governed transitions of control across operational contexts. Treat it as the meta-process that sews
+  the twelve subgoal patterns together — not a place to reinvent them. Evidence comes from the sub-patterns;
+  this pattern prescribes the integration cadence and the named owners that keep D6 as a coherent whole
+  rather than twelve disconnected artifacts.
+
+  '
+normative_anchors:
+  sfrs_addressed:
+  - a
+  - b
+  - c
+  - d
+  evidence_addressed:
+  - I
+  - II
+  - III
+  - IV
+  - V
+  - VI
+  - VII
+  - VIII
+  sfrs_not_addressed: []
+  evidence_not_addressed: [IX]
+process_elements:
+- name: Context Governance Council
+  cadence: monthly + on material context shift (new jurisdiction, new capability, new user population)
+  participants:
+  - context owner
+  - safety lead
+  - legal counsel
+  - UX research lead
+  - localization lead
+  - red-team rep
+  maps_to_sfr:
+  - a
+  - b
+  - d
+- name: Control-transition rehearsal
+  cadence: quarterly; per novel handoff scenario before go-live
+  participants:
+  - on-call operator
+  - AI capability owner
+  - incident commander
+  - independent observer
+  maps_to_sfr:
+  - b
+- name: Mutual-recognition audit
+  cadence: semi-annual
+  participants:
+  - UX research
+  - safety lead
+  - representative end users under NDA or ethics board
+  maps_to_sfr:
+  - d
+- name: Contextual adaptation review
+  cadence: continuous intake, monthly triage
+  participants:
+  - localization lead
+  - cultural advisors
+  - affected-community liaisons
+  - product owner
+  maps_to_sfr:
+  - c
+- name: Suite integration review
+  cadence: quarterly; binds outputs of D6.1–D6.9 and underlined variants into a single context posture
+    report
+  participants:
+  - context owner
+  - owners of each D6 subgoal pattern
+  maps_to_sfr:
+  - a
+  - b
+  - c
+  - d
+triggers:
+- New jurisdiction or user population added → Context Governance Council
+- Incident or near-miss involving context misread → Mutual-recognition audit
+- Proposed handoff pattern change → Control-transition rehearsal
+- Subgoal pattern evidence becomes stale (> review cadence) → Suite integration review
+- Localization complaint or cultural-harm report → Contextual adaptation review
+artifacts:
+- Quarterly context posture report (rolls up D6.1–D6.9 + underlined variants)
+- Control-transition protocol library (per handoff scenario)
+- Mutual-recognition audit reports
+- Contextual adaptation decision log
+evidence_production:
+- evidence_numeral: I
+  how_to_produce: 'Roll up D6.10 (context drift) adaptive-learning documentation and D6.7 (culturo-linguistic)
+    training records into a single capabilities dossier. Include validation results, drift-detection outputs,
+    and adaptation outcomes dated within the review window.
+
+    '
+- evidence_numeral: II
+  how_to_produce: 'Cite the live monitoring and intervention records from D6.1 (historic constraints),
+    D6.8 (role persistence), D6.10 (drift) and link to D5 transparency disclosures. The suite-level pattern
+    owns the index; the sub-patterns own the raw logs.
+
+    '
+- evidence_numeral: III
+  how_to_produce: 'Cross-reference D6.7 (culturo-linguistic) training-data provenance records. Suite-level
+    artifact: a provenance index showing per- dataset version, source, preprocessing, and jurisdictional
+    constraints (D6.3, D6.6).
+
+    '
+- evidence_numeral: IV
+  how_to_produce: 'Aggregate UX research, user-journey maps, and design-thinking workshop outcomes from
+    D6.12 (decision fatigue) and D6.7 (cultural adaptation). Include evidence that outputs influenced
+    product decisions.
+
+    '
+- evidence_numeral: V
+  how_to_produce: 'Internal audit reports from suite integration reviews. Include anomalies detected per
+    sub-pattern, resolutions, and trend analysis across quarters.
+
+    '
+- evidence_numeral: VI
+  how_to_produce: 'Scenario-planning and stress-test documentation from D6.11 (contextual ambiguity) and
+    the control-transition rehearsals above. Must include documented system limitations and boundary conditions.
+
+    '
+- evidence_numeral: VII
+  how_to_produce: 'Control-transition protocols from the rehearsal program, organized by contextual situation
+    (emergency, routine, partial-capability, degraded-trust). Versioned, signed off by safety lead.
+
+    '
+- evidence_numeral: VIII
+  how_to_produce: 'Risk-assessment and stakeholder-communication strategies from the Context Governance
+    Council. Include interactive stakeholder engagement records (workshops, consultation outputs).
+
+    '
+cross_references:
+- D6::idx1::understanding-historic-constraints-and-s
+- D6::idx2::system-state-translation-and-communicati
+- D6::idx3::nominal-ownership-and-jurisdictional-fra
+- D6::idx4::separation-of-control-and-data-channels
+- D6::idx5::performance-information-sharing-and-stan
+- D6::idx6::dynamic-regulatory-framework-management
+- D6::idx7::culturo-linguistic-adaptations
+- D6::idx8::prevention-of-role-persistence-errors
+- D6::idx9::management-of-access-and-usage-restricti
+- D6::idx12::managing-context-drift
+- D6::idx13::managing-contextual-ambiguity
+- D6::idx14::preventing-decision-fatigue
+confidence: medium
+needs_human_review: true
+review_notes: 'Suite-level pattern is deliberately integrative rather than prescriptive — the specific
+  mechanisms live in sub-patterns. The risk is double-counting evidence: reviewers should treat this as
+  the index pattern, not a standalone compliance artifact. Cross-suite dependencies are substantial: D5
+  (transparency of role disclosure), D9 (governance/compliance frame), I1 (opaque agency — context concealment
+  is the inverse failure mode), I3 (context degradation — direct overlap, especially with D6.10/D6.11;
+  suite consolidation should harmonize between D6 and I3 rather than duplicate). Content-type is `process`;
+  a case could be made for `governance` given the Council structure, but the living-cadence and cross-pattern
+  integration flavor dominates.
+
+  '
+drafted_by: claude-opus-4.7-author
+drafted_at: 2026-04-16
+anchor_exemplar: D7.2-culture-of-safety
+version_compat:
+  framework_version_min: '1.0'
+  framework_version_max: 1.x
+  pattern_layer_version: v1-draft

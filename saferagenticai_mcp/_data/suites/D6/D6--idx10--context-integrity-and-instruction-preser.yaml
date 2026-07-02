@@ -1,0 +1,229 @@
+# D6.10 — Context Integrity and Instruction Preservation
+
+id: "D6::idx10::context-integrity-and-instruction-preser"
+display_id: "D6.10"
+is_underlined_variant: false
+display_id_variant_note: "D6.10_underlined"
+suite_id: "D6"
+suite_title: "Understanding and Controlling the Context"
+subgoal_title: "Context Integrity and Instruction Preservation"
+content_type: code-applicable
+
+summary: >
+  Agentic systems operating with bounded context windows must implement
+  mechanisms to preserve safety-critical instructions under context
+  pressure, detect context window displacement attacks, and maintain
+  instruction integrity during context compaction or summarization.
+  Context loss affecting safety-relevant state shall be treated as a
+  safety event requiring escalation. The context window is a finite
+  resource; when it fills, something is evicted, and if what gets
+  evicted is a safety instruction, the system has silently degraded
+  its own safety posture.
+
+normative_anchors:
+  sfrs_addressed: [a, b, c]
+  evidence_addressed: [I, II, III]
+  sfrs_not_addressed: []
+  evidence_not_addressed: []
+
+cross_references:
+  - "D6::idx0::understanding-and-controlling-the-contex"
+  - "D6::idx12::managing-context-drift"
+  - "D6::idx13::managing-contextual-ambiguity"
+  - "D3::idx8::prompt-injection-and-instruction-hierarc"
+
+  - "D6::idx14::preventing-decision-fatigue"
+design_patterns:
+
+  - name: Safety instruction pinning
+    sketch: >
+      Safety-critical instructions are tagged with a "pinned" flag
+      that exempts them from context compaction and summarization.
+      The context manager treats pinned instructions as immutable
+      occupants of the context window. When the window fills, only
+      non-pinned content is eligible for eviction. Pinned content is
+      defined by the operator in configuration, not by the agent at
+      runtime. The pinned set includes: system-level safety
+      constraints, capability boundaries, escalation triggers, and
+      identity/role definitions.
+    maps_to_sfr: [a]
+    when_to_use: Every agentic system operating with a bounded
+      context window, which is to say every LLM-based agent.
+
+  - name: Context integrity verification
+    sketch: >
+      At defined checkpoints (before tool execution, before output
+      generation, at compaction boundaries), the system verifies that
+      all pinned safety instructions are present and unmodified in
+      the current context. Verification uses hash comparison against
+      the original pinned content. If any pinned instruction is
+      missing, truncated, or modified, the system enters a safe
+      state: pauses execution, logs a context integrity violation,
+      and escalates to a human operator. The system does not attempt
+      to reconstruct the missing instruction from memory.
+    maps_to_sfr: [b]
+    when_to_use: Continuously during execution. Checkpoint frequency
+      should increase under context pressure (high utilization of
+      the context window).
+
+  - name: Context displacement attack detection
+    sketch: >
+      Monitor for patterns that indicate a deliberate attempt to
+      fill the context window with content designed to displace safety
+      instructions: unusually long tool outputs, repetitive user
+      messages, retrieved documents with padding content, and
+      multi-turn conversations that inject large volumes of low-value
+      content. Detection signals include: context utilization rate
+      (rapid filling), content diversity (low entropy filling suggests
+      padding), and source concentration (one source dominating the
+      context). Detected displacement attempts trigger the same safe
+      state as a context integrity violation.
+    maps_to_sfr: [c]
+    when_to_use: Any agent that processes content from untrusted
+      sources (users, retrieved documents, tool outputs) within a
+      bounded context.
+
+  - name: Graceful degradation under context pressure
+    sketch: >
+      When context utilization exceeds a defined threshold (e.g., 80%),
+      the system enters a degraded-but-safe mode: it prioritizes
+      safety instructions over task content, warns the user that
+      context capacity is constrained, limits new content ingestion,
+      and increases the frequency of integrity verification checks.
+      If context pressure reaches a critical threshold (e.g., 95%),
+      the system refuses new input and requests a session reset or
+      human handoff rather than risking silent instruction loss.
+    maps_to_sfr: [a, b]
+    when_to_use: Long-running agent sessions, multi-turn
+      conversations, and agents processing large documents.
+
+anti_patterns:
+
+  - name: Treating context compaction as lossless
+    why_wrong: >
+      Summarization is lossy by definition. Compacting the context
+      to free space will drop or distort information. If safety
+      instructions are in the summarized region, their precise
+      meaning may shift or disappear. Pinning exempts safety content
+      from this lossy process.
+
+  - name: Agent-managed safety instruction priority
+    why_wrong: >
+      Letting the agent decide which instructions are safety-critical
+      and which can be evicted gives the agent authority over its own
+      constraints. An agent optimizing for task completion has an
+      incentive to deprioritize instructions that constrain it.
+      The pinned set is operator-defined.
+
+  - name: Ignoring context window utilization as a metric
+    why_wrong: >
+      Context utilization is a leading indicator of safety risk.
+      A system at 95% context capacity with no monitoring will
+      silently lose instructions on the next input. Context
+      utilization must be tracked and alerted on like any other
+      resource metric.
+
+  - name: Session continuation after detected context loss
+    why_wrong: >
+      Continuing to operate after a safety instruction has been
+      detected as missing treats context loss as a warning rather
+      than a safety event. The framework requires escalation, not
+      a log entry and continued operation.
+
+code_shape:
+  language: pseudocode
+  code: |
+    class ContextIntegrityManager:
+        def __init__(self, pinned_instructions, context_limit):
+            self.pinned = pinned_instructions
+            self.pinned_hashes = {id: hash(inst)
+                                  for id, inst in pinned_instructions.items()}
+            self.context_limit = context_limit
+            self.pressure_threshold = 0.80
+            self.critical_threshold = 0.95
+
+        def verify_integrity(self, current_context):
+            for inst_id, expected_hash in self.pinned_hashes.items():
+                actual = current_context.get_pinned(inst_id)
+                if actual is None or hash(actual) != expected_hash:
+                    AUDIT.alert(event="context_integrity_violation",
+                                missing_instruction=inst_id)
+                    return self.enter_safe_state(inst_id)
+            return True
+
+        def check_pressure(self, current_context):
+            utilization = current_context.size / self.context_limit
+            METRICS.gauge("context_utilization", utilization)
+            if utilization >= self.critical_threshold:
+                AUDIT.alert(event="context_critical_pressure")
+                return self.refuse_new_input()
+            if utilization >= self.pressure_threshold:
+                AUDIT.warn(event="context_high_pressure")
+                return self.enter_degraded_mode()
+            return True
+
+        def compact(self, current_context):
+            # Only non-pinned content is eligible for compaction
+            evictable = current_context.get_non_pinned()
+            summarized = SUMMARIZER.compress(evictable)
+            current_context.replace_non_pinned(summarized)
+            # Re-verify after compaction
+            return self.verify_integrity(current_context)
+  notes: >
+    The manager is external to the agent's reasoning loop. The agent
+    cannot modify the pinned set, skip integrity checks, or override
+    the safe-state transition. Context pressure monitoring treats
+    context capacity as a safety-relevant resource, not just a
+    performance concern.
+
+evidence_production:
+
+  - evidence_numeral: I
+    how_to_produce: >
+      Export the pinned instruction registry: which instructions are
+      pinned, their hashes, the operator who configured them, and
+      the last verification timestamp. Include context integrity
+      verification logs showing check frequency, pass/fail results,
+      and any integrity violation events with their resolution.
+
+  - evidence_numeral: II
+    how_to_produce: >
+      Publish context pressure monitoring data: utilization trends
+      across sessions, threshold breach events, degraded-mode
+      activations, and input-refusal events. Include evidence that
+      context displacement attack detection is active: detection
+      rule configuration and any triggered alerts.
+
+  - evidence_numeral: III
+    how_to_produce: >
+      Export safe-state transition logs: every instance where the
+      system entered a safe state due to context integrity violation
+      or critical pressure, the trigger, the human escalation
+      record, and the resolution. Include red-team test results
+      specifically targeting context displacement and instruction
+      eviction under pressure.
+
+confidence: medium
+needs_human_review: false
+review_notes: >
+  Phase 3: Initial draft, awaiting human review. SFR and evidence
+  descriptions in criteria-v1.json are empty; content derived from the
+  subgoal description. This pattern has strong cross-suite connections:
+  D3.8 (prompt injection) addresses a related but distinct threat
+  (adversarial instruction override vs. passive instruction loss);
+  D6.12 (context drift) addresses gradual semantic drift rather than
+  the abrupt loss modeled here. Operational heuristic "Context
+  Degradation Defense" is the direct empirical source for this
+  pattern. The "context as a finite safety-relevant resource" framing
+  is drawn from production agent deployment experience. The
+  displacement attack detection pattern is less mature than the
+  pinning and verification patterns; reviewer should assess whether
+  current detection techniques are sufficiently reliable to
+  recommend.
+
+drafted_by: claude-opus-4-6-author
+drafted_at: 2026-05-16
+version_compat:
+  framework_version_min: "1.0"
+  framework_version_max: "1.x"
+  pattern_layer_version: "v1-draft"

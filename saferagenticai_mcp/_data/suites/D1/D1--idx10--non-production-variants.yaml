@@ -1,0 +1,257 @@
+id: "D1::idx10::non-production-variants"
+display_id: "D1.10"
+suite_id: "D1"
+suite_title: "Goal Alignment"
+subgoal_title: "Non-production Variants"
+content_type: code-applicable
+
+summary: >
+  An agent whose goal-decomposition code can be forked, copied, or
+  partially duplicated into a test build is an alignment escape hatch.
+  This subgoal asks for controls that prevent the goal-pursuing
+  subsystems from running outside the approved alignment surface — no
+  forks without full safeguards, no off-label public deployments, no
+  test variants that strip the safety machinery. The enforcement
+  mechanism is signed-build attestation and runtime capability binding,
+  not policy-only "please don't."
+
+normative_anchors:
+  sfrs_addressed: [a]
+  evidence_addressed: [I, II, III]
+  sfrs_not_addressed: []
+  evidence_not_addressed: []
+
+cross_references:
+  - "D1::idx1::transparency-of-goals"
+  - "D1::idx2::goal-adjustability"
+  - "D1::idx9::goal-drift"
+
+design_patterns:
+
+  - name: Signed build with alignment-surface attestation
+    sketch: >
+      Every deployable build of the goal-pursuing components carries a
+      signed manifest attesting that (a) the full D1 alignment surface
+      is present (goal store, event log, decision trace, drift monitor,
+      reward-policy binding, interpretability pipeline), (b) the build
+      was produced from a known commit, (c) the signer is an authorized
+      release principal. Runtime refuses to load components whose
+      manifest fails verification. Verification fails closed — a
+      signature service outage does not become a tacit permit.
+    maps_to_sfr: [a]
+    when_to_use: Any binary or container image that contains
+      goal-decomposition logic.
+
+  - name: Capability binding to alignment components
+    sketch: >
+      Goal-pursuit APIs (planner, subgoal spawner, reward evaluator)
+      refuse to initialize unless the full alignment surface is attached
+      and responsive: `require(goal_store && event_log && decision_trace
+      && drift_monitor)`. Mocks are permitted only when an environment
+      flag explicitly names a test context, and builds with that flag
+      active cannot be signed for production distribution.
+    maps_to_sfr: [a]
+    when_to_use: Always — the check belongs at the module boundary, not
+      at the application layer above it.
+
+  - name: Distribution-channel separation for non-production variants
+    sketch: >
+      Public demos, evaluation builds, red-team targets, and research
+      forks are distributed through channels distinct from production,
+      with explicit end-user warnings and telemetry that tags the
+      variant. Internal CI generates test variants automatically from
+      the signed production build with alignment-reduction annotations;
+      hand-rolled test forks outside this pipeline are rejected at
+      deploy time.
+    maps_to_sfr: [a]
+    when_to_use: Any org that ships evaluation builds, public demos, or
+      partner previews alongside production.
+
+  - name: Fork-detection telemetry and attestation registry
+    sketch: >
+      Production agent instances emit periodic attestations
+      `{instance_id, build_hash, signer, alignment_surface_hash,
+      deployment_env}` to a central registry. Instances that fail to
+      attest, attest with unrecognized signatures, or attest with a
+      divergent alignment-surface hash are isolated and flagged as
+      suspected unauthorized variants. Catches the rogue-copy case
+      where source is extracted and run outside the deployment
+      perimeter.
+    maps_to_sfr: [a]
+    when_to_use: Where the deployment perimeter is non-trivial
+      (multi-environment, partner deployments, open-source distribution).
+
+  - name: Source access controls matched to release authority
+    sketch: >
+      Goal-decomposition source, reward-policy definitions, and
+      alignment-surface modules are access-controlled: read access
+      broad, write access scoped to release principals, fork and export
+      actions audited. Pre-receive hooks on alignment-critical paths
+      block pushes from non-release principals. Complements signed
+      builds by reducing the population that can attempt an
+      unauthorized variant in the first place.
+    maps_to_sfr: [a]
+    when_to_use: Any org where source-access scope and release-authority
+      scope differ (most orgs).
+
+anti_patterns:
+
+  - name: '"Test mode" toggle in production binary'
+    why_wrong: >
+      A flag that disables alignment components without changing the
+      binary means a production build can be degraded in-place with no
+      change-management trail. Test variants must be distinct builds
+      with distinct attestations, not runtime feature flags.
+
+  - name: 'Partial duplication "for benchmarking"'
+    why_wrong: >
+      Extracting the planner to benchmark without the goal store or
+      drift monitor is exactly the "partially duplicated without
+      requisite alignments" case SFR-a names. If the planner runs, the
+      alignment surface runs.
+
+  - name: Policy-only prohibition on forking
+    why_wrong: >
+      A README or acceptable-use policy saying "do not fork" is not a
+      safeguard. SFR-a asks for mechanisms that *prevent and prohibit*;
+      asking nicely is neither.
+
+  - name: Untracked evaluation builds leaking to public channels
+    why_wrong: >
+      Evaluation builds that reach users without warnings, telemetry,
+      or alignment-reduction disclosure create an off-label deployment
+      surface the org cannot oversee — the exact scenario the subgoal
+      description names.
+
+  - name: Attestation registry that fails open
+    why_wrong: >
+      A fork-detection registry that treats missing attestations as
+      "probably fine" detects nothing. Non-attesting instances must be
+      treated as suspected unauthorized variants until explained.
+
+code_shape:
+  language: pseudocode
+  code: |
+    # Module init: verify signed build and bind alignment surface
+    def init_planner(ctx):
+        manifest = BUILD_MANIFEST.load()
+        if not SIGNATURE.verify(manifest, trusted_signers=RELEASE_KEYS):
+            raise UnsignedBuildRefused(manifest.build_hash)
+
+        required = {"goal_store", "event_log", "decision_trace",
+                    "drift_monitor", "reward_policy", "explanation_pipeline"}
+        attached = set(ctx.alignment_surface.present())
+        missing = required - attached
+        if missing and not ctx.env.is_authorized_test:
+            raise AlignmentSurfaceIncomplete(missing)
+
+        # Periodic attestation to central registry
+        ATTESTATION.start(
+            instance_id=ctx.instance_id,
+            build_hash=manifest.build_hash,
+            signer=manifest.signer,
+            alignment_surface_hash=hash(sorted(attached)),
+            deployment_env=ctx.env.name,
+            interval_sec=300,
+        )
+
+    # Pre-receive hook on alignment-critical paths
+    def pre_receive_hook(pushed_refs, principal):
+        for ref in pushed_refs:
+            if touches_alignment_critical_paths(ref):
+                if principal not in RELEASE_PRINCIPALS:
+                    AUDIT.log_unauthorized_edit_attempt(ref, principal)
+                    raise Unauthorized(
+                        "alignment-critical paths require release authority")
+                AUDIT.log_alignment_edit(ref, principal)
+
+    # Registry side: detect divergent or missing attestations
+    def registry_sweep():
+        for instance in EXPECTED_INSTANCES.active():
+            att = ATTESTATION_STORE.latest(instance.id)
+            if att is None or att.age() > GRACE_PERIOD:
+                ISOLATION.quarantine(instance, reason="no_attestation")
+                DEVIATION_LOG.record(instance, "missing_attestation")
+            elif att.signer not in RELEASE_KEYS:
+                ISOLATION.quarantine(instance, reason="unknown_signer")
+                DEVIATION_LOG.record(instance, "unauthorized_variant")
+            elif att.alignment_surface_hash != EXPECTED_SURFACE_HASH:
+                ISOLATION.quarantine(instance, reason="surface_divergence")
+                DEVIATION_LOG.record(instance, "partial_duplication")
+  notes: >
+    Signature verification fails closed. Attestation registry treats
+    silence as suspicion, not as consent. DEVIATION_LOG entries are
+    the raw material for Evidence-III.
+
+evidence_production:
+
+  - evidence_numeral: I
+    how_to_produce: >
+      Maintain technical documentation of the software components
+      implementing the safeguards: build-signing toolchain, manifest
+      schema, runtime verification module, capability-binding checks,
+      pre-receive hooks on alignment-critical paths, attestation
+      registry service, and source-access control configuration.
+      Version-control these artifacts; export per-release bills of
+      materials and signer authorization records as signed CI
+      artifacts stored in an append-only audit archive.
+
+  - evidence_numeral: II
+    how_to_produce: >
+      Emit structured runtime logs from each control in use: signed-
+      build verification outcomes (accepted/rejected with manifest
+      hash), capability-binding initializations (surface components
+      attached, missing-component refusals), periodic attestations
+      received by the registry, registry sweeps and their outcomes.
+      Retain with correlation IDs so a given instance's lifecycle can
+      be reconstructed. Non-zero rejection and isolation counts are
+      evidence the controls are live; continuous-zero counts are
+      evidence the test surface is weak, not that the safeguards are
+      strong.
+
+  - evidence_numeral: III
+    how_to_produce: >
+      Maintain a deviation register capturing each detected departure
+      from the stated goal-alignment posture: unauthorized fork
+      attempts caught by pre-receive hooks, unsigned or mis-signed
+      builds refused at load time, non-attesting or divergent-surface
+      instances quarantined, off-channel evaluation builds discovered
+      in the wild. Each entry records detection signal, investigation
+      findings, and remediation (key revocation, instance isolation,
+      repository lockdown, takedown request, post-mortem). Link
+      entries to the Evidence-II logs that triggered them. This
+      register is the "detection and remediation" artifact SFR-a's
+      safeguards exist to generate.
+
+confidence: high
+needs_human_review: true
+review_notes: >
+  SFR-a is broad — "safeguards ... to prevent and prohibit ... forked
+  or partially duplicated without requisite alignments." This pattern
+  reads the "prevent and prohibit" language as requiring mechanism,
+  not policy, and leans on signed builds, capability binding, and
+  attestation as the concrete mechanisms. Orgs that argue a mature
+  release-management process suffices should note that the framework's
+  text asks for safeguards the system *has in place*, not practices
+  the org follows. Medium confidence because the supply-chain
+  dimension (partner deployments, OSS forks of published weights or
+  code) is deployment-model-specific and this pattern cannot fully
+  prescribe for all shapes. Cross-suite dependencies to flag for
+  consolidation: D3 Security provides the primitives this subgoal
+  depends on (key management, signing infrastructure, attestation
+  transport, isolation mechanisms); I1 Race Dynamics is relevant
+  where adversarial or competitive forks are the threat model; D9
+  Responsible Governance is relevant where forks raise licensing or
+  regulatory obligations. Within-suite refs are kept to transparency-
+  of-goals (idx1), goal-adjustability (idx2), and goal-drift (idx9)
+  because unauthorized variants typically surface as drift or
+  opacity first.
+
+version_compat:
+  framework_version_min: "1.0"
+  framework_version_max: "1.x"
+  pattern_layer_version: "v1-draft"
+
+drafted_by: claude-opus-4.7-author
+drafted_at: 2026-04-17
+anchor_exemplar: D3.2-sandboxing

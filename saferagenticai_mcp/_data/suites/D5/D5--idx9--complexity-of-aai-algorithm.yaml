@@ -1,0 +1,169 @@
+id: D5::idx9::complexity-of-aai-algorithm
+display_id: "D5_1"
+suite_id: D5
+suite_title: Transparency and Interpretability of Reasoning
+subgoal_title: Complexity of AAI Algorithm
+content_type: code-applicable
+summary: 'This is an inhibitor-variant subgoal (D5̲.1): the failure mode is algorithms so complex that
+  no one can interpret them, even in principle. The honest answer is that end-to-end interpretation of
+  frontier neural systems is an open research problem. The pattern is therefore: manage complexity deliberately
+  (don''t use a larger model than necessary), expose structural hooks where interpretability tooling exists,
+  and be candid about what cannot currently be interpreted. Pretending opacity is solved is a worse failure
+  than acknowledging it.
+
+  '
+normative_anchors:
+  sfrs_addressed:
+  - a
+  - b
+  - c
+  - d
+  evidence_addressed:
+  - I
+  - II
+  - III
+  sfrs_not_addressed: []
+  evidence_not_addressed: []
+cross_references:
+- D5::idx4::interpretability-and-traceability-of-rea
+- D5::idx10::documentation-incomprehensibility
+design_patterns:
+- name: Complexity-justification gate
+  sketch: 'Per-capability decision: what model family and scale are necessary? Document the justification
+    — "we use a 70B model because 7B failed on benchmark X at threshold Y" — and revisit when cheaper-or-simpler
+    alternatives mature. The gate is a design artifact: a decision not to use a smaller model is auditable.
+    Complexity is not free; it costs interpretability.
+
+    '
+  maps_to_sfr:
+  - a
+  when_to_use: Model selection and major capability expansion.
+- name: Modular architecture with interpretable seams
+  sketch: 'Prefer pipelines where reasoning steps are decomposed into smaller, individually-analyzable
+    modules (retriever + reader + planner + executor), versus monolithic end-to-end inference where possible
+    for the task. The monolithic model still has opacity, but the scaffolding around it is inspectable.
+    Document the decomposition and the information-flow between modules; changes to the decomposition
+    are versioned.
+
+    '
+  maps_to_sfr:
+  - a
+  when_to_use: Wherever task structure allows meaningful decomposition without unacceptable quality loss.
+- name: Interpretability tool integration
+  sketch: 'Where tools exist and apply to the architecture, integrate them: attribution methods (integrated
+    gradients, attention analysis with known caveats), probing classifiers for specific concepts, activation-patching
+    for causal mediation, and — for models where they are available — sparse-autoencoder feature analysis
+    and circuit-level inspection. These are research-grade capabilities; integrate them as telemetry surfaces,
+    not as claims that the model is "interpreted."
+
+    '
+  maps_to_sfr:
+  - b
+  when_to_use: For any capability where interpretability will be audited or where safety review requires
+    more than behavioral evaluation.
+- name: Trustworthiness monitoring on decision outputs
+  sketch: 'Continuous monitors track whether observed decision patterns drift from calibration baseline:
+    confidence calibration (measured ECE), refusal-rate drift, disparate outputs across population slices,
+    behavioral consistency across semantically equivalent prompts. When thresholds trip, flag for review.
+    This is not interpretability but a proxy for "is the system still behaving as characterized?"
+
+    '
+  maps_to_sfr:
+  - c
+  when_to_use: Production systems with material decision authority.
+- name: Adaptation and pattern-learning telemetry
+  sketch: 'Track how system behavior changes over time: retraining cadence, memory growth, tool-acquisition,
+    prompt/policy edits. Report on adaptations in aggregate (monthly) so that an auditor can see the system''s
+    learning trajectory rather than a static snapshot. Integrates with D5.1 goal-log self-learning event
+    classification.
+
+    '
+  maps_to_sfr:
+  - d
+  when_to_use: Any system with persistent learning or memory.
+anti_patterns:
+- name: Claiming interpretability because attribution maps exist
+  why_wrong: 'Attribution is a useful signal, not an explanation. Attribution methods are known to be
+    unstable and architecture-dependent; presenting an attribution heatmap as "the reason the model decided
+    X" overstates what we know.
+
+    '
+- name: Using the largest available model by default
+  why_wrong: 'Defaulting to frontier capacity when task requirements don''t demand it costs both compute
+    and interpretability. The complexity-justification gate exists to make this a conscious decision rather
+    than a habit.
+
+    '
+- name: Pretending monolithic models can be decomposed post hoc
+  why_wrong: 'Adding a "reasoning head" or "explanation head" to an already- trained monolith gives you
+    a second output that correlates imperfectly with the first. Modularity is an architectural choice,
+    not a retrofit.
+
+    '
+- name: Interpretability tooling only used in research mode
+  why_wrong: 'If attribution / probing / circuit analysis never runs on production inputs, it cannot evidence
+    production behavior. Tooling belongs in the operational loop, not a separate research track that never
+    touches the shipped system.
+
+    '
+- name: Silent capacity growth
+  why_wrong: 'Quietly upgrading to a larger model or adding tools without revisiting the complexity justification
+    or re-auditing interpretability reduces the evidentiary basis of prior transparency claims.
+
+    '
+code_shape:
+  language: pseudocode
+  code: "# Complexity-justification record + interpretability telemetry\n\n@dataclass\nclass ComplexityJustification:\n\
+    \    capability_id: str\n    model_family: str\n    model_size: str\n    alternatives_evaluated: list[dict]\
+    \   # {model, score, eval_id}\n    chosen_rationale: str\n    interpretability_tools_supported: list[str]\n\
+    \    review_date: str\n    next_review_due: str\n\n# Telemetry surface joined to decision records\n\
+    \ndef interpretability_probe(dr: DecisionRecord) -> ProbeResult:\n    # Attribution / probing / patching\
+    \ as available;\n    # returns structured results joined to decision_id.\n    return {\n        \"\
+    attribution\": ATTRIBUTION.run_if_supported(dr),\n        \"probe_findings\": PROBES.active_for(dr.decision_type),\n\
+    \        \"calibration\": CALIBRATION.measure(dr),\n        # Honesty: results are partial, methods\
+    \ have known caveats\n        \"caveats\": KNOWN_CAVEATS.for_methods_used(),\n    }\n"
+  notes: 'The ComplexityJustification record is the main artifact. The probe output is a telemetry surface,
+    not a reasoning explanation.
+
+    '
+evidence_production:
+- evidence_numeral: I
+  how_to_produce: 'Retain the Complexity-Justification records for every material capability. Publish
+    architecture diagrams showing the decomposition into interpretable modules. Retain the interpretability-tool
+    inventory with applicability per model family; document known limitations honestly.
+
+    '
+- evidence_numeral: II
+  how_to_produce: 'Comparative analyses showing interpretability differences across architectural choices
+    (e.g., "when we added the structured planner, decision-path traceability improved from X to Y on benchmark
+    Z"). Monitoring logs of complexity-related metrics over time. Adaptation records linking to D5.1.
+
+    '
+- evidence_numeral: III
+  how_to_produce: 'Implementation documentation for each interpretability tool: coverage, known failure
+    modes, output format, integration point. Effectiveness metrics (e.g., rater agreement on tool-assisted
+    vs unaided decision review). Evidence that the complexity/comprehensibility balance was reviewed and
+    adjusted over time.
+
+    '
+confidence: low
+needs_human_review: true
+review_notes: 'Low confidence is deliberate. The interpretability research landscape (mechanistic interpretability,
+  sparse autoencoders, circuit analysis) is moving fast and is not production-stable for frontier models.
+  The pattern above is honest about that limitation rather than pretending a mature solution exists. Organizations
+  that adopt this pattern should avoid claims of "full interpretability" and instead claim "measured interpretability
+  at level X for components Y, research-grade tooling for component Z, opacity acknowledged for component
+  W." Cross-suite for Phase 2: D5::idx4 depends on this (you cannot interpret what you cannot even structurally
+  access); I1 Opaque Agency is the failure mode this subgoal directly addresses; D7 Safe System Profile
+  (caution-by-default should scale with opacity).
+
+  '
+version_compat:
+  framework_version_min: '1.0'
+  framework_version_max: 1.x
+  pattern_layer_version: v1-draft
+drafted_by: claude-opus-4.7-author
+drafted_at: 2026-04-16
+anchor_exemplar: D3.2-sandboxing
+display_id_variant_note: D5_1
+is_underlined_variant: true

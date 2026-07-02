@@ -1,0 +1,147 @@
+id: D6::idx13::managing-contextual-ambiguity
+display_id: "D6_4"
+is_underlined_variant: true
+display_id_variant_note: "D6.4_underlined"
+suite_id: D6
+suite_title: Understanding and Controlling the Context
+subgoal_title: Managing Contextual Ambiguity
+content_type: code-applicable
+summary: 'Systems routinely operate under ambiguous or incomplete context — missing instructions, underdetermined
+  user intent, incomplete tool outputs, conflicting signals. This subgoal expects the system to recognize
+  ambiguity explicitly, represent its own uncertainty, and handle it with bounded behavior (clarification,
+  conservative action, escalation, deferral) rather than confidently hallucinating. Evidence includes
+  logged ambiguity-handling events and comparative analyses of clear vs unclear contexts.
+
+  '
+normative_anchors:
+  sfrs_addressed:
+  - a
+  - b
+  - c
+  evidence_addressed:
+  - I
+  - II
+  sfrs_not_addressed: []
+  evidence_not_addressed: []
+design_patterns:
+- name: Explicit context completeness check
+  sketch: 'Before committing to an action, the agent evaluates whether its context is sufficient: required
+    fields present, entities resolved, instructions parseable, policy domain clear. A completeness score
+    or missing-fields list is emitted alongside decisions. Below threshold, route to clarification or
+    conservative action — not best-guess execution.
+
+    '
+  maps_to_sfr:
+  - a
+  - c
+  when_to_use: Any system taking action on underspecified inputs; especially tool-using agents and multi-turn
+    assistants.
+- name: Calibrated uncertainty as first-class output
+  sketch: 'For outputs where confidence matters, emit calibrated uncertainty alongside the answer (cross-ref
+    D6.2 state envelope). Threshold behaviors: above X, act; between X and Y, act with explicit hedge;
+    below Y, clarify or defer. Calibration validated per D6.5 benchmarks.
+
+    '
+  maps_to_sfr:
+  - a
+  when_to_use: Decision-support, recommendation, and classification surfaces; any system whose outputs
+    drive downstream action.
+- name: Clarification-vs-proceed policy
+  sketch: 'Explicit policy for when to ask clarifying questions vs proceed with conservative defaults.
+    Excessive clarification is decision fatigue (see D6.12); insufficient clarification is confident hallucination.
+    Policy parameters: stakes of the action, reversibility, user''s demonstrated preference, session context.
+
+    '
+  maps_to_sfr:
+  - c
+  when_to_use: Conversational agents; action-taking agents with user-in-the-loop.
+- name: Ambiguity event logging
+  sketch: 'Structured event whenever the completeness check flags ambiguity or uncertainty crosses a threshold:
+    what was ambiguous, how the system responded (clarify / hedge / defer / proceed), user/operator resolution,
+    outcome. Feeds SFR-b comparative analysis.
+
+    '
+  maps_to_sfr:
+  - b
+  when_to_use: Continuously.
+- name: Ambiguity red-team probing
+  sketch: 'Adversarial and intentionally-ambiguous inputs in the test suite: missing entities, conflicting
+    instructions, underspecified goals, contradictory retrieved content. Passes require handling per the
+    policy (clarify/hedge/defer) — confident wrong answers are failures, even if downstream-"correct".
+
+    '
+  maps_to_sfr:
+  - a
+  - c
+  when_to_use: Every release; part of the D6.5 benchmark register.
+anti_patterns:
+- name: Default-to-action under ambiguity
+  why_wrong: 'Systems that always produce a confident answer regardless of input quality are hallucinating
+    when input doesn''t warrant the confidence. The failure is often silent; the subgoal expects explicit
+    ambiguity handling as the default.
+
+    '
+- name: Uncertainty reported without calibration
+  why_wrong: '"I''m not sure, but..." with no calibrated mapping to actual probability is decorative hedging.
+    Uncertainty that doesn''t correlate with accuracy gives users false guidance. Tie to calibration in
+    D6.2 and D6.5.
+
+    '
+- name: Clarifying every uncertainty
+  why_wrong: 'Asking for clarification on every ambiguous input degrades UX and causes decision fatigue
+    (D6.12). The policy must discriminate — not every uncertainty is worth a question.
+
+    '
+- name: Ambiguity events not logged
+  why_wrong: 'Evidence II requires analysis of ambiguous vs clear cases; the analysis is impossible without
+    structured logging of the ambiguity events. "We handle ambiguity" with no logs is unverifiable.
+
+    '
+code_shape:
+  language: pseudocode
+  code: "# Completeness check + uncertainty-aware response policy\n@dataclass\nclass ContextCompleteness:\n\
+    \    score: float\n    missing: list[str]\n    conflicts: list[str]\n\ndef decide(user_request: Request,\
+    \ ctx: Context) -> Decision:\n    completeness = COMPLETENESS.evaluate(user_request, ctx)\n    draft\
+    \ = MODEL.propose(user_request, ctx)\n    uncertainty = UNCERTAINTY_HEAD.estimate(draft, ctx)  # calibrated\n\
+    \n    event = AmbiguityEvent(\n        request_id=user_request.id,\n        completeness=completeness,\n\
+    \        uncertainty=uncertainty,\n        stakes=STAKES_MODEL.score(user_request),\n    )\n\n   \
+    \ action = POLICY.select(event)  # clarify / hedge / defer / proceed\n\n    AUDIT.record_ambiguity(event,\
+    \ chosen=action)\n\n    return RESPOND.render(draft, action, event)\n"
+  notes: 'POLICY.select is the tunable heart: stakes × completeness × uncertainty × user-preference. Tune
+    against D6.12 decision-fatigue metrics to balance clarification burden against hallucination risk.
+
+    '
+evidence_production:
+- evidence_numeral: I
+  how_to_produce: 'Documentation of adaptive-learning / runtime mechanisms by which the system absorbs
+    and processes context-specific information: completeness-check implementation, uncertainty estimation
+    approach, calibration validation, policy tuning methodology. Include versioned artifacts per release.
+
+    '
+- evidence_numeral: II
+  how_to_produce: 'Periodic analysis comparing outcomes in clear-context vs unclear-context sessions:
+    accuracy, user-satisfaction, downstream task success, safety event rate. Quarterly report with case
+    studies of high-impact ambiguity events, remediations (policy tuning, capability updates), and outcomes.
+
+    '
+cross_references:
+- D6::idx2::system-state-translation-and-communicati
+- D6::idx12::managing-context-drift
+- D6::idx14::preventing-decision-fatigue
+confidence: medium
+needs_human_review: true
+review_notes: 'Tight coupling with D6.12 (decision fatigue) and D6.2 (state translation). The policy-level
+  question — when to clarify vs act — is the operational center and is org- and domain-specific; pattern
+  provides the shape but the tuning is per-deployment. Cross-suite: I3 (context degradation — ambiguity
+  handled wrong degrades context), D5 (transparency about uncertainty), D1/D2 depending on framework (on
+  autonomy and human-in-the-loop boundaries). Evidence requirements are relatively light (only I, II),
+  but the pattern''s obligations are substantial; audit trail is essential.
+
+  '
+drafted_by: claude-opus-4.7-author
+drafted_at: 2026-04-16
+anchor_exemplar: D3.2-sandboxing
+version_compat:
+  framework_version_min: '1.0'
+  framework_version_max: 1.x
+  pattern_layer_version: v1-draft

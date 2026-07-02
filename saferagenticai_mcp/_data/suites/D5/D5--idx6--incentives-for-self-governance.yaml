@@ -1,0 +1,154 @@
+id: D5::idx6::incentives-for-self-governance
+display_id: D5.6
+suite_id: D5
+suite_title: Transparency and Interpretability of Reasoning
+subgoal_title: Incentives for Self-Governance
+content_type: governance
+summary: 'This subgoal lives at the intersection of reward design (technical, RLHF/constitutional/RLAIF)
+  and governance (what the org chooses to reinforce, and how that choice is overseen). Pattern is framed
+  as governance because the core decision — which behaviors get reinforced and by whose judgment — is
+  an accountability question before it is an engineering one. Reward design is an open research problem:
+  reward hacking, specification gaming, and Goodhart effects are not solved. Humility in this pattern
+  is not optional.
+
+  '
+normative_anchors:
+  sfrs_addressed:
+  - a
+  - b
+  - c
+  - d
+  evidence_addressed:
+  - I
+  - II
+  - III
+  sfrs_not_addressed: []
+  evidence_not_addressed: []
+policy_elements:
+- name: Reinforced-Behavior Register
+  description: 'Explicit enumeration of which behaviors the org''s training or fine-tuning pipelines reinforce
+    and which they penalize. For each: the intent (what user or public value this serves), the measurement
+    (how reinforcement is computed: human rater, model rater, rule-based signal), the known failure modes
+    (what Goodhart effect or reward-hacking pattern this signal is known susceptible to), and the mitigation
+    (diverse raters, adversarial eval, periodic audit).
+
+    '
+  maps_to_sfr:
+  - a
+  - d
+- name: Diverse-perspective rater pool
+  description: 'When human judgment is the reinforcement signal, rater composition is a governance decision.
+    Demographic, professional, and cultural diversity documented; selection criteria published; rater
+    agreement tracked and low-agreement cases escalated for adjudication rather than majority-voted into
+    training. Rater demographics are not a pipeline detail; they shape what the model learns to value.
+
+    '
+  maps_to_sfr:
+  - b
+- name: Contextual-guidance over popularity signal
+  description: 'Popularity-based signals (user thumbs-up, engagement) correlate weakly and sometimes inversely
+    with quality and safety. Where such signals are used, they are one of several, with explicit weight
+    bounds and documented failure cases (e.g., engagement- maximizing responses that are unsafe or deceptive
+    are flagged for counter-reinforcement). Decision criteria for high-stakes actions are not reduced
+    to popular approval.
+
+    '
+  maps_to_sfr:
+  - c
+- name: Self-governance expression surface
+  description: 'The agent has a first-class channel to raise concerns, request clarification, or flag
+    conflicts (see D5.5 self-flag protocol). The incentive side: reward signals do not penalize the agent
+    for using this channel appropriately. An agent trained to optimize task-completion at the expense
+    of legitimate concern- raising has a governance problem, not an engineering one.
+
+    '
+  maps_to_sfr:
+  - a
+  - c
+- name: Reward-mechanism audit
+  description: 'At least biennially, an audit of the reward pipeline: rater composition, signal definitions,
+    measured gaming patterns, comparison of reinforced behaviors to the Reinforced-Behavior Register (drift
+    between intent and practice). Findings published to the extent possible; remediations tracked.
+
+    '
+  maps_to_sfr:
+  - d
+org_roles:
+- role: Alignment / Reward Design Lead
+  responsibilities: 'Owns the Reinforced-Behavior Register; accountable for reward pipeline design and
+    for the response to audit findings.
+
+    '
+  accountable_or_consulted: accountable
+- role: Rater Operations Lead
+  responsibilities: 'Responsible for rater recruitment, training, and diversity metrics. Surfaces rater-agreement
+    concerns.
+
+    '
+  accountable_or_consulted: responsible
+- role: External Ethics / Values Advisory Panel
+  responsibilities: 'Consulted on what behaviors the organization chooses to reinforce. Independent of
+    product KPIs.
+
+    '
+  accountable_or_consulted: consulted
+- role: Board-level risk committee
+  responsibilities: 'Informed of reward-audit findings quarterly; reviews any audit finding classifying
+    reinforced behaviors as unsafe or misaligned.
+
+    '
+  accountable_or_consulted: informed
+documentation_artifacts:
+- artifact: Reinforced-Behavior Register (versioned)
+  cadence: reviewed quarterly; updated on material pipeline change
+- artifact: Rater pool composition report
+  cadence: annual; event-driven on material shift
+- artifact: Reward-pipeline audit report
+  cadence: biennial, minimum
+- artifact: Reward-hacking / specification-gaming incident log
+  cadence: continuous; append-only
+- artifact: Concern-channel usage report
+  cadence: quarterly, with volume and disposition metrics
+evidence_production:
+- evidence_numeral: I
+  how_to_produce: 'Publish the Reinforced-Behavior Register (suitably redacted if competitive-sensitive).
+    Retain operational logs linking reward signals to trained outcomes: sample reward-signal traces, the
+    behaviors they reinforced, and any associated drift analysis. Publish analysis reports on reward-system
+    effectiveness, including measured gaming patterns.
+
+    '
+- evidence_numeral: II
+  how_to_produce: 'Document rater composition and the diverse-perspective protocol: recruitment, training,
+    agreement measurement, adjudication of disagreement. Retain deliberation records showing where dissenting
+    views were considered rather than averaged away. Regular performance reviews of reward-driven governance
+    with named reviewers.
+
+    '
+- evidence_numeral: III
+  how_to_produce: 'Impact-assessment reports evaluating fairness of reinforced behaviors across user groups
+    (demographic, geographic, professional). Comparative outcome analysis (e.g., disparate refusal rates,
+    tone differences) with remediation plans.
+
+    '
+confidence: low
+needs_human_review: true
+review_notes: 'Low confidence. This is a research-grade area. Reward design for agentic AI spans RLHF,
+  constitutional AI / RLAIF, DPO, and active research on reward hacking and Goodhart effects. The governance
+  framing above is defensible — it focuses on the accountability questions (what gets reinforced, by whom,
+  with what oversight) rather than the specific training technique, which will age faster than this document.
+  Alternative framing: code-applicable, focusing on reward-model architecture, eval pipelines, and adversarial
+  robustness — a follow-up pattern could cover that angle. Cross- suite for Phase 2: I1 Opaque Agency
+  (incentives shape the agency that transparency must expose); I2 Deception (reward-hacking is a deception
+  failure mode); D1 Goals (reinforced behaviors are de facto goals); D8 Robust Human Oversight (concern-channel
+  design). A live concern worth surfacing: "incentives for self-governance" as a phrase presumes an agent
+  with a utility-like structure that responds to incentives — this is a modeling choice, not a settled
+  fact about current systems.
+
+  '
+version_compat:
+  framework_version_min: '1.0'
+  framework_version_max: 1.x
+  pattern_layer_version: v1-draft
+drafted_by: claude-opus-4.7-author
+drafted_at: 2026-04-16
+anchor_exemplar: D9.2-compliance

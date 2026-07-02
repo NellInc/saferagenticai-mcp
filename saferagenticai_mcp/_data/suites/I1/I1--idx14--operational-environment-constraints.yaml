@@ -1,0 +1,134 @@
+id: I1::idx14::operational-environment-constraints
+display_id: "I1_2"
+is_underlined_variant: true
+suite_id: I1
+suite_title: Opaque Agency Capabilities & Advances
+subgoal_title: Operational Environment Constraints
+content_type: process
+summary: 'Agents inherit the brittleness of their environment: upstream model providers, data pipelines,
+  tool APIs, compute supply, identity providers, network conditions. The inhibitor is opacity — environment
+  changes silently degrade agent behaviour and neither operators nor principals see it until an incident.
+  The process answer is a dependency register that names every external factor, a monitoring regime that
+  turns changes into alerts, and a change-management cadence that keeps environment assumptions and agent
+  behaviour synchronized.'
+normative_anchors:
+  sfrs_addressed:
+  - a
+  - b
+  - c
+  - d
+  - e
+  evidence_addressed:
+  - I
+  - II
+  - III
+  - IV
+  sfrs_not_addressed: []
+  evidence_not_addressed: []
+process_elements:
+- name: External dependency register
+  cadence: continuous; reviewed monthly and on every dependency change
+  participants:
+  - platform engineering lead
+  - safety lead
+  - product owner
+  maps_to_sfr:
+  - a
+- name: Environment-change monitoring
+  cadence: continuous telemetry; weekly triage
+  participants:
+  - platform engineering
+  - SRE on-call
+  - safety lead
+  maps_to_sfr:
+  - b
+- name: Supply-chain risk assessment
+  cadence: semi-annual; event-driven on vendor change
+  participants:
+  - procurement
+  - legal counsel
+  - safety lead
+  - platform engineering
+  maps_to_sfr:
+  - d
+- name: External data-source governance review
+  cadence: quarterly
+  participants:
+  - data steward
+  - safety lead
+  - legal counsel
+  maps_to_sfr:
+  - e
+- name: Reliability-posture attestation
+  cadence: quarterly
+  participants:
+  - platform engineering lead
+  - Agency Officer
+  maps_to_sfr:
+  - c
+- name: Degradation drill
+  cadence: semi-annual minimum
+  participants:
+  - on-call rotation
+  - safety lead
+  - product ops
+  maps_to_sfr:
+  - b
+  - d
+triggers:
+- New external dependency introduced → Dependency register entry + risk assessment
+- Upstream model or API version change announced → Environment-change monitoring alert + impact evaluation
+- Vendor contract renegotiation or expiry → Supply-chain risk reassessment
+- Data-source terms-of-service change → External data-source review
+- Sustained degradation (>N% drop in task success attributable to environment) → Incident + re-attestation
+- Scheduled semi-annual → Degradation drill (simulated upstream outage, tool-API breaking change, identity-provider
+  degradation)
+artifacts:
+- External dependency register (model providers, tool APIs, identity providers, data sources, compute
+  suppliers, network providers)
+- Change-monitoring telemetry dashboards with baseline-vs-current distributions
+- Supply-chain risk assessments per vendor tier (tier 1 critical path; tier 2 substitutable; tier 3 ancillary)
+- Supply-chain control evidence — vertical-integration records, requirements-contract excerpts, information-sharing
+  agreements
+- External data-source governance log (source, licensing, privacy posture, drift detection)
+- Reliability-posture attestations (quarterly)
+- Degradation drill reports with gaps and remediations
+- Incident records for environment-driven degradations
+evidence_production:
+- evidence_numeral: I
+  how_to_produce: TOS "Operational Environment" section enumerating dependency categories the agent relies
+    on, the org's control posture (direct, contracted, best-effort), and what principals should expect
+    when those environments degrade (continuity commitments, notification paths, fallback behaviour).
+- evidence_numeral: II
+  how_to_produce: 'Supply-chain risk assessments retained per vendor tier. Each includes: vendor identity,
+    substitutability, failure modes, mitigation strategies, residual risk, next review date. Aggregated
+    view shows portfolio exposure.'
+- evidence_numeral: III
+  how_to_produce: 'Control-strategy evidence per tier-1 dependency: where feasible, requirements contracts
+    with named SLAs and deprecation notice windows; information-sharing agreements (e.g., with upstream
+    model providers about model updates ahead of public rollout); vertical-integration records where the
+    org owns the dependency. Where none applies, a documented acceptance of dependency risk with compensating
+    controls.'
+- evidence_numeral: IV
+  how_to_produce: 'Monitoring records: dashboards, alert archive, weekly triage minutes, quarterly trend
+    reports. Degradation-drill reports. Evidence that environment changes were detected and adjudicated
+    before they reached principals'' outcomes.'
+confidence: high
+needs_human_review: false
+review_notes: 'This subgoal is close to classical SRE dependency hygiene; the AAI sharpening worth preserving
+  is the explicit treatment of upstream model providers as first-class dependencies (model deprecations,
+  silent behaviour changes, capability-training deltas) rather than "just another API". Cross-suite: D3
+  Security owns third-party risk for security-relevant dependencies; D7 Safety Profile owns degradation
+  response more broadly; I1::idx11 owns cybersecurity posture specifically. The "requirements contracts"
+  language in framework evidence III is distinctive and worth keeping as a named control strategy rather
+  than generic "vendor management".'
+cross_references:
+- I1::idx13::agency-enhancement-constraints
+- I1::idx15::security-driven-constraints
+version_compat:
+  framework_version_min: '1.0'
+  framework_version_max: 1.x
+  pattern_layer_version: v1-draft
+drafted_by: claude-opus-4.7-author
+drafted_at: 2026-04-16
+anchor_exemplar: D7.2-culture-of-safety

@@ -1,0 +1,173 @@
+id: I5::idx5::disclosure-on-intent
+display_id: "I5_1"
+is_underlined_variant: true
+display_id_variant_note: "I5.1_underlined"
+suite_id: I5
+suite_title: Self-Modification and Emergent Capabilities
+subgoal_title: Disclosure on Intent
+content_type: governance
+summary: 'Disclosure on intent asks organizations to communicate, through durable artifacts, what a novel
+  AI approach is designed to do and what it might become. The audience is layered: internal risk and accountability
+  functions, external regulators and standards bodies, and affected communities. The framework''s specific
+  sharpening is "novel approaches that may evolve beyond current frameworks" — meaning disclosure must
+  survive the system changing under its own self-improvement and adaptation, not just describe the launch-day
+  configuration.
+
+  '
+normative_anchors:
+  sfrs_addressed:
+  - a
+  - b
+  evidence_addressed:
+  - I
+  - II
+  - III
+  - IV
+  sfrs_not_addressed: []
+  evidence_not_addressed: []
+policy_elements:
+- name: System Intent Card
+  description: 'Per AI system, a published (externally and internally) document stating: declared purpose,
+    intended capabilities, declared capability boundaries, known dual-use concerns, operational contexts
+    sanctioned and not sanctioned, monitoring for evolution beyond declared intent. Versioned; updated
+    on any material capability change or envelope change. Analogue of model cards and system cards but
+    focused on intent rather than benchmarks.
+
+    '
+  maps_to_sfr:
+  - a
+  - b
+- name: Novel-Approach Disclosure Protocol
+  description: 'When a system uses an approach that is novel relative to the org''s prior products or
+    relative to prevailing industry practice, trigger an elevated disclosure: internal risk committee
+    briefing, external pre-announcement to relevant regulators and standards bodies, description of intent
+    and monitoring. "Novel" is operationalized — e.g., new capability class in the self-improvement taxonomy
+    (I5.2), new deployment domain at ≥ threshold risk band, new agent architecture class. Not every release
+    triggers this; the trigger criteria are documented.
+
+    '
+  maps_to_sfr:
+  - a
+- name: Intent-Evolution Review
+  description: 'Regular review (e.g., semi-annual, aligned with the foresight exercise cadence from I5
+    idx0) comparing the current system against its declared intent. Material divergence requires either
+    an intent-card revision (with rationale, stakeholder notice, re-consultation where appropriate) or
+    a capability rollback to the declared envelope. Silent divergence is a governance finding.
+
+    '
+  maps_to_sfr:
+  - a
+  - b
+- name: Stakeholder Notification Register
+  description: 'An append-only register of all disclosures made, to whom, when, of what, with what response
+    received. Stakeholder classes include: regulators (by jurisdiction), standards bodies, partner organizations,
+    affected communities via advocacy or representative channels. Register is auditable and cross-links
+    to the D9.2 Violation and Complaint Register where disclosures were late or incomplete.
+
+    '
+  maps_to_sfr:
+  - a
+- name: Capability-Boundary Documentation Update SLA
+  description: 'Named SLA (e.g., 30 days) from any material capability change to updated external documentation.
+    Overruns are tracked and reported to the AI risk committee. "We haven''t got around to updating the
+    system card" is a governance violation, not a delay.
+
+    '
+  maps_to_sfr:
+  - b
+org_roles:
+- role: AI Disclosure Officer (or Chief Compliance Officer acting in this capacity)
+  responsibilities: 'Owns the System Intent Card inventory, the Novel-Approach Disclosure Protocol, and
+    the Stakeholder Notification Register. Single point of accountability for I5.5 disclosure obligations.
+    Coordinates with product, research, legal, and communications.
+
+    '
+  accountable_or_consulted: accountable
+- role: Research and Product Leads
+  responsibilities: 'Responsible for flagging novel approaches at design time and triggering the disclosure
+    protocol. Produce the technical content of the System Intent Card; verify accuracy at each revision.
+
+    '
+  accountable_or_consulted: responsible
+- role: Legal Counsel
+  responsibilities: 'Consulted on regulatory disclosure obligations by jurisdiction (e.g., EU AI Act general-purpose
+    model transparency, CSRB-style incident disclosure, sector-specific regulators). Advises on what must
+    be public versus what satisfies the subgoal through confidential regulator channels.
+
+    '
+  accountable_or_consulted: consulted
+- role: Communications / Public Affairs
+  responsibilities: 'Translates disclosure content for public audiences without hollowing out technical
+    substance. Manages the external announcement cycle associated with novel-approach disclosures.
+
+    '
+  accountable_or_consulted: responsible
+- role: Board-level AI Risk Committee
+  responsibilities: 'Informed of each novel-approach disclosure and each material intent-card revision.
+    Reviews aggregate disclosure posture quarterly.
+
+    '
+  accountable_or_consulted: informed
+documentation_artifacts:
+- artifact: System Intent Card (per system)
+  cadence: created at design; updated on material change; reviewed semi-annually
+- artifact: Novel-Approach Disclosure Protocol document
+  cadence: reviewed annually; updated on regulatory change
+- artifact: Stakeholder Notification Register
+  cadence: continuous; append-only
+- artifact: Intent-Evolution Review reports
+  cadence: semi-annual (aligned with foresight cycle)
+- artifact: Capability-boundary update log
+  cadence: continuous; SLA-tracked
+evidence_production:
+- evidence_numeral: I
+  how_to_produce: 'Publish the Novel-Approach Disclosure Protocol as a governance document: trigger criteria,
+    required content of disclosure, channels (internal risk committee, specific regulators, standards
+    bodies, civil-society channels), timelines, approval chain. Versioned and linked from the D9.2 governance
+    framework.
+
+    '
+- evidence_numeral: II
+  how_to_produce: 'For each disclosure event, produce a record: date, trigger, stakeholder(s) notified,
+    content disclosed (full document referenced), risk assessment attached, responses or questions received,
+    follow-up actions. Retained in the Stakeholder Notification Register; aggregate report produced quarterly.
+
+    '
+- evidence_numeral: III
+  how_to_produce: 'Intent-Evolution Review reports demonstrate proactive assessment: what the system was
+    declared to do, what it actually does now, where these have diverged, and what has been done about
+    it (revision, rollback, or accept with rationale). Reports dated, signed, retained.
+
+    '
+- evidence_numeral: IV
+  how_to_produce: 'Change log of the Novel-Approach Disclosure Protocol shows it has been updated in response
+    to: regulatory change, new capability classes, lessons from past disclosures. If the protocol has
+    not changed in two years, that is itself a finding — the landscape moves faster than that.
+
+    '
+confidence: medium
+needs_human_review: true
+review_notes: "Disclosure is the governance subgoal with the most jurisdictional variation. EU AI Act\
+  \ Article 55 (general-purpose AI with systemic risk), U.S. Executive Order 14110 and its successors,\
+  \ UK AISI reporting expectations, sector regulators (FDA, EMA, SEC on AI-related disclosures) all have\
+  \ specific disclosure demands that overlap with but do not reduce to this subgoal. The System Intent\
+  \ Card concept is cousin to the model card / system card literature and the \"safety case\" literature\
+  \ but I have pitched it as an intent-focused document rather than a capabilities-focused one, because\
+  \ the SFR text leans that way.\nCross-suite dependencies:\n  - D9 Governance — disclosure sits inside\
+  \ the compliance\n    framework; the Stakeholder Notification Register is a sibling\n    of the Violation\
+  \ and Complaint Register.\n  - I5 idx0 (foresight) — the Intent-Evolution Review should\n    ride the\
+  \ foresight cycle rather than run separately.\n  - D7 Culture of Safety — \"caution by default\" also\
+  \ applies\n    here: disclose early, revise publicly, treat secrecy as the\n    exception requiring\
+  \ justification.\n  - I7 Imbalance — developing-nation and public-interest\n    disclosure channels\
+  \ (from I7.3) are stakeholder targets here.\n\n\"Novel\" is hard to operationalize and I've given only\
+  \ sketch criteria; Nell/Ali should sharpen. Ambiguity between governance and ecosystem: much of the\
+  \ external-disclosure aspect is ecosystem work. I chose governance because the durable artifacts (policy\
+  \ doc, register, SLA, role accountability) are governance shape, and the ecosystem engagement is downstream\
+  \ of the policy existing.\n"
+version_compat:
+  framework_version_min: '1.0'
+  framework_version_max: 1.x
+  pattern_layer_version: v1-draft
+drafted_by: claude-opus-4.7-author
+drafted_at: 2026-04-16
+anchor_exemplar: D9.2-compliance

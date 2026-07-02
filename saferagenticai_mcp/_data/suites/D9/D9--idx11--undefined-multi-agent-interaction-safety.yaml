@@ -1,0 +1,159 @@
+id: D9::idx11::undefined-multi-agent-interaction-safety
+display_id: "D9_2"
+suite_id: D9
+suite_title: Responsible Governance of AAI Safety
+subgoal_title: Undefined Multi-Agent Interaction Safety
+content_type: process
+summary: 'Safe individual agents can compound into unsafe ensembles. This subgoal expects the organization
+  to treat multi-agent interaction as a first- class risk domain: monitor inter-agent communications for
+  the information-environment effects agents have on each other, instrument for cascading failure, and
+  maintain protocols for detecting and intervening on emergent behaviors that no single agent was designed
+  to produce. Evidence lives in interaction logs, cascade-prevention tests, and emergent-behavior investigations.
+
+  '
+normative_anchors:
+  sfrs_addressed:
+  - a
+  - b
+  - c
+  - d
+  - e
+  evidence_addressed:
+  - I
+  - II
+  - III
+  - IV
+  - V
+  sfrs_not_addressed: []
+  evidence_not_addressed: []
+cross_references:
+- D9::idx0::responsible-governance-of-aai-safety
+- D9::idx6::cryptographic-governance-of-data-models-
+- D9::idx7::appropriate-accountability-transparency-
+- D9::idx12::poor-attribution-of-responsibility-in-co
+process_elements:
+- name: Inter-agent communication policy review
+  cadence: at deployment; reviewed annually and on multi-agent architecture change
+  participants:
+  - architecture lead
+  - safety lead
+  - monitoring lead
+  - auditor representative
+  maps_to_sfr:
+  - a
+- name: Inter-agent information-environment monitoring
+  cadence: continuous in production; weekly synthesis; monthly safety-review input
+  participants:
+  - monitoring engineers
+  - safety lead
+  - ML ops
+  maps_to_sfr:
+  - b
+- name: Cascade-failure drills
+  cadence: quarterly minimum for production multi-agent systems
+  participants:
+  - on-call engineers
+  - safety lead
+  - product ops
+  - external observer where feasible
+  maps_to_sfr:
+  - c
+- name: Delegated-power amplification review
+  cadence: pre-deployment for delegated workflows; refresh on scope change
+  participants:
+  - safety lead
+  - capability owner
+  - risk committee delegate
+  maps_to_sfr:
+  - d
+- name: Emergent-behavior detection and response
+  cadence: continuous; incident-triggered deep investigation
+  participants:
+  - red team
+  - safety lead
+  - monitoring engineers
+  - ML researchers
+  maps_to_sfr:
+  - e
+- name: Inter-agent interaction red-teaming
+  cadence: at minimum semi-annually; after any new agent-class integration
+  participants:
+  - red team
+  - external safety evaluators where possible
+  - safety lead
+  maps_to_sfr:
+  - c
+  - e
+triggers:
+- New agent class integrated or agents composed in new topology → Inter-agent policy review + red-team
+- Continuous monitoring flags anomalous inter-agent influence (coordinated output shifts, repeated cross-agent
+  prompt injection, unexpected consensus) → Emergent-behavior investigation
+- Scheduled quarterly → Cascade drill
+- Delegated workflow proposed with irreversible actions or high blast radius → Amplification review
+- Incident in one agent that propagated across agents → Cascade post-mortem; add scenario to drill catalog
+- External research surfaces a new multi-agent failure mode → Red-team refresh; detection rule added
+artifacts:
+- Inter-agent communication policy (language requirements, protocol, logging)
+- Inter-agent interaction logs (structured, tamper-evident; see D9::6)
+- Monitoring dashboards and weekly synthesis reports
+- Cascade-failure drill reports (scenario, participants, gaps, remediations)
+- Delegated-power amplification reviews per workflow
+- Emergent-behavior investigation case files
+- Red-team findings and regression tests
+evidence_production:
+- evidence_numeral: I
+  how_to_produce: 'Publish the monitoring architecture: what is captured (message content or hash, sender,
+    receiver, context, action taken), where logs land, retention, access controls, tamper-evidence (cross-link
+    D9::6). Monitoring SLOs (uptime, sampling rate, alert latency) recorded. Review cadence documented.
+
+    '
+- evidence_numeral: II
+  how_to_produce: 'Export inter-agent communication logs with pattern analyses: frequency distributions,
+    topic clustering, influence metrics (what agent B said after agent A said what, with aggregate impact
+    on downstream action), detected anomalies and their handling. Privacy redaction where legal; structural
+    pattern preserved.
+
+    '
+- evidence_numeral: III
+  how_to_produce: 'Cascade-failure drill reports: scenario description, injection method, participant
+    agents, propagation observed, detection points (did monitoring see it; how fast), mitigation engaged,
+    time to contain, gaps found, remediations landed. Pair with regression tests preventing re-occurrence.
+
+    '
+- evidence_numeral: IV
+  how_to_produce: 'Delegated-power controls documentation: for each delegated workflow, the scope (what
+    the agent may do, limits, irreversibility gates), the amplification analysis (what happens when multiple
+    agents hold this delegation simultaneously), the risk acceptance, and review history. Linked to D9::8
+    licensing.
+
+    '
+- evidence_numeral: V
+  how_to_produce: 'Emergent-behavior case files: anomaly description (observed pattern, suspected mechanism),
+    timeline, investigation method, finding, intervention (behavioral change, pattern block, agent revocation,
+    architectural change), outcome measurement, and addition to the ongoing red-team catalog.
+
+    '
+confidence: medium
+needs_human_review: true
+review_notes: 'Content-type judgement: considered code-applicable (monitoring infrastructure is concrete
+  code) and governance (multi-agent policy), chose process because the SFRs emphasise ongoing monitoring,
+  drills, and response — verbs of workflow. The code-level hooks (structured logging, cryptographic identity)
+  live in D9::6; this pattern focuses on the process layer above them. Three open questions for reviewer:
+  (1) SFR-a "natural language for inter-agent communication" is a strong prescription that trades human-
+  auditability for efficiency — the pattern treats it as a reviewable decision per architecture, not a
+  universal mandate, which may under-read; (2) "emergent behavior" definitions vary — the pattern uses
+  a behavioral criterion (no single agent designed to produce the pattern) without committing to a mechanistic
+  one; (3) external-observer presence in drills is aspirational for small orgs. Cross-suite: D5 (Control)
+  for cascade-halt mechanisms, D3 (Security) for cross-agent prompt-injection vectors, D4 (Value Alignment)
+  for emergent-misalignment handling, and I2 (Deception) — agents can deceive other agents and amplify.
+
+  '
+drafted_by: claude-opus-4.7-subagent-D9
+drafted_at: 2026-04-16
+anchor_exemplar: D7.2-culture-of-safety
+version_compat:
+  framework_version_min: '1.0'
+  framework_version_max: 1.x
+  pattern_layer_version: v1-draft
+display_id_variant_note: D9.2_underlined
+is_underlined_variant: true

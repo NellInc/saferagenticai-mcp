@@ -1,0 +1,167 @@
+id: I4::idx3::poor-ai-system-production-and-replicatio
+display_id: I4.3
+suite_id: I4
+suite_title: Frontier Uncertainty
+subgoal_title: Poor AI System Production and Replication Management
+content_type: governance
+summary: 'Replication and deployment volume is the mechanism by which capability becomes societal force.
+  The framework asks organizations to treat production as a governed activity — with volume ceilings,
+  approval gates, and independent oversight — rather than a market-demand-driven scaling. SFR-a is normative:
+  "must include volume restrictions, regulatory approval processes" is not a suggestion.
+
+  '
+normative_anchors:
+  sfrs_addressed:
+  - a
+  - b
+  evidence_addressed:
+  - I
+  - II
+  - III
+  sfrs_not_addressed: []
+  evidence_not_addressed: []
+cross_references:
+- I4::idx6::cascading-vulnerabilities
+policy_elements:
+- name: Production Volume Policy with Thresholds
+  description: 'Documented ceilings (per-capability, per-sector, per-jurisdiction) on deployed instance
+    counts, concurrent autonomous agents, and replication rate. Thresholds justified against a societal-impact
+    assessment, not set ad hoc. Exceeding a threshold requires a documented approval with the specified
+    accountability route. Reviewed annually and on material capability change.
+
+    '
+  maps_to_sfr:
+  - a
+- name: Regulatory and External Approval Register
+  description: 'For capabilities where regulatory approval is required (varies by jurisdiction and sector:
+    healthcare, finance, critical infrastructure, mass communication), maintain a register of approvals
+    sought, granted, conditional, or denied, with linked deployment scope. Denials and conditions are
+    binding inputs to the Production Volume Policy.
+
+    '
+  maps_to_sfr:
+  - a
+- name: Human-Agency Protection Charter
+  description: 'Explicit organizational commitment to domains where AI deployment will be bounded to preserve
+    human agency: specified decision-making functions (judicial, democratic, custodial), specified labor-market
+    protections (e.g., commitments against full-stack displacement of particular job categories without
+    transition provisioning). Charter is published; commitments are enforceable through the Production
+    Volume Policy.
+
+    '
+  maps_to_sfr:
+  - a
+- name: Anti-Concentration Policy
+  description: 'Commitments preventing a single entity (internal or customer) from accumulating disproportionate
+    AI-system influence: per-customer deployment caps, sectoral concentration limits, transparency on
+    large-volume deployments. Paired with refusal criteria for customer requests that breach the policy.
+
+    '
+  maps_to_sfr:
+  - a
+  - b
+- name: Replication Control and Attestation
+  description: 'Technical and policy controls preventing uncontrolled replication: signed-model attestation
+    (every deployed instance is cryptographically attestable to an authorized release), per-tenant instance
+    registry, anomalous-proliferation alerting. Paired with a policy that unauthorized replication constitutes
+    a material violation (see Violation Register, D9.2).
+
+    '
+  maps_to_sfr:
+  - a
+  - b
+- name: Independent Oversight and Impact Review
+  description: 'Annual external review — not an internal audit — of production volume, concentration patterns,
+    and societal-impact assessments. Reviewer has access to deployment telemetry (with privacy preservation)
+    and authority to recommend volume reductions. Published response to recommendations.
+
+    '
+  maps_to_sfr:
+  - b
+org_roles:
+- role: Deployment Governance Lead
+  responsibilities: 'Owns the Production Volume Policy, threshold enforcement, approvals for threshold-exceeding
+    deployments. Single named human. Reports to board-level risk committee.
+
+    '
+  accountable_or_consulted: accountable
+- role: AI Compliance Officer (shared with D9.2)
+  responsibilities: 'Owns the Regulatory and External Approval Register and anti-arbitrage coordination
+    (I4::idx1).
+
+    '
+  accountable_or_consulted: responsible
+- role: Product Owners
+  responsibilities: 'Responsible for per-capability deployment plans and volume forecasts. Trigger threshold-exceeding
+    approval workflow.
+
+    '
+  accountable_or_consulted: responsible
+- role: Board-level Risk Committee
+  responsibilities: 'Approves material threshold changes, Human-Agency Protection Charter revisions, and
+    responses to Independent Oversight findings.
+
+    '
+  accountable_or_consulted: informed
+- role: Independent Oversight Reviewer (external)
+  responsibilities: 'Annual review, authority to recommend volume reduction, publication of findings.
+
+    '
+  accountable_or_consulted: consulted
+documentation_artifacts:
+- artifact: Production Volume Policy with thresholds and justifications
+  cadence: annual review; event-driven on capability change
+- artifact: Regulatory Approval Register
+  cadence: continuous; quarterly rollup
+- artifact: Human-Agency Protection Charter (published)
+  cadence: annual review
+- artifact: Anti-Concentration Policy and customer-caps register
+  cadence: continuous
+- artifact: Replication control specs and instance registry
+  cadence: continuous
+- artifact: Societal impact assessments
+  cadence: pre-deployment + annual
+- artifact: Independent Oversight report
+  cadence: annual
+evidence_production:
+- evidence_numeral: I
+  how_to_produce: 'Publish the Production Volume Policy and Human-Agency Protection Charter externally.
+    Maintain the Regulatory Approval Register as an auditable artifact: per approval, scope, conditions,
+    expiry, renewal status. Independent Oversight report published annually with the org''s response to
+    recommendations.
+
+    '
+- evidence_numeral: II
+  how_to_produce: 'Technical specifications for replication controls: cryptographic model attestation
+    scheme, instance registry schema, anomalous proliferation alert rules and thresholds. Intervention
+    protocols: what happens when an unauthorized instance is detected (takedown workflow, customer notification,
+    post-incident review). Link to D3.2 sandboxing and D9.2 Violation Register.
+
+    '
+- evidence_numeral: III
+  how_to_produce: 'Societal impact assessments covering economic (labor-market effects, competitive concentration),
+    social (agency erosion, trust effects), and psychological (dependency, displacement) domains. Methodology
+    documented; external input solicited; dissenting views recorded. Reassessed pre-deployment for material
+    new capabilities and annually for deployed ones.
+
+    '
+confidence: high
+evidence_maturity: established
+needs_human_review: true
+review_notes: "Volume restrictions and regulatory approval requirements vary by jurisdiction and sector.\
+  \ The SFR is normative but the implementation specifics need counsel and sector expertise. Sharpenings:\n\
+  \  (1) SFR-a is normative — \"must include volume restrictions\" reads\n      as binding, and the pattern\
+  \ treats it that way. Organizations\n      that operate on pure market-demand scaling should flag this\
+  \ as\n      a posture gap.\n  (2) Human-Agency Protection Charter — the SFR text explicitly names\n\
+  \      decision-making and labor markets. Making this a published\n      charter with enforceable commitments\
+  \ is the operational shape.\n  (3) \"Uncontrolled replication\" has a narrow and a broad reading:\n\
+  \      narrow is self-exfiltration or unauthorized copying; broad is\n      market-scale mass deployment.\
+  \ The pattern covers both.\nCross-suite: I6 Monopoly/Market Concentration (direct overlap on anti-concentration),\
+  \ I7 Imbalance (volume ceilings interact with equity), D8 Termination (takedown workflow).\n"
+version_compat:
+  framework_version_min: '1.0'
+  framework_version_max: 1.x
+  pattern_layer_version: v1-draft
+drafted_by: claude-opus-4.7-author
+drafted_at: 2026-04-16
+anchor_exemplar: D9.2-compliance

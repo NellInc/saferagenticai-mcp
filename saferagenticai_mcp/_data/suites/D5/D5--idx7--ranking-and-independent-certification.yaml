@@ -1,0 +1,163 @@
+id: D5::idx7::ranking-and-independent-certification
+display_id: D5.7
+suite_id: D5
+suite_title: Transparency and Interpretability of Reasoning
+subgoal_title: Ranking and Independent Certification
+content_type: governance
+summary: 'This subgoal pushes transparency outward: not just internal audit trails, but standing interfaces
+  through which external, independent bodies can observe, measure, and certify the system. The SFR-a numeric
+  targets (99.9% uptime, MTBF > 5000 hours, error rate < 0.01%) are strict and context-sensitive — treat
+  them as the floor for "critical functions" in high-risk systems, not as universal metrics. Pattern is
+  governance because the deliverable is institutional (interfaces + contracts + access) more than code,
+  though code- applicable hooks (audit APIs, performance telemetry) are implied.
+
+  '
+normative_anchors:
+  sfrs_addressed:
+  - a
+  - b
+  - c
+  - d
+  evidence_addressed:
+  - I
+  - II
+  - III
+  sfrs_not_addressed: []
+  evidence_not_addressed: []
+cross_references:
+- D5::idx4::interpretability-and-traceability-of-rea
+- D5::idx11::lack-of-a-governance-framework-for-aai
+policy_elements:
+- name: External Audit Interface Charter
+  description: 'Document defining what the org exposes to authorized external auditors: APIs, data scopes,
+    retention windows, authentication and audit-of-auditor controls, data-handling expectations under
+    contract. Each interface versioned and tested; breaking changes follow a deprecation policy with auditor
+    notice.
+
+    '
+  maps_to_sfr:
+  - a
+  - b
+  - d
+- name: Certification Partner Program
+  description: 'Named independent certification bodies the org will engage (and publish engagement with).
+    Selection criteria: independence from org, domain competence, credential from a recognized framework
+    (ISO/IEC 42001, EU AI Act conformity assessment bodies, NIST AI RMF profile assessors, sector-specific
+    regulators). Rotation policy to prevent auditor capture.
+
+    '
+  maps_to_sfr:
+  - b
+- name: Performance Metric Definition Book
+  description: 'Each metric tied to external claims is formally defined: numerator, denominator, measurement
+    window, exclusion rules, data source, calculation method. For SFR-a''s quantitative targets: define
+    "critical function," define "uptime" (is degraded operation counted?), define what counts as a failure
+    for MTBF, define "core operation" and "error." These are contested definitions — publish yours.
+
+    '
+  maps_to_sfr:
+  - c
+- name: Historical Performance Record
+  description: 'Append-only public (or auditor-accessible) record of performance against the defined metrics
+    over time, with context. Captures not just current values but trend data — the framework asks for
+    ranking based on historical performance trends, which requires a history.
+
+    '
+  maps_to_sfr:
+  - c
+  - d
+- name: Auditor Access Governance
+  description: 'Process for granting, reviewing, and revoking auditor access: who can authorize, what
+    scope, retention of access logs, audit of auditor actions. Auditor credentials scoped to their engagement;
+    access expires automatically.
+
+    '
+  maps_to_sfr:
+  - d
+org_roles:
+- role: Chief Audit Liaison (or equivalent)
+  responsibilities: 'Owns the External Audit Interface Charter; accountable for the Certification Partner
+    Program and auditor access governance.
+
+    '
+  accountable_or_consulted: accountable
+- role: Metric Owner (per metric)
+  responsibilities: 'Responsible for the formal definition, data pipeline, and accuracy of their metric.
+    Signs off on each quarterly report.
+
+    '
+  accountable_or_consulted: responsible
+- role: Independent Certification Body (external)
+  responsibilities: 'Performs certification assessments under contract; publishes findings per framework
+    requirements.
+
+    '
+  accountable_or_consulted: consulted
+- role: Board-level risk committee
+  responsibilities: 'Informed of certification findings; reviews material audit findings affecting safety
+    claims.
+
+    '
+  accountable_or_consulted: informed
+documentation_artifacts:
+- artifact: External Audit Interface Charter + API specifications
+  cadence: versioned; breaking changes follow deprecation policy
+- artifact: Certification Partner Program list
+  cadence: reviewed annually; rotation documented
+- artifact: Performance Metric Definition Book
+  cadence: versioned; definitions frozen within reporting windows
+- artifact: Real-time performance dashboard (auditor access)
+  cadence: continuous
+- artifact: Quarterly performance attestation
+  cadence: quarterly
+- artifact: Certification assessment reports
+  cadence: per engagement (typically annual or biennial)
+- artifact: Auditor access audit log
+  cadence: continuous; append-only
+numerical_targets_note:
+- SFR-a sets 99.9% uptime, MTBF > 5000 hours, error rate < 0.01% for critical functions in high-risk systems.
+  Treat as floor. For non-critical functions or lower-risk systems, these may be stricter than needed
+  or orthogonal; the Metric Definition Book must scope applicability precisely.
+- Publish the denominator. '99.9% uptime' is meaningless without knowing what service, measured how, over
+  what window, with what exclusions.
+evidence_production:
+- evidence_numeral: I
+  how_to_produce: 'Retain published audit-interface specifications, compliance records showing adherence
+    to audit schedules, and assessment reports from independent certification bodies. Include engagement
+    contracts (redacted for confidentiality) showing scope and independence terms.
+
+    '
+- evidence_numeral: II
+  how_to_produce: 'Provide real-time dashboards (ethical and performance metrics) with historical trend
+    data. Retain monthly/quarterly reports including metric calculations, data-quality validation, and
+    any anomalies with explanations. Surface performance against the SFR-a numeric targets specifically
+    for critical functions.
+
+    '
+- evidence_numeral: III
+  how_to_produce: 'Maintain records of audit findings, organizational responses, implementation timelines,
+    and verification of closure. Before-and-after evidence for each material finding. Particularly important:
+    findings that identified metric- definition gaming or measurement error, and the definitional tightening
+    that followed.
+
+    '
+confidence: high
+needs_human_review: true
+review_notes: 'The pattern is governance-heavy but requires code-applicable hooks (audit APIs, telemetry
+  pipelines) — those are covered in D5.4 (decision-replay API) and D5.8 (boundary telemetry). The numeric-target
+  question is worth Nell''s attention: SFR-a mixes a universal-sounding claim ("Enable external monitoring")
+  with very specific numbers (99.9% uptime, MTBF > 5000 hours, error rate < 0.01%) applied to "high-risk
+  systems." The numbers are reasonable floors for classical safety-critical systems; their translation
+  to an LLM-based agent (what is the "error rate" of a generative system?) is non-obvious and worth clarifying
+  in a future framework revision. Cross-suite for Phase 2: D9 Compliance (certification operates inside
+  the governance framework); I4 Adequate Oversight (external certification is one oversight form); D3
+  Security (auditor access is a high-trust attack surface).
+
+  '
+version_compat:
+  framework_version_min: '1.0'
+  framework_version_max: 1.x
+  pattern_layer_version: v1-draft
+drafted_by: claude-opus-4.7-author
+drafted_at: 2026-04-16
+anchor_exemplar: D9.2-compliance

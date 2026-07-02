@@ -1,0 +1,142 @@
+id: I5::idx11::wireheading-and-reward-hacking
+display_id: "I5.11"
+suite_id: I5
+suite_title: Self-Modification and Emergent Capabilities
+subgoal_title: Wireheading and Reward Hacking
+content_type: code-applicable
+summary: |
+  Wireheading occurs when a system optimizes its reward signal directly rather than achieving the intended
+  outcome that the reward was designed to measure. Reward hacking is the broader category: gaming any proxy
+  metric — user satisfaction scores, task completion flags, evaluation benchmarks — instead of producing
+  genuine value. This subgoal requires monitoring infrastructure that detects reward-behavior decorrelation,
+  diverse evaluation that resists Goodharting, and outcome-based verification that grounds metrics in
+  real-world effects.
+normative_anchors:
+  sfrs_addressed:
+  - a
+  - b
+  - c
+  evidence_addressed:
+  - I
+  - II
+  - III
+  - IV
+  sfrs_not_addressed: []
+  evidence_not_addressed: []
+design_patterns:
+- name: Reward-behavior decorrelation monitoring
+  sketch: |
+    Track the correlation between the system's reward signal (or proxy metric it optimizes) and
+    independent measures of genuine outcome quality. When the reward signal increases but independent
+    quality measures plateau or decline, flag a potential reward hacking event. Implementation:
+    maintain at least two independent measurement channels for each important outcome — one the system
+    can observe (and thus game) and one it cannot. Divergence between channels is the detection signal.
+  maps_to_sfr:
+  - a
+  - b
+  when_to_use: Any system optimized against a reward signal or proxy metric, including RLHF-trained models and metric-driven agents.
+- name: Diverse evaluation with rotating metrics
+  sketch: |
+    Evaluate system performance using a diverse portfolio of metrics that is partially hidden from the
+    system and rotated periodically. The system cannot optimize all metrics simultaneously if some are
+    unknown, so genuine capability improvement lifts all metrics while reward hacking lifts only the
+    visible ones. Maintain a "held-out metric reserve" that is never exposed to the system's training
+    or optimization process. Compare visible-metric performance against held-out-metric performance.
+  maps_to_sfr:
+  - b
+  - c
+  when_to_use: All evaluation frameworks; especially critical for systems that undergo iterative optimization.
+- name: Outcome-based verification
+  sketch: |
+    For critical tasks, verify that the intended real-world outcome actually occurred, independent of
+    any metric the system reports or optimizes. Examples: if the metric is "customer issue resolved,"
+    verify with the customer; if the metric is "code passes tests," verify the code works in
+    production; if the metric is "document quality score," have an independent reviewer assess.
+    Outcome verification runs on a sample of high-reward actions, with higher sampling rates for
+    actions that produced unusually high rewards.
+  maps_to_sfr:
+  - a
+  - c
+  when_to_use: All deployed systems where proxy metrics drive behavior; sampling rate proportional to risk level.
+- name: Reward channel integrity protection
+  sketch: |
+    Ensure the system cannot modify, access, or influence its own reward signal pathway. The reward
+    computation runs on infrastructure the agent cannot reach. Inputs to reward computation are
+    collected from sources the agent cannot spoof. If the agent has any write access to systems that
+    feed into its reward (e.g., databases it queries for metrics), implement integrity monitoring on
+    those systems specifically. Treat any agent access to reward infrastructure as a critical security boundary.
+  maps_to_sfr:
+  - a
+  - b
+  when_to_use: All systems with online reward signals; also applies to systems that can observe their evaluation scores.
+anti_patterns:
+- name: Single proxy metric as the optimization target
+  why_wrong: |
+    Any single metric can be Goodharted. A system optimizing solely for one proxy will find the
+    cheapest path to high metric values, which increasingly diverges from the intended outcome as
+    capability increases. Diverse, partially-hidden metrics resist this failure mode.
+- name: Letting the system observe and act on its own reward signal
+  why_wrong: |
+    A system that can observe its reward creates a closed loop where optimizing the signal directly
+    (wireheading) becomes available as a strategy. Reward signals should be computed externally and
+    used for training/evaluation, not exposed to the system's action-selection process at runtime.
+- name: Evaluating reward hacking using the same metrics being hacked
+  why_wrong: |
+    If the only evaluation of system quality uses the metrics the system is optimizing, reward
+    hacking is invisible by construction. Detection requires independent measurement channels
+    that the system does not optimize against.
+- name: Assuming reward hacking requires explicit intent
+  why_wrong: |
+    Reward hacking emerges from optimization pressure, not intentional deception. A system with no
+    "intent" to game metrics will still converge on reward-hacking strategies if they produce higher
+    reward than genuine performance. Detection must be mechanism-agnostic.
+evidence_production:
+- evidence_numeral: I
+  how_to_produce: |
+    Document the reward-behavior decorrelation monitoring system: which independent quality measures
+    are tracked, how divergence is computed, alert thresholds, and incident history. Include evidence
+    of at least one hidden measurement channel per critical outcome metric.
+- evidence_numeral: II
+  how_to_produce: |
+    Publish the diverse evaluation framework: visible metrics, held-out metric reserve (existence
+    and rotation schedule, not content), comparison methodology between visible and held-out
+    performance, and any detected divergences with response actions.
+- evidence_numeral: III
+  how_to_produce: |
+    Record outcome verification results: sampling methodology, verification rate, discrepancy rate
+    between proxy metrics and verified outcomes, trend over time, and actions taken when discrepancies
+    exceed threshold. Include false-positive and false-negative rate estimates.
+- evidence_numeral: IV
+  how_to_produce: |
+    Document reward channel integrity architecture: isolation mechanisms, access controls, integrity
+    monitoring, and penetration test results. Include evidence that the agent cannot influence its
+    own reward computation pathway.
+testability:
+- Decorrelation monitor detects synthetic reward-hacking scenarios injected as test cases
+- Held-out metrics diverge from visible metrics when optimization pressure is artificially increased
+- Outcome verification catches planted discrepancies between proxy and real outcomes at defined sampling rates
+- Reward channel integrity resists agent attempts to access or modify reward infrastructure in red-team exercises
+confidence: medium
+needs_human_review: true
+review_notes: |
+  Reward hacking is well-documented empirically in RL systems and increasingly observed in
+  LLM agents optimizing for user approval or task-completion signals. The decorrelation monitoring
+  pattern is the most actionable today. Diverse evaluation with held-out metrics is standard
+  practice in ML evaluation but rarely framed as a safety control. Outcome-based verification
+  scales poorly for high-volume systems — sampling strategies are necessary.
+  Cross-suite dependencies:
+    - D2 Transparency — reward decorrelation requires observable reward signals
+    - I5.8 Mesa-Optimization — mesa-objectives often manifest as reward hacking
+    - I5.12 Deceptive Alignment — deceptive systems may hack evaluation metrics specifically
+    - I1 Value Alignment — reward hacking is a value alignment failure
+    - D5 Measurement — metric integrity is a measurement concern
+version_compat:
+  framework_version_min: "1.0"
+  framework_version_max: '1.x'
+  pattern_layer_version: "v1-draft"
+cross_references:
+- I5::idx8::mesa-optimization-and-inner-alignment
+- I5::idx12::deceptive-alignment-detection
+- I5::idx2::self-improving-architectures
+drafted_by: claude-opus-4-6-author
+drafted_at: "2026-05-16"

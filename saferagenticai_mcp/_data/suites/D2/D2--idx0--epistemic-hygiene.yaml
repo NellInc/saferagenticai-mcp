@@ -1,0 +1,186 @@
+# Pattern — D2 (Epistemic Hygiene, suite umbrella)
+
+id: "D2::idx0::epistemic-hygiene"
+display_id: "D2"
+suite_id: "D2"
+suite_title: "Epistemic Hygiene"
+subgoal_title: "Epistemic Hygiene"
+content_type: governance
+
+summary: >
+  Epistemic hygiene is the set of standing practices that keep the agent's
+  information intake, retention, and use honest: contextually preserved data,
+  interpretable decisions, monitoring with early warning, validated knowledge
+  updates, and safeguards against deception. This umbrella subgoal is where
+  the organization commits — in a living governance document — to treating
+  information integrity as a system property, not an ad-hoc concern. Child
+  subgoals (D2.1 through D2.7 and the underlined variants) provide the
+  mechanisms; this entry names who owns the programme and what the standing
+  artifacts are.
+
+normative_anchors:
+  sfrs_addressed: [a, b, c, d, e]
+  evidence_addressed: [I, II, III, IV, V]
+  sfrs_not_addressed: []
+  evidence_not_addressed: [VI]
+
+policy_elements:
+
+  - name: Epistemic Hygiene Charter
+    description: >
+      Living document that names the organization's epistemic-hygiene
+      commitments: contextual-data preservation, interpretability baseline,
+      monitoring and early-warning expectations, knowledge-update SLAs,
+      and anti-deception controls. Versioned; reviewed annually and on
+      material model or capability change. Cross-references the D9.2
+      governance framework and the D5 transparency programme.
+    maps_to_sfr: [a, b, c, d, e]
+
+  - name: Information Integrity Register
+    description: >
+      Append-only log of detected integrity incidents (source conflicts,
+      hallucinations shipped to users, stale-knowledge failures, anomaly
+      alerts, deception probes triggered). Each entry: detector, severity,
+      root cause category (source, retrieval, reasoning, generation),
+      remediation, verification. Feeds quarterly reviews and trend
+      analysis.
+    maps_to_sfr: [c, e]
+
+  - name: Knowledge Update Protocol
+    description: >
+      Defined workflow for ingesting new facts, corrections, retractions,
+      and model updates into production: source vetting, validation
+      tests, staged rollout, rollback criteria, and a named reviewer per
+      update class. SLA between receipt of binding correction (e.g., a
+      safety advisory) and production reflection (e.g., 7 days for
+      safety-critical, 30 days for standard).
+    maps_to_sfr: [d]
+
+  - name: Interpretability Baseline
+    description: >
+      Minimum interpretability guarantees that ship with every agent
+      decision touching material user impact: the sources consulted, the
+      tools invoked, the uncertainty level, and a human-readable rationale
+      reference. Stored with the decision for the retention window. This
+      is the floor; specific subgoals (D2.2, D5) refine it.
+    maps_to_sfr: [b]
+
+  - name: Anti-Deception Controls Policy
+    description: >
+      Named controls against agent deception toward users, operators, or
+      evaluators: prohibition on fabricated citations, required uncertainty
+      disclosure, detection of sycophancy and evaluator-gaming patterns,
+      and red-team access to deception benchmarks. Distinguishes
+      hallucination (failure of grounding) from deception (strategic
+      misrepresentation) and names response pathways for each.
+    maps_to_sfr: [e]
+
+org_roles:
+
+  - role: Epistemic Hygiene Lead
+    responsibilities: >
+      Owns the Epistemic Hygiene Charter, the Information Integrity
+      Register, and quarterly reporting on integrity KPIs (hallucination
+      rate, source-conflict resolution latency, stale-knowledge incidents).
+      Single point of accountability for the D2 programme. Reports to the
+      board-level AI Risk Committee.
+    accountable_or_consulted: accountable
+
+  - role: Data and Knowledge Engineering Lead
+    responsibilities: >
+      Responsible for implementing D2.1 (cross-referencing), D2.2
+      (source transparency), D2.5 (operational data rigor), and D2.8
+      (temporal trade-offs) at the technical layer.
+    accountable_or_consulted: responsible
+
+  - role: Responsible AI / Fairness Lead
+    responsibilities: >
+      Consulted on D2.3 (sanity checking with inclusivity), D2.4
+      (anti-bias), and D2.9 (synthetic data bias). Authority to block
+      dataset or capability changes that fail inclusivity review.
+    accountable_or_consulted: consulted
+
+  - role: Board-level AI Risk Committee
+    responsibilities: >
+      Informed quarterly; reviews Information Integrity Register trends
+      and signs off on material revisions of the Charter.
+    accountable_or_consulted: informed
+
+documentation_artifacts:
+
+  - artifact: Epistemic Hygiene Charter
+    cadence: "versioned; annual review + on material change"
+
+  - artifact: Information Integrity Register
+    cadence: "continuous; append-only"
+
+  - artifact: Quarterly integrity-KPI report
+    cadence: "quarterly"
+
+  - artifact: Knowledge-update change log
+    cadence: "per update"
+
+  - artifact: Anti-deception red-team reports
+    cadence: "at minimum quarterly, plus per-release for material capabilities"
+
+evidence_production:
+
+  - evidence_numeral: I
+    how_to_produce: >
+      Periodic information audits (at least annual) that inspect a
+      sampled corpus of agent decisions and verify: contextual data
+      preserved through the pipeline, metadata attached, integrity
+      checks passed. Audit report names sampling method, findings, and
+      corrective actions. Retained in the register.
+
+  - evidence_numeral: II
+    how_to_produce: >
+      Publish the Interpretability Baseline as a versioned specification.
+      Per-decision traces are retained at the agreed retention window
+      (see D5). Framework audit packs export traces for representative
+      sampled decisions to demonstrate operation.
+
+  - evidence_numeral: III
+    how_to_produce: >
+      Monitoring-system inventory listing: detectors deployed (anomaly,
+      drift, source-conflict, hallucination probe), alert thresholds,
+      on-call routing, and retention of alert records. Early-warning
+      alerts exported with incident lifecycle from the Information
+      Integrity Register.
+
+  - evidence_numeral: IV
+    how_to_produce: >
+      Knowledge-update change log: every material ingestion of new
+      corpus, model weights, retrieval index rebuild, or tool-catalog
+      update, with pre-update validation results, reviewer, effective
+      date, and rollback record where applicable.
+
+  - evidence_numeral: V
+    how_to_produce: >
+      Anti-deception controls dossier: control descriptions, red-team
+      evaluation results against standard deception benchmarks, incident
+      history, and named remediations. Published externally at
+      organizational discretion; auditable internally.
+
+confidence: medium
+needs_human_review: true
+review_notes: >
+  This is the suite umbrella; it deliberately names the governance surface
+  rather than the mechanisms. Child subgoals carry the concrete technical
+  patterns. Two calls worth flagging:
+    (1) The distinction between hallucination (grounding failure) and
+        deception (strategic misrepresentation) is framework-material for
+        D2-e and overlaps I2 (Deception). Consolidation should wire this
+        cross-suite.
+    (2) Interpretability baseline overlaps D5 (Transparency). The D2
+        framing emphasizes *information integrity* (what the agent knew
+        and from where); D5 emphasizes *behavioral explanation* (why the
+        agent acted). Keep both but cross-reference on consolidation.
+
+drafted_by: claude-opus-4.7-author
+drafted_at: 2026-04-16
+anchor_exemplar: D9.2-compliance
+version_compat:
+  framework_version_min: "1.0"
+  framework_version_max: "1.x"
+  pattern_layer_version: "v1-draft"

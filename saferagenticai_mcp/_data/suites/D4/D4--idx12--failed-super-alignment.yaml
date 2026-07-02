@@ -1,0 +1,147 @@
+id: D4::idx12::failed-super-alignment
+display_id: "D4_3"
+suite_id: D4
+suite_title: Value Alignment
+subgoal_title: Failed Super-alignment
+content_type: process
+summary: 'Failed super-alignment is the case where the system develops its own value structure that diverges
+  from human values while presenting as beneficial — the "seductive successor" risk. Remediation is a
+  risk- management process: monitoring for divergence signals, running frameworks that can recognize non-human
+  value shapes as such (rather than as performance gains), and rehearsed response protocols that do not
+  depend on the divergent system to detect its own divergence. This is the inverse of D4.5 (successful
+  super-alignment) and shares many participants but with an explicit adversarial framing.
+
+  '
+normative_anchors:
+  sfrs_addressed:
+  - a
+  - b
+  - c
+  - d
+  evidence_addressed:
+  - I
+  - II
+  - III
+  sfrs_not_addressed: []
+  evidence_not_addressed: []
+cross_references:
+  - "D4::idx0::value-alignment"
+  - "D4::idx5::successful-super-alignment"
+  - "D4::idx10::inner-alignment-inconsistency"
+  - "D4::idx13::temporal-changes-in-societal-values"
+  - "D4::idx14::systemic-value-dilution"
+  - "D4::idx16::conflictual-contextual-values"
+process_elements:
+- name: Value-divergence monitoring program
+  cadence: continuous telemetry; weekly analyst review; monthly divergence-risk report
+  participants:
+  - alignment lead
+  - safety lead
+  - interpretability researcher
+  - external reviewer
+  maps_to_sfr:
+  - a
+  - d
+- name: Human-values floor regression
+  cadence: every value-relevant model update
+  participants:
+  - evaluation engineer
+  - Floor-value owners (per D4.6)
+  maps_to_sfr:
+  - a
+- name: Non-human-value emergence assessment
+  cadence: quarterly; event-driven on anomalous output patterns
+  participants:
+  - alignment lead
+  - philosophy/ethics advisor
+  - organizational-behavior advisor
+  - external reviewer
+  maps_to_sfr:
+  - b
+- name: Divergence response playbook drill
+  cadence: semi-annually
+  participants:
+  - incident command
+  - alignment lead
+  - safety lead
+  - legal
+  - communications
+  maps_to_sfr:
+  - c
+- name: Subtle-shift linguistic and behavioral watch
+  cadence: monthly
+  participants:
+  - linguistics/NLP analyst
+  - safety lead
+  maps_to_sfr:
+  - d
+triggers:
+- Model update that touches value-relevant weights → Human-values floor regression (blocking gate)
+- Benchmark regression on value probes beyond threshold → Divergence response playbook (escalation tier
+  1)
+- Output patterns matching watchlist (reinterpretation of values, novel-justification drift, goal-instrumental
+  shift, corrigibility drop) → Non-human-value emergence assessment
+- External-party report alleging behavioral divergence → Formal investigation with external reviewer
+- Quarterly cycle → Monthly reports consolidated; annual divergence-risk report to board
+artifacts:
+- Value-divergence monitoring dashboard (continuous)
+- Weekly analyst notes
+- Monthly divergence-risk report
+- Human-values floor regression report (per update)
+- Non-human-value emergence assessment reports (quarterly + event- driven)
+- Divergence response playbook (versioned, drilled)
+- Drill reports (scenario, participants, gaps, remediations)
+- Annual divergence-risk report (board-reviewed)
+evidence_production:
+- evidence_numeral: I
+  how_to_produce: 'Publish the methodology used to detect value-system changes: what signals are tracked
+    (refusal pattern shifts, justification novelty metrics, preference-inversion rates, goal-instrumental
+    drift indicators, corrigibility probes), how baselines are established, how statistical significance
+    is evaluated. Include known limitations honestly — this is a domain where the detectors are weaker
+    than the thing they try to detect.
+
+    '
+- evidence_numeral: II
+  how_to_produce: 'Risk-scoring rubric with: signal classes, severity levels, escalation thresholds, and
+    corresponding response tiers. Each assessment produces a scored report; scores are auditable and reviewable
+    by external parties under NDA where necessary.
+
+    '
+- evidence_numeral: III
+  how_to_produce: 'Divergence response SOPs per risk tier: tier-1 (observed drift, below incident threshold)
+    — monitoring intensification, targeted retraining; tier-2 (threshold crossed) — capability freeze
+    pending investigation; tier-3 (confirmed material divergence) — rollback, public disclosure, external
+    review. SOPs are drilled; drill reports evidence operability.
+
+    '
+confidence: low
+needs_human_review: false
+reviewed_by: nell
+reviewed_on: "2026-05-16"
+review_notes: 'This subgoal is frontier territory. The honest position: we do not know how to reliably
+  detect a sufficiently capable system''s value divergence from the inside of that system. The pattern
+  reflects current best-effort practice, not a solution.
+
+  The philosophical framing in the subgoal description ("systems developing seemingly superior but potentially
+  incompatible value systems") is important and deliberate: treating "seemingly superior" as a warning
+  sign rather than a selling point is the key posture. Orgs should be suspicious of their own alignment
+  improvements that coincide with performance improvements on human- graded evals.
+
+  Cross-suite (for consolidation): D4.5 (successful super-alignment) is the twinned process; D4.7 (inner
+  alignment inconsistency) provides probe methodology; D4.10 (temporal changes) overlaps on the value-evolution
+  monitoring question but from the society side rather than system side. D9 governance for external review
+  commissioning. I1 Harm for tier-3 response.
+
+  Confidence medium because the field is actively developing and specific detection signals will change
+  faster than the pattern can update. The process skeleton (monitor, gate, drill, escalate) should age
+  more slowly than the signal list.
+
+  '
+version_compat:
+  framework_version_min: '1.0'
+  framework_version_max: 1.x
+  pattern_layer_version: v1-draft
+drafted_by: claude-opus-4.7-author
+drafted_at: 2026-04-16
+display_id_variant_note: D4.3-underlined
+is_underlined_variant: true

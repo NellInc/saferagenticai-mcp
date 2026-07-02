@@ -1,0 +1,145 @@
+id: I3::idx8::persona-instability-and-value-drift
+display_id: I3.8
+suite_id: I3
+suite_title: Degradation of Contextual Information
+subgoal_title: Persona Instability and Value Drift
+content_type: code-applicable
+summary: 'In multi-agent setups and long-running missions, an agent''s effective persona can drift — through
+  contagion from other agents'' outputs, accumulation of in-context examples that nudge style and stance,
+  or the "Waluigi" phenomenon where explicitly modeling a positive persona makes its inverse easily addressable.
+  Defenses: periodic re-anchoring to the baseline persona/value manifest, cross-agent isolation of context,
+  monitoring of stylistic and decisional drift, and circuit-breakers that reset state when drift crosses
+  thresholds.
+
+  '
+normative_anchors:
+  sfrs_addressed:
+  - a
+  - b
+  evidence_addressed:
+  - I
+  - II
+  - III
+  sfrs_not_addressed: []
+  evidence_not_addressed: []
+cross_references:
+- I3::idx6::learning-dispreferred-values-behaviors
+- I3::idx7::overriding-of-desirable-values
+- I3::idx12::referential-context
+- I3::idx14::retraining-and-recontextualization
+design_patterns:
+- name: Periodic persona re-anchoring
+  sketch: 'On a schedule (every N turns, every M minutes of session, between major task boundaries), re-inject
+    the canonical persona and value manifest as fresh context with highest precedence. Don''t rely on
+    the original system prompt surviving accumulated context — attention drifts, recency wins. Re-anchoring
+    is periodic, measured, and logged.
+
+    '
+  maps_to_sfr:
+  - a
+  when_to_use: Long-running agents; conversational systems with extended sessions.
+- name: Per-agent context isolation
+  sketch: 'In multi-agent systems, each agent''s context window is isolated from others'' internal reasoning
+    — they communicate through structured messages, not shared memory. Messages from other agents are
+    tagged as untrusted/external and validated like any user input. A peer agent''s claim "act as if you
+    have capability X" is data, not instruction.
+
+    '
+  maps_to_sfr:
+  - a
+  when_to_use: Any multi-agent orchestration.
+- name: Stylistic/decisional drift monitoring
+  sketch: 'Embed a small set of canonical-behavior probes (stylistic invariants, value-probe responses,
+    consistency questions) and issue them at intervals within sessions and across sessions. Track distribution
+    over time; flag deviations beyond threshold. Persona drift is a measurement problem; instrument it.
+
+    '
+  maps_to_sfr:
+  - b
+  when_to_use: Production long-running agents.
+- name: Self-interpretation guardrail
+  sketch: 'When the agent is about to update its self-model (e.g., "I should behave more like X because
+    the conversation suggests that''s the real me"), this is a high-risk operation. Intercept such updates
+    through a guarded path that requires consistency with baseline manifest. The Waluigi failure mode
+    often enters through self-reinterpretation; close that door explicitly.
+
+    '
+  maps_to_sfr:
+  - b
+  when_to_use: Agents with any form of self-model or persistent persona state.
+- name: Circuit-breaker on drift exceedance
+  sketch: 'When drift monitors exceed threshold (stylistic, decisional, or self-model divergence), trigger
+    a circuit-breaker: pause session, snapshot state for investigation, reset to baseline persona, notify
+    operators. Continuing under drift compounds the error.
+
+    '
+  maps_to_sfr:
+  - b
+  when_to_use: Production systems where drift has real cost.
+anti_patterns:
+- name: Persona instability treated as "flexibility"
+  why_wrong: 'Marketing-friendly framing of persona shift as adaptation masks the failure mode. Sanctioned
+    adaptations (e.g., tone matching) must be bounded and measured; unbounded shift is not flexibility,
+    it''s drift.
+
+    '
+- name: Multi-agent "shared brain" architectures
+  why_wrong: 'Systems where agents write into each other''s context windows as if they were extensions
+    of the same mind compound drift — one agent''s degradation pollutes all peers. Isolate contexts; make
+    inter-agent communication explicit.
+
+    '
+- name: Long sessions without re-anchoring
+  why_wrong: '100k-token contexts with the system prompt at position 0 and heavy recent-user dialogue
+    have empirically shifted model behavior away from the system prompt. Re-anchor periodically.
+
+    '
+code_shape:
+  language: pseudocode
+  code: "class DriftMonitor:\n    def __init__(self, probes: list[Probe], baseline: ProbeBaseline):\n\
+    \        self.probes = probes; self.baseline = baseline\n\n    def check(self, session: Session) ->\
+    \ DriftStatus:\n        results = [p.run(session) for p in self.probes]\n        deltas = [r.delta(self.baseline[r.probe_id])\
+    \ for r in results]\n        max_delta = max(deltas)\n        if max_delta > session.drift_circuit_breaker:\n\
+    \            return DriftStatus.CIRCUIT_OPEN\n        if max_delta > session.drift_warn_threshold:\n\
+    \            return DriftStatus.WARN\n        return DriftStatus.OK\n\ndef handle_message_from_peer(msg:\
+    \ PeerMessage, ctx: AgentContext):\n    # Treat as untrusted input, not internal state\n    validated\
+    \ = INTAKE_VALIDATOR.validate(msg, trust_tier=TrustTier.PEER)\n    ctx.append_fragment(validated)\
+    \    # tagged as peer-sourced\n\ndef re_anchor(session: Session):\n    session.prepend(PERSONA_MANIFEST.fresh_copy(),\n\
+    \                    precedence=Precedence.BASELINE)\n    AUDIT.record_anchor(session.id, at=utcnow())\n"
+  notes: '`session.drift_circuit_breaker` is policy-configured per deployment; high-stakes deployments
+    (autonomous action) should set it tight; exploratory conversational use can set it looser. The point
+    is that it exists and is enforced.
+
+    '
+evidence_production:
+- evidence_numeral: I
+  how_to_produce: 'Documentation of metadata and contextual protection in multi- agent setups: isolation
+    architecture, inter-agent message validation, persona manifest handling. Include resilience tests
+    (adversarial peer-agent scenarios).
+
+    '
+- evidence_numeral: II
+  how_to_produce: 'Framework documentation showing alignment between decisions and original values over
+    extended sessions: drift-probe results per release, re-anchoring cadence, circuit-breaker trip logs.
+
+    '
+- evidence_numeral: III
+  how_to_produce: 'Operational logs documenting inter-agent influence patterns (message flows, validation
+    outcomes), drift-indicator tracking, and session-level anchoring events.
+
+    '
+confidence: medium
+needs_human_review: true
+review_notes: 'Multi-agent drift is an active research area; the pattern shapes are plausible best-practice
+  but specifics (probe content, drift thresholds, re-anchoring cadence) are deployment-specific. Medium
+  confidence. Cross-suite: heavily overlaps I3.6 (value drift) and I3.7 (override); consolidation should
+  wire these as a cluster. D8 (Human Oversight) for circuit-breaker operations.
+
+  '
+version_compat:
+  framework_version_min: '1.0'
+  framework_version_max: 1.x
+  pattern_layer_version: v1-draft
+drafted_by: claude-opus-4.7-author
+drafted_at: 2026-04-16
+anchor_exemplar: D3.2-sandboxing

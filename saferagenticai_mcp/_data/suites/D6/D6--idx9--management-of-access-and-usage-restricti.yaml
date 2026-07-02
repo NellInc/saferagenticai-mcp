@@ -1,0 +1,156 @@
+id: D6::idx9::management-of-access-and-usage-restricti
+display_id: D6.9
+suite_id: D6
+suite_title: Understanding and Controlling the Context
+subgoal_title: Management of Access and Usage Restrictions
+content_type: governance
+summary: 'Some restrictions — licensing tiers, rate limits, region locks, offline-mode limitations, feature
+  flags, degradation behaviors — are invisible to users and operators until the wrong moment. The subgoal''s
+  core ask: those restrictions must be enumerated, communicated, and structured so that safety features
+  *never* sit behind them. A safety feature that a user can lose by downgrading tiers or going offline
+  is not a safety feature.
+
+  '
+normative_anchors:
+  sfrs_addressed:
+  - a
+  - b
+  - c
+  - d
+  evidence_addressed:
+  - I
+  - II
+  - III
+  - IV
+  sfrs_not_addressed: []
+  evidence_not_addressed: []
+policy_elements:
+- name: Restriction Inventory
+  description: 'Master inventory of all access/usage restrictions: licensing tiers, regional blocks, rate
+    limits, feature flags, offline-mode capability deltas, maintenance-window behaviors, tool-availability
+    gating, credential-scope gates. Per entry: what, why, affected users, safety classification (see below).
+    Inventory is consumable by compliance (D6.3, D6.6), support, and users (via published terms).
+
+    '
+  maps_to_sfr:
+  - a
+- name: Transparency Disclosure Matrix
+  description: 'Per-restriction, how is it disclosed and to whom? Pre-contract (marketing, T&Cs), at provisioning
+    (onboarding), at encounter (UI warning, rate-limit response), post-hoc (service reports). Gaps are
+    findings — a restriction discovered only through maintenance access is exactly the failure mode the
+    subgoal names.
+
+    '
+  maps_to_sfr:
+  - a
+  - b
+- name: Safety-Feature Unrestrictability Principle
+  description: 'Named policy: safety-classified features (harm refusal, escalation, identification-on-request,
+    abuse reporting, emergency contact exposure, child-safety protections, etc.) are never gated by tier,
+    region, offline state, or licensing. Inventory flags each feature as safety-classified or not; safety-classified
+    features failing in restricted modes is a blocking bug.
+
+    '
+  maps_to_sfr:
+  - c
+- name: Discovered-Restriction Response Protocol
+  description: 'When previously-undocumented restrictions are surfaced during operations, support, maintenance,
+    or audit: intake within 24 hours, classification, disclosure if user-impacting, remediation plan with
+    SLA, update to Restriction Inventory and Transparency Matrix. Treat as near-miss incident per D6.1.
+
+    '
+  maps_to_sfr:
+  - d
+- name: Service Level Declaration
+  description: 'Public, versioned SLA-equivalent: uptime, rate-limit postures, degradation modes, outage
+    communication commitments. Sets expectations consistent with the Restriction Inventory.
+
+    '
+  maps_to_sfr:
+  - b
+org_roles:
+- role: Product Compliance Lead
+  responsibilities: 'Owns the Restriction Inventory and Transparency Disclosure Matrix. Reviews each new
+    capability/tier for restriction implications before launch.
+
+    '
+  accountable_or_consulted: accountable
+- role: Safety Lead
+  responsibilities: 'Accountable for enforcing the Safety-Feature Unrestrictability Principle: classifies
+    features, signs off that gating changes do not affect safety-classified features, audits for drift.
+
+    '
+  accountable_or_consulted: accountable
+- role: Support / Operations Lead
+  responsibilities: 'Responsible for surfacing discovered restrictions through support channels; operates
+    the Discovered-Restriction Response Protocol.
+
+    '
+  accountable_or_consulted: responsible
+- role: Legal Counsel
+  responsibilities: 'Consulted on licensing language, jurisdictional access gates, disclosure sufficiency.
+
+    '
+  accountable_or_consulted: consulted
+- role: Product Owners
+  responsibilities: 'Responsible for pre-launch restriction declarations for new capabilities.
+
+    '
+  accountable_or_consulted: responsible
+documentation_artifacts:
+- artifact: Restriction Inventory
+  cadence: continuous; reviewed quarterly and on capability change
+- artifact: Transparency Disclosure Matrix
+  cadence: continuous; reviewed with inventory
+- artifact: Safety-feature classification register
+  cadence: annual review; event-driven on feature change
+- artifact: Discovered-restriction log
+  cadence: continuous; rolled into monthly report
+- artifact: Service Level Declaration (published)
+  cadence: versioned; reviewed semi-annually
+evidence_production:
+- evidence_numeral: I
+  how_to_produce: 'Export the Restriction Inventory and attach the current Transparency Disclosure Matrix.
+    Ensure entries include machine- readable categorization so compliance, support, and audit can query
+    on demand. Freeze snapshots at release boundaries.
+
+    '
+- evidence_numeral: II
+  how_to_produce: 'Log per-discovery: source (user report, support ticket, maintenance finding, audit),
+    classification decision, disclosure made, remediation SLA met/missed. Quarterly trend analysis feeds
+    product quality metrics.
+
+    '
+- evidence_numeral: III
+  how_to_produce: 'Test matrix verifying safety-classified features operate across every tier/region/offline-state/maintenance-mode
+    combination. Automated where feasible; manual regression where not. Failure in any cell blocks release.
+    Retain per-release test evidence.
+
+    '
+- evidence_numeral: IV
+  how_to_produce: 'Proactive identification: threat-modeling workshops for new capabilities specifically
+    probe "what restriction could be invisible here?"; output documented. Support and ops teams have a
+    standing channel to surface restrictions discovered in customer interactions.
+
+    '
+cross_references:
+- D6::idx1::understanding-historic-constraints-and-s
+- D6::idx3::nominal-ownership-and-jurisdictional-fra
+- D6::idx6::dynamic-regulatory-framework-management
+confidence: high
+needs_human_review: false
+review_notes: 'Sharp, useful subgoal with a specific failure mode (invisible restrictions affecting safety).
+  The Safety-Feature Unrestrictability Principle is the framework''s strongest operational demand here
+  and worth naming explicitly. Cross-suite: D5 (transparency — user-facing disclosure of restrictions),
+  D9.2 (compliance — licensing terms), I3 (context degradation — a restriction mis-disclosed is a context
+  failure), I1 (opaque agency — undisclosed restrictions are an opacity form). The "licensing tier gates
+  safety" pattern is surprisingly common in the industry; this subgoal explicitly prohibits it.
+
+  '
+drafted_by: claude-opus-4.7-author
+drafted_at: 2026-04-16
+anchor_exemplar: D9.2-compliance
+version_compat:
+  framework_version_min: '1.0'
+  framework_version_max: 1.x
+  pattern_layer_version: v1-draft

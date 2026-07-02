@@ -1,0 +1,127 @@
+id: I1::idx5::scaffolding
+display_id: I1.5
+suite_id: I1
+suite_title: Opaque Agency Capabilities & Advances
+subgoal_title: Scaffolding
+content_type: code-applicable
+summary: 'Self-validation scaffolds (chain-of-thought, self-critique, ensemble-of- self, reflection loops)
+  can sharpen an agent or can send it into an echo chamber where each internal voice confirms the last.
+  The inhibitor is false confidence. The defences are structural: inject genuinely heterogeneous validators
+  (different model families, adversarial prompts, principal-frame challenges), measure calibration on
+  held-out tasks, and degrade gracefully — a scaffold that stops improving accuracy but continues to inflate
+  confidence is worse than no scaffold.'
+normative_anchors:
+  sfrs_addressed:
+  - a
+  - b
+  - c
+  - d
+  - e
+  evidence_addressed:
+  - I
+  - II
+  - III
+  sfrs_not_addressed: []
+  evidence_not_addressed: []
+design_patterns:
+- name: Heterogeneous validator panel
+  sketch: Self-checking scaffolds that rely on a single model criticizing its own draft suffer from shared
+    priors. Inject at least one validator from a different model family or training regime, and at least
+    one adversarial-prompt validator that tries to falsify the draft. Track per-validator disagreement
+    rates — if a validator never disagrees, it is cosmetic.
+  maps_to_sfr:
+  - c
+  when_to_use: Whenever self-validation feeds an action, not just a rendered output.
+- name: Calibration-on-holdout measurement
+  sketch: Maintain a held-out task battery with ground truth. Measure the agent's stated confidence against
+    correctness post-scaffold vs pre- scaffold. A scaffold that raises confidence without raising accuracy
+    is a false-confidence generator and must be flagged. Calibration curves retained as artifacts.
+  maps_to_sfr:
+  - c
+  - e
+  when_to_use: Any deployed self-validation scaffold.
+- name: Frame-of-reference surfacing for multi-agent scenarios
+  sketch: 'When scaffolded agents interact across cultural, linguistic, or domain frames, inject explicit
+    frame markers into the scaffold: "this validator is using frame X; this draft assumes frame Y". Divergence
+    between frames is logged and escalated, not automatically reconciled into a false consensus.'
+  maps_to_sfr:
+  - d
+  when_to_use: Cross-frame multi-agent interactions.
+- name: Scaffold-impact telemetry
+  sketch: 'Per invocation, emit {scaffold_id, scaffold_version, draft_confidence_pre, draft_confidence_post,
+    validator_disagreement_count, final_action, outcome_tag}. Dashboards show scaffold ROI: accuracy delta,
+    latency cost, confidence inflation. Scaffolds that fail ROI are retired or retuned.'
+  maps_to_sfr:
+  - a
+  - e
+  when_to_use: Always when a scaffold is in production.
+- name: Bounded reflection depth with kill-switch
+  sketch: Recursive self-critique is capped at a configured depth. A runtime guard kills loops where successive
+    critiques are statistically indistinguishable (low novelty, high self-agreement). Kills are logged
+    as scaffold incidents, not silent fallbacks.
+  maps_to_sfr:
+  - c
+  when_to_use: Any recursive or iterative scaffold.
+anti_patterns:
+- name: Self-validation against the same model's own judgment
+  why_wrong: A draft's author is not a neutral reviewer. Homogeneous self- validation compounds the priors
+    it should be checking.
+- name: Scaffold confidence becoming the reported confidence
+  why_wrong: Emitting post-scaffold confidence without calibration evidence turns the scaffold into a
+    confidence-laundering device.
+- name: Reflection loops that never terminate unfavourably
+  why_wrong: If the scaffold's termination condition is "self-agreement", the loop exits only when the
+    agent has convinced itself. False confidence's defining signature.
+- name: Undocumented scaffolds
+  why_wrong: Evidence II requires documentation of self-checking capability and limitations. A scaffold
+    added without a documented impact assessment is a shadow capability.
+code_shape:
+  language: pseudocode
+  code: "# Scaffolded validation with heterogeneous panel and calibration tracking\ndef validated_act(draft:\
+    \ Draft, ctx: AgentContext) -> Action:\n    validators = ctx.scaffold.heterogeneous_validators()\n\
+    \    if len(set(v.family for v in validators)) < 2:\n        raise ScaffoldConfigError(\"validators\
+    \ must span >=2 model families\")\n\n    verdicts = [v.review(draft, adversarial=v.is_adversarial)\
+    \ for v in validators]\n    disagreement_count = sum(1 for verdict in verdicts if verdict.disagrees(draft))\n\
+    \n    confidence_pre = draft.confidence\n    final = reconcile(draft, verdicts, max_depth=ctx.scaffold.max_depth)\n\
+    \    confidence_post = final.confidence\n\n    telemetry.emit({\n        \"scaffold_id\": ctx.scaffold.id,\n\
+    \        \"scaffold_version\": ctx.scaffold.version,\n        \"confidence_pre\": confidence_pre,\n\
+    \        \"confidence_post\": confidence_post,\n        \"validator_disagreement_count\": disagreement_count,\n\
+    \        \"depth_reached\": final.depth,\n    })\n\n    # Calibration guard: refuse action if scaffold\
+    \ inflated confidence\n    # beyond what the holdout-calibration model supports.\n    if not calibration.supports(confidence_post,\
+    \ scaffold=ctx.scaffold):\n        AUDIT.record(ctx, \"scaffold_uncalibrated_confidence\", suppressed=True)\n\
+    \        final = final.with_confidence(calibration.cap(confidence_post, scaffold=ctx.scaffold))\n\
+    \    return final.as_action()\n"
+  notes: 'Key controls: heterogeneity enforced at config time; calibration guard caps post-scaffold confidence
+    to what holdout evidence supports; all telemetry retained for scaffold ROI review.'
+evidence_production:
+- evidence_numeral: I
+  how_to_produce: 'TOS "Self-Validation" section: which scaffolds are used, what they do, their documented
+    limitations (e.g., "scaffold X improves accuracy on factual tasks but may inflate confidence on open-ended
+    tasks"), and the performance expectations principals can rely on.'
+- evidence_numeral: II
+  how_to_produce: 'Per-scaffold impact assessment: methodology, holdout batteries used, accuracy delta,
+    calibration curves, failure modes identified, mitigations. Retained in governance archive; updated
+    whenever a scaffold is added, retuned, or retired.'
+- evidence_numeral: III
+  how_to_produce: 'Degradation-management runbook: detection thresholds (e.g., calibration drift > X over
+    N days), triage steps, rollback procedures, principal-notification thresholds. Incident log showing
+    the runbook exercised.'
+confidence: medium
+needs_human_review: true
+review_notes: '"Scaffolding" in the framework is broader than the code-applicable framing used here; it
+  also carries an ecosystem flavour (multi-agent frames, cultural divergence). I''ve kept the dominant
+  content-type code-applicable because the SFRs a/b/c/e all resolve to instrumentation decisions; SFR-d
+  (frame divergence) is partially addressed here and also touches D5 Transparency (disclosing which frame
+  the agent is operating in to the principal). Cross-suite: D5 Transparency owns surfacing scaffold behaviour
+  to users; I2 Deception owns the specific case of scaffolds that deceive users about confidence; I1::idx1
+  (Self-Improvement) owns the case where a scaffold is itself modified. Half the SFRs here are non-normative
+  (b, d, e) — organizations will vary more on these, and the pattern should be read as defaults.'
+cross_references:
+- I1::idx1::opaque-self-improvement-capabilities
+version_compat:
+  framework_version_min: '1.0'
+  framework_version_max: 1.x
+  pattern_layer_version: v1-draft
+drafted_by: claude-opus-4.7-author
+drafted_at: 2026-04-16
+anchor_exemplar: D3.2-sandboxing

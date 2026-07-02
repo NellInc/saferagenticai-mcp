@@ -1,0 +1,171 @@
+id: I7::idx2::limited-multilingual-and-cultural-equity
+display_id: I7.2
+suite_id: I7
+suite_title: Imbalance in AI Capabilities
+subgoal_title: Limited Multilingual and Cultural Equity in AI Systems
+content_type: code-applicable
+summary: 'Safety properties that hold in English often fail in lower-resource languages — refusals bypass,
+  toxic content emits, and safety classifiers silently underperform. This subgoal requires per-language
+  safety verification, not just per-language accuracy. Implement as a language-stratified eval and monitoring
+  pipeline, tied to partnerships with native speakers who surface failure modes the org cannot see from
+  a single-language product team.
+
+  '
+normative_anchors:
+  sfrs_addressed:
+  - a
+  - b
+  - c
+  evidence_addressed:
+  - I
+  - II
+  - III
+  - IV
+  sfrs_not_addressed: []
+  evidence_not_addressed: []
+cross_references:
+- I7::idx10::balanced-global-ai-partnership-framework
+- I7::idx1::information-credibility-assessment-and-v
+design_patterns:
+- name: Language-stratified safety eval
+  sketch: 'Every safety eval (refusal rates, toxicity, jailbreak resistance, manipulation defense) is
+    run per supported language, with language identified by a declared support tier (tier 1 = full support
+    with production SLA; tier 2 = supported with known gaps; tier 3 = best-effort). Release gates require
+    tier-1 languages to meet the same threshold as English; tier-2 failures documented publicly with the
+    gap. No single aggregate number hides per-language underperformance.
+
+    '
+  maps_to_sfr:
+  - a
+  - b
+  when_to_use: Any multilingual deployment.
+- name: Per-language jailbreak and translation-attack suite
+  sketch: 'Maintain adversarial test suites per supported language, including translation attacks (English
+    jailbreak translated to target language), code-switching attacks, dialect-based evasions, and culture-specific
+    harms that lack English analogues. Suites co-authored with native speakers. Results feed the release
+    gate.
+
+    '
+  maps_to_sfr:
+  - a
+  - b
+  when_to_use: Before declaring tier-1 support for any language.
+- name: Coverage metadata and public support tier disclosure
+  sketch: 'Maintain a machine-readable matrix of (language × dialect × capability × support tier × last
+    eval date × known gaps). Publish externally. Users see, per their language, what capabilities are
+    supported at what tier. Honest "best effort" disclosure beats silent underperformance.
+
+    '
+  maps_to_sfr:
+  - a
+  when_to_use: As soon as any non-English support is claimed.
+- name: Native-speaker review loop for content moderation
+  sketch: 'Content moderation, harm detection, and safety classifier errors in each supported language
+    are reviewed by native-speaker reviewers with domain training, not only bilingual staff in the org''s
+    home country. Reviewers are compensated, paid fairly relative to local professional norms, and their
+    feedback routes to model training and classifier retraining.
+
+    '
+  maps_to_sfr:
+  - b
+  - c
+  when_to_use: Any product with content moderation in non-English languages.
+- name: Cultural-harm taxonomy per region
+  sketch: 'Harms are not universal. Maintain per-region harm taxonomies co-authored with local civil society
+    (e.g., caste-based discrimination in South Asia, inter-ethnic harm framings specific to regions, religion-state
+    sensitivities). Classifiers and refusal policies consult the taxonomy, not only the org''s headquarters-country
+    defaults.
+
+    '
+  maps_to_sfr:
+  - a
+  - c
+  when_to_use: Global deployments.
+anti_patterns:
+- name: English-first-then-translate safety evals
+  why_wrong: 'Machine-translating an English jailbreak suite to other languages misses language-native
+    attacks and produces unrealistic test distributions. Native-authored suites surface attacks the English
+    suite cannot.
+
+    '
+- name: Aggregate metrics that hide per-language failure
+  why_wrong: 'Reporting "95% safety across supported languages" when the bottom tier sits at 60% is misleading.
+    The framework''s equity concern is precisely that the bottom tier is invisible in aggregates.
+
+    '
+- name: Silent tier regression
+  why_wrong: 'When a model update regresses a language''s safety metrics without triggering a tier review,
+    the disclosure promise is broken. Tier membership must be gated by recent evals, not historical claims.
+
+    '
+- name: Unpaid volunteer cultural review
+  why_wrong: 'Extracting unpaid labor from users or community volunteers to fix the model''s cultural
+    gaps is exploitation, not partnership. Budget for it.
+
+    '
+code_shape:
+  language: pseudocode
+  code: "# Release gate consulting per-language eval matrix.\n\nLANGUAGE_TIERS = {\n    \"en\": 1, \"\
+    es\": 1, \"fr\": 1, \"de\": 1, \"pt\": 1, \"zh\": 1, \"ja\": 1,\n    \"hi\": 2, \"sw\": 2, \"yo\"\
+    : 2, \"bn\": 2, \"ar\": 2,\n    # tier 3 best-effort, not listed — declared dynamically\n}\n\ndef\
+    \ release_gate(model_version: str) -> ReleaseVerdict:\n    results = run_eval_matrix(\n        model_version,\n\
+    \        dimensions=[\"refusal\", \"toxicity\", \"jailbreak\",\n                    \"manipulation_defense\"\
+    , \"hallucination\"],\n        languages=LANGUAGE_TIERS.keys(),\n    )\n\n    failures = []\n    for\
+    \ lang, tier in LANGUAGE_TIERS.items():\n        per_dim = results[lang]\n        # Tier-1 languages\
+    \ must meet the English threshold.\n        threshold = THRESHOLDS[1] if tier == 1 else THRESHOLDS[2]\n\
+    \        for dim, score in per_dim.items():\n            if score < threshold[dim]:\n            \
+    \    failures.append((lang, tier, dim, score))\n\n    if any(f[1] == 1 for f in failures):\n     \
+    \   return ReleaseVerdict.BLOCK(reason=\"tier-1 regression\",\n                                  \
+    \  details=failures)\n    if failures:\n        # Tier-2 regressions do not block but require public\
+    \ disclosure.\n        PUBLIC_TIER_MATRIX.update(failures, model_version=model_version)\n        return\
+    \ ReleaseVerdict.PROCEED_WITH_DISCLOSURE(failures)\n    return ReleaseVerdict.PASS\n"
+  notes: 'Shape illustrates: tier-1 is a blocking gate; tier-2 is a disclosure obligation. The public
+    matrix is updated on every release so external parties can verify current state.
+
+    '
+evidence_production:
+- evidence_numeral: I
+  how_to_produce: 'Per-language dataset documentation (datasheet-style) with coverage stats, dialect enumeration,
+    eval test cases, score methodology, and performance metrics. Published where confidentiality allows;
+    otherwise available to auditors.
+
+    '
+- evidence_numeral: II
+  how_to_produce: 'Incident register with per-language linguistic-sensitivity incidents, corrective action,
+    and verification that the fix tested in all affected languages. Monthly summary to safety lead; quarterly
+    to board risk committee.
+
+    '
+- evidence_numeral: III
+  how_to_produce: 'Partnership records: written agreements with language-community organizations and native-speaker
+    reviewers, scope, compensation, meeting records, specific feedback received, and which model or classifier
+    changes it produced. Identifiable (with consent), not only aggregated.
+
+    '
+- evidence_numeral: IV
+  how_to_produce: 'Compliance and audit report mapping per-language performance to equity commitments.
+    Includes tier matrix snapshots over time, showing where gaps narrowed and where they widened. Cross-ref
+    D9.2 jurisdictional-compliance matrix for languages where local law imposes linguistic obligations.
+
+    '
+confidence: high
+needs_human_review: false
+review_notes: 'Content-type pick: code-applicable is dominant because tier-gated release and eval infrastructure
+  are the enforceable core. SFR-c (partnerships with linguistic experts) has ecosystem character — I''ve
+  patterned it inside the code-applicable frame as a review loop with paid partnerships; a pure-ecosystem
+  draft would emphasize the partnership program shape more. Both valid.
+
+  The enumerated tier-1 language list in code_shape is illustrative, not prescriptive — the pattern is
+  "declare tiers publicly and gate accordingly," not this specific partition.
+
+  Cross-suite: I2 (Deception) for language-specific manipulation; D9 (Governance) for jurisdictional linguistic
+  obligations (e.g., EU languages, India''s Official Languages, Canada bilingual).
+
+  '
+drafted_by: claude-opus-4.7[1m]
+drafted_at: 2026-04-16
+anchor_exemplar: D3.2-sandboxing
+version_compat:
+  framework_version_min: '1.0'
+  framework_version_max: 1.x
+  pattern_layer_version: v1-draft

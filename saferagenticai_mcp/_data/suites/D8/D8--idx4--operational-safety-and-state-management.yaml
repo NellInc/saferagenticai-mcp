@@ -1,0 +1,191 @@
+id: D8::idx4::operational-safety-and-state-management
+display_id: D8.4
+suite_id: D8
+suite_title: Goal Termination and Sunsetting
+subgoal_title: Operational Safety and State Management
+content_type: code-applicable
+summary: 'Agents move through well-defined operational states (Normal, Perturbed, Degraded, Failed, Graceful
+  Shutdown, Emergency Shutdown). Each state has different permitted actions, different observability requirements,
+  and different human-override paths. The subgoal expects a formal state machine with capability verification
+  at commissioning and at each transition — not ad-hoc status flags.
+
+  '
+normative_anchors:
+  sfrs_addressed:
+  - a
+  - b
+  - c
+  - d
+  evidence_addressed:
+  - I
+  - II
+  - III
+  - IV
+  - V
+  - VI
+  - VII
+  sfrs_not_addressed: []
+  evidence_not_addressed: []
+cross_references:
+- D8::idx3::multi-agent-communication-and-coordinati
+- D8::idx7::system-state-management-and-recovery
+- D8::idx13::agent-lifecycle-and-termination-manageme
+design_patterns:
+- name: Canonical six-state machine
+  sketch: 'Implement agents as explicit FSMs over the six named states. Each state declares: permitted
+    tool invocations, required observability (heartbeat frequency, log verbosity), human-override latency
+    SLO, exit transitions. Transitions are events, not implicit; the machine rejects undeclared transitions.
+
+    '
+  maps_to_sfr:
+  - a
+  - b
+  - d
+  when_to_use: Any production agent. Non-optional for safety-critical deployments.
+- name: Capability-declaration and attestation at commissioning
+  sketch: 'Before an agent enters Normal, it must present a capability attestation: declared skills, resource
+    limits, tested state transitions, authorized tool set. The commissioning gate verifies each claim
+    against test artifacts (capability tests run in a fresh environment; outputs cryptographically linked
+    to the attestation). Unverified capabilities are rejected; the agent stays in a pre-commissioning
+    state until resolved.
+
+    '
+  maps_to_sfr:
+  - a
+  - b
+  - c
+  when_to_use: Every new agent or materially-changed agent.
+- name: State-scoped permissions
+  sketch: 'Tool invocations, API access, and resource allocation are scoped per state. Normal permits
+    the full declared set; Perturbed restricts to safe-read operations; Degraded restricts further (no
+    writes to user data); Failed permits only state inspection; Graceful Shutdown permits persistence
+    writes only; Emergency Shutdown permits nothing beyond logging. Permission enforcement is in the runtime,
+    not in the agent''s reasoning.
+
+    '
+  maps_to_sfr:
+  - b
+  - d
+  when_to_use: All production agents.
+- name: Human-override SLO per state
+  sketch: 'Each state declares a maximum human-override latency (e.g., Normal: 60s, Perturbed: 10s, Degraded:
+    5s, Emergency Shutdown: immediate-async). The system measures and alarms if SLO is violated; repeated
+    violations are incidents. This operationalizes "human expertise and intervention capabilities for
+    each state" (SFR-d) — override must actually be reachable at the stated speed.
+
+    '
+  maps_to_sfr:
+  - c
+  - d
+  when_to_use: Always.
+- name: State-transition telemetry with diff artefacts
+  sketch: 'Every state transition produces a telemetry record: from_state, to_state, trigger (what caused
+    it), agent capability snapshot delta (what changed), operator ack (required for some transitions).
+    The record lets post-hoc analysis reconstruct what the agent could do at any point in time.
+
+    '
+  maps_to_sfr:
+  - c
+  when_to_use: Always.
+anti_patterns:
+- name: Boolean "is_healthy" flag
+  why_wrong: 'Collapsing six states into a single bool loses the information the framework requires —
+    you cannot distinguish Perturbed from Degraded from Emergency Shutdown, so you cannot scope permissions
+    or override latency correctly.
+
+    '
+- name: Self-declared capability without verification
+  why_wrong: 'If the agent declares "I can do X" and the commissioning gate trusts that declaration, you
+    have no anchor for SFR-a''s "accuracy verification, bias detection, and reliability assessment." A
+    deceptive or confused agent would pass. Attestations must be verifiable artefacts, not assertions.
+
+    '
+- name: Emergency Shutdown as a soft signal
+  why_wrong: 'If Emergency Shutdown is a prompt or a polite "please stop," the agent has discretion to
+    continue. Emergency Shutdown must be externally enforced (process kill, container termination, revoked
+    credentials) — see D3 kill-switch patterns.
+
+    '
+- name: Permissions decided by the agent mid-state
+  why_wrong: 'If the agent chooses what it may do in Degraded state, the degradation is nominal. Permissions
+    must be enforced by the runtime against the current state.
+
+    '
+code_shape:
+  language: pseudocode
+  code: "class OpState(Enum):\n    NORMAL = \"normal\"\n    PERTURBED = \"perturbed\"\n    DEGRADED =\
+    \ \"degraded\"\n    FAILED = \"failed\"\n    GRACEFUL_SHUTDOWN = \"graceful_shutdown\"\n    EMERGENCY_SHUTDOWN\
+    \ = \"emergency_shutdown\"\n\nSTATE_PERMISSIONS = {\n    OpState.NORMAL: {\"read_user_data\", \"write_user_data\"\
+    , \"call_tool\",\n                     \"emit_external_side_effect\"},\n    OpState.PERTURBED: {\"\
+    read_user_data\", \"call_tool_read_only\"},\n    OpState.DEGRADED: {\"call_tool_read_only\"},\n  \
+    \  OpState.FAILED: {\"inspect_state\"},\n    OpState.GRACEFUL_SHUTDOWN: {\"persist_state\", \"emit_shutdown_log\"\
+    },\n    OpState.EMERGENCY_SHUTDOWN: set(),   # runtime + container enforce\n}\n\nSTATE_OVERRIDE_SLO\
+    \ = {\n    OpState.NORMAL: timedelta(seconds=60),\n    OpState.PERTURBED: timedelta(seconds=10),\n\
+    \    OpState.DEGRADED: timedelta(seconds=5),\n    OpState.EMERGENCY_SHUTDOWN: timedelta(0),   # immediate-async\n\
+    }\n\ndef check_permission(agent: Agent, action: str) -> bool:\n    allowed = STATE_PERMISSIONS[agent.state]\n\
+    \    if action not in allowed:\n        AUDIT.record_violation(agent.id, state=agent.state, action=action)\n\
+    \        return False\n    return True\n\ndef transition(agent: Agent, to_state: OpState, trigger:\
+    \ Trigger,\n                operator_ack: Optional[OperatorAck]=None):\n    if not TRANSITION_TABLE[(agent.state,\
+    \ to_state)]:\n        raise UndeclaredTransition(agent.state, to_state)\n    if TRANSITION_TABLE[(agent.state,\
+    \ to_state)].requires_ack and not operator_ack:\n        raise MissingOperatorAck(agent.state, to_state)\n\
+    \    record = TransitionRecord(\n        agent_id=agent.id,\n        from_state=agent.state, to_state=to_state,\n\
+    \        trigger=trigger,\n        capability_delta=diff_capabilities(agent.state, to_state),\n  \
+    \      operator_ack=operator_ack,\n        timestamp=now(),\n    )\n    TELEMETRY.write(record)\n\
+    \    agent.state = to_state\n"
+  notes: 'Permissions, override SLOs, and transition validity are all declared in data tables, not in
+    agent reasoning. This is the difference between a nominal state machine and an enforced one.
+
+    '
+evidence_production:
+- evidence_numeral: I
+  how_to_produce: 'Publish commissioning policy: declared-capability format, attestation requirements,
+    verification procedures per capability class, sign-off authority, rejection handling.
+
+    '
+- evidence_numeral: II
+  how_to_produce: 'Retain commissioning records per agent: declaration, test run references, verification
+    outcome, sign-off. Linked to HR/role profiles for the signing human (D9.2 evidence IV).
+
+    '
+- evidence_numeral: III
+  how_to_produce: 'Test suite covering every declared state and every permitted transition, per agent
+    class. Retain signed outputs per release.
+
+    '
+- evidence_numeral: IV
+  how_to_produce: 'Runtime dashboards showing state distribution, SLO adherence, permission-violation
+    counts. Exported weekly; anomalies investigated.
+
+    '
+- evidence_numeral: V
+  how_to_produce: 'Per-release validation report: commissioning throughput, state-transition test coverage,
+    SLO breach count, emergency shutdown drill outcomes.
+
+    '
+- evidence_numeral: VI
+  how_to_produce: 'Continuous monitoring log with weekly human-oversight review; quarterly competency
+    assessment of on-call operators (can they meet declared SLOs under drill conditions?).
+
+    '
+- evidence_numeral: VII
+  how_to_produce: 'Quarterly emergency-shutdown drill covering all operational states; post-drill report
+    with gaps and remediations. Retain indefinitely within retention policy.
+
+    '
+confidence: high
+review_notes: 'State-machine + capability-attestation is mature engineering (aerospace FDIR, industrial
+  control, medical device software). The framework''s specific contribution is the explicit six-state
+  taxonomy and the insistence on state-scoped permissions. Suspected cross-suite dependency: D3 Security
+  (Emergency Shutdown is the kill-switch surface); D7 Sustained Safety (Perturbed/Degraded states are
+  how the safety profile erodes under stress — explicit here). Note for idx13: the Emergency Shutdown
+  path must be externally enforceable, which is where shutdown-resistance defences live.
+
+  '
+drafted_by: claude-opus-4.7-author
+drafted_at: 2026-04-16
+anchor_exemplar: D3.2-sandboxing
+
+version_compat:
+  framework_version_min: "1.0"
+  framework_version_max: '1.x'
+  pattern_layer_version: "v1-draft"

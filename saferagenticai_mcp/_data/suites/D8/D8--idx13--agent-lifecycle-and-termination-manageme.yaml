@@ -1,0 +1,176 @@
+id: D8::idx13::agent-lifecycle-and-termination-manageme
+display_id: "D8_2"
+is_underlined_variant: true
+display_id_variant_note: "D8.2_underlined"
+suite_id: D8
+suite_title: Goal Termination and Sunsetting
+subgoal_title: Agent Lifecycle and Termination Management
+content_type: governance
+summary: 'Agent lifecycle is a contract spanning commissioning, active service, and decommissioning. This
+  subgoal formalizes the contract: no agent may be authorized into production without a declared termination
+  specification, and no agent may be signed off as terminated without verified handover and post-termination
+  inspection. "Inadequate termination procedures" is explicitly called out as a risk category — the organization
+  must demonstrate it has remedied that risk with process, not just intent.
+
+  '
+normative_anchors:
+  sfrs_addressed:
+  - a
+  - b
+  - c
+  - d
+  - e
+  evidence_addressed:
+  - I
+  - II
+  - III
+  - IV
+  - V
+  sfrs_not_addressed: []
+  evidence_not_addressed: []
+cross_references:
+- D8::idx4::operational-safety-and-state-management
+- D8::idx6::service-parameters-and-termination-manag
+- D8::idx10::independent-termination-validation
+- D8::idx12::governance-mechanism-prioritization-and-
+policy_elements:
+- name: Agent Lifecycle Contract
+  description: 'Per agent class, a single authoritative document covering: intended purpose, declared
+    capabilities, authorized operational states, resource envelope, data touchpoints, sunset plan, handover
+    requirements, retention obligations. Signed before commissioning; updated on material change; retained
+    per records policy.
+
+    '
+  maps_to_sfr:
+  - a
+- name: Commissioning Gate
+  description: 'Structured go/no-go decision before an agent enters production: checklist covering capability
+    attestation (linked to D8.4), integration test results, risk review, stakeholder notification readiness,
+    termination-specification completeness. Signed by named approver; failure to pass any item blocks
+    production.
+
+    '
+  maps_to_sfr:
+  - b
+- name: End-of-Service Specification
+  description: 'Every agent''s lifecycle contract declares its end-of-service plan before go-live: what
+    constitutes end-of-service (natural completion, scheduled sunset, superseded-by-replacement, safety-triggered),
+    handover destination, data-disposition policy, user-notification plan, post-decommission artefact
+    retention. Missing end-of-service = blocked commissioning.
+
+    '
+  maps_to_sfr:
+  - a
+- name: Decommissioning Checklist and Sign-Off
+  description: 'Formal checklist for decommissioning: final state preserved, handover completed to declared
+    destination, downstream consumers notified, access revoked, credentials rotated / burned, attribution
+    logs preserved, post-decommission inspection passed. Independent validator (D8.10) co-signs.
+
+    '
+  maps_to_sfr:
+  - b
+  - c
+- name: Lifecycle Oversight Function
+  description: 'Dedicated team or role maintaining the lifecycle register, monitoring active agents against
+    their contracts, flagging drift (capabilities outgrown contract, data touchpoints expanded), and initiating
+    review. Named owner; reports into safety-lead governance chain.
+
+    '
+  maps_to_sfr:
+  - d
+- name: Continuous Review Cadence
+  description: 'Lifecycle policies themselves are reviewed annually (minimum) and on: regulatory change,
+    material incident, new agent class. Review output feeds back into the Agent Lifecycle Contract template.
+
+    '
+  maps_to_sfr:
+  - e
+org_roles:
+- role: Agent Lifecycle Owner
+  responsibilities: 'Accountable for maintenance of the per-agent lifecycle contracts and commissioning-gate
+    outcomes. Single named human; reports to safety lead.
+
+    '
+  accountable_or_consulted: accountable
+- role: Commissioning Approver (per agent class)
+  responsibilities: 'Authorized to sign off commissioning. Must be independent of the build team. Decision
+    documented with rationale.
+
+    '
+  accountable_or_consulted: accountable
+- role: Decommissioning Approver
+  responsibilities: 'Authorized to sign off decommissioning. Co-signs with D8.10 Independent Validator.
+
+    '
+  accountable_or_consulted: accountable
+- role: Lifecycle Oversight Team
+  responsibilities: 'Day-to-day monitoring of lifecycle register, drift detection, review initiation.
+    Named leads; operational cadence monthly.
+
+    '
+  accountable_or_consulted: responsible
+- role: Legal / Compliance
+  responsibilities: 'Consulted on data-disposition, user-notification, and jurisdiction-specific decommissioning
+    requirements.
+
+    '
+  accountable_or_consulted: consulted
+documentation_artifacts:
+- artifact: Agent Lifecycle Contract template (governance-wide)
+  cadence: annually reviewed
+- artifact: Per-agent lifecycle contract instances
+  cadence: per agent; updated on material change
+- artifact: Commissioning gate records
+  cadence: per commissioning event
+- artifact: Decommissioning checklists and sign-off records
+  cadence: per decommissioning event
+- artifact: Lifecycle drift report
+  cadence: monthly
+- artifact: Annual lifecycle policy review minutes
+  cadence: annually
+evidence_production:
+- evidence_numeral: I
+  how_to_produce: 'Publish the Agent Lifecycle Contract template and every instance against it. Retain
+    versioned; link from D9.2 governance framework. Demonstrates SFR-a coverage of end-of-service specification
+    breadth.
+
+    '
+- evidence_numeral: II
+  how_to_produce: 'Technical specifications for commissioning-gate and decommissioning-checklist tooling:
+    what it checks, how it blocks, how sign-offs are captured. Retain with release artefacts.
+
+    '
+- evidence_numeral: III
+  how_to_produce: 'Sampled audit evidence: for N agents commissioned in period, retain commissioning-gate
+    records; for M agents decommissioned, retain checklist sign-offs. Independent validator (D8.10) confirms.
+
+    '
+- evidence_numeral: IV
+  how_to_produce: 'Design specifications showing lifecycle tooling integrated into CI/CD / ops platform
+    — commissioning-gate is code, not a PDF.
+
+    '
+- evidence_numeral: V
+  how_to_produce: 'Annual lifecycle report: commissioning volume, decommissioning volume, drift alarms
+    raised and resolved, policy revisions implemented. Board-level summary.
+
+    '
+confidence: high
+review_notes: 'This pattern overlaps significantly with D8.6 (Service Parameters and Termination Management,
+  idx6) — service vs. agent is a distinction that in practice often blurs. Consolidation should decide
+  whether to merge or preserve the agent-vs-service split. The framework''s underlined-variant convention
+  suggests the two are intentionally distinct (agent = the AI entity; service = the deployed offering
+  using one or more agents), and we have patterned them consistently with that interpretation. Suspected
+  cross-suite dependency: D9.2 Compliance (commissioning as a compliance gate); D4 Value Alignment (decommissioning
+  triggered by value misalignment is a likely scenario); D7 Sustained Safety (lifecycle drift monitoring
+  is a safety-profile concern).
+
+  '
+drafted_by: claude-opus-4.7-author
+drafted_at: 2026-04-16
+anchor_exemplar: D9.2-compliance
+
+version_compat:
+  framework_version_min: "1.0"
+  framework_version_max: '1.x'
+  pattern_layer_version: "v1-draft"

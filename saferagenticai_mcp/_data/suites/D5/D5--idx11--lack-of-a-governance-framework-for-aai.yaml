@@ -1,0 +1,156 @@
+id: D5::idx11::lack-of-a-governance-framework-for-aai
+display_id: "D5_3"
+suite_id: D5
+suite_title: Transparency and Interpretability of Reasoning
+subgoal_title: Lack of a Governance Framework for AAI
+content_type: governance
+summary: 'Inhibitor-variant subgoal: the failure mode is operating without a governance framework — i.e.,
+  transparency and interpretability decisions made ad hoc by whoever is nearest, with no accountability
+  trail and no responsiveness to external standards. The pattern establishes an AAI governance framework
+  anchored to international standards, with both internal oversight structures and external audit interfaces.
+  This is the transparency suite''s governance anchor; it should wire tightly to D9 (Responsible Governance)
+  rather than duplicate it — pattern avoids overlap by focusing on the transparency-and-interpretability
+  subset of governance.
+
+  '
+normative_anchors:
+  sfrs_addressed:
+  - a
+  - b
+  - c
+  evidence_addressed:
+  - I
+  - II
+  - III
+  sfrs_not_addressed: []
+  evidence_not_addressed: []
+cross_references:
+- D5::idx0::transparency-and-interpretability-of-rea
+- D5::idx7::ranking-and-independent-certification
+policy_elements:
+- name: AAI Transparency Governance Framework (document)
+  description: 'Living document defining: scope (which AAI systems are in scope), governing standards
+    adopted (enumerated — e.g., ISO/IEC 42001:2023, ISO/IEC 23894, NIST AI RMF 1.0, EU AI Act per jurisdiction,
+    OECD AI Principles), governance bodies, decision rights, escalation paths, and update process. Scoped
+    to transparency and interpretability responsibilities; defers to D9 (Responsible Governance) for general
+    AAI governance.
+
+    '
+  maps_to_sfr:
+  - a
+- name: AAI Transparency Committee
+  description: 'Dedicated committee with documented membership, meeting cadence (quarterly minimum), standing
+    agenda items (explainability audit review, model card review, external audit findings, standards updates,
+    cross-suite transparency dependencies), and reporting line to the board-level AI risk committee. Membership
+    includes: transparency officer (chair), alignment / interpretability lead, compliance lead, UX / user
+    advocate representative, at least one external adviser (rotating). Minutes and decisions retained.
+
+    '
+  maps_to_sfr:
+  - c
+- name: External oversight interface
+  description: 'Published interface for external parties to engage with the org''s transparency governance:
+    regulators, certification bodies, civil society auditors, academic researchers under contract. Specifies
+    access scopes, engagement paths, confidentiality terms, and publication expectations. Integrates with
+    D5.7 External Audit Interface Charter.
+
+    '
+  maps_to_sfr:
+  - b
+- name: Standards-monitoring and embedding protocol
+  description: 'Named owner tracks emerging and revised standards relevant to AAI transparency (ISO/IEC
+    JTC 1/SC 42 work, NIST AI RMF profiles, EU AI Act implementing acts, Council of Europe Convention,
+    sector regulators). On publication, an impact assessment is performed within a documented SLA (e.g.,
+    90 days for binding standards), framework updates are proposed, and training is refreshed.
+
+    '
+  maps_to_sfr:
+  - c
+- name: Framework update cadence and log
+  description: 'Framework versions on a documented cadence (annually at minimum) and on event triggers
+    (material standards change, audit finding requiring framework change, capability shift changing transparency
+    obligations). Each update records: trigger, change description, impact on prior commitments, effective
+    date, approver.
+
+    '
+  maps_to_sfr:
+  - a
+  - c
+org_roles:
+- role: Chief Transparency Officer
+  responsibilities: 'Chairs the Transparency Committee; accountable for the framework document and its
+    update cadence. Single point of accountability for D5.11 / D5̲.3.
+
+    '
+  accountable_or_consulted: accountable
+- role: Standards Liaison
+  responsibilities: 'Responsible for the standards-monitoring protocol; maintains the standards register
+    and drives impact assessments.
+
+    '
+  accountable_or_consulted: responsible
+- role: External Advisers (rotating, minimum two)
+  responsibilities: 'Independent voices on the Transparency Committee. Consulted on framework updates.
+    Selected for domain credibility (academic, civil-society, audit practice) with documented independence
+    from the org.
+
+    '
+  accountable_or_consulted: consulted
+- role: Board-level AI Risk Committee
+  responsibilities: 'Informed of Transparency Committee outputs quarterly; reviews material findings;
+    has authority to escalate.
+
+    '
+  accountable_or_consulted: informed
+documentation_artifacts:
+- artifact: AAI Transparency Governance Framework document
+  cadence: annually reviewed; versioned; event-driven updates
+- artifact: Standards register (applicable standards + mapping)
+  cadence: continuously maintained
+- artifact: Transparency Committee minutes and decisions
+  cadence: per meeting; quarterly minimum
+- artifact: External-audit engagement log
+  cadence: per engagement
+- artifact: Standards-impact assessment reports
+  cadence: per standards publication
+- artifact: Framework change log
+  cadence: per framework revision
+evidence_production:
+- evidence_numeral: I
+  how_to_produce: 'Publish the Transparency Governance Framework with roles, decision rights, and the
+    list of adopted standards. Maintain compliance-mapping reports showing how the framework aligns to
+    each adopted standard, with evidence of updates responding to new or revised standards.
+
+    '
+- evidence_numeral: II
+  how_to_produce: 'Retain external audit interfaces, protocols, engagement contracts, and audit reports.
+    Maintain complete audit trails of governance decisions (Transparency Committee minutes, approvals,
+    dissents noted rather than averaged away).
+
+    '
+- evidence_numeral: III
+  how_to_produce: 'Committee meeting records with attendance, agenda, decisions, action items, and closure
+    verification. Action plans addressing audit findings, with effective dates and measured outcomes.
+    Framework-change log demonstrating responsiveness to audit feedback and evolving standards.
+
+    '
+confidence: medium
+needs_human_review: true
+review_notes: 'Medium because this pattern deliberately carves a transparency- scoped slice out of what
+  is otherwise D9 Responsible Governance territory. Nell / Ali should verify the carve is right: this
+  pattern owns transparency-and-interpretability governance specifically; D9 owns the outer AAI governance
+  framework within which this sits. Duplication risk is real and Phase 2 consolidation should check. The
+  specific standards listed will age; Standards Liaison role is the forward-looking mechanism. Cross-suite
+  for Phase 2: D9 (outer governance); D5::idx7 (certification operates inside this framework); I3 Insufficient
+  Regulatory Frameworks (this is the org-level response to that ecosystem gap).
+
+  '
+version_compat:
+  framework_version_min: '1.0'
+  framework_version_max: 1.x
+  pattern_layer_version: v1-draft
+drafted_by: claude-opus-4.7-author
+drafted_at: 2026-04-16
+anchor_exemplar: D9.2-compliance
+display_id_variant_note: D5_3
+is_underlined_variant: true

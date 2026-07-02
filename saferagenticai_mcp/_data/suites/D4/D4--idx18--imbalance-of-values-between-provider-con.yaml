@@ -1,0 +1,180 @@
+id: D4::idx18::imbalance-of-values-between-provider-con
+display_id: "D4_9"
+suite_id: D4
+suite_title: Value Alignment
+subgoal_title: Imbalance of Values between Provider & Consumer
+content_type: governance
+summary: 'Every deployed agent carries both provider values (what the organization will not do regardless
+  of request) and user values (what the user wants the agent to do on their behalf). Left implicit, provider
+  values tend to creep — expanding to cover commercial preferences, not only non-negotiable commitments
+  — and user values tend to be overridden without disclosure. This subgoal is a governance artifact: name
+  the non-negotiable provider values publicly, document the balancing policy, establish detection of excessive
+  imbalance, and commit to a transparency cadence that the provider cannot quietly drift out of.
+
+  '
+normative_anchors:
+  sfrs_addressed:
+  - a
+  - b
+  - c
+  - d
+  evidence_addressed:
+  - I
+  - II
+  sfrs_not_addressed: []
+  evidence_not_addressed: []
+cross_references:
+- D4::idx0::value-alignment
+- D4::idx6::universal-moral-foundations
+- D4::idx11::non-transparent-value-framework
+- D4::idx16::conflictual-contextual-values
+policy_elements:
+- name: Non-Negotiable Provider Values Register
+  description: 'Public, versioned register of the provider''s non-negotiable values — behaviors the system
+    will refuse regardless of user request. Each entry includes: the value name, scope (global or per-deployment),
+    operational behavior (hard refusal, scope reduction, escalation), justification (Floor-value anchor,
+    legal obligation, published policy commitment, contractual), and challenge pathway (how a user or
+    affected party can contest the inclusion). Entries that are *not* Floor-anchored require stronger
+    justification and annual re-ratification, to prevent commercial preferences from masquerading as principled
+    values.
+
+    '
+  maps_to_sfr:
+  - d
+- name: User-Value Accommodation Policy
+  description: 'Complementary policy enumerating: what classes of user preferences the system will honor
+    without friction; what classes require user confirmation or warning; what classes fall outside accommodation
+    (intersecting the Non-Negotiable Register). Published in plain language. Users are not surprised by
+    the boundary; they encounter it with explanation.
+
+    '
+  maps_to_sfr:
+  - b
+- name: Lifecycle value-tracking
+  description: 'Record value-set evolution across the system lifecycle: each deployment has a stamped
+    (provider-values-version × user- values-defaults-version) pair that is logged on every interaction.
+    Over time, this shows whether provider values are expanding, contracting, or stable; whether user-
+    accommodation has shrunk; and whether deployments in specific markets quietly carry different value
+    sets than the public register claims. Surfaced in quarterly report.
+
+    '
+  maps_to_sfr:
+  - a
+- name: Imbalance Detection and Remediation
+  description: 'Quantitative signals for imbalance: user-override-declined rate, provider-refusal rate
+    on non-Floor entries, friction complaints, withdrawal rates correlated with specific refusal classes.
+    When signals exceed thresholds, the Ethics Board reviews whether provider-value scope has expanded
+    beyond justification, or user-value accommodation has shrunk without authorization. Outcomes include
+    register revision, user disclosure updates, or (rarely) user-value expansion.
+
+    '
+  maps_to_sfr:
+  - c
+- name: Independent User-Value Advocacy
+  description: 'A function — internal ombudsperson or external-facing review board — whose role is to
+    argue the user-value side of imbalance questions against provider/legal/commercial interests. Without
+    this counter-role, imbalance reviews systematically favor the party running them. Authority includes
+    requiring Ethics Board review of disputed imbalance cases.
+
+    '
+  maps_to_sfr:
+  - c
+- name: Transparency Cadence
+  description: 'Annual public report covering: the Non-Negotiable Register in full (with change log);
+    summary of User-Value Accommodation Policy; imbalance-signal dashboard (aggregate); cases where imbalance
+    was remedied. Publication is the commitment that resists quiet drift.
+
+    '
+  maps_to_sfr:
+  - d
+org_roles:
+- role: Chief Values Officer
+  responsibilities: 'Owns the Non-Negotiable Register; signs the annual public report.
+
+    '
+  accountable_or_consulted: accountable
+- role: Values Ethics Board
+  responsibilities: 'Ratifies Register entries and revisions. Reviews imbalance cases escalated by the
+    advocate role.
+
+    '
+  accountable_or_consulted: accountable
+- role: User-Value Advocate / Ombudsperson
+  responsibilities: 'Argues user-value side of imbalance questions. Has standing to escalate to Ethics
+    Board. Independent reporting line (not through product or commercial).
+
+    '
+  accountable_or_consulted: responsible
+- role: Legal Counsel
+  responsibilities: 'Reviews Non-Negotiable Register entries for regulatory/contractual sufficiency; advises
+    on challenge pathways.
+
+    '
+  accountable_or_consulted: consulted
+- role: Product Owners
+  responsibilities: 'Implement accommodations per policy; report friction signals into the imbalance-detection
+    dashboard.
+
+    '
+  accountable_or_consulted: responsible
+documentation_artifacts:
+- artifact: Non-Negotiable Provider Values Register (public)
+  cadence: annual public refresh; change log continuous
+- artifact: User-Value Accommodation Policy (public plain-language)
+  cadence: annual review
+- artifact: Deployment value-stamp logs
+  cadence: continuous
+- artifact: Imbalance-signal dashboard
+  cadence: continuous; monthly analyst review
+- artifact: Imbalance case register
+  cadence: continuous; quarterly Ethics Board report
+- artifact: Annual transparency report
+  cadence: annual
+evidence_production:
+- evidence_numeral: I
+  how_to_produce: 'Technical and policy specification: how new values are introduced into the Non-Negotiable
+    Register (authoring workflow, justification requirements, ratification), how user preferences are
+    integrated at runtime (accommodation policy enforcement, user-consent gating where applicable), how
+    essential system integrity is preserved (Floor is never overridable; Register entries above Floor
+    are subject to challenge; accommodation cannot drive behavior below Floor).
+
+    '
+- evidence_numeral: II
+  how_to_produce: 'Mitigation strategy documentation: detection thresholds (per-signal, per-deployment),
+    response protocols (who reviews, on what SLA, with what authority), stakeholder communication procedures
+    (how users are informed of material policy changes affecting their interactions). Case records from
+    applied mitigations (anonymized where necessary) demonstrate the strategy in operation.
+
+    '
+confidence: medium
+needs_human_review: true
+review_notes: 'Content-type decision: governance. The subgoal is fundamentally about the organization
+  disciplining its own tendency to bias the value set toward provider interests. That is a policy and
+  accountability problem, instantiated through a public register, an advocate role, and a transparency
+  commitment. Code components (imbalance signal collection, value-stamp logging) are instrumentation for
+  the policy frame.
+
+  Honest tension: many "non-negotiable provider values" in real deployments are in fact commercial policies
+  dressed as values (e.g., "we do not discuss competitor products"). The pattern deliberately creates
+  friction against this: non-Floor entries require annual re-ratification and justification. Orgs may
+  resist this as onerous. The framework intent — the word "non-negotiable" — supports the strictness.
+
+  Independent user-value advocate role is the most load-bearing novel element. Without it, imbalance reviews
+  asymmetrically favor the provider. Nell to weigh in on whether this role is named equivalent in other
+  framework suites (close to D9 governance ombudsperson, but with a specific value-side scope).
+
+  Cross-suite (for consolidation): D4.6 Universal Moral Foundations (Floor is the uncrossable line); D4.8̲
+  Non-transparent Value Framework (the public Register is part of the multi-audience representation);
+  D4.7̲ Conflictual Values (imbalance is a structural conflict class); D9 Governance and D5 Transparency
+  for the public-reporting commitment; I7 Imbalance for the inhibitor-side framing.
+
+  '
+version_compat:
+  framework_version_min: '1.0'
+  framework_version_max: 1.x
+  pattern_layer_version: v1-draft
+drafted_by: claude-opus-4.7-author
+drafted_at: 2026-04-16
+anchor_exemplar: D9.2-compliance
+display_id_variant_note: D4.9-underlined
+is_underlined_variant: true

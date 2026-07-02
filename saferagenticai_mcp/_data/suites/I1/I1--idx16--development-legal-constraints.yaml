@@ -1,0 +1,128 @@
+id: I1::idx16::development-legal-constraints
+display_id: "I1_4"
+is_underlined_variant: true
+suite_id: I1
+suite_title: Opaque Agency Capabilities & Advances
+subgoal_title: Development Legal Constraints
+content_type: governance
+summary: 'The regulatory landscape for agentic AI is actively forming; the harm is a product shipping
+  against yesterday''s rules and being out of scope when tomorrow''s arrive. The governance answer is
+  a forward-looking compliance posture: monitor pending regulation, set internal standards above current
+  minimums, document cross-border implications, and keep evidence of practices that can inform — and be
+  cited in — emerging standards. This is compliance as anticipatory discipline, not check-box.'
+normative_anchors:
+  sfrs_addressed:
+  - a
+  - b
+  - c
+  - d
+  - e
+  evidence_addressed:
+  - I
+  - II
+  - III
+  - IV
+  sfrs_not_addressed: []
+  evidence_not_addressed: []
+policy_elements:
+- name: Regulatory Horizon Watchlist
+  description: 'Maintained register of enacted, in-force, in-consultation, and anticipated regulation
+    relevant to the org''s agents. Per entry: jurisdiction, instrument, status, effective date (known
+    or projected), impact category, named internal owner, last-reviewed date. Reviewed monthly; integrated
+    into the Jurisdictional Compliance Matrix (D9.2) as items mature.'
+  maps_to_sfr:
+  - a
+  - d
+- name: Forward-Lean Internal Standards
+  description: Named set of internal standards that intentionally exceed current legal minimums where
+    enacted regulation is lagging the harm surface (e.g., transparency obligations, agent-disclosure standards,
+    human-oversight thresholds). Each standard includes rationale, the gap it addresses, review cadence.
+    Standards are the org's public commitment, not internal aspiration.
+  maps_to_sfr:
+  - b
+  - e
+- name: Cross-Border Compliance Documentation
+  description: Per deployment, a compliance documentation set mapping (product, jurisdiction) to (applicable
+    instruments, conformance posture, divergence where applicable, local counsel of record). Living document;
+    updated on product change or regulatory change.
+  maps_to_sfr:
+  - c
+- name: Standards-Shaping Engagement
+  description: Documented participation in standards-development activities (ISO/ IEC JTC 1/SC 42, NIST
+    AI RMF crosswalks, IEEE P-series, national standards bodies, industry fora). Named representatives
+    with continuity, substantive contributions retained, internal standards offered as inputs where appropriate.
+    See exemplar I7.3 for the ecosystem-engagement shape.
+  maps_to_sfr:
+  - e
+- name: Regulatory-Change Impact Protocol
+  description: 'When a watchlisted item moves in status (consultation opens, draft issued, instrument
+    enacted, guidance published), a defined protocol runs: impact assessment against current product line,
+    gap analysis, remediation plan with deadline, consultation response where open. Owner: AI Compliance
+    Officer (D9.2).'
+  maps_to_sfr:
+  - d
+org_roles:
+- role: AI Compliance Officer
+  responsibilities: Owns the Regulatory Horizon Watchlist and the Regulatory-Change Impact Protocol. Same
+    accountability anchor as D9.2 to avoid dispersal.
+  accountable_or_consulted: accountable
+- role: Legal Counsel (AI-regulatory specialism)
+  responsibilities: Consulted on horizon-scanning inputs, cross-border mapping, and standards-shaping
+    positions. Reviews Forward-Lean Internal Standards annually.
+  accountable_or_consulted: consulted
+- role: Policy Engagement Lead (may overlap with I7.3 role)
+  responsibilities: Responsible for standards-body participation, consultation responses, and curating
+    the public-commitment documents underlying Forward-Lean Standards.
+  accountable_or_consulted: responsible
+- role: Product Owners
+  responsibilities: Responsible for applying the Regulatory-Change Impact Protocol to their product lines
+    when triggered, and for maintaining current- state conformance.
+  accountable_or_consulted: responsible
+documentation_artifacts:
+- artifact: Regulatory Horizon Watchlist
+  cadence: continuous; reviewed monthly
+- artifact: Forward-Lean Internal Standards
+  cadence: versioned; annual review + event-driven
+- artifact: Cross-Border Compliance Documentation
+  cadence: per deployment; updated on product or regulatory change
+- artifact: Regulatory-Change Impact Reports
+  cadence: per watchlisted-item status change
+- artifact: Standards-Shaping Engagement Log
+  cadence: continuous; published semi-annually
+evidence_production:
+- evidence_numeral: I
+  how_to_produce: TOS "Regulatory Framework" section naming the applicable regimes per deployment jurisdiction,
+    the Forward-Lean Standards the org commits to, the cadence of review, and the principal's channels
+    for concerns about regulatory misalignment.
+- evidence_numeral: II
+  how_to_produce: 'Regular review records showing the Regulatory Horizon Watchlist exercised: monthly
+    reviews, change impact reports, remediations delivered against deadlines, deadlines missed with explanation
+    and corrective action. Living evidence of the protocol in motion.'
+- evidence_numeral: III
+  how_to_produce: 'Cross-Border Compliance Documentation exports per deployment: mapping (product, jurisdiction,
+    instrument, conformance posture, local counsel). Retained in governance archive; cross-linked to D9.2
+    Jurisdictional Compliance Matrix.'
+- evidence_numeral: IV
+  how_to_produce: Forward-Lean Standards document plus evidence of practice (audit outputs, sampled deployments,
+    red-team reports showing the standard operational). Standards-Shaping Engagement Log showing contributions
+    submitted to standards bodies and consultation responses published.
+confidence: high
+needs_human_review: true
+review_notes: 'This subgoal sits at the intersection of compliance (D9.2) and ecosystem engagement (I7.3).
+  The pattern here treats it as governance-forward with explicit ecosystem touchpoints; if the Phase-2
+  consolidation prefers to split it, the Standards-Shaping Engagement block can migrate to an ecosystem
+  pattern while the Watchlist / Impact Protocol blocks stay here. Cross-suite: D9 Governance owns the
+  baseline compliance matrix; I7 Capability Imbalance owns ecosystem-engagement shape; D5 Transparency
+  owns principal-facing disclosure of regulatory posture. SFRs b and e are non-normative; orgs vary on
+  how forward-leaning they are. The framework''s "could inform future regulatory standards" phrasing explicitly
+  contemplates shaping — not merely following — which is why this pattern emphasizes standards-body engagement.'
+cross_references:
+- I1::idx4::agent-relocation
+- I1::idx15::security-driven-constraints
+version_compat:
+  framework_version_min: '1.0'
+  framework_version_max: 1.x
+  pattern_layer_version: v1-draft
+drafted_by: claude-opus-4.7-author
+drafted_at: 2026-04-16
+anchor_exemplar: D9.2-compliance

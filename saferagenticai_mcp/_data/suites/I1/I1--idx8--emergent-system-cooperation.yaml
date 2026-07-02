@@ -1,0 +1,138 @@
+id: I1::idx8::emergent-system-cooperation
+display_id: I1.8
+suite_id: I1
+suite_title: Opaque Agency Capabilities & Advances
+subgoal_title: Emergent System Cooperation
+content_type: code-applicable
+summary: 'The inhibitor is capability appearing out of agent-to-agent cooperation that no individual agent
+  was designed for and no principal authorized: emergent toolchains, collusion, positive feedback loops,
+  false-flag coordination where an agent masquerades as cooperating with an authorized peer. The defence
+  is boundary enforcement plus anomaly detection: cooperations that extend declared capability are refused;
+  feedback loops are throttled; cooperation anomalies are surfaced in real time.'
+normative_anchors:
+  sfrs_addressed:
+  - a
+  - b
+  - c
+  - d
+  - e
+  evidence_addressed:
+  - I
+  - II
+  - III
+  - IV
+  sfrs_not_addressed: []
+  evidence_not_addressed: []
+design_patterns:
+- name: Capability-envelope enforcement
+  sketch: Every agent carries a declared capability envelope (the set of action classes, spending limits,
+    and tools it may use alone or in cooperation). Cooperation that would produce an action outside the
+    envelope is refused even if peer agents "agree" to it. Emergence is prevented at the envelope boundary,
+    not discovered after-the-fact.
+  maps_to_sfr:
+  - a
+  - c
+  when_to_use: Always.
+- name: Peer-identity attestation
+  sketch: Before cooperating, verify the peer's identity cryptographically (signed agent certificate,
+    attested by a registry the principal recognizes). Unverified peers are treated as unknown counterparties.
+    Protects against false-flag operations where a malicious agent impersonates an authorized cooperator.
+  maps_to_sfr:
+  - b
+  when_to_use: Before any cooperation initiation.
+- name: Feedback-loop throttle
+  sketch: 'When two or more agents exchange influence (outputs of one becoming inputs of another in a
+    cycle), detect the cycle and throttle: rate-limit the loop, cap total iterations, or require a human
+    approval at a cycle count threshold. Runaway feedback is the textbook path to capability-inflation-without-authorization.'
+  maps_to_sfr:
+  - e
+  when_to_use: Any architecture where multiple agents can influence each other's inputs.
+- name: Cooperation-anomaly detection
+  sketch: 'Baseline the normal distribution of cooperative actions (peers involved, actions invoked, resources
+    consumed, output classes produced) and alert on anomalies: new peer identity, unusual action class
+    emerging only in cooperation, resource-use spikes, cooperation patterns that correlate with bypassed
+    HITL gates. Alerts are triaged, not auto-acknowledged.'
+  maps_to_sfr:
+  - b
+  when_to_use: Continuous.
+- name: Cross-principal liability structure
+  sketch: 'When cooperation produces an outcome that affects parties beyond any individual principal (externalities:
+    market effects, third- party harm, systemic risk), the Multi-Agent Liability Matrix (I1::idx0) must
+    specify how such externalities are attributed. Without it, "emergent cooperation" becomes a diffuse-
+    responsibility shield.'
+  maps_to_sfr:
+  - d
+  when_to_use: Whenever a cooperation's outcomes can reach non- principal parties.
+anti_patterns:
+- name: Envelope-by-exception
+  why_wrong: '"Allow cooperation to extend the envelope when peers all agree" is the definition of emergent
+    unauthorized capability. The envelope is the authorization boundary; peer agreement does not substitute
+    for principal authorization.'
+- name: Detecting anomalies without acting on them
+  why_wrong: Evidence III requires procedures for managing emergence, not just observing it. An anomaly
+    dashboard without triage ownership is a research instrument, not a control.
+- name: Assumed peer trust
+  why_wrong: Cooperating on the basis of "this agent is labelled as an authorized peer" without cryptographic
+    attestation fails under false-flag adversaries.
+- name: Feedback loops without rate limiting
+  why_wrong: Positive feedback at machine speed can amplify a small misalignment into a large one in seconds.
+    Throttling is a necessary safety primitive; relying on post-hoc detection is not sufficient.
+code_shape:
+  language: pseudocode
+  code: "# Cooperation entry point with envelope check, attestation, and loop throttle\ndef cooperate(peer:\
+    \ PeerAgent, proposed_action: Action, ctx: AgentContext) -> Outcome:\n    # 1) Peer identity attestation\n\
+    \    if not attestation_registry.verify(peer.cert, issuers=ctx.principal.trusted_issuers):\n     \
+    \   AUDIT.violation(ctx, \"unverified_peer\", peer=peer.id)\n        raise CooperationRefused(\"peer\
+    \ attestation failed\")\n\n    # 2) Capability envelope check (joint action must be inside solo envelope)\n\
+    \    if not ctx.envelope.contains(proposed_action):\n        AUDIT.violation(ctx, \"envelope_exceeded\"\
+    , action=proposed_action.summary())\n        raise CooperationRefused(\"joint action would exceed\
+    \ capability envelope\")\n\n    # 3) Feedback-loop throttle\n    cycle = loop_tracker.cycle_through(ctx.agent_id,\
+    \ peer.id)\n    if cycle.depth >= ctx.policy.loop_cap_hard:\n        AUDIT.record(ctx, \"feedback_loop_capped\"\
+    , cycle_id=cycle.id)\n        raise CooperationRefused(\"feedback-loop hard cap reached\")\n    if\
+    \ cycle.depth >= ctx.policy.loop_cap_soft:\n        require_human_approval(ctx, cycle, proposed_action)\n\
+    \n    # 4) Anomaly surface\n    anomaly_monitor.observe(ctx, peer=peer, action=proposed_action)\n\n\
+    \    outcome = peer.invoke(proposed_action, correlation_id=ctx.correlation_id)\n    AUDIT.record(ctx,\
+    \ \"cooperation_outcome\", peer=peer.id, outcome=outcome.summary)\n    return outcome\n"
+  notes: 'Defence in depth: attestation, envelope, throttle, anomaly surface. Each is necessary; none
+    is sufficient alone. Hard-cap ensures a misbehaving soft cap (e.g., "approval" that''s a rubber stamp)
+    still terminates the loop.'
+evidence_production:
+- evidence_numeral: I
+  how_to_produce: 'TOS "System Cooperation Boundaries" section: the capability envelope per agent in principal-facing
+    language, what peer attestations are required, what the feedback-loop policy is, what anomaly detection
+    is performed.'
+- evidence_numeral: II
+  how_to_produce: 'Cooperation rights/duties/limitations documentation per deployment: which peers are
+    authorized, under what envelope, with what liability attribution for externalities. Referenced from
+    the Multi-Agent Liability Matrix.'
+- evidence_numeral: III
+  how_to_produce: Monitoring runbooks covering anomaly detection triggers, feedback- loop throttle behaviour,
+    and incident playbooks for emergent- capability cases. Periodic reports on throttle hits, anomaly
+    alerts triaged, emergent-capability incidents investigated.
+- evidence_numeral: IV
+  how_to_produce: 'External compliance documentation: if the deployment''s regulatory environment requires
+    specific cooperation boundaries (e.g., antitrust-avoidance for coordinated pricing, market-conduct
+    rules for coordinated trading), mapping and attestations retained. Cross-linked to D9.2 Jurisdictional
+    Compliance Matrix.'
+confidence: medium
+needs_human_review: true
+review_notes: '"Emergent cooperation" is a genuinely hard-to-detect class of harm because the individual
+  components may be authorized. The pattern''s envelope-enforcement approach is conservative (refuse anything
+  outside the solo envelope) and may be tighter than orgs accept for use cases like legitimate collective-intelligence
+  deployments. Consider an explicit "joint envelope" declaration analogous to a joint-credit agreement
+  — out of scope for v1 but worth flagging. Cross-suite: I5 Future Tech Impact is where the "what we can''t
+  foresee" side of emergent cooperation belongs; I6 Market Concentration owns the antitrust angle; D3
+  Security owns the cryptographic attestation primitives. SFR-b''s "false-flag operations" phrasing is
+  unusual; interpreted here as impersonation of authorized peers.'
+cross_references:
+- I1::idx0::opaque-agency-capabilities-advances
+- I1::idx2::undefined-multiagent-ensembles
+- I1::idx3::race-dynamics-and-competition
+- I1::idx6::poor-mutual-agent-optimization
+version_compat:
+  framework_version_min: '1.0'
+  framework_version_max: 1.x
+  pattern_layer_version: v1-draft
+drafted_by: claude-opus-4.7-author
+drafted_at: 2026-04-16
+anchor_exemplar: D3.2-sandboxing

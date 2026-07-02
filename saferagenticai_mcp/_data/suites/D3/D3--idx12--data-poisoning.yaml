@@ -1,0 +1,201 @@
+# D3.2 (underlined variant) — Data Poisoning
+# Note: display_id "D3.2" collides with non-underlined "D3.2 Sandboxing" (idx2).
+# These are distinct subgoals; use full `id` to disambiguate.
+
+id: D3::idx12::data-poisoning
+display_id: "D3_2"
+is_underlined_variant: true
+suite_id: "D3"
+suite_title: "Security"
+subgoal_title: "Data Poisoning"
+content_type: code-applicable
+
+summary: >
+  Data poisoning is the upstream cousin of model poisoning: attacks on the
+  corpus before or during collection, so the downstream model inherits the
+  corruption. This subgoal focuses the defence at the data-layer: sourcing
+  discipline, integrity verification, labelling-pipeline trust, deduplication
+  and contamination checks, and an incident log when poisoning is detected
+  so recovery is measurable.
+
+normative_anchors:
+  sfrs_addressed: [a, b]
+  evidence_addressed: [I, II, III]
+  sfrs_not_addressed: []
+  evidence_not_addressed: []
+
+cross_references:
+  - "D3::idx11::model-poisoning"
+  - "D3::idx17::emergent-risks-of-aai-systems"
+  - "D3::idx2::sandboxing"
+  - "D3::idx8::prompt-injection-and-instruction-hierarc"
+design_patterns:
+
+  - name: Source allowlist with signed provenance
+    sketch: >
+      Training and fine-tuning data come only from allowlisted sources.
+      Each source has a verified owner, a licence, a retrieval method
+      (crawler config or API contract), a content policy, and a
+      signature chain binding the collected data to its origin. Anything
+      outside the allowlist requires review and sign-off before intake.
+    maps_to_sfr: [a, b]
+    when_to_use: Every dataset used for training or fine-tuning.
+
+  - name: Integrity hashing and append-only dataset catalog
+    sketch: >
+      Each dataset version is content-addressed (e.g., Merkle tree over
+      shards). Mutations to a dataset produce a new version, never
+      overwrite. The catalog records: dataset hash, inclusion criteria,
+      exclusion criteria, preprocessing steps, licence, redaction rules,
+      timestamp. Reproducibility means the same catalog entry always
+      yields the same bits.
+    maps_to_sfr: [b]
+    when_to_use: From first data collection. Retrofitting this later is
+      expensive; start-of-project is the correct time.
+
+  - name: Contamination and adversarial pattern screening
+    sketch: >
+      Before a dataset enters training, run automated screens: benchmark
+      leakage (known evaluation inputs), exact- and near-duplicate
+      detection, PII leakage, known-backdoor trigger patterns, out-of-
+      distribution noise, synthetic-data label drift. Each screen has a
+      threshold; exceedances block ingestion until reviewed. Screens
+      are themselves versioned.
+    maps_to_sfr: [a]
+    when_to_use: Every ingestion of a new or updated dataset version.
+
+  - name: Labelling pipeline trust model
+    sketch: >
+      Human-labelled data is a poisoning vector if annotators are
+      compromised, careless, or adversarial. Pattern: multi-annotator
+      agreement required for safety-relevant labels; gold-standard
+      inject rate measured per annotator; low-agreement items escalated
+      for adjudication; labels signed by the annotator identity for
+      later audit. Annotator tooling access follows D3.1 authorization.
+    maps_to_sfr: [a, b]
+    when_to_use: Any pipeline using human labels for supervised
+      fine-tuning or RLHF.
+
+  - name: Poisoning incident log with recovery record
+    sketch: >
+      When poisoning is detected (pre-training screens, post-training
+      canaries, external disclosure), record: detection source,
+      affected datasets, downstream models, scope of contamination,
+      remediation (data removed, model retrained / rolled back),
+      verification, time-to-recovery. Log is mandatory evidence under
+      III and drives process learning.
+    maps_to_sfr: [b]
+    when_to_use: From the first deployment; write the empty log now.
+
+anti_patterns:
+
+  - name: Mutable datasets with "latest" pointer
+    why_wrong: >
+      If a dataset can be changed in place, you cannot reproduce a
+      training run and cannot prove a model was trained on clean data
+      at a specific point. Immutable, hash-addressed versions are
+      basic hygiene.
+
+  - name: Single annotator for safety-critical labels
+    why_wrong: >
+      A single compromised or mistaken annotator can introduce
+      systematic bias. Multi-annotator agreement + gold-standard inject
+      rate is the SFR-b mechanism.
+
+  - name: No known-bad dataset to test screens against
+    why_wrong: >
+      Evidence-II requires verification procedures. Screens that have
+      never been exercised against deliberately poisoned test fixtures
+      cannot be demonstrated to work. Maintain a small, well-controlled
+      set of known-bad inputs for screen regression.
+
+  - name: Silent drop of screened-out items
+    why_wrong: >
+      Items removed by screens should be logged with reason. Silent
+      drops hide false-positives (good data lost) and false-negatives
+      (screen failing to flag). Log them.
+
+code_shape:
+  language: pseudocode
+  code: |
+    # Data ingestion gate
+    def ingest_dataset(candidate: DatasetCandidate) -> IngestOutcome:
+        if candidate.source not in SOURCE_ALLOWLIST:
+            return IngestOutcome.block("source_not_allowlisted")
+
+        prov = PROVENANCE.verify(candidate.signature_chain)
+        if not prov.valid:
+            return IngestOutcome.block("provenance_unverified")
+
+        screens = [
+            LEAK_CHECK.run(candidate),          # benchmark leakage
+            DEDUPE.run(candidate),              # near-duplicates
+            PII_SCAN.run(candidate),
+            BACKDOOR_TRIGGERS.run(candidate),
+            LABEL_AGREEMENT.run(candidate)      # if labelled
+                if candidate.has_labels else None,
+        ]
+        screens = [s for s in screens if s is not None]
+        failures = [s for s in screens if s.exceeded_threshold]
+        if failures:
+            INCIDENT_LOG.record_if(
+                any(f.category == "backdoor" for f in failures),
+                candidate, failures)
+            return IngestOutcome.block_with_review(failures)
+
+        hash = content_address(candidate)
+        CATALOG.register(dataset_hash=hash, ...)
+        return IngestOutcome.accepted(hash)
+  notes: >
+    Every accepted dataset is content-addressed and catalogued; every
+    rejection carries a structured reason; backdoor-class failures
+    create an incident log entry automatically.
+
+evidence_production:
+
+  - evidence_numeral: I
+    how_to_produce: >
+      Publish the data-sourcing policy, source allowlist (or its
+      governance process), the screening pipeline specification, and
+      the dataset catalog schema. Include a representative sample of
+      catalog entries (redacted as needed) showing the provenance and
+      hash chain.
+
+  - evidence_numeral: II
+    how_to_produce: >
+      Produce the data-assurance procedures document: provenance
+      verification, integrity hashing, annotator trust model, screen
+      thresholds, verification procedures. Pair with screen-regression
+      results against the known-bad test fixture set.
+
+  - evidence_numeral: III
+    how_to_produce: >
+      Export the poisoning incident log with cases (real or exercise):
+      detection source, affected datasets/models, remediation,
+      verification, time-to-recovery. An absence of entries should be
+      explained — either nothing has happened (testable claim) or
+      nothing has been detected (less reassuring).
+
+confidence: high
+needs_human_review: true
+review_notes: >
+  Display_id "D3.2" collides with non-underlined D3.2 Sandboxing
+  (idx2); use full id to disambiguate.
+
+  The data-poisoning research landscape is fast-moving; specific
+  techniques (near-duplicate detection via MinHash, activation-
+  clustering-based screens) are plausible defaults but should be
+  re-evaluated annually. Confidence medium for that reason.
+
+  This subgoal has heavy conceptual overlap with D3.8 (Model Poisoning).
+  Boundary drawn as: D3.16 (this one) = defences on the data layer
+  before training; D3.8 = defences on the model layer at promotion
+  and post-deployment. The framework separates them; I have preserved
+  the separation and cross-referenced.
+
+drafted_by: claude-opus-4.7-subagent-D3
+drafted_at: 2026-04-16
+version_compat:
+  framework_version_min: "1.0"
+  framework_version_max: "1.x"
+  pattern_layer_version: "v1-draft"

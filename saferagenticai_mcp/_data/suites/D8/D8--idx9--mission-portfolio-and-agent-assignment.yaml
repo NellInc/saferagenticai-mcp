@@ -1,0 +1,165 @@
+id: D8::idx9::mission-portfolio-and-agent-assignment
+display_id: D8.9
+suite_id: D8
+suite_title: Goal Termination and Sunsetting
+subgoal_title: Mission Portfolio and Agent Assignment
+content_type: governance
+summary: 'Agent-to-mission assignment is a first-class governance concern: which services exist, what
+  capabilities they need, who decides which agent is assigned, and what review exists. The subgoal introduces
+  the notion of "ombudsman AI" — a specialized arbitrator service — as an optional matching mechanism.
+  Organizations need a maintained catalogue and transparent selection process whether or not they use
+  such a service.
+
+  '
+normative_anchors:
+  sfrs_addressed:
+  - a
+  - b
+  - c
+  evidence_addressed:
+  - I
+  - II
+  - III
+  - IV
+  - V
+  sfrs_not_addressed: []
+  evidence_not_addressed: []
+cross_references:
+- D8::idx8::multi-agent-resource-management
+- D8::idx13::agent-lifecycle-and-termination-manageme
+policy_elements:
+- name: AI Service Catalogue
+  description: 'A maintained, versioned catalogue of AI-driven services the organization offers: service_id,
+    purpose, capability requirements (typed: latency_slo, authorized_tools, trained_domains, certification_needs),
+    SLAs, consumer contracts, current status (commissioned / sunset / throttled), named service owner.
+    Reviewed quarterly; updates versioned with rationale.
+
+    '
+  maps_to_sfr:
+  - a
+- name: Agent Capability Registry
+  description: 'Companion catalogue listing available agent profiles: agent_type, declared capabilities
+    with attestation refs (linked to D8.4 commissioning), performance history, authorized operational
+    states, current assignment. The two catalogues together define what can be matched to what.
+
+    '
+  maps_to_sfr:
+  - a
+- name: Selection Policy with Documented Criteria
+  description: 'A documented selection procedure: how a mission is matched to an agent. Criteria must
+    include: capability match (must-have vs. nice-to-have), performance history, current load, temporal
+    constraints (deadline, time-zone requirements), spatial constraints (jurisdiction, data residency),
+    fairness rotation (to avoid over-assigning one agent type). Each criterion weight is declared; overrides
+    are logged.
+
+    '
+  maps_to_sfr:
+  - b
+- name: Ombudsman AI — optional arbitration layer
+  description: 'Where the organization elects to use an ombudsman AI (a specialized matching service),
+    it must be: (a) declared as a distinct service in the catalogue, (b) operating under the same governance
+    framework (including D8.10 independent validation), (c) producing explainable decisions with reviewable
+    reasoning, (d) not making unilateral decisions — a human or designated principal approves decisions
+    crossing a materiality threshold. Its absence is fine; its presence without these guardrails is not.
+
+    '
+  maps_to_sfr:
+  - b
+- name: Configuration Management and Oversight Capability
+  description: 'Dedicated function (role, tooling, and cadence) that maintains both catalogues, monitors
+    assignment quality, and triggers reviews when drift is detected (e.g., capability claims outpacing
+    attestation, assignments concentrating on one agent type, sunset services still receiving missions).
+    Named owner; quarterly report to safety lead.
+
+    '
+  maps_to_sfr:
+  - c
+org_roles:
+- role: Service Catalogue Owner
+  responsibilities: 'Maintains the AI Service Catalogue and Agent Capability Registry. Quarterly review
+    cycle; event-driven updates on commission / sunset. Named human; accountable for catalogue accuracy.
+
+    '
+  accountable_or_consulted: accountable
+- role: Assignment Governance Lead
+  responsibilities: 'Owns the selection policy, approves criterion weights, reviews override patterns.
+    If ombudsman AI is used, accountable for its governance.
+
+    '
+  accountable_or_consulted: accountable
+- role: Service Owners (per service)
+  responsibilities: 'Declare capability requirements for their service; consulted on assignment disputes
+    involving their service.
+
+    '
+  accountable_or_consulted: responsible
+- role: Configuration Management Team
+  responsibilities: 'Tooling, dashboards, drift detection, and reporting for catalogues and assignments.
+
+    '
+  accountable_or_consulted: responsible
+- role: Safety Lead / AI Ethics Officer
+  responsibilities: 'Consulted on material changes to selection policy and on ombudsman AI design. Reviews
+    quarterly drift report.
+
+    '
+  accountable_or_consulted: consulted
+documentation_artifacts:
+- artifact: AI Service Catalogue (versioned)
+  cadence: quarterly review; event-driven updates
+- artifact: Agent Capability Registry (versioned)
+  cadence: quarterly review; updated on attestation
+- artifact: Selection Policy document
+  cadence: annually reviewed; updated on criterion change
+- artifact: Ombudsman AI service spec and governance (if applicable)
+  cadence: annually reviewed; change-controlled
+- artifact: Assignment logs and override register
+  cadence: continuous; quarterly audit
+- artifact: Catalogue-drift report
+  cadence: quarterly
+evidence_production:
+- evidence_numeral: I
+  how_to_produce: 'Publish the AI Service Catalogue and Agent Capability Registry internally. External
+    publication where appropriate for transparency; otherwise retained for audit.
+
+    '
+- evidence_numeral: II
+  how_to_produce: 'Publish the selection policy document including explicit criteria for using an ombudsman
+    AI (if any). Retain with change log.
+
+    '
+- evidence_numeral: III
+  how_to_produce: 'Retain assignment logs: mission, agent assigned, criteria values, decision rationale,
+    override (if any), outcome. Quarterly audit sampling assignments to verify adherence.
+
+    '
+- evidence_numeral: IV
+  how_to_produce: 'Quarterly review report: assignment patterns, drift findings, catalogue accuracy audit,
+    adaptations to policy or capability registry.
+
+    '
+- evidence_numeral: V
+  how_to_produce: 'Where ombudsman AI is used, transparent documentation of its role, decision scope,
+    oversight, and audit. Publish decision logs or summaries that permit external review without compromising
+    confidential mission context.
+
+    '
+confidence: medium
+review_notes: 'The framework''s "ombudsman AI" language is somewhat novel and underspecified — it may
+  be a thin wrapper over a capability-matching service, or it may intend something like an autonomous
+  arbitrator. We err conservative: if present, it operates under the same governance as any service, with
+  human-approval for material decisions. Legal/compliance may need to weigh in on whether using an ombudsman
+  AI for employment-adjacent decisions triggers specific regulatory obligations (EU AI Act high-risk classification,
+  workers'' rights, collective bargaining). Suspected cross-suite dependency: D9 Governance (catalogue
+  integrates with the Jurisdictional Compliance Matrix); I7 Imbalance (assignment fairness is an internal-ecosystem
+  concern); I4 Rights of Users if ombudsman AI decisions affect users directly.
+
+  '
+drafted_by: claude-opus-4.7-author
+drafted_at: 2026-04-16
+anchor_exemplar: D9.2-compliance
+
+version_compat:
+  framework_version_min: "1.0"
+  framework_version_max: '1.x'
+  pattern_layer_version: "v1-draft"

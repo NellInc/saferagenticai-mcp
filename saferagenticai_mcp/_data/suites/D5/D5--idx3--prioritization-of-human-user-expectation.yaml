@@ -1,0 +1,139 @@
+id: D5::idx3::prioritization-of-human-user-expectation
+display_id: D5.3
+suite_id: D5
+suite_title: Transparency and Interpretability of Reasoning
+subgoal_title: Prioritization of Human User Expectations
+content_type: process
+summary: 'Transparency measures that do not deliver value to their intended audience are theater. This
+  subgoal asks the organization to structure its transparency work so user expectations shape what is
+  explained, at what depth, through what channel — and to rebalance when evidence says the current design
+  is not landing. The process discipline is rebalancing: most orgs ship transparency features once and
+  let them ossify.
+
+  '
+normative_anchors:
+  sfrs_addressed:
+  - a
+  - b
+  - c
+  evidence_addressed:
+  - I
+  - II
+  - III
+  sfrs_not_addressed: []
+  evidence_not_addressed: []
+cross_references:
+- D5::idx2::clarity-of-mutual-expectations
+- D5::idx10::documentation-incomprehensibility
+- D5::idx12::rapid-transparency-feature-evolution
+process_elements:
+- name: Transparency value review
+  cadence: quarterly; event-driven on material product or audience change
+  participants:
+  - product owner
+  - safety lead
+  - UX researcher
+  - a user advocate or ombudsperson
+  - representative stakeholder
+  maps_to_sfr:
+  - a
+  - c
+- name: Stakeholder-value mapping session
+  cadence: annually and on material new-audience onboarding
+  participants:
+  - product owner
+  - safety lead
+  - UX researcher
+  - at least two stakeholder-group representatives
+  maps_to_sfr:
+  - a
+  - b
+- name: Transparency metric review
+  cadence: quarterly; aligned to value review
+  participants:
+  - data/UX lead
+  - safety lead
+  - product owner
+  maps_to_sfr:
+  - b
+- name: Adaptive-transparency change control
+  cadence: continuous; each material change runs through a documented change record
+  participants:
+  - capability owner
+  - safety lead
+  - UX researcher
+  maps_to_sfr:
+  - c
+- name: User-comprehension study
+  cadence: at least annually; after any material explanation redesign
+  participants:
+  - UX researcher
+  - sample users across expertise tiers
+  - safety lead as observer
+  maps_to_sfr:
+  - a
+  - c
+triggers:
+- New stakeholder group onboarded → Stakeholder-value mapping session
+- User feedback signals explanation unclear at rate exceeding threshold → Transparency value review +
+  comprehension study
+- Product capability change affects explanation surface → Adaptive- transparency change control
+- Quarterly calendar → Transparency value review + metric review
+- External audit finding on explanation usefulness → Emergency value review
+artifacts:
+- Stakeholder value map (who cares about what; what decisions transparency supports for each group)
+- Transparency metric dashboard (e.g., explanation comprehension score, time-to-understanding, complaint
+  rate, appeal rate, measured faithfulness vs plausibility)
+- Change records for transparency-feature adjustments
+- User-comprehension study reports
+- Quarterly value-review minutes with action items
+process_norms:
+- Measurable signals only. "Users seem to like the explanation" is not a metric. Comprehension tested
+  via task completion or paraphrase accuracy; satisfaction via validated instruments (e.g., adapted UMUX,
+  SUS-style where relevant).
+- User advocate or ombudsperson seat is non-negotiable at value reviews. Product-owner self-assessment
+  is a known failure mode.
+- Prioritization decisions documented with runners-up. "We chose A over B because..." retains the reasoning
+  for the next review.
+- Adverse findings from comprehension studies must reach product leadership within 10 business days. Burying
+  unfavorable usability data is an integrity failure, not a PR choice.
+evidence_production:
+- evidence_numeral: I
+  how_to_produce: 'Maintain requirements-level documentation showing user expectations were treated as
+    priority inputs (not one of many). Transparency metrics defined with their link to user values documented
+    (why this metric measures something users care about). Adaptation process written down, with decision
+    authority named.
+
+    '
+- evidence_numeral: II
+  how_to_produce: 'Retain stakeholder survey results and analysis reports mapping transparency signals
+    to satisfaction and task-success metrics. Case studies — at least one per year — showing measurable
+    outcome improvements attributable to transparency adaptation.
+
+    '
+- evidence_numeral: III
+  how_to_produce: 'Change log of every transparency adjustment with scope, rationale, measured effect
+    (or pending measurement plan), and rollback conditions. Failure-analysis reports when measured effect
+    was null or negative; mitigation records when user expectations measurably went unmet.
+
+    '
+confidence: medium
+needs_human_review: true
+review_notes: 'Process content-type because the deliverable is a cadence + roles + studies, not a code
+  surface. The risk in this subgoal is the word "prioritize" — SFR-a says human user expectations take
+  priority over other considerations, which can read as absolute. In practice other considerations (safety,
+  legal, third-party rights) legitimately override user preference; the pattern above treats user expectation
+  as a high-weight input to prioritization, not a vetoing one. Nell may want to sharpen: is SFR-a claiming
+  user-expectation supremacy over e.g. safety? Pattern assumes not — expectations are prioritized within
+  the space of already-safe designs. Cross-suite for Phase 2: D8 Robust Human Oversight (user expectations
+  interact with operator expectations — may conflict); I5 Misuse (some user expectations should not be
+  prioritized, e.g. expectations of harmful content).
+
+  '
+version_compat:
+  framework_version_min: '1.0'
+  framework_version_max: 1.x
+  pattern_layer_version: v1-draft
+drafted_by: claude-opus-4.7-author
+drafted_at: 2026-04-16
+anchor_exemplar: D7.2-culture-of-safety

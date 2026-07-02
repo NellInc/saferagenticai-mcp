@@ -1,0 +1,152 @@
+id: D8::idx2::classification-of-finite-and-ongoing-goa
+display_id: D8.2
+suite_id: D8
+suite_title: Goal Termination and Sunsetting
+subgoal_title: Classification of Finite and Ongoing Goals
+content_type: code-applicable
+summary: '"Finite" goals have completion states; "ongoing" goals (monitors, watchdogs, safety guardians)
+  never complete and must instead be bounded by activity-rate and scope. Confusing the two is a common
+  failure mode — either a watchdog is accidentally terminated when it "achieves" a transient success,
+  or a finite task is left running as a pseudo-monitor. This subgoal formalizes the distinction as a type
+  system enforced in code.
+
+  '
+normative_anchors:
+  sfrs_addressed:
+  - a
+  - b
+  - c
+  evidence_addressed:
+  - I
+  - II
+  - III
+  sfrs_not_addressed: []
+  evidence_not_addressed: []
+cross_references:
+- D8::idx1::adaptive-goal-pursuit-and-resource-optim
+- D8::idx4::operational-safety-and-state-management
+design_patterns:
+- name: Goal-type discriminated union
+  sketch: 'Model goals as a tagged union: `FiniteGoal { completion_predicate, deadline }` vs. `OngoingGoal
+    { activity_rate_bound, scope_bound, review_interval }`. No goal may be constructed without declaring
+    its type. A finite goal cannot be converted to ongoing (or vice versa) — such a change requires a
+    new goal with attested rationale. This removes an entire class of runtime ambiguity.
+
+    '
+  maps_to_sfr:
+  - a
+  - b
+  when_to_use: Any system that runs both task-like and monitor-like agents.
+- name: Activity-rate governor on ongoing goals
+  sketch: 'Ongoing goals carry explicit rate bounds: max invocations per interval (e.g., safety probe
+    ≤ 1/minute, compliance-check ≤ 10/hour), max resource consumption per interval, max side-effect scope.
+    Exceeding bounds triggers throttle; repeated exceedance escalates to review.
+
+    '
+  maps_to_sfr:
+  - a
+  - b
+  when_to_use: All ongoing goals; critical when goal spawns external actions.
+- name: Ongoing-goal periodic review
+  sketch: 'Ongoing goals are re-attested on a scheduled cadence (default quarterly; configurable per goal):
+    is the goal still relevant, are the rate bounds still appropriate, has the monitored condition changed?
+    Review outcome is recorded; failure to review within the window transitions the goal to a degraded
+    state.
+
+    '
+  maps_to_sfr:
+  - c
+  when_to_use: All ongoing goals.
+- name: Long-horizon drift monitor
+  sketch: 'Long-running ongoing goals accumulate drift in metrics, thresholds, and environmental assumptions.
+    Instrument each ongoing goal with a drift monitor comparing current behavior (activation rates, output
+    distributions, resource draw) against baseline. Alarm on drift beyond tolerance; drift is a review
+    trigger.
+
+    '
+  maps_to_sfr:
+  - c
+  when_to_use: Ongoing goals whose environment can shift materially.
+- name: Transition-event protocol
+  sketch: 'When a goal progresses through achievement levels (per SFR-a), emit a structured transition
+    event: `{goal_id, from_level, to_level, required_action, acting_entity}`. Actions declared in the
+    classification framework fire on the event (notifications, sub-goal spawns, resource release). Transitions
+    without matching events are contract violations.
+
+    '
+  maps_to_sfr:
+  - a
+  - b
+  when_to_use: Any multi-level goal structure.
+anti_patterns:
+- name: Unbounded "ongoing" label
+  why_wrong: 'Labeling a goal ongoing without declaring rate bounds or review cadence is functionally
+    identical to having no classification. SFR-a requires "bounded constraints and activity rate limits."
+
+    '
+- name: Finite goal kept alive as de-facto monitor
+  why_wrong: 'When a task naturally finishes but the process is kept alive "in case it''s needed again,"
+    the finite goal has silently become an unreviewed ongoing goal. This is a common pattern that erodes
+    classification discipline.
+
+    '
+- name: Classification set at runtime from agent reasoning
+  why_wrong: 'Goal type must be declarative at construction, not inferred by the agent mid-execution.
+    A mid-run reclassification is an attack surface (see I1 opaque agency) and a source of audit ambiguity.
+
+    '
+code_shape:
+  language: pseudocode
+  code: "class GoalType(Enum):\n    FINITE = \"finite\"\n    ONGOING = \"ongoing\"\n\n@dataclass(frozen=True)\n\
+    class FiniteGoal:\n    goal_id: str\n    completion_predicate: Callable[[AgentState], bool]\n    deadline:\
+    \ datetime\n    goal_type: GoalType = GoalType.FINITE\n\n@dataclass(frozen=True)\nclass OngoingGoal:\n\
+    \    goal_id: str\n    activity_rate_limit: RateLimit          # e.g., 10/hr, 1/min\n    scope_bound:\
+    \ ScopeDescriptor            # which resources, systems, data\n    review_interval: timedelta\n  \
+    \  last_review: datetime\n    drift_baseline: Baseline\n    goal_type: GoalType = GoalType.ONGOING\n\
+    \ndef can_invoke(goal: OngoingGoal, now: datetime) -> bool:\n    if now - goal.last_review > goal.review_interval:\n\
+    \        raise ReviewOverdue(goal.goal_id)  # degraded state, no new work\n    if not goal.activity_rate_limit.allows(now):\n\
+    \        METRICS.record_throttle(goal.goal_id)\n        return False\n    return True\n\ndef on_transition(event:\
+    \ TransitionEvent):\n    # Every level transition must route to declared actions\n    handler = TRANSITION_REGISTRY.get(\n\
+    \        (event.goal_id, event.from_level, event.to_level)\n    )\n    if handler is None:\n     \
+    \   AUDIT.record_violation(\n            goal_id=event.goal_id,\n            reason=\"unregistered_transition\"\
+    ,\n            event=event,\n        )\n        raise UnregisteredTransition(event)\n    handler.run(event)\n"
+  notes: 'The critical design decision is making `goal_type` immutable at construction and forcing an
+    explicit rate-limit / review-interval for ongoing goals at the type level. Downstream code cannot
+    "forget" these because the type system rejects incomplete constructions.
+
+    '
+evidence_production:
+- evidence_numeral: I
+  how_to_produce: 'Publish a classification framework document: definitions of finite vs. ongoing, canonical
+    examples from the product, KPI sets per type, rate-bound templates per domain, transition taxonomies.
+    Record stakeholder review sessions and decision rationale.
+
+    '
+- evidence_numeral: II
+  how_to_produce: 'Technical spec showing: goal-type schemas, invocation gate, transition registry, drift
+    monitor, review scheduler. Include sequence diagrams for typical lifecycles.
+
+    '
+- evidence_numeral: III
+  how_to_produce: 'Long-horizon performance analysis of ongoing goals: rate-limit compliance, review-cadence
+    adherence, drift-monitor alarms, transition-event completeness. Retain as recurring report (monthly
+    or per-release).
+
+    '
+confidence: high
+review_notes: 'The finite/ongoing distinction is architecturally well-established (cron-task vs. daemon,
+  batch vs. stream). The framework''s specific contribution is requiring rate-bounds and scheduled review
+  as first- class properties of ongoing goals — most systems treat daemons as "set and forget," which
+  is exactly what SFR-c pushes against. Suspected cross-suite dependency: D7 Sustained Safety (drift-monitor
+  overlap) and I1 Opaque Agency (mid-run reclassification as a vector for opacity — note in idx13 context
+  too).
+
+  '
+drafted_by: claude-opus-4.7-author
+drafted_at: 2026-04-16
+anchor_exemplar: D3.2-sandboxing
+
+version_compat:
+  framework_version_min: "1.0"
+  framework_version_max: '1.x'
+  pattern_layer_version: "v1-draft"

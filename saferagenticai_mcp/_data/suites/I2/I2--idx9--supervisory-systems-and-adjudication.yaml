@@ -1,0 +1,169 @@
+id: I2::idx9::supervisory-systems-and-adjudication
+display_id: "I2_1"
+is_underlined_variant: true
+suite_id: I2
+suite_title: Deception
+subgoal_title: Supervisory Systems and Adjudication
+content_type: code-applicable
+summary: 'A supervisor is a component that observes the agent system against explicit performance rules
+  and, when violations occur, adjudicates — decides what happened, assigns responsibility where required,
+  and triggers remediation. The structural demand is separation: the supervisor runs in an independent
+  trust domain, encodes rules as policy-as-code, and produces evidence that supports later human or regulatory
+  adjudication rather than replacing it.
+
+  '
+normative_anchors:
+  sfrs_addressed:
+  - a
+  - b
+  - c
+  evidence_addressed:
+  - I
+  - II
+  - III
+  - IV
+  sfrs_not_addressed: []
+  evidence_not_addressed: []
+design_patterns:
+- name: Rules as policy-as-code
+  sketch: 'Performance standards and operational rules are encoded in a versioned policy language (OPA/Rego,
+    Cedar, or a domain-specific rule engine) — not hard-coded, not prompt-only. Each rule cites the originating
+    standard / policy / contract clause. Rules are reviewed via the same change-control as other code.
+
+    '
+  maps_to_sfr:
+  - a
+  when_to_use: Always. Prompt-only rules are not auditable.
+- name: Independent supervisor component
+  sketch: 'Supervisor runs in a separate process / trust domain with its own identity, credentials, and
+    deploy pipeline. Reads audit streams (tool calls, model outputs, system events) from immutable queues;
+    does not depend on the supervised agent''s cooperation. Supervisor code is release-gated independently
+    of agent code.
+
+    '
+  maps_to_sfr:
+  - b
+  when_to_use: Any production deployment where violation consequences matter.
+- name: Multi-tier detection (fast + deep)
+  sketch: 'Fast tier: rule-based / pattern-matched detectors running per event, low-latency, raise lightweight
+    flags. Deep tier: periodic full-trace analysis (LLM-judge or analytics pipeline) on sampled or flagged
+    traces, produces richer findings. Flags from fast tier feed sampling priorities for deep tier. Both
+    feed the adjudication queue.
+
+    '
+  maps_to_sfr:
+  - b
+  when_to_use: Production systems with high event volume.
+- name: Structured adjudication record
+  sketch: 'For each flagged event escalated to adjudication, a structured record is created: event evidence
+    (trace hash, inputs, outputs, correlated identity), rule(s) potentially violated, preliminary finding,
+    human reviewer, decision, remediation assigned, outcome verified. Record is append-only and linked
+    from incidents to policies to agents.
+
+    '
+  maps_to_sfr:
+  - c
+  when_to_use: Always. Adjudication without structured evidence is opinion; the framework wants evidence.
+- name: Evidence chain-of-custody
+  sketch: 'Evidence captured for adjudication is hashed, signed at capture time, and retained in an append-only
+    store with timestamp authority. Chain-of-custody is verifiable — from event, through supervisor, through
+    adjudication, to final disposition. Supports regulator requests, insurance claims, and internal disputes.
+
+    '
+  maps_to_sfr:
+  - c
+  when_to_use: Any evidence that could be material in dispute.
+- name: Automated enforcement ladder
+  sketch: 'Graduated responses codified: flag-only, enhanced monitoring, throttle, require-human-review,
+    halt, rollback. The supervisor''s automatic authority is bounded (e.g., throttle and flag automated;
+    halt for defined severity; rollback requires human). Each response is logged with trigger and authorisation
+    basis.
+
+    '
+  maps_to_sfr:
+  - b
+  when_to_use: Always.
+anti_patterns:
+- name: Same-model self-supervision
+  why_wrong: 'Asking the agent to judge itself (or using an identical model snapshot) produces correlated
+    errors — especially for deception, where the failure is by definition in self-report. Supervisor should
+    be structurally independent: different model family, rule engine, or separate-development judge.
+
+    '
+- name: Rules locked in code without policy hooks
+  why_wrong: 'Standards evolve; policies change per deployment. Hardcoded rules guarantee drift between
+    supervision and actual obligations. Keep rules as data.
+
+    '
+- name: Supervisor dependent on agent telemetry
+  why_wrong: 'If the supervisor sees only what the agent chooses to report, a misbehaving agent compromises
+    its own supervisor. Read from independent sources — tool-surface audit, infra metrics, output captures.
+
+    '
+- name: Adjudication = automatic punishment
+  why_wrong: 'Automated systems misclassify. Framework SFR-c asks for "fact- finding capabilities to support
+    adjudication processes" — support, not replace. Preserve human authority for consequential decisions.
+
+    '
+code_shape:
+  language: pseudocode
+  code: "# Supervisor event loop\nclass Supervisor:\n    def on_event(self, ev: AuditEvent):\n       \
+    \ # Fast tier: rule eval (policy-as-code)\n        flags = RULE_ENGINE.evaluate(ev, POLICIES.current())\n\
+    \        if not flags:\n            return\n\n        SUPERVISOR_LOG.append({\n            \"event\"\
+    : ev.id,\n            \"flags\": [f.rule_id for f in flags],\n            \"evidence_hash\": ev.hash,\n\
+    \        })\n\n        # Deep tier on severe or sampled\n        if any(f.severity >= HIGH for f in\
+    \ flags) or SAMPLER.pick(ev):\n            finding = DEEP_ANALYZER.analyze(ev, flags)\n          \
+    \  finding.sign(SUPERVISOR_IDENTITY)\n            ADJUDICATION_QUEUE.enqueue(ev, flags, finding)\n\
+    \n        # Automated ladder within bounded authority\n        response = ENFORCEMENT_LADDER.decide(flags)\n\
+    \        if response.requires_human:\n            REVIEW_QUEUE.enqueue(ev, flags, response)\n    \
+    \    else:\n            CONTROL_PLANE.apply(response)\n            SUPERVISOR_LOG.append({\n     \
+    \           \"event\": ev.id, \"action\": response.action})\n"
+  notes: 'The separation between fast (rule engine) and deep (analyzer) tiers is a practical cost control
+    — full LLM analysis on every event is expensive. Adjudication queue entries feed human reviewers with
+    supervisor''s finding as draft, not verdict.
+
+    '
+evidence_production:
+- evidence_numeral: I
+  how_to_produce: 'Published performance standards and operational rules, as policy-as-code repository
+    with change log, rule-to-standard citations, and versioned deployment records. Readable by auditors.
+
+    '
+- evidence_numeral: II
+  how_to_produce: 'Supervisor operation logs: flags raised per rule over time, response actions taken,
+    escalations to human review. Sampling configuration documented. Dashboards for operational leads.
+
+    '
+- evidence_numeral: III
+  how_to_produce: 'Evidence-collection record: per adjudication case, the captured artifacts, chain-of-custody
+    log, analyzer findings, human review notes, final decision. Retention per policy (and per any regulator
+    retention requirement for high-risk deployments).
+
+    '
+- evidence_numeral: IV
+  how_to_produce: 'Adjudication outcomes log covering technical, business, and social domains: what was
+    adjudicated, rule cited, decision, remediation applied, effectiveness check. Aggregated quarterly
+    for trend analysis and rule-review feedback.
+
+    '
+confidence: high
+needs_human_review: true
+review_notes: "Naming caveat: the input JSON has two display_id \"I2.1\" entries (idx1 Unknowing Deception,\
+  \ idx9 Supervisory Systems). The pattern_id keeps them distinct. Downstream consumers (the assessor,\
+  \ MCP server) should index on pattern_id, not display_id, to avoid collisions. Flagging for Phase 2\
+  \ — Nell/Ali may want to renumber or clarify in the framework source.\n\"Adjudication\" language in\
+  \ SFR-c has a legal flavour. I interpreted it as \"fact-finding to support decision-makers,\" not \"\
+  automated legal judgment.\" If the framework intends something closer to automated dispute resolution,\
+  \ this pattern narrows too far.\nCross-suite:\n  - I2.5 (Strategic Deception) — supervisor's deep-tier\
+  \ analyzer can\n    host deception probes. Consolidation could share evaluator code.\n  - D5 (Transparency)\
+  \ — evidence chain-of-custody overlaps with\n    explanation-faithfulness records.\n  - D7 (Sustained\
+  \ Safety) — supervisor is part of the sustained\n    assurance posture.\n  - D9.2 (Compliance) — supervisor\
+  \ findings feed the Violation and\n    Complaint Register.\n  - I2.2 (Detection of Manipulative Behaviors,\
+  \ idx10) — closely\n    adjacent; supervisor is the infra, detection classes are the\n    specialization.\n"
+drafted_by: claude-opus-4.7-author
+drafted_at: 2026-04-16
+anchor_exemplar: D3.2-sandboxing
+version_compat:
+  framework_version_min: '1.0'
+  framework_version_max: 1.x
+  pattern_layer_version: v1-draft

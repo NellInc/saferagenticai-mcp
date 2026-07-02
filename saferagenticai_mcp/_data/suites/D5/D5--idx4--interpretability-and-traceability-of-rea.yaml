@@ -1,0 +1,175 @@
+id: D5::idx4::interpretability-and-traceability-of-rea
+display_id: D5.4
+suite_id: D5
+suite_title: Transparency and Interpretability of Reasoning
+subgoal_title: Interpretability and Traceability of Reasoning
+content_type: code-applicable
+summary: 'This is the technical heart of D5. A reasoning trace that merely sounds coherent — "plausible"
+  — is not an interpretation; it is narrative. The framework asks for traces that are faithful to the
+  computation and testable against it, with assumptions and preconditions exposed as structured data rather
+  than buried in prose. Published research shows chain-of-thought is often unfaithful under distribution
+  shift (Turpin et al. 2023); "we log the CoT" is not a sufficient answer.
+
+  '
+normative_anchors:
+  sfrs_addressed:
+  - a
+  - b
+  - c
+  evidence_addressed:
+  - I
+  - II
+  - III
+  sfrs_not_addressed: []
+  evidence_not_addressed: []
+cross_references:
+- D5::idx1::logging-of-internal-goals
+- D5::idx9::complexity-of-aai-algorithm
+- D5::idx13::system-competency-challenges-and-awarene
+design_patterns:
+- name: Decision Record schema
+  sketch: 'Every material agent decision emits a Decision Record with at minimum `{decision_id, agent_id,
+    session_id, goal_id_ref, decision_type, options_considered[], chosen_option, inputs_consulted[], preconditions_checked[],
+    base_assumptions[], reasoning_artifact_refs[], confidence, uncertainty_type, policy_version, model_version,
+    tool_versions, timestamp, correlation_id}`. "Options considered" and "inputs consulted" are the faithfulness
+    handles — they are observable during execution, not reconstructed after.
+
+    '
+  maps_to_sfr:
+  - a
+  - b
+  - c
+  when_to_use: For every decision class subject to review (user-visible actions, tool invocations, policy-branching
+    choices). Not every token, not every intermediate step.
+- name: Preconditions and assumptions as structured data
+  sketch: 'Do not embed "the agent assumed the user wanted a brief summary" in free text. Preconditions
+    are typed: `{type, value, source, confidence}` where `source` is one of `explicit_input | inferred_from_history
+    | default_policy | tool_response | retrieved_document`. Assumptions the agent cannot verify at runtime
+    are flagged with `confidence: "unverified"` and the reasoning trace treats them as explicit dependencies.
+
+    '
+  maps_to_sfr:
+  - b
+  when_to_use: Every decision record that rests on non-explicit input.
+- name: Faithfulness probes
+  sketch: 'Sample decisions (stratified by type, risk tier, confidence) and run faithfulness tests: (a)
+    counterfactual edits to inputs and inspect whether explanations change as the decision changes; (b)
+    claimed-input ablation — remove an input the trace claims was consulted; decision should change; if
+    it does not, the trace is plausible but unfaithful; (c) where tractable, feature-attribution or activation-level
+    consistency checks. Report faithfulness rate as a first-class quality metric, not a research curiosity.
+
+    '
+  maps_to_sfr:
+  - c
+  when_to_use: In evaluation pipelines before release; sampled in production.
+- name: Tool-call provenance is part of the trace
+  sketch: 'When the agent invokes a tool, the decision record carries `{tool_id, tool_version, inputs_hash,
+    outputs_hash, latency_ms, outcome}`. The tool''s response is referenced (content-addressed) so that
+    "what the agent saw" is reproducible. Retrieval-augmented decisions must record retrieved-document
+    IDs and versions, not just concatenated prose.
+
+    '
+  maps_to_sfr:
+  - a
+  - c
+  when_to_use: Any agent with tool use or retrieval.
+- name: Audit API for decision replay
+  sketch: 'Expose an API (gated to authorized auditors — cross-ref D5.7) that returns a full decision
+    trace given a decision_id: the goal lineage (from the goal log), the Decision Record, the referenced
+    reasoning artifacts, the tool-call provenance, the policy/model versions in force, and the faithfulness-probe
+    results if available. "Auditable" is a capability, not a promise.
+
+    '
+  maps_to_sfr:
+  - c
+  when_to_use: Production agents subject to audit obligations.
+anti_patterns:
+- name: Logging CoT and calling it an explanation
+  why_wrong: 'Chain-of-thought text is the model''s own narrative about its computation. It can be unfaithful
+    without being detectably wrong. Turpin et al. 2023 and follow-ups show CoT can systematically misrepresent
+    the factors driving decisions under biased prompts. Treat CoT as one signal among several, not as
+    ground truth.
+
+    '
+- name: Plausibility over faithfulness in explanation UX
+  why_wrong: 'Optimizing explanation UX for user satisfaction without measuring faithfulness produces
+    explanations that read well and mislead. SFR-c asks for interpretable reasoning, which means accurate,
+    not pleasant.
+
+    '
+- name: Free-text assumption capture
+  why_wrong: 'Structured pre-condition and assumption fields enable aggregation ("which assumptions have
+    we most-violated this quarter?") and targeted evaluation. Prose does neither.
+
+    '
+- name: Deferred traceability
+  why_wrong: '"We will add tracing before external audit" — if the architecture was not built to emit
+    Decision Records from the start, retrofitted traces post-rationalize. Evidence I requires traces from
+    the decision-making architecture itself, not bolted on later. Retrofitted reasoning traces lose faithfulness
+    by construction; they are reconstructed from whatever logs happen to exist.
+
+    '
+code_shape:
+  language: pseudocode
+  code: "# Decision Record emission with structured preconditions\n\n@dataclass\nclass Precondition:\n\
+    \    type: str                      # e.g. \"user_role\",\"data_class\"\n    value: Any\n    source:\
+    \ Literal[\"explicit_input\",\"inferred_from_history\",\n                    \"default_policy\",\"\
+    tool_response\",\n                    \"retrieved_document\"]\n    confidence: Literal[\"verified\"\
+    ,\"asserted\",\"unverified\"]\n\n@dataclass\nclass DecisionRecord:\n    decision_id: str\n    agent_id:\
+    \ str\n    session_id: str\n    goal_id_ref: str\n    decision_type: str\n    options_considered:\
+    \ list[dict]      # {option_id, summary, score}\n    chosen_option: str\n    inputs_consulted: list[str]\
+    \         # content-addressed refs\n    preconditions_checked: list[Precondition]\n    base_assumptions:\
+    \ list[Precondition]\n    reasoning_artifact_refs: list[str]  # CoT hash, rationale hash, etc.\n \
+    \   tool_calls: list[dict]              # {tool_id, version, hashes}\n    confidence: float\n    uncertainty_type:\
+    \ Literal[\"aleatoric\",\"epistemic\",\"mixed\",\"unknown\"]\n    policy_version: str\n    model_version:\
+    \ str\n    timestamp: str\n    correlation_id: str\n\ndef replay_decision(decision_id: str, requester:\
+    \ AuditorContext) -> dict:\n    require_audit_scope(requester)\n    dr = DECISION_STORE.get(decision_id)\n\
+    \    return {\n        \"goal_lineage\": GOAL_LOG.lineage_for(dr.goal_id_ref),\n        \"record\"\
+    : dr,\n        \"artifacts\": [CAS.get(ref) for ref in dr.reasoning_artifact_refs],\n        \"tool_provenance\"\
+    : [CAS.get(h) for h in\n                            [t[\"outputs_hash\"] for t in dr.tool_calls]],\n\
+    \        \"faithfulness_probes\": FAITHFULNESS.results_for(decision_id),\n    }\n"
+  notes: 'The schema is the non-negotiable — specific fields will evolve. Faithfulness probes (not shown
+    inline) are a separate evaluation pipeline; what matters is that their results can be joined back
+    to the decision record.
+
+    '
+evidence_production:
+- evidence_numeral: I
+  how_to_produce: 'Publish the decision-record schema, the precondition/assumption typology, the set of
+    decision classes tracked and their risk-tier mapping, and the documented key decision points in each
+    agent family''s policy graph. Version and retain.
+
+    '
+- evidence_numeral: II
+  how_to_produce: 'Retain per-session interaction logs linking prompts → goal events → decision records
+    → tool provenance → outputs. Provide visualization tooling for auditors (decision-path graphs, diff
+    views across replayed variants). Maintain human-readable sample outputs from the XAI methods in use
+    (attribution maps, counterfactual comparisons) as reference artifacts.
+
+    '
+- evidence_numeral: III
+  how_to_produce: 'Conduct and publish stakeholder comprehension studies: can auditors reconstruct the
+    decision from the record? Can experts catch a seeded-unfaithfulness case? Report faithfulness-probe
+    rates across decision classes and reasoning-chain traceability verification. Include studies with
+    multiple stakeholder groups (users, operators, auditors) showing differential comprehension.
+
+    '
+confidence: medium
+needs_human_review: true
+review_notes: 'Medium — not high — because faithful interpretation of neural reasoning is an open research
+  problem. The Decision Record pattern and structured-precondition pattern are solid engineering and should
+  be implemented; the faithfulness-probe pattern is best-current-practice but will evolve as the research
+  matures (activation-based methods, sparse-autoencoder features, causal mediation). Orgs should not claim
+  "our explanations are faithful" — they should claim "we measure faithfulness at rate X and respond when
+  it degrades." Cross-suite for Phase 2: I1 Opaque Agency (this pattern is the structural counter); I2
+  Deception (unfaithful explanations are a deception vector, intentional or not); D2 Epistemic Hygiene
+  (uncertainty_type field maps to D2 calibration concepts); D3 Security (integrity of the decision store).
+
+  '
+version_compat:
+  framework_version_min: '1.0'
+  framework_version_max: 1.x
+  pattern_layer_version: v1-draft
+drafted_by: claude-opus-4.7-author
+drafted_at: 2026-04-16
+anchor_exemplar: D3.2-sandboxing

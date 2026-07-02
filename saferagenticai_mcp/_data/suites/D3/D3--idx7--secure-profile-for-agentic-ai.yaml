@@ -1,0 +1,188 @@
+# D3.7 — Secure Profile for Agentic AI
+
+id: "D3::idx7::secure-profile-for-agentic-ai"
+display_id: "D3.7"
+suite_id: "D3"
+suite_title: "Security"
+subgoal_title: "Secure Profile for Agentic AI"
+content_type: governance
+
+summary: >
+  A "secure profile" is the machine-readable identity card of an AAI
+  system: who it is, what it may do, who vouches for it, and how it is
+  recognised across a trust boundary. This subgoal asks the organisation
+  to adopt existing standards where they exist (and participate in their
+  development) and to publish its own validation protocol where they do
+  not. It is governance-first because the deliverables are policy,
+  standards mapping, and identity issuance authority — the code that
+  implements them is downstream (see D3.1, D3.2).
+
+normative_anchors:
+  sfrs_addressed: [a, b, c]
+  evidence_addressed: [I, II, III]
+  sfrs_not_addressed: []
+  evidence_not_addressed: []
+
+cross_references:
+  - "D3::idx1::authorization"
+  - "D3::idx17::emergent-risks-of-aai-systems"
+
+policy_elements:
+
+  - name: Secure Operational Profile Specification
+    description: >
+      A per-agent document covering: capability scope, authorised tools
+      and data classes, trust relationships (who this agent accepts calls
+      from and why), credential types and lifetimes, logging requirements,
+      decommissioning conditions. One profile per production capability
+      class; profiles are versioned and signed by the security owner.
+      Maps machine-readable portions to the authorization policy used
+      at runtime (D3.1).
+    maps_to_sfr: [a]
+
+  - name: Standards-Adoption Register
+    description: >
+      Living mapping from each identity and profile element to the
+      applicable external standard (e.g., W3C DID / Verifiable
+      Credentials for agent identity, SPIFFE/SPIRE for workload identity,
+      OpenID Federation for cross-org trust, ISO/IEC 42001 AI management
+      system, NIST AI RMF / NIST AI 600-1 GenAI Profile, sector-specific
+      standards where applicable). Each row: standard, version, adopted
+      / planned / rejected, rationale, review date. Absence of a
+      standard is itself a tracked fact.
+    maps_to_sfr: [b]
+
+  - name: Internal Validation Protocol (gap-filler for standards absence)
+    description: >
+      Where no applicable external standard exists, define an internal
+      validation protocol: the cryptographic credential format, the
+      issuance authority, the relying-party verification steps, the
+      revocation mechanism, the cross-org interoperability stance.
+      Published externally where possible to invite standardisation —
+      not kept as internal secret, which would reproduce the silo the
+      framework warns against.
+    maps_to_sfr: [c]
+
+  - name: Agent Registry and Bill-of-Materials
+    description: >
+      Registry of all production agents with: secure profile reference,
+      model provenance (base model, fine-tune, system prompt version),
+      tool and data-source inventory, credential issuance record,
+      operational owner, decommissioning status. Forms the base of the
+      supply-chain transparency required by D3.7 (underlined) and D3.14
+      (emergent risks).
+    maps_to_sfr: [a]
+
+  - name: Profile Review and Update Cadence
+    description: >
+      Profiles re-reviewed at fixed cadence (at least semi-annually),
+      on material capability change, and on publication of a relevant
+      standard update. The review examines whether the profile still
+      describes the agent's actual behaviour — drift between profile and
+      behaviour is a finding.
+    maps_to_sfr: [a]
+
+org_roles:
+
+  - role: AAI Identity and Profile Owner (single accountable human)
+    responsibilities: >
+      Owns the Secure Operational Profile Specification, the
+      standards-adoption register, and the internal validation protocol.
+      Signs off on new agent profiles before production.
+    accountable_or_consulted: accountable
+
+  - role: Security Architecture Lead
+    responsibilities: >
+      Responsible for the technical embedding of profiles into runtime
+      (D3.1 authorization, D3.2 sandboxing). Ensures profile declarations
+      map to enforced behaviour.
+    accountable_or_consulted: responsible
+
+  - role: Standards Liaison
+    responsibilities: >
+      Tracks external standards (ISO/IEC JTC 1/SC 42, NIST AI Safety
+      Institute, IEEE, W3C DID / VC working groups) and participates
+      substantively. Maintains the Standards-Adoption Register.
+    accountable_or_consulted: responsible
+
+  - role: Legal Counsel
+    responsibilities: >
+      Consulted on regulatory standards (EU AI Act profile obligations
+      for high-risk systems, sector-specific identity requirements).
+    accountable_or_consulted: consulted
+
+  - role: External Auditor (annually)
+    responsibilities: >
+      Validates that profiles and their implementation correspond and
+      that the standards register reflects reality.
+    accountable_or_consulted: consulted
+
+documentation_artifacts:
+
+  - artifact: Secure Operational Profile (per agent)
+    cadence: "per agent; reviewed semi-annually and on material change"
+
+  - artifact: Standards-Adoption Register
+    cadence: "continuous; quarterly review"
+
+  - artifact: Internal Validation Protocol
+    cadence: "versioned; reviewed on standards-register change"
+
+  - artifact: Agent Registry / BOM
+    cadence: "continuous; append-only for decommissioned entries"
+
+  - artifact: External audit report
+    cadence: "annually"
+
+evidence_production:
+
+  - evidence_numeral: I
+    how_to_produce: >
+      Publish the Secure Operational Profile Specification and exemplar
+      profiles for each production agent (redacted for sensitive
+      capability detail where necessary). Include the lifecycle coverage
+      evidence: design, deployment, operation, maintenance, decommissioning
+      stages each addressed.
+
+  - evidence_numeral: II
+    how_to_produce: >
+      Export the Standards-Adoption Register showing: which external
+      standards are in force, which are planned, which are rejected with
+      reasoning. Pair with standards-liaison activity log (working group
+      participation, draft contributions, review comments filed).
+
+  - evidence_numeral: III
+    how_to_produce: >
+      Publish the Internal Validation Protocol where applicable: format
+      of the agent credential (e.g., signed JWT / verifiable credential
+      with specified claims), issuance authority, verification steps
+      relying parties must perform, revocation mechanism, interoperability
+      stance. Version history documenting evolution.
+
+confidence: high
+needs_human_review: true
+review_notes: >
+  Content-type decision: governance over code-applicable. SFR-b ("adopt
+  global standards") is dominant; the deliverables (profile specification,
+  standards register, validation protocol) are policy-layer artifacts
+  whose code embodiment is downstream in D3.1 / D3.2. An argument
+  exists for code-applicable if the organisation treats "secure profile"
+  as a JSON schema — but the framework phrasing points at the governance
+  layer.
+
+  Specific standards named (W3C DID/VC, SPIFFE/SPIRE, ISO/IEC 42001,
+  NIST AI RMF) are plausible defaults for 2026 but the landscape is
+  actively evolving. Nell and/or a standards-specialist reviewer should
+  verify currency; I7.3 exemplar flagged the same aging risk.
+
+  Cross-suite hypothesis (not added as cross_reference): D9 (Governance)
+  for the board-level standards stance, I7 (Capability Imbalance) for
+  the ecosystem-engagement dimension of standards participation.
+
+drafted_by: claude-opus-4.7-subagent-D3
+drafted_at: 2026-04-16
+anchor_exemplar: D9.2-compliance
+version_compat:
+  framework_version_min: "1.0"
+  framework_version_max: "1.x"
+  pattern_layer_version: "v1-draft"

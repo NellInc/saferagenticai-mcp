@@ -1,0 +1,144 @@
+id: D9::idx4::internationalization-of-aai-governance
+display_id: D9.4
+suite_id: D9
+suite_title: Responsible Governance of AAI Safety
+subgoal_title: Internationalization of AAI Governance
+content_type: ecosystem
+summary: 'This subgoal lives outside the org''s four walls: it asks whether the organization is actively
+  participating in and aligning with international AAI governance — standards bodies, cross-jurisdiction
+  agreements, identity and trust frameworks — rather than optimising for a single jurisdiction''s rules.
+  Evidence is external: participation records, adoption of shared standards, harm-scale assessments that
+  cross borders.
+
+  '
+normative_anchors:
+  sfrs_addressed:
+  - a
+  - b
+  - c
+  - d
+  evidence_addressed:
+  - I
+  - II
+  - III
+  sfrs_not_addressed: []
+  evidence_not_addressed: []
+cross_references:
+- D9::idx0::responsible-governance-of-aai-safety
+- D9::idx2::compliance-with-applicable-laws-standard
+- D9::idx5::building-trust-through-independent-verif
+- D9::idx6::cryptographic-governance-of-data-models-
+stakeholders:
+- name: International AI governance bodies
+  engagement_channel: 'Named, continuous participation in the working groups most relevant to the org''s capabilities
+    — typically including ISO/IEC JTC 1/SC 42, OECD AI Policy Observatory, Council of Europe AI Committee,
+    UN AI Advisory Body outputs, and the Global Digital Compact follow-on processes. Participation is
+    substantive (draft contributions, review rounds) not nominal. Maintain continuity of representation
+    across leadership changes.
+
+    '
+  maps_to_sfr:
+  - a
+- name: Cross-jurisdictional regulators and AISIs
+  engagement_channel: 'Bilateral and multilateral engagement with AI Safety Institutes and equivalent (UK AISI, US
+    AISI, EU AI Office, Singapore IMDA, Japan AISI, Canadian AISI, regional bodies). Engagement forms
+    include pre-deployment model access, joint evaluations, information-sharing agreements on incidents
+    and findings, and harmonised reporting where permissible.
+
+    '
+  maps_to_sfr:
+  - a
+- name: Trust and identity frameworks
+  engagement_channel: 'Adopt established trust frameworks where they exist — digital identity trust frameworks with
+    multinational backing, W3C standards for the open web, IETF protocols, TRIPS for IP matters. Where
+    gaps exist, contribute to standards development rather than building proprietary alternatives. Publish
+    the org''s adopted framework inventory with rationale.
+
+    '
+  maps_to_sfr:
+  - b
+- name: Harm-scale evaluation consortia
+  engagement_channel: 'Contribute to, or establish where absent, shared evaluation infrastructure for harm-scale
+    assessment (intentional misuse, accidental cascade, societal-scale effects). Patterns: shared red-team
+    corpora, common evaluation protocols, agreed severity taxonomies. Publish the org''s harm-scale methodology
+    and its mapping to international frameworks (e.g., NIST AI RMF risk categories, EU AI Act Annex III
+    classes).
+
+    '
+  maps_to_sfr:
+  - c
+- name: Propaganda and cyber-threat coordination bodies
+  engagement_channel: 'Active participation in cross-org forums addressing AI-enabled disinformation, election integrity,
+    influence operations, and offensive-cyber misuse. Examples: relevant industry coalitions, information-sharing
+    and analysis organizations (ISACs), elections integrity partnerships, state-actor defense coordination.
+    Commit to disclosure of detected misuse patterns within agreed SLAs.
+
+    '
+  maps_to_sfr:
+  - d
+- name: Developing-jurisdiction AI ecosystems
+  engagement_channel: 'Active engagement with AI governance bodies in jurisdictions with less-developed regulatory
+    capacity — African Union Continental AI Strategy, ASEAN Guide on AI Governance, regional technical
+    cooperation. Patterns: technical-assistance programs, capacity- building, treating these jurisdictions
+    as governance participants, not compliance dumping grounds.
+
+    '
+  maps_to_sfr:
+  - a
+engagement_modes:
+- mode: ISO/IEC JTC 1/SC 42 — AI standards (management system, risk, bias, governance)
+- mode: OECD AI Policy Observatory and Working Party on AI Governance
+- mode: Council of Europe Framework Convention on AI
+- mode: UN AI Advisory Body and Global Digital Compact follow-on
+- mode: G7 Hiroshima AI Process and successor frameworks
+- mode: International network of AI Safety Institutes (UK, US, EU, Singapore, Japan, Canada, and counterparts)
+- mode: NIST AI RMF and international harmonisation efforts
+- mode: Partnership on AI; Frontier Model Forum (where scale-appropriate)
+- mode: MLCommons for shared benchmarks and evaluation infrastructure
+- mode: W3C, IETF for technical/identity standards
+- mode: 'Regional strategies: African Union Continental AI Strategy, ASEAN Guide on AI Governance, Latin American
+  regional initiatives'
+- mode: TRIPS and WIPO processes for IP dimensions of cross-border AI
+evidence_production:
+- evidence_numeral: I
+  how_to_produce: 'Publish a "global AAI governance posture" document enumerating: international frameworks
+    adopted, standards adhered to, working- group memberships with named representatives and continuity
+    records, cross-border agreements signed, and the org''s harm-scale assessment methodology. Reviewed
+    annually with version history.
+
+    '
+- evidence_numeral: II
+  how_to_produce: 'Records of participation: meeting attendance, draft contributions made (with links
+    where public), positions submitted, votes cast where applicable, co-authored outputs. Aggregated annually
+    into a participation report that distinguishes substantive engagement from attendance. Compliance
+    with specific international agreements evidenced by the signed instrument and the org''s mapping to
+    it.
+
+    '
+- evidence_numeral: III
+  how_to_produce: 'Adoption inventory: each technical standard adopted, version, date adopted, scope of
+    adoption (which products/capabilities), and evidence of adherence (test results, attestations, conformity
+    reports). Where an org chose not to adopt a standard, document rationale and any alternative in place.
+
+    '
+confidence: medium
+needs_human_review: true
+review_notes: 'Ecosystem patterns age quickly — named bodies and agreements will shift. This pattern names
+  current (2026) touchpoints to be actionable, with the understanding that Phase 2 consolidation or later
+  versions will refresh. Two specific uncertainties: (1) SFR-d on propaganda/cybersecurity coordination
+  is sharp-edged in ways that intersect national-security law (e.g., export controls on offensive-cyber
+  knowledge, election- interference disclosure rules); legal counsel should shape the disclosure SLAs;
+  (2) "TRIPS agreements" as an adopted framework conflates an intergovernmental treaty with an org-level
+  adoption act — the pattern reads this as "design within TRIPS-compatible IP norms" which may under-
+  or over-read the SFR. Cross-suite: strong overlap with I7 (Imbalance — Global Partnership); D9::4 is
+  the governance- participation flavour, I7.3 the equity flavour. Heavy cross-refs to D3 (Security) for
+  cyber-threat coordination and D4 (Value Alignment) for harm-scale methodology.
+
+  '
+drafted_by: claude-opus-4.7-subagent-D9
+drafted_at: 2026-04-16
+anchor_exemplar: I7.3-balanced-global-partnership
+version_compat:
+  framework_version_min: '1.0'
+  framework_version_max: 1.x
+  pattern_layer_version: v1-draft

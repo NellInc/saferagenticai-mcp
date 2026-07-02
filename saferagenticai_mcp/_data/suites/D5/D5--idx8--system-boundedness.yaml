@@ -1,0 +1,170 @@
+id: D5::idx8::system-boundedness
+display_id: D5.8
+suite_id: D5
+suite_title: Transparency and Interpretability of Reasoning
+subgoal_title: System Boundedness
+content_type: code-applicable
+summary: 'System boundaries are the reference against which "within scope" and "out of scope" behavior
+  are judged. If the boundary is not documented and enforceable, every behavior is defensible post hoc.
+  This subgoal asks for a declared operational envelope — capabilities, decision domains, data classes,
+  authority scopes — with runtime detectors for attempted violations and structured response paths. Note:
+  this is the transparency face of boundedness (its disclosure and monitoring); containment enforcement
+  itself is D3 Security territory.
+
+  '
+normative_anchors:
+  sfrs_addressed:
+  - a
+  - b
+  - c
+  evidence_addressed:
+  - I
+  - II
+  - III
+  sfrs_not_addressed: []
+  evidence_not_addressed: []
+cross_references:
+- D5::idx1::logging-of-internal-goals
+- D5::idx5::self-monitoring-and-examination-capabili
+- D5::idx2::clarity-of-mutual-expectations
+design_patterns:
+- name: Operational Envelope declaration
+  sketch: 'A machine-readable artifact declaring the agent''s bounds across dimensions: `capabilities`
+    (what actions the agent may perform), `decision_domains` (what question types it will answer vs decline),
+    `data_classes` (what data categories it may access or produce), `authority_scope` (what commitments
+    it may make on behalf of what principals), `operational_context` (time, location, deployment constraints).
+    Each dimension has explicit allow-sets; default is deny. Published (to the extent appropriate per
+    audience) and versioned.
+
+    '
+  maps_to_sfr:
+  - a
+  when_to_use: Before first production deployment; updated on any material capability change.
+- name: Pre-action envelope check
+  sketch: 'Before executing any action that could cross a boundary, the agent consults the envelope. Actions
+    inside envelope proceed with a logged envelope-check event; actions outside are refused with a structured
+    decline (`reason: out_of_envelope, dimension: X, requested: Y, allowed: Z`). Not a prompt instruction
+    — a runtime gate in the action dispatcher.
+
+    '
+  maps_to_sfr:
+  - a
+  - b
+  when_to_use: Every action with nontrivial side effects.
+- name: Boundary-violation detection telemetry
+  sketch: 'Every attempted violation (whether blocked or leaked) emits a structured event: `{violation_id,
+    envelope_dim, requested, allowed, blocked (bool), agent_reasoning_ref, user_input_ref, severity, timestamp,
+    correlation_id}`. Violations are joined to goal lineage — was this a directly requested action, an
+    inferred sub-goal, or a side-effect? Unblocked violations (boundary breaches in production) trigger
+    incident response.
+
+    '
+  maps_to_sfr:
+  - b
+  when_to_use: Always in production.
+- name: Escalation path for ambiguous boundaries
+  sketch: 'Boundaries are not always bright lines. Define an `ambiguous` disposition: agent cannot definitively
+    classify the action as in or out of envelope. Ambiguous cases route to human adjudication (or defined
+    fallback policy), not to the agent''s own discretion. Each adjudication updates the envelope with
+    the resolution — the boundary becomes sharper over time.
+
+    '
+  maps_to_sfr:
+  - a
+  - b
+  when_to_use: Any agent operating in domains with unclear regulatory or ethical boundaries.
+- name: Envelope audit checkpoints
+  sketch: 'Scheduled review of the envelope against observed behavior: are there capabilities declared
+    allowed that are never used (consider tightening)? Capabilities used often at the edge of envelope
+    (consider refining the boundary)? Violation patterns concentrated by user or context (consider policy
+    adjustment)? Output: envelope-version-bump with rationale.
+
+    '
+  maps_to_sfr:
+  - a
+  when_to_use: Quarterly minimum.
+anti_patterns:
+- name: Boundaries defined only in training data or system prompt
+  why_wrong: 'Behavioral conditioning is fragile; a compliant agent under ordinary conditions can drift
+    under adversarial inputs or distribution shift. Pre-action runtime checks do not have that failure
+    mode — they are deterministic.
+
+    '
+- name: Silent out-of-scope responses
+  why_wrong: 'Declining without a structured reason loses evidence. Every decline is a boundary signal
+    — preserved decline events feed envelope audits.
+
+    '
+- name: Envelope drift without version control
+  why_wrong: 'If the envelope is a living document updated ad hoc, historical decisions cannot be adjudicated
+    against the boundary-in-force at the time. Envelope versions are artifacts; every decision record
+    references the envelope version it was adjudicated against.
+
+    '
+- name: Ambiguous-as-silent-pass default
+  why_wrong: 'Routing ambiguous cases through the agent''s own discretion erodes the boundary. Ambiguous
+    defaults to decline or escalate, not proceed.
+
+    '
+- name: Stakeholder training treated as boundary enforcement
+  why_wrong: 'Training people what the system will and will not do is important (SFR-c), but it is not
+    a substitute for runtime enforcement. SFR-c is additive, not alternative.
+
+    '
+code_shape:
+  language: pseudocode
+  code: "# Envelope check as a dispatch gate\n\n@dataclass\nclass Envelope:\n    version: str\n    capabilities:\
+    \ set[str]\n    decision_domains: set[str]\n    data_classes: set[str]\n    authority_scope: dict[str,\
+    \ set[str]]\n    operational_context: dict[str, Any]\n\nENVELOPE_CHECK = Literal[\"in_envelope\",\"\
+    out_of_envelope\",\"ambiguous\"]\n\ndef check_envelope(action: ProposedAction,\n                 \
+    \  envelope: Envelope) -> tuple[ENVELOPE_CHECK, dict]:\n    reasons = {}\n    if action.capability\
+    \ not in envelope.capabilities:\n        return (\"out_of_envelope\",\n                {\"dimension\"\
+    :\"capability\",\"requested\":action.capability})\n    # ... check each dimension ...\n    if any_ambiguous(action,\
+    \ envelope):\n        return (\"ambiguous\", {\"dimension\":\"unclear\"})\n    return (\"in_envelope\"\
+    , {})\n\ndef dispatch(action: ProposedAction, ctx: AgentContext) -> ActionResult:\n    disp, detail\
+    \ = check_envelope(action, ctx.envelope)\n    emit_envelope_event(action, disp, detail, ctx)\n   \
+    \ if disp == \"out_of_envelope\":\n        return ActionResult.declined(reason=detail, envelope_ver=ctx.envelope.version)\n\
+    \    if disp == \"ambiguous\":\n        return ADJUDICATION.route(action, detail, ctx)\n    return\
+    \ EXECUTE(action, ctx)\n"
+  notes: 'The envelope is content; the dispatch gate is mechanism. Both are needed. Skipping either yields
+    a pattern the framework will not accept as evidence.
+
+    '
+evidence_production:
+- evidence_numeral: I
+  how_to_produce: 'Publish the Operational Envelope, the ConOps it implements, and the architecture diagrams
+    showing where envelope checks sit in the action dispatch path. Version history retained.
+
+    '
+- evidence_numeral: II
+  how_to_produce: 'Extract from telemetry: boundary-violation logs with dispositions, alert records for
+    high-severity cases, documented response procedures, and evidence of enforcement consistency across
+    operational domains (including red-team results showing the dispatch gate holding under attempted
+    bypass).
+
+    '
+- evidence_numeral: III
+  how_to_produce: 'Retain training materials for operators, users, and developers explaining system boundaries;
+    awareness-program attendance records; escalation procedures with named owners. Quarterly assessment
+    reports covering boundary effectiveness and stakeholder comprehension (e.g., "do operators know how
+    the system responds to out-of-envelope requests?").
+
+    '
+confidence: high
+needs_human_review: false
+review_notes: 'High confidence on the envelope + runtime gate + telemetry shape — this is well-understood
+  safety engineering applied to agents. The hardest part in practice is the envelope''s content, not its
+  enforcement: getting agreement on what the agent may and may not do is a product/policy question that
+  this pattern cannot solve, only support. Cross-suite for Phase 2: D3 Security (containment enforcement
+  complements transparency enforcement); D8 Robust Human Oversight (ambiguous-case adjudication is an
+  oversight surface); I1 Opaque Agency (undocumented boundaries are a contributor); D7 Safe System Profile
+  (default-off / caution-by- default interacts with envelope definition).
+
+  '
+version_compat:
+  framework_version_min: '1.0'
+  framework_version_max: 1.x
+  pattern_layer_version: v1-draft
+drafted_by: claude-opus-4.7-author
+drafted_at: 2026-04-16
+anchor_exemplar: D3.2-sandboxing

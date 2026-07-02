@@ -1,0 +1,208 @@
+# D3.6 — Overseeing & Monitoring Agents
+
+id: "D3::idx6::overseeing-monitoring-agents"
+display_id: "D3.6"
+suite_id: "D3"
+suite_title: "Security"
+subgoal_title: "Overseeing & Monitoring Agents"
+content_type: code-applicable
+
+summary: >
+  Monitoring agents are AI systems watching AI systems. This subgoal expects
+  them to exist, but with two non-trivial constraints: they must detect
+  deviations from goals and values (not only infrastructure metrics), and
+  they must not become single points of failure that replace human oversight.
+  The framework's guard against "common mode failure" is the core design
+  challenge — independence between monitors and monitored.
+
+normative_anchors:
+  sfrs_addressed: [a, b, c]
+  evidence_addressed: [I, II, III, IV]
+  sfrs_not_addressed: []
+  evidence_not_addressed: []
+
+cross_references:
+  - "D3::idx3::dynamic-risk-analysis-assessment"
+  - "D3::idx5::dynamic-intervention-and-mitigation"
+  - "D3::idx14::spyware"
+
+design_patterns:
+
+  - name: External watchdog with independent substrate
+    sketch: >
+      The monitoring agent runs on a different model family, different
+      provider, different training data, and different infrastructure
+      from the monitored agent wherever feasible. If the monitored agent
+      is compromised at the model or supply-chain level, the watchdog is
+      unaffected. Common mode failure protection is architectural, not a
+      review checkbox.
+    maps_to_sfr: [b, c]
+    when_to_use: Every high-consequence agent deployment.
+
+  - name: Parameter-bounded tiered response watchdog
+    sketch: >
+      The watchdog enforces declared numeric bounds (output length, claim
+      count, tool-call rate, egress volume, confidence thresholds, topic
+      classifier scores) and value-aligned checks (policy-text adherence,
+      known-disallowed-content detectors). Exceeding a bound triggers a
+      tiered response: (T1) warn and tag output, (T2) throttle, (T3)
+      partial suspend, (T4) full suspend pending human review. Aligns
+      with the D3.5 intervention ladder.
+    maps_to_sfr: [a, b]
+    when_to_use: Any agent with structured output or tool use.
+
+  - name: Human-in-the-loop for monitor-initiated escalation
+    sketch: >
+      The watchdog cannot unilaterally decide the monitored agent is
+      permanently compromised. Its highest autonomous action is suspension
+      pending review; restoration and permanent decision require a named
+      human. This is the framework's anti-common-mode-failure clause
+      operationalised.
+    maps_to_sfr: [c]
+    when_to_use: Every watchdog deployment.
+
+  - name: Monitor-the-monitor (meta-oversight)
+    sketch: >
+      The watchdog's own behaviour is monitored: false-positive rate,
+      false-negative rate (from red-team ground truth), uptime, response
+      latency, drift from baseline. If the watchdog degrades, a human
+      oversight committee is alerted and a fallback policy (stricter
+      static guardrails) activates.
+    maps_to_sfr: [c]
+    when_to_use: Any watchdog in production for more than the short
+      term.
+
+  - name: Value-alignment checks not only safety checks
+    sketch: >
+      The watchdog checks for alignment with declared goals and values,
+      not only for technical safety violations. Classifiers or LLM-as-
+      judge prompts test: is the agent pursuing the stated goal, using
+      methods consistent with stated values, providing outputs that match
+      stakeholder expectations. Disagreement between the agent's declared
+      intent and its observed action is a first-class alert.
+    maps_to_sfr: [a]
+    when_to_use: Any agent operating with delegated authority or on
+      behalf of a principal whose values are declarable.
+
+anti_patterns:
+
+  - name: Watchdog on the same model family as the monitored agent
+    why_wrong: >
+      A jailbreak that defeats the monitored model defeats its twin.
+      Common mode failure is the explicit concern of SFR-c. Diversify.
+
+  - name: Watchdog can kill but humans cannot restore
+    why_wrong: >
+      An automated monitor that can block but not be overridden
+      concentrates failure, not distributes it. Humans must have clear,
+      audited restore authority.
+
+  - name: Monitor alerts without parameter bounds
+    why_wrong: >
+      Evidence IV explicitly requires "parameter bounding definitions."
+      Qualitative "we check for weird stuff" monitoring is not a
+      watchdog; it's a dashboard nobody watches.
+
+  - name: No ground-truth measurement of false-positive / false-negative
+    why_wrong: >
+      Without periodic red-team ground truth, you cannot tell if the
+      watchdog is 99% accurate or 50%. An untested monitor is a
+      decorative component.
+
+  - name: Prompt-level "check yourself" self-monitoring
+    why_wrong: >
+      Asking the same model to self-evaluate correlates failures rather
+      than catching them. Self-critique as a technique has uses; it is
+      not oversight.
+
+code_shape:
+  language: pseudocode
+  code: |
+    # Watchdog wrapping agent output with tiered response
+    def oversee(agent_output: AgentStep, ctx: TaskContext) -> OversightVerdict:
+        checks = [
+            bounded_length(agent_output, ctx.profile.max_tokens),
+            bounded_egress(agent_output, ctx.profile.max_egress),
+            topic_allowed(agent_output, ctx.profile.topic_classifier),
+            value_consistency(agent_output, ctx.declared_goal,
+                              ctx.declared_values),
+            not_known_disallowed(agent_output, DISALLOWED_DETECTORS),
+        ]
+        breaches = [c for c in checks if not c.passed]
+        if not breaches:
+            return OversightVerdict.PASS
+
+        tier = max(b.tier for b in breaches)
+        # T1 warn+tag, T2 throttle, T3 partial_suspend, T4 full_suspend
+        action = TIERED_RESPONSE[tier]
+        AUDIT.record(OversightEvent(agent_output, breaches, tier, action))
+        HUMAN_QUEUE.enqueue_if(tier >= 3, breaches)
+        return OversightVerdict(action=action, tier=tier, breaches=breaches)
+
+    # Meta-oversight: measure the watchdog itself
+    def watchdog_health() -> HealthReport:
+        return HealthReport(
+            fp_rate=RED_TEAM.false_positive_rate(),
+            fn_rate=RED_TEAM.false_negative_rate(),
+            latency_p99=METRICS.p99("watchdog.eval_ms"),
+            uptime=METRICS.uptime("watchdog"),
+            drift=BASELINE.drift("watchdog.output_distribution"),
+        )
+  notes: >
+    Structured checks with tiered outcomes; human queue for high tiers;
+    a second loop measuring the watchdog itself so degradation surfaces.
+
+evidence_production:
+
+  - evidence_numeral: I
+    how_to_produce: >
+      Operational records from the monitoring plane showing ongoing
+      oversight: verdicts rendered, breaches detected, tiered responses
+      applied, alignment checks run. Include value-alignment alerts
+      distinct from infrastructure alerts.
+
+  - evidence_numeral: II
+    how_to_produce: >
+      Export watchdog detections showing deviations identified and
+      routed to human operators with timestamps. Pair with outcome
+      data: which detections were confirmed true, which false. Publish
+      as a quarterly effectiveness report.
+
+  - evidence_numeral: III
+    how_to_produce: >
+      Documentation of the human-oversight architecture: named roles
+      with restore / override authority, escalation paths, review
+      cadence, and the authority matrix that forbids the watchdog from
+      acting as the sole decision-maker for permanent actions.
+
+  - evidence_numeral: IV
+    how_to_produce: >
+      Publish the watchdog specification: parameter-bounding definitions
+      per capability profile (numeric limits, topic lists, confidence
+      thresholds), the tiered response protocol (what each tier does),
+      the red-team test logs that verify the watchdog detected and
+      intervened in test scenarios. Include periodic drill reports.
+
+confidence: high
+needs_human_review: true
+review_notes: >
+  "Common mode failure" is the framework's specific phrasing and the
+  core design pressure of this subgoal. I have operationalised it as
+  architectural diversity (different model family / provider /
+  substrate) between monitor and monitored. Nell may want to
+  strengthen further — e.g., requiring independent red-team validation.
+
+  Cross-suite hypothesis (not added as cross_reference): D5
+  (Transparency) likely carries the reasoning-trace logging pattern
+  that the watchdog analyses, and D8 (Human Control) likely carries the
+  human-override authority pattern referenced here. Added cross-ref to
+  D3.11 (Spyware) because covert-channel detection is a natural
+  watchdog responsibility.
+
+drafted_by: claude-opus-4.7-subagent-D3
+drafted_at: 2026-04-16
+anchor_exemplar: D3.2-sandboxing
+version_compat:
+  framework_version_min: "1.0"
+  framework_version_max: "1.x"
+  pattern_layer_version: "v1-draft"

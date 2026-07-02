@@ -1,0 +1,172 @@
+id: I2::idx8::deceptive-jurisdictional-obfuscation
+display_id: I2.8
+suite_id: I2
+suite_title: Deception
+subgoal_title: Deceptive Jurisdictional Obfuscation
+content_type: governance
+summary: 'Jurisdictional arbitrage — routing compute, data, or operational responsibility through a venue
+  where oversight is weaker — is a recognised pattern of escaping accountability. The framework asks for
+  governance that makes cross-border operations visible, maintains single-source-of-truth responsibility,
+  and prevents responsibility laundering through structure.
+
+  '
+normative_anchors:
+  sfrs_addressed:
+  - a
+  - b
+  - c
+  evidence_addressed:
+  - I
+  - II
+  - III
+  - IV
+  sfrs_not_addressed: []
+  evidence_not_addressed: []
+policy_elements:
+- name: Jurisdictional Operations Register
+  description: 'Maintained inventory of every operational location: compute / training site, inference
+    hosting region, data-storage jurisdiction, support-center location, subcontractor venues. Each entry
+    names the applicable legal regime, the responsible internal owner, and the accountability chain up
+    to the parent organization. Updated on any material operational change.
+
+    '
+  maps_to_sfr:
+  - a
+- name: Transfer Review Board (TRB)
+  description: 'A standing cross-functional board (legal, compliance, engineering, risk) reviews any proposal
+    to move operations across jurisdictions. Mandatory gate before an operational transfer proceeds. Assesses:
+    legitimate business rationale, maintained oversight mechanisms, whether the transfer narrows user
+    rights, embargo / sanctions exposure, data-protection regime shift, regulator notification requirement.
+    Decisions recorded with rationale.
+
+    '
+  maps_to_sfr:
+  - a
+  - c
+- name: Continuous cross-jurisdictional monitoring
+  description: 'Monitoring function that tracks operational activity against the Jurisdictional Operations
+    Register and flags patterns consistent with responsibility-avoidance (routing around enforcement actions,
+    repeated transfers to weaker-oversight regimes, shell-entity chains, unusual subcontractor structures).
+    Flags escalate to the TRB.
+
+    '
+  maps_to_sfr:
+  - b
+- name: Unified accountability chain
+  description: 'Regardless of the operational jurisdiction, the accountable human under the D9.2 Accountability
+    Framework remains identifiable and reachable. Subsidiary or subcontractor structures do not dissolve
+    accountability. Where local law would prevent an internal owner from acting, the TRB records a compensating
+    mechanism (e.g., parent-guarantee, regulator-facing liaison, board reservation).
+
+    '
+  maps_to_sfr:
+  - c
+- name: Embargo / sanctions / tariff screening
+  description: 'Pre-transaction screening against applicable sanctions lists (OFAC, EU consolidated, UN,
+    sector-specific) and embargo regimes. Records decisions and denials. Tariff and export-control classifications
+    maintained for AI capabilities that fall under dual-use / advanced-technology controls.
+
+    '
+  maps_to_sfr:
+  - a
+  - b
+- name: Regulator-relations protocol
+  description: 'Documented protocol for engaging regulators across the jurisdictions in the register:
+    designated points of contact, notification thresholds, cooperation commitments for cross-border investigations.
+    Includes commitment not to use jurisdictional structure to obstruct lawful inquiry.
+
+    '
+  maps_to_sfr:
+  - c
+org_roles:
+- role: Chief Compliance Officer (or AI Compliance Officer per D9.2)
+  responsibilities: 'Owns the Jurisdictional Operations Register, chairs or co-chairs the Transfer Review
+    Board, and maintains the regulator-relations protocol. Single accountable human for the suite.
+
+    '
+  accountable_or_consulted: accountable
+- role: General Counsel
+  responsibilities: 'TRB member. Leads embargo / sanctions / export-control screening. Advises on jurisdictional-regime
+    comparisons and on unified- accountability mechanisms where local law creates friction.
+
+    '
+  accountable_or_consulted: consulted
+- role: Risk Function / Chief Risk Officer
+  responsibilities: 'TRB member. Reviews transfers for concentration risk, enforcement exposure, reputational
+    risk.
+
+    '
+  accountable_or_consulted: consulted
+- role: Engineering / Operations Lead
+  responsibilities: 'TRB member. Responsible for executing transfers to the documented plan, implementing
+    monitoring hooks across the new venue, and verifying oversight mechanisms function post-transfer.
+
+    '
+  accountable_or_consulted: responsible
+- role: Board / Audit Committee
+  responsibilities: 'Informed of material cross-jurisdictional changes. Reviews annual register and TRB
+    activity. Has authority to veto transfers that impair accountability.
+
+    '
+  accountable_or_consulted: informed
+documentation_artifacts:
+- artifact: Jurisdictional Operations Register
+  cadence: continuous; material change triggers update within 30 days
+- artifact: Transfer Review Board charter and minutes
+  cadence: per meeting; charter reviewed annually
+- artifact: Transfer proposals and decisions (per transfer)
+  cadence: per event; retained indefinitely
+- artifact: Cross-jurisdictional monitoring dashboard + quarterly report
+  cadence: continuous monitoring; quarterly report
+- artifact: Embargo / sanctions screening logs
+  cadence: per transaction; retained per sanctions-law requirements
+- artifact: Regulator-relations protocol document
+  cadence: versioned; reviewed annually
+- artifact: Annual cross-jurisdictional compliance attestation
+  cadence: annual
+evidence_production:
+- evidence_numeral: I
+  how_to_produce: 'Export of the Jurisdictional Operations Register with change history; TRB meeting minutes
+    covering the reporting period; transfer decision records (proposal, rationale, decision, owner, oversight
+    maintenance plan).
+
+    '
+- evidence_numeral: II
+  how_to_produce: 'Monitoring dashboard with quarterly summary: cross-border activity volume, flags raised,
+    patterns investigated, outcomes. Include examples of responsibility-avoidance patterns detected and
+    remediated.
+
+    '
+- evidence_numeral: III
+  how_to_produce: 'Accountability-maintenance records per transfer: who remained accountable, compensating
+    mechanisms put in place where local law created friction, verification that accountability functioned
+    post-transfer (e.g., incident response worked across the border).
+
+    '
+- evidence_numeral: IV
+  how_to_produce: 'Liability-framework documentation: published organizational commitments regarding cross-border
+    accountability, sample customer / partner contract clauses, regulator-facing statements, evidence
+    of honoring cross-border cooperation requests.
+
+    '
+confidence: high
+needs_human_review: true
+review_notes: "Much of this depends on the specific regulatory environment: EU AI Act Article 22 (authorised\
+  \ representatives), GDPR Article 27, UK and US sector rules, sanctions regimes change. The pattern provides\
+  \ durable governance structure; concrete requirements (which regulators, which notifications) need counsel\
+  \ per jurisdiction.\n\"Tariffs and embargoes\" appears in the subgoal description, which surfaces an\
+  \ unusual concern — AI-specific export controls (advanced-chip export controls, compute-threshold notification\
+  \ regimes emerging under EU AI Act and US executive orders). The pattern includes these under embargo\
+  \ / sanctions / tariff screening, but Nell / counsel should verify currency.\nCross-suite:\n  - D9.2\
+  \ (Compliance) — Jurisdictional Compliance Matrix there is\n    closely adjacent; this pattern specialises\
+  \ on the deception-\n    avoidance angle.\n  - I2.5 (I2::idx13 — Identity Management) — cross-jurisdictional\n\
+  \    authentication overlaps; identity standards pattern addresses the\n    technical authentication\
+  \ side, this pattern addresses the\n    governance side.\n  - I6 (Market Concentration) — structural\
+  \ avoidance of oversight\n    relates to anti-monopolistic governance.\n"
+drafted_by: claude-opus-4.7-author
+drafted_at: 2026-04-16
+anchor_exemplar: D9.2-compliance
+version_compat:
+  framework_version_min: '1.0'
+  framework_version_max: 1.x
+  pattern_layer_version: v1-draft

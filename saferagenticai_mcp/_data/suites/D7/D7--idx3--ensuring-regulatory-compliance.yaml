@@ -1,0 +1,170 @@
+id: D7::idx3::ensuring-regulatory-compliance
+display_id: D7.3
+suite_id: D7
+suite_title: Achieving and Sustaining a Safe System Profile
+subgoal_title: Ensuring Regulatory Compliance
+content_type: governance
+summary: 'Regulatory compliance for agentic AI is a moving target across many jurisdictions and sector
+  regulators. This subgoal expects a durable compliance program, not a one-time certification: a maintained
+  register of applicable requirements, continuous monitoring against it, a rapid update path when standards
+  change, periodic audit, and named humans accountable for each domain. Deeply overlaps the D9 governance
+  suite; D7.3 is the sustain-it-over-time lens on that apparatus.
+
+  '
+normative_anchors:
+  sfrs_addressed:
+  - a
+  - b
+  - c
+  - d
+  - e
+  evidence_addressed:
+  - I
+  - II
+  - III
+  - IV
+  - V
+  sfrs_not_addressed: []
+  evidence_not_addressed: []
+policy_elements:
+- name: Regulatory Register
+  description: 'Maintained mapping of (capability × deployment jurisdiction × applicable law / standard
+    / regulator) with named compliance owner per row. Entries cite the binding text and its effective
+    version. Reviewed quarterly and on material product change. Gaps surface automatically when a capability
+    ships to a jurisdiction without a mapped owner.
+
+    '
+  maps_to_sfr:
+  - a
+- name: Continuous Compliance Monitoring Plan
+  description: 'Set of recurring checks mapped to the Regulatory Register. Each check has a frequency,
+    method (automated scan, manual review, third-party audit), evidence artifact, escalation path. Not
+    a once-a-year scramble.
+
+    '
+  maps_to_sfr:
+  - b
+- name: Standards Change-Response SLA
+  description: 'Documented service-level for ingesting new or amended regulations: monitoring function
+    identifies change, legal consulted, impact assessment authored, policy/config update dispatched, training
+    refreshed, attestation recorded. Typical SLA: 30 days for advisory guidance, 90 days for binding standards,
+    or the regulator''s own deadline if shorter.
+
+    '
+  maps_to_sfr:
+  - c
+- name: Independent Compliance Audit
+  description: 'Internal audit at least annually; external / third-party audit at least every two years
+    or as required by jurisdiction (e.g., EU AI Act high-risk systems). Findings tracked to closure with
+    residual-risk acceptance where closure is impractical.
+
+    '
+  maps_to_sfr:
+  - d
+- name: Regulator Engagement Charter
+  description: 'Named liaison(s) per major regulator (AI safety institutes, data protection authorities,
+    sector regulators). Cadence of engagement (formal submissions, sandbox participation, consultation
+    responses) and records thereof. Engagement is substantive, not nominal.
+
+    '
+  maps_to_sfr:
+  - e
+org_roles:
+- role: AI Compliance Officer
+  responsibilities: 'Owns the Regulatory Register, Continuous Compliance Monitoring Plan, and change-response
+    SLA. Reports to board-level risk committee. Single point of accountability for D7.3.
+
+    '
+  accountable_or_consulted: accountable
+- role: Legal Counsel (internal or retained, jurisdiction-specific)
+  responsibilities: 'Consulted on jurisdictional mapping, ambiguous regulatory interpretation, standards
+    change-response. Signs off on binding interpretations.
+
+    '
+  accountable_or_consulted: consulted
+- role: Product / Capability Owner
+  responsibilities: 'Responsible for executing compliance controls for their capability; triggers Register
+    review on capability change.
+
+    '
+  accountable_or_consulted: responsible
+- role: Internal Audit function
+  responsibilities: 'Independent of product and compliance; conducts annual audit against the Register
+    and Monitoring Plan; reports findings to board.
+
+    '
+  accountable_or_consulted: consulted
+- role: Regulator Liaison(s)
+  responsibilities: 'Named individual(s) per major regulator; maintains continuity across staff changes;
+    attends formal proceedings; archives correspondence.
+
+    '
+  accountable_or_consulted: responsible
+- role: Board-level AI Risk Committee
+  responsibilities: 'Informed quarterly; reviews material non-conformances, penalty patterns, audit findings.
+    Authority to pause deployments on compliance grounds.
+
+    '
+  accountable_or_consulted: informed
+documentation_artifacts:
+- artifact: Regulatory Register
+  cadence: quarterly review; event-driven on law or product change
+- artifact: Continuous Compliance Monitoring Plan
+  cadence: versioned; reviewed annually and on regulatory change
+- artifact: Standards change-response log
+  cadence: per change ingested, with SLA clock
+- artifact: Annual internal audit report
+  cadence: annual
+- artifact: External audit / certification evidence
+  cadence: per audit cycle (typically biennial or per regulator requirement)
+- artifact: Regulator correspondence archive
+  cadence: continuous, retained per records policy
+- artifact: Quarterly compliance attestation to board
+  cadence: quarterly
+evidence_production:
+- evidence_numeral: I
+  how_to_produce: 'Publish the Regulatory Register as a controlled document; export an anonymized summary
+    for external audits. For each row: binding text citation, version, effective date, owner, mapped controls.
+
+    '
+- evidence_numeral: II
+  how_to_produce: 'Quarterly compliance report aggregating monitoring-plan check results across jurisdictions.
+    Include pass/fail per control, open findings, trend. Cross-reference to the Violation and Complaint
+    Register (D9.2).
+
+    '
+- evidence_numeral: III
+  how_to_produce: 'Standards change-response log: for each ingested change, record date of identification,
+    impact assessment, policy/config update PR, training refresh, effective date of the update. Demonstrates
+    SLA adherence.
+
+    '
+- evidence_numeral: IV
+  how_to_produce: 'Audit reports (internal + external) with scope, methodology, findings, risk ratings,
+    management responses, closure status. Retain all versions including interim drafts to show the audit
+    process was not interfered with.
+
+    '
+- evidence_numeral: V
+  how_to_produce: 'Regulator engagement log: submissions made, consultations responded to, sandbox participation,
+    correspondence summaries. Where public, link to the public record.
+
+    '
+confidence: high
+needs_human_review: true
+review_notes: 'Heavy overlap with D9.3 (regulatory compliance within the governance suite) — the D7.3
+  slice is the "keep it running over time" lens; D9.3 tends to be the structural governance lens. Consolidation
+  should cross-reference, not duplicate. Specific jurisdictions (EU AI Act, GDPR, sector regulators) would
+  sharpen this further but age fast — named the program mechanics rather than the specific bodies. SFR-e''s
+  "collaborative relationships with regulatory bodies" is non-normative in the input but is exactly the
+  kind of thing regulators increasingly expect — flagged for human review on whether to upgrade to a stronger
+  ask. Cross-suite: D9 governance, I7 (international coordination).
+
+  '
+version_compat:
+  framework_version_min: '1.0'
+  framework_version_max: 1.x
+  pattern_layer_version: v1-draft
+drafted_by: claude-opus-4.7-author
+drafted_at: 2026-04-16
+anchor_exemplar: D9.2-compliance

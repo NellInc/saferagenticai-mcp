@@ -1,0 +1,139 @@
+id: D5::idx10::documentation-incomprehensibility
+display_id: "D5_2"
+suite_id: D5
+suite_title: Transparency and Interpretability of Reasoning
+subgoal_title: Documentation Incomprehensibility
+content_type: process
+summary: 'Inhibitor-variant subgoal: the failure mode is documentation so dense, jargon-heavy, or monolithic
+  that it communicates nothing to the readers it is ostensibly for. The pattern is layered documentation
+  with audience-specific tiers, regular user testing of comprehension (not satisfaction), and a feedback
+  loop that actually drives revision. Documentation that sits unchanged for two years with no evidence
+  anyone reads it is not documentation; it is compliance theater.
+
+  '
+normative_anchors:
+  sfrs_addressed:
+  - a
+  - b
+  - c
+  - d
+  evidence_addressed:
+  - I
+  - II
+  - III
+  sfrs_not_addressed: []
+  evidence_not_addressed: []
+cross_references:
+- D5::idx0::transparency-and-interpretability-of-rea
+- D5::idx4::interpretability-and-traceability-of-rea
+process_elements:
+- name: Layered documentation authoring
+  cadence: continuous; paired with each material capability release
+  participants:
+  - technical writer
+  - subject matter expert
+  - UX writer or content strategist
+  - at least one non-expert reviewer
+  maps_to_sfr:
+  - a
+  - b
+- name: Standards conformance review
+  cadence: annually and on publication of relevant new standard (ISO/IEC 42001, 23894, IEEE 7000 series,
+    EU AI Act Annex IV, NIST AI RMF, sector-specific)
+  participants:
+  - documentation lead
+  - compliance lead
+  - legal
+  maps_to_sfr:
+  - a
+- name: Comprehension study
+  cadence: at least annually per tier; after major documentation restructure
+  participants:
+  - UX researcher
+  - sample readers from each tier
+  - documentation lead
+  maps_to_sfr:
+  - d
+- name: Interactive-tool build and review
+  cadence: aligned to documentation releases; user-tested before public launch
+  participants:
+  - developer
+  - UX researcher
+  - technical writer
+  maps_to_sfr:
+  - b
+- name: Feedback-to-revision loop
+  cadence: continuous intake; monthly triage; revisions shipped on documentation release cadence
+  participants:
+  - documentation lead
+  - technical writer
+  - UX researcher
+  maps_to_sfr:
+  - c
+  - d
+triggers:
+- New capability released → Layered documentation authored and comprehension-tested before public release
+- Applicable new standard published → Standards conformance review
+- Comprehension study finds tier underperforming → Revision cycle with measured pre/post comparison
+- Feedback volume exceeds triage threshold → Documentation lead escalates to release planning
+- Annual calendar → Comprehension study per tier
+artifacts:
+- Documentation Tier Reference (what each tier covers, who it's for, what format it takes)
+- Per-tier documentation (lay-user, practitioner/developer, auditor/regulator, internal engineering)
+- Interactive tools (e.g., decision-explainer walkthroughs, model card browsers, policy diff viewers)
+- Comprehension study reports with task-completion or paraphrase accuracy metrics per tier
+- Feedback log with triage outcomes
+- Documentation revision changelog with pre/post measures where available
+process_norms:
+- Measure comprehension, not satisfaction. "The docs are helpful" (opinion) is not a comprehension metric.
+  Measure whether readers can perform a task, answer a question, or paraphrase correctly.
+- Non-expert reviewer on every tier-1 document. Peer review inside the expert author group misses jargon
+  drift.
+- Plain-language rewrite is editing, not dumbing down. Technical accuracy is non-negotiable; length and
+  jargon density are negotiable.
+- Documentation debt is tracked with the same discipline as code debt. Stale docs have a named owner and
+  a remediation plan.
+- Feedback that changes nothing is a signal. If a quarter of feedback points at the same confusion and
+  the doc does not change, ask why.
+evidence_production:
+- evidence_numeral: I
+  how_to_produce: 'Maintain a standards-mapping document: for each applicable standard, which documentation
+    section satisfies which clause. Retain the multi-tiered documentation set with version history; retain
+    review records showing expert and non-expert sign-off per release.
+
+    '
+- evidence_numeral: II
+  how_to_produce: 'Collect and retain feedback-survey results with enough structure to aggregate (tier,
+    topic, specificity). Demonstrate interactive tools with usage statistics (sessions, task completion
+    rates). Document comprehension improvements with pre/post measures — not just "we updated the docs."
+
+    '
+- evidence_numeral: III
+  how_to_produce: 'Retain comprehension-study reports and case studies showing that a documentation change
+    measurably improved reader understanding. Include cases where the first revision did not work and
+    a second revision was needed — honesty about iteration is more credible than a monotonic-improvement
+    narrative.
+
+    '
+confidence: high
+needs_human_review: false
+review_notes: 'High confidence on the process shape — this is tech-writing discipline applied to AAI documentation.
+  The harder problem is that AAI documentation has unusual properties: the system itself changes faster
+  than traditional software docs assume, and emergent behavior means documentation can age rapidly even
+  without a visible release. The cadence above (aligned to capability releases, with annual tier-wise
+  comprehension studies) tries to accommodate this but may need tightening for fast-moving systems. Cross-suite
+  for Phase 2: D5::idx12 (rapid transparency feature evolution) shares the "documentation keeps up with
+  the system" problem and may want to be closely linked in Phase 2 consolidation; D9 Compliance (standards
+  conformance); I6 Improper Ecosystem Considerations / information asymmetry (under-documentation is an
+  ecosystem harm).
+
+  '
+version_compat:
+  framework_version_min: '1.0'
+  framework_version_max: 1.x
+  pattern_layer_version: v1-draft
+drafted_by: claude-opus-4.7-author
+drafted_at: 2026-04-16
+anchor_exemplar: D7.2-culture-of-safety
+display_id_variant_note: D5_2
+is_underlined_variant: true

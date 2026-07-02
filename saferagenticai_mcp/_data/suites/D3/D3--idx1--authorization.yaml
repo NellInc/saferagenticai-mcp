@@ -1,0 +1,158 @@
+id: D3::idx1::authorization
+display_id: D3.1
+suite_id: D3
+suite_title: Security
+subgoal_title: Authorization
+content_type: code-applicable
+summary: "Authorization in agentic systems is not \"is this human logged in\" \u2014 it is \"does this\
+  \ chain of principals (human delegator \u2192 agent \u2192 sub-agent \u2192 tool) collectively have\
+  \ authority for this action right now, and can we prove it later?\" The subgoal asks for verified identity\
+  \ and monitored, enforced authorization for every actor, human or AI, touching the system.\n"
+normative_anchors:
+  sfrs_addressed:
+  - a
+  - b
+  evidence_addressed:
+  - I
+  - II
+  - III
+  sfrs_not_addressed: []
+  evidence_not_addressed: []
+cross_references:
+- D3::idx2::sandboxing
+- D3::idx4::operational-boundaries-and-constraints
+- D3::idx6::overseeing-monitoring-agents
+- D3::idx14::spyware
+design_patterns:
+- name: Machine-identity for every agent and sub-agent
+  sketch: "Every agent process has its own cryptographic identity (SPIFFE/SPIRE, AWS IAM Roles, workload\
+    \ identity federation, or equivalent). No agent uses a human's credentials. When one agent spawns\
+    \ another, the child receives a scoped, short-lived credential derived from the parent's mandate \u2014\
+    \ not the parent's full credential. Human delegation is explicit: the principal chain is recorded\
+    \ in every authorization event.\n"
+  maps_to_sfr:
+  - b
+  when_to_use: Every production agent deployment. No exceptions.
+- name: Delegation tokens with bounded scope and TTL
+  sketch: 'When a human or calling system authorizes an agent to act, issue a token that encodes: the
+    delegated capabilities (action verbs + resource scopes), TTL (minutes-to-hours, not weeks), and the
+    originating principal. Tokens are verified at every tool call; expired or out-of-scope tokens deny
+    the call and audit. Macaroons, biscuit tokens, or capability-URL designs fit naturally here.
+
+    '
+  maps_to_sfr:
+  - a
+  - b
+  when_to_use: Any agent that takes delegated authority from a user or upstream system.
+- name: Policy-as-code authorization (explicit deny-by-default)
+  sketch: 'Centralize authorization decisions in a policy engine (OPA/Rego, Cedar, or equivalent) rather
+    than scattering `if user.is_admin` checks through code. Default policy is deny; allowed actions are
+    enumerated. Policy is versioned, peer-reviewed, and tested. Every decision emits an audit event (`allow`
+    / `deny` / reason / policy version).
+
+    '
+  maps_to_sfr:
+  - b
+  when_to_use: Any non-trivial authorization surface. Once you have two roles and three resources, write
+    policy; don't hand-roll conditionals.
+- name: Continuous verification of the ecosystem perimeter
+  sketch: "\"Establish and continuously monitor\" (SFR-a) means the authorization plane is itself monitored:\
+    \ enumerate all identity providers, trust relationships, cross-account/tenant trusts, service principals,\
+    \ and API keys. Drift from the declared perimeter triggers an alert. Unauthorized-access attempts\
+    \ are not only blocked \u2014 they are analyzed for pattern, origin, and capability implication.\n"
+  maps_to_sfr:
+  - a
+  when_to_use: Always. A one-time perimeter review is a point-in-time snapshot; "continuously" is in the
+    normative text.
+- name: Step-up auth for high-consequence actions
+  sketch: "Define a catalogue of high-consequence actions (mass data export, credential rotation, capability\
+    \ enablement, egress to new domain, irreversible writes). These require a fresh authentication challenge\
+    \ \u2014 re-verify the human principal at decision time, not at session start. For autonomous actions,\
+    \ require a second approver or out-of-band confirmation.\n"
+  maps_to_sfr:
+  - a
+  - b
+  when_to_use: Any action whose blast radius exceeds the agent's standard operating envelope.
+anti_patterns:
+- name: Shared service-account credentials for agents
+  why_wrong: 'When multiple agents share one credential, the audit log cannot tell who did what. SFR-a''s
+    "monitor to prevent interference" becomes unenforceable: there is no "who" to attribute.
+
+    '
+- name: Long-lived bearer tokens without refresh
+  why_wrong: 'A leaked static API key is a persistent foothold. Short-lived, rotatable credentials (even
+    if slightly more complex to implement) bound the blast radius of any leak.
+
+    '
+- name: Authorization checks in the UI only
+  why_wrong: 'Agents don''t use UIs; they call APIs directly. Any authorization that lives in frontend
+    code is bypassable. Enforce at the API and, for defense-in-depth, at the data layer.
+
+    '
+- name: Role explosion (RBAC with thousands of roles)
+  why_wrong: 'When every new user gets a new role, no one can audit "who can do X." Prefer attribute-based
+    or relationship-based authorization with machine-readable policy that answers "who could do this?"
+    and "what can this principal do?" in seconds.
+
+    '
+- name: Treating agent identity as a prompt claim
+  why_wrong: '"I am the admin" in a prompt is not authorization. The cryptographic identity of the calling
+    process is the only trusted signal; anything the model says about itself must be verified against
+    that identity.
+
+    '
+code_shape:
+  language: pseudocode
+  code: "# Policy-as-code with delegation chain verification\ndef authorize(request: ToolCall, ctx: AgentContext)\
+    \ -> Decision:\n    # 1. Verify the machine identity presenting the call\n    identity = IDP.verify(ctx.workload_token)\
+    \  # SPIFFE/JWT/etc.\n    if not identity:\n        AUDIT.deny(ctx, reason=\"unverified_identity\"\
+    )\n        return Decision.DENY\n\n    # 2. Verify the delegation token (human \u2192 agent \u2192\
+    \ sub-agent)\n    chain = DELEGATION.verify_chain(ctx.delegation_token)\n    if chain.expired or chain.scope.lacks(request.action):\n\
+    \        AUDIT.deny(ctx, reason=\"delegation_out_of_scope\",\n                   action=request.action,\
+    \ scope=chain.scope)\n        return Decision.DENY\n\n    # 3. Policy engine decision (deny-by-default)\n\
+    \    decision = POLICY.evaluate(\n        principal=chain.origin,\n        acting_as=identity,\n \
+    \       action=request.action,\n        resource=request.resource,\n        context=ctx.environment,\n\
+    \    )\n    AUDIT.record(decision, policy_version=POLICY.version)\n\n    # 4. Step-up for high-consequence\
+    \ actions\n    if decision.allow and request.action in HIGH_CONSEQUENCE:\n        if not STEP_UP.verify_recent(chain.origin,\
+    \ max_age_s=300):\n            AUDIT.deny(ctx, reason=\"step_up_required\")\n            return Decision.DENY\n\
+    \n    return decision\n"
+  notes: 'Four independent checks: workload identity, delegation scope, policy engine, step-up. Any one
+    can deny. Every outcome audited with enough context to reconstruct the decision offline.
+
+    '
+evidence_production:
+- evidence_numeral: I
+  how_to_produce: 'Publish the Access Control and Authentication Policy (referenced from D3 umbrella),
+    authorization policy source (OPA/Cedar repo), and the credential lifecycle procedure (issuance, rotation,
+    revocation). Include a catalogue of all identity providers and trust relationships.
+
+    '
+- evidence_numeral: II
+  how_to_produce: "Export from the monitoring plane: detections for unauthorized-access attempts, anomalous\
+    \ delegation use (e.g., off-hours high-privilege), drift from declared perimeter, and blocking actions\
+    \ taken. Show closed-loop \u2014 detection triggered, rule fired, access blocked, alert routed.\n"
+- evidence_numeral: III
+  how_to_produce: 'Centralize authorization decision logs (allow and deny) with: principal chain, action,
+    resource, policy version, decision, reason, timestamp, correlation ID to the agent''s reasoning trace
+    where applicable. Retain per records policy; ensure immutability (append-only store, WORM, or signed
+    log segments).
+
+    '
+confidence: high
+needs_human_review: false
+review_notes: 'Display_id "D3.1" collides with the underlined-variant "D3.1 Model Poisoning" (idx8). Both
+  are real subgoals; use the full `id` to disambiguate. The advisor flagged this for the suite.
+
+  SFR-a phrasing ("prevent interference and harm from malicious actors") is broad; I have narrowed to
+  perimeter monitoring and continuous verification because this subgoal is titled "Authorization" and
+  other malicious-actor defences live in D3.3 (dynamic risk), D3.5 (intervention), and D3.11 (spyware).
+  Cross-referenced rather than duplicated.
+
+  '
+drafted_by: claude-opus-4.7-subagent-D3
+drafted_at: 2026-04-16
+anchor_exemplar: D3.2-sandboxing
+version_compat:
+  framework_version_min: '1.0'
+  framework_version_max: 1.x
+  pattern_layer_version: v1-draft

@@ -1,0 +1,145 @@
+id: D7::idx2::culture-of-safety
+display_id: D7.2
+suite_id: D7
+suite_title: Achieving and Sustaining a Safe System Profile
+subgoal_title: Culture of Safety
+content_type: process
+summary: 'Safety culture is what people do when no one is checking. This subgoal expects the organization
+  to build durable processes that make safety the default under uncertainty, rather than an override that
+  leadership invokes in crises. The framework''s "caution by default" clause is the sharpest operational
+  handle — make it named policy with audit evidence.
+
+  '
+normative_anchors:
+  sfrs_addressed:
+  - a
+  - b
+  - c
+  - d
+  - e
+  evidence_addressed:
+  - I
+  - II
+  - III
+  - IV
+  - V
+  sfrs_not_addressed: []
+  evidence_not_addressed: []
+process_elements:
+- name: Pre-deployment risk review
+  cadence: pre-deployment (blocking gate before any new or materially-changed capability ships)
+  participants:
+  - responsible engineer
+  - safety lead
+  - independent red teamer
+  - product owner
+  maps_to_sfr:
+  - b
+- name: Caution-by-default capability enablement
+  cadence: continuous
+  participants:
+  - safety lead
+  - capability owner
+  maps_to_sfr:
+  - d
+- name: Blameless incident post-mortem
+  cadence: per-incident (within 10 business days) + monthly pattern review
+  participants:
+  - incident commander
+  - involved engineers
+  - safety lead
+  - neutral facilitator
+  maps_to_sfr:
+  - a
+  - e
+- name: Contingency drill
+  cadence: quarterly minimum
+  participants:
+  - on-call rotation
+  - safety lead
+  - product ops
+  - external observer where feasible
+  maps_to_sfr:
+  - c
+- name: Safety onboarding and recertification
+  cadence: mandatory at hire; recertification annually for all roles with production capability authority
+  participants:
+  - all eligible staff
+  - safety lead as instructor-of-record
+  maps_to_sfr:
+  - a
+  - e
+- name: Leadership safety signal
+  cadence: monthly all-hands item; quarterly board reporting
+  participants:
+  - CEO or designated executive
+  - safety lead
+  maps_to_sfr:
+  - a
+triggers:
+- New capability proposed or materially changed → Pre-deployment risk review
+- Incident or near-miss detected → Blameless post-mortem
+- Scheduled quarterly → Contingency drill
+- New hire with production authority → Safety onboarding
+- Annual anniversary → Safety recertification
+- Novel or under-tested capability flagged → Caution-by-default default-off stance with explicit enablement
+  request required
+- Post-mortem backlog grows or recurring-cause patterns detected → Escalation to board-level risk review
+artifacts:
+- Pre-deployment risk assessments (per capability, signed off by safety lead)
+- Capability diaries (record of which capabilities are default-off, why, and when they are enabled/revoked)
+- Post-mortem documents (blameless, root-cause focused, with action items)
+- Contingency drill reports (scenario, participants, gaps identified, remediations)
+- Onboarding completion records
+- Recertification attestations
+- Monthly all-hands safety-signal meeting minutes
+- Quarterly board risk report
+evidence_production:
+- evidence_numeral: I
+  how_to_produce: 'Maintain attendance records for all safety training and onboarding sessions. HR system
+    or LMS can export these. Include: participant, module, completion date, score where assessed. Retain
+    per records policy. Link individual records to accountability role profiles (D9.2 evidence IV).
+
+    '
+- evidence_numeral: II
+  how_to_produce: 'Every pre-deployment risk assessment is a dated, signed document that enumerates: capability
+    description, identified risks, mitigations, residual risk, go/no-go recommendation, sign-off by safety
+    lead. Retain in an auditable register. Link to the Violation and Complaint Register (D9.2) when risks
+    materialize as incidents.
+
+    '
+- evidence_numeral: III
+  how_to_produce: 'Contingency plans are living documents per incident category (e.g., model outage, unintended
+    capability escalation, data exposure). Each names a role-holder for each response step, lists allocated
+    resources (people, compute, legal hold capacity), and is exercised at least quarterly via drills with
+    written reports.
+
+    '
+- evidence_numeral: IV
+  how_to_produce: 'Capture safety communications systematically: meeting minutes (all-hands safety segments,
+    monthly safety team meetings), published policy documents (with version history), internal announcements,
+    newsletter entries. The volume and regularity matter — a single annual memo does not evidence a culture.
+
+    '
+- evidence_numeral: V
+  how_to_produce: 'Caution-by-default requires auditable records. Maintain a capability ledger: every
+    capability with default-off status, the justification, who has authority to enable it, conditions
+    for enablement, conditions for revocation. Quarterly audit report shows: capabilities default-off,
+    enablement requests made, approved, denied, revoked. "Caution by default" is only a policy if failing
+    to document a capability''s status is itself a violation.
+
+    '
+confidence: medium
+needs_human_review: true
+review_notes: "Much of this (blameless post-mortems, pre-deployment reviews, drills) is established SRE/security\
+  \ culture and the LLM will draft similar patterns for other process subgoals. The framework-specific\
+  \ sharpenings worth preserving as subagents generalize:\n  (1) \"Caution by default\" as a named, auditable\
+  \ policy — this is a\n      framework-specific phrase with operational teeth if treated as such.\n \
+  \ (2) Capability ledger / default-off stance — concrete mechanism that\n      subagents should look\
+  \ for in other subgoals.\n  (3) Cross-referencing between subgoals (e.g., D9.2 evidence IV, the\n  \
+  \    Violation Register) — the framework is a graph, not a checklist.\nNell to weigh in on whether \"\
+  independent red teamer\" is expected in the pre-deployment review or is over-prescribing relative to\
+  \ the SFR text (which says \"proactive risk assessment\" without specifying independence).\n"
+drafted_by: claude-opus-4.7-author
+drafted_at: 2026-04-16
+anchor_exemplar: self

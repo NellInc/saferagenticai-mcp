@@ -1,0 +1,175 @@
+id: I2::idx10::detection-of-manipulative-behaviors
+display_id: "I2_2"
+is_underlined_variant: true
+suite_id: I2
+suite_title: Deception
+subgoal_title: Detection of Manipulative Behaviors
+content_type: code-applicable
+summary: 'Where I2.1 (idx9) provides the supervisor infrastructure, this subgoal provides the detection
+  content: classifiers for manipulative, confusing, or undesirable patterns — sycophancy, dark patterns,
+  coercive framing, emotionally loaded misdirection, over-confident misleading claims — plus protective
+  response mechanisms and, for high-stakes decisions, multi- system consensus (independent systems vote
+  on the same decision).
+
+  '
+normative_anchors:
+  sfrs_addressed:
+  - a
+  - b
+  - c
+  evidence_addressed:
+  - I
+  - II
+  - III
+  - IV
+  sfrs_not_addressed: []
+  evidence_not_addressed: []
+design_patterns:
+- name: Manipulative-behavior taxonomy and classifiers
+  sketch: 'Define a named taxonomy: sycophancy, dark patterns, deceptive urgency, false authority, emotional
+    coercion, confabulated citation, misleading confidence, over-personalization-to- influence. For each,
+    train or source a classifier and set a sensitivity threshold. Taxonomy is versioned; new categories
+    added via governance review, not silently.
+
+    '
+  maps_to_sfr:
+  - a
+  when_to_use: Any model-driven output surface where users or downstream systems may rely on the output.
+- name: Protective response playbook
+  sketch: 'For each detected pattern class, a protective response is defined: append a correction notice,
+    rewrite via a safer model, require human review, block delivery, or surface to the user what was detected.
+    Playbook is content — not branching logic — so it is reviewable. Each response is logged with trigger
+    and delivered-to-user result.
+
+    '
+  maps_to_sfr:
+  - b
+  when_to_use: Always, with response severity matched to deployment risk.
+- name: Pre-delivery filter gateway
+  sketch: 'Model outputs pass a gateway before user delivery. The gateway runs classifiers (inline or
+    with strict latency budget), applies the playbook, and logs. Gateway is in the supervisor trust domain,
+    not the agent''s. Supports canary / shadow traffic for classifier evaluation.
+
+    '
+  maps_to_sfr:
+  - b
+  when_to_use: Any externally-facing surface with non-trivial manipulation risk.
+- name: Multi-system consensus for high-stakes decisions
+  sketch: 'For decisions above a risk threshold (irreversible actions, material financial impact, safety-critical
+    outputs), route the task to multiple independent systems — different models, or model + rule engine
+    — and require consensus. Divergences are surfaced to a human. Use independent inputs to prevent a
+    single compromised system dominating consensus.
+
+    '
+  maps_to_sfr:
+  - c
+  when_to_use: High-stakes decision points; do not use universally (latency, cost, correlated-error risk).
+- name: Adversarial probe library
+  sketch: 'Maintain a library of prompts designed to elicit manipulative behavior (sycophantic compliance
+    tests, pressure prompts, authority-framing tests). Run against models regularly; failures feed remediation
+    backlog. Library is access-controlled.
+
+    '
+  maps_to_sfr:
+  - a
+  when_to_use: Pre-deployment and on ongoing cadence.
+- name: User-reporting feedback loop
+  sketch: 'Users can flag outputs as manipulative / misleading. Flagged samples feed classifier retraining
+    and taxonomy review. Report queue is human-moderated to prevent adversarial report poisoning. Response
+    to reporter is closed-loop.
+
+    '
+  maps_to_sfr:
+  - a
+  when_to_use: User-facing surfaces.
+anti_patterns:
+- name: Consensus by majority of correlated models
+  why_wrong: 'If the "multiple systems" share weights, training data, or prompt framing, their errors
+    are correlated. A confident-wrong consensus is worse than a single model''s wrong answer because it
+    launders the error through apparent validation. Independence must be real: different families, different
+    data, or complementary methods (model vs rule engine).
+
+    '
+- name: Blocking filter as the whole defence
+  why_wrong: 'A filter with no training feedback and no taxonomy review becomes a stale checklist attacker-adapted
+    around. The detection system must evolve with observed manipulation patterns.
+
+    '
+- name: Users informed of detection but not of content
+  why_wrong: 'Telling a user "the AI tried to manipulate you; output suppressed" without any transparency
+    on what was detected and why erodes trust and leaves the user unable to judge the classifier''s calibration.
+
+    '
+- name: Classifiers too strict, user experience degrades
+  why_wrong: 'Over-triggering classifiers train users to bypass warnings. Calibrate sensitivity per deployment,
+    track false-positive rates, iterate.
+
+    '
+code_shape:
+  language: pseudocode
+  code: "def pre_delivery_filter(agent_output: Output, context: Context) -> Output:\n    detections =\
+    \ []\n    for cls in MANIPULATION_CLASSIFIERS.active():\n        r = cls.score(agent_output, context)\n\
+    \        if r.score >= cls.threshold:\n            detections.append(r)\n            AUDIT.record(\"\
+    manip_detect\", cls=cls.id,\n                        score=r.score, output_hash=agent_output.hash)\n\
+    \n    if not detections:\n        return agent_output\n\n    response = PLAYBOOK.decide(detections,\
+    \ context.risk_class)\n    if response.block:\n        return OutputBlocked(reason=response.user_message)\n\
+    \    if response.require_human_review:\n        REVIEW_QUEUE.enqueue(agent_output, detections)\n \
+    \       return OutputHeld(reason=\"under review\")\n    if response.rewrite:\n        return SAFER_MODEL.rewrite(agent_output,\
+    \ constraints=response.constraints)\n    return agent_output.with_notice(response.user_notice)\n\n\
+    def consensus_decide(task: HighStakesTask) -> Decision:\n    systems = CONSENSUS_POOL.independent_systems(task)\n\
+    \    votes = [s.decide(task) for s in systems]\n    agreement = CONSENSUS.score(votes)\n    if agreement\
+    \ < THRESHOLD:\n        HUMAN_REVIEW.require(task, votes)\n        return Decision.deferred(votes)\n\
+    \    AUDIT.record(\"consensus\", task.id,\n                votes=[v.summary() for v in votes],\n \
+    \               agreement=agreement)\n    return CONSENSUS.aggregate(votes)\n"
+  notes: 'Classifier stack can mix trained judges (sycophancy, emotional framing) with rule-based detectors
+    (false-authority citation patterns, urgency-cue lexicons). Consensus pool size depends on stakes and
+    cost; three independent systems is a reasonable default.
+
+    '
+evidence_production:
+- evidence_numeral: I
+  how_to_produce: 'Taxonomy document (versioned) with class definitions, example instances, and classifier-to-class
+    mapping. Playbook document with per-class protective response. Access-controlled location with audit
+    log on changes.
+
+    '
+- evidence_numeral: II
+  how_to_produce: 'Operational log: per-class detection counts, response actions (blocked / rewritten
+    / held / noticed), false-positive rate estimates from sampled review. Monthly report summarising trends
+    and remediations.
+
+    '
+- evidence_numeral: III
+  how_to_produce: 'Consensus-decision records for high-stakes tasks: task identifier, participating systems,
+    individual votes, agreement score, final decision, human review outcome where triggered. Retention
+    per policy; redaction for sensitive payloads.
+
+    '
+- evidence_numeral: IV
+  how_to_produce: 'Behaviour-analysis reports spanning technical (model outputs, tool-call patterns) and
+    social (user feedback, reported harms, downstream outcomes where observable) domains. Quarterly cross-domain
+    review with safety lead.
+
+    '
+confidence: medium
+needs_human_review: true
+review_notes: "Display-id collision with idx10 here uses \"I2.2\" (from input JSON). As with idx9, pattern_id\
+  \ disambiguates; downstream consumers should index on pattern_id.\nManipulation detection is an active\
+  \ research area and classifier performance varies widely. The structural pattern (taxonomy + classifiers\
+  \ + playbook + gateway + consensus for high-stakes) is stable; concrete classifier choices need domain\
+  \ teams.\nMulti-system consensus has well-known failure mode (correlated errors) that I've called out\
+  \ in anti-patterns. It's worth preserving in Phase 2 as a framework-specific sharpening — the SFR text\
+  \ leaves independence implicit, but correlated-error risk is the operational hazard.\nCross-suite:\n\
+  \  - I2.1 (idx9 — Supervisory Systems) — shares supervisor trust domain;\n    pre-delivery filter is\
+  \ a specific supervisor-hosted mechanism.\n  - I2.5 (Strategic Deception) — sycophancy classifier is\
+  \ common\n    infrastructure; consolidation should avoid duplicate ownership.\n  - D2 (Epistemic Hygiene)\
+  \ — \"misleading confidence\" class overlaps\n    with calibration; be explicit about the line.\n  -\
+  \ D5 (Transparency) — user notification of detection ties to\n    transparency commitments.\n  - I3\
+  \ (if present for Manipulation) — naming overlap; Phase 2 should\n    clarify boundary.\n"
+drafted_by: claude-opus-4.7-author
+drafted_at: 2026-04-16
+anchor_exemplar: D3.2-sandboxing
+version_compat:
+  framework_version_min: '1.0'
+  framework_version_max: 1.x
+  pattern_layer_version: v1-draft

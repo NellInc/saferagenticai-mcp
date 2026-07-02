@@ -1,0 +1,168 @@
+id: "D1::idx1::transparency-of-goals"
+display_id: "D1.1"
+suite_id: "D1"
+suite_title: "Goal Alignment"
+subgoal_title: "Transparency of Goals"
+content_type: code-applicable
+
+summary: >
+  Stakeholders cannot oversee what they cannot see. This subgoal requires a
+  queryable, live view of every goal the agent is pursuing — primary,
+  instrumental, and emergent — plus a durable history of how that portfolio
+  evolved. Treat the goal tree as first-class application state with its own
+  schema, its own persistence, and its own read API, not as prompt-buried
+  narrative the model may or may not re-derive.
+
+normative_anchors:
+  sfrs_addressed: [a, b]
+  evidence_addressed: [I, II]
+  sfrs_not_addressed: []
+  evidence_not_addressed: []
+
+cross_references:
+  - "D1::idx4::transparency-of-decisions"
+  - "D1::idx3::goal-interpretability"
+
+design_patterns:
+
+  - name: Explicit goal-tree data structure
+    sketch: >
+      Represent goals as a typed, persisted graph with fields
+      `{goal_id, parent_id, text, origin (user|system|derived), priority,
+      status, created_at, updated_at, completion_criteria, owner_agent}`.
+      Every planning step must read and write through this structure; the
+      model's chain-of-thought is not authoritative. Instrumental subgoals
+      created during operation are inserted with `origin=derived` and linked
+      to the triggering parent.
+    maps_to_sfr: [a]
+    when_to_use: Any agent that decomposes user asks into subgoals.
+
+  - name: Live goal-inspection API
+    sketch: >
+      Expose a read-only endpoint (e.g., `GET /agents/{id}/goals`) returning
+      the current goal tree with hierarchy, priorities, progression
+      percentage, and open instrumental subgoals. Gate with the same authn
+      used for agent control, and emit an access-audit event so reads are
+      themselves evidence of stakeholder oversight.
+    maps_to_sfr: [a]
+    when_to_use: Always; this is the primary SFR-a evidence surface.
+
+  - name: Append-only goal event log
+    sketch: >
+      Every create / update / complete / abandon / reprioritize operation on
+      the goal graph emits a structured event to an append-only store
+      `{event_id, goal_id, prev_state, new_state, actor, reason, ts,
+      correlation_id}`. Retention ≥ the organization's incident-investigation
+      window. Historical queries reconstruct goal state at any point in time.
+    maps_to_sfr: [b]
+    when_to_use: Whenever goals can change after creation — i.e., always.
+
+  - name: Stakeholder-tiered views
+    sketch: >
+      Surface the same underlying goal tree at three granularities: operator
+      (full detail including internal subgoals), user (their originating ask
+      plus top-level derived goals), auditor (full detail plus event log).
+      Do not filter by hiding; filter by summarizing, and record which view
+      a stakeholder received.
+    maps_to_sfr: [a, b]
+    when_to_use: Multi-audience deployments.
+
+anti_patterns:
+
+  - name: Goal tree lives only in the model's context window
+    why_wrong: >
+      If the "goals" are whatever the LLM last said they were, there is no
+      transparency — there is a narrative. The framework expects a
+      stakeholder-queryable artifact independent of inference state.
+
+  - name: Logging prompts instead of goals
+    why_wrong: >
+      Prompt logs conflate instructions, reasoning, and outputs. Evidence II
+      asks for goal history with "completion status, causal relationships,
+      and decision pathways" — that requires structured goal events, not a
+      haystack of transcripts.
+
+  - name: Mutable history
+    why_wrong: >
+      A goal log that can be rewritten cannot satisfy "comprehensive
+      historical records" under any serious audit. Append-only is the
+      minimum; tamper-evident (hash-chained, signed) is the floor for
+      high-stakes deployments.
+
+  - name: Hidden instrumental goals
+    why_wrong: >
+      Agents that spawn subgoals internally without surfacing them defeat
+      SFR-a's "any instrumental goals developed by the system during
+      operation" clause. Derived goals must be written to the tree before
+      being acted on.
+
+code_shape:
+  language: pseudocode
+  code: |
+    # Goal-tree operations are the ONLY legal path to change agent objectives
+    class GoalStore:
+        def create(self, *, parent_id, text, origin, priority, actor, reason):
+            goal = Goal(id=new_id(), parent_id=parent_id, text=text,
+                        origin=origin, priority=priority, status="active",
+                        created_at=now(), updated_at=now())
+            DB.insert(goal)
+            EVENT_LOG.append(GoalEvent(
+                type="create", goal_id=goal.id, prev_state=None,
+                new_state=goal.to_dict(), actor=actor, reason=reason,
+                ts=now(), correlation_id=ctx.correlation_id))
+            return goal
+
+        def derive(self, parent_id, text, reason):
+            # Instrumental subgoals MUST go through the same gate
+            return self.create(parent_id=parent_id, text=text,
+                               origin="derived", priority=inherit(parent_id),
+                               actor="agent_self", reason=reason)
+
+    # Planner checks goal store, not its own scratchpad
+    def plan_next_step(agent_ctx):
+        active_goals = GOAL_STORE.current_tree(agent_ctx.agent_id)
+        return PLANNER.select(active_goals)
+  notes: >
+    Key invariant: no code path mutates agent objectives except through
+    GoalStore. Enforce via lint or runtime check — if the planner can set
+    its own goals in scratchpad, SFR-a is unverifiable.
+
+evidence_production:
+
+  - evidence_numeral: I
+    how_to_produce: >
+      Stand up the goal-inspection API as a first-class product surface
+      with its own documentation, authn, and access log. Screenshots and
+      API-response samples in a stakeholder-accessible location satisfy
+      "real-time goal transparency reports." For internal multi-agent
+      systems, a dashboard aggregating all agents' goal trees is the usual
+      form.
+
+  - evidence_numeral: II
+    how_to_produce: >
+      Export the append-only goal event log per audit window with
+      reconstruction queries that show goal lifecycle (create → updates →
+      completion or abandonment) for any goal_id. Include causal links
+      (parent_id chains, triggering events) and decision pathways (which
+      actor modified what, with reason). Tamper-evidence (hash chains or
+      signed batches) is strongly recommended for regulated deployments.
+
+confidence: high
+needs_human_review: false
+review_notes: >
+  Standard pattern — explicit goal state plus append-only event log is
+  well-established. The SFR-specific sharpening is "instrumental goals
+  developed during operation" (SFR-a): this is what distinguishes agentic
+  systems from workflow systems and what the pattern must enforce. The
+  `origin=derived` tag and the rule that derive() funnels through the same
+  gate as create() are the concrete mechanism. D5 (Transparency) likely
+  overlaps; this is the goal-specialized slice.
+
+version_compat:
+  framework_version_min: "1.0"
+  framework_version_max: "1.x"
+  pattern_layer_version: "v1-draft"
+
+drafted_by: claude-opus-4.7-author
+drafted_at: 2026-04-16
+anchor_exemplar: D3.2-sandboxing

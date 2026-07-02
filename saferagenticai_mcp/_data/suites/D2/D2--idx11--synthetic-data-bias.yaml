@@ -1,0 +1,207 @@
+# Pattern — D2.9 Synthetic Data Bias (underlined variant D2.2̲)
+
+id: D2::idx11::synthetic-data-bias
+display_id: "D2_2"
+is_underlined_variant: true
+suite_id: "D2"
+suite_title: "Epistemic Hygiene"
+subgoal_title: "Synthetic Data Bias"
+content_type: code-applicable
+
+summary: >
+  Synthetic data is the default patch for coverage gaps and the fastest
+  way to re-encode the generator's existing biases into the training
+  signal at higher fidelity. The subgoal asks for mechanisms that treat
+  synthetic data as a managed intervention: bounded in volume, explicit
+  in purpose, continuously monitored for distributional and behavioural
+  impact, and never a silent substitute for real data from
+  under-represented populations.
+
+normative_anchors:
+  sfrs_addressed: [a, b, c]
+  evidence_addressed: [I, II, III]
+  sfrs_not_addressed: []
+  evidence_not_addressed: []
+
+cross_references:
+  - "D2::idx3::sanity-checking"
+  - "D2::idx4::anti-bias-technologies-processes"
+  - "D2::idx12::sparse-data"
+  - "D2::idx2::transparency-of-information-sources"
+  - "D2::idx8::output-fidelity-and-anti-confabulation"
+
+design_patterns:
+
+  - name: Synthetic-data charter with declared purpose
+    sketch: >
+      No synthetic data enters a training or retrieval corpus without a
+      declared purpose: the specific gap it addresses (named in the
+      lacuna register — see D2.4), why real data is not feasible
+      (cost, access, privacy, safety), the volume cap, the
+      generation methodology, and the monitoring plan. Undeclared
+      synthetic data (including outputs of other models fed back in) is
+      the failure mode; treat feedback loops as synthetic-data events.
+    maps_to_sfr: [a]
+    when_to_use: Any dataset or corpus receiving generated content.
+
+  - name: Volume caps and provenance tagging
+    sketch: >
+      Enforce a synthetic-to-real ratio cap per relevant partition of
+      the dataset (per protected attribute, per domain slice). Every
+      synthetic example is tagged in storage with (generator_id,
+      generation_parameters_hash, generated_at, purpose_id). Training
+      and evaluation pipelines can compute and report the ratio per
+      slice without recomputation.
+    maps_to_sfr: [a, b]
+    when_to_use: Any dataset mixing real and synthetic data.
+
+  - name: Generator audit before use
+    sketch: >
+      Before a generator is used for synthetic-data production, audit
+      it for bias on the same dimensions the receiving pipeline cares
+      about. Generating synthetic "minority-group" examples from a
+      generator that under-represents that group worsens the problem.
+      Specifically: measure the generator's own disparity on the target
+      attribute; document known failure modes; require independent
+      review sign-off per D2.4 fairness gate before admission.
+    maps_to_sfr: [b]
+    when_to_use: Every generator considered for synthetic-data
+      production.
+
+  - name: Downstream impact monitoring
+    sketch: >
+      After synthetic data enters training, compare model behaviour
+      pre- and post-inclusion on disaggregated metrics (per D2.4).
+      Monitor for: seesaw effects (worst-group improves at the expense
+      of another), mode-collapse (reduced output diversity), fidelity
+      regression (model parrots synthetic artifacts). If any threshold
+      trips, the synthetic cohort is revisited.
+    maps_to_sfr: [c]
+    when_to_use: Every release where synthetic data is material.
+
+  - name: Sunset and refresh discipline
+    sketch: >
+      Synthetic-data cohorts have expiry dates and refresh plans,
+      paired with intent to replace with real data as it becomes
+      available. "Permanent synthetic" without a plan to replace is a
+      permanent lacuna hidden by its filler.
+    maps_to_sfr: [a]
+    when_to_use: Whenever a synthetic cohort is expected to remain in
+      the dataset across multiple releases.
+
+anti_patterns:
+
+  - name: Model outputs recycled as training data without tagging
+    why_wrong: >
+      Training on the agent's own outputs (or a sibling model's) is
+      synthetic-data generation, even if not labelled as such. Missing
+      this treatment allows unbounded feedback loops.
+
+  - name: Synthetic-minority as representation
+    why_wrong: >
+      Generating examples of under-represented groups from a generator
+      that already under-represents them amplifies the bias with a
+      coverage-looking signal. Worse than doing nothing because it
+      masks the gap from fairness metrics.
+
+  - name: No volume cap
+    why_wrong: >
+      Unconstrained synthetic augmentation drives the real-data
+      distribution to a minority of the training signal. The cap is
+      the guardrail against "model trained on its own priors".
+
+  - name: Generator audit skipped for convenience
+    why_wrong: >
+      "We use a strong off-the-shelf generator" without auditing it
+      on the exact dimensions the receiving pipeline cares about is
+      the D2.4 anti-pattern in disguise.
+
+code_shape:
+  language: pseudocode
+  code: |
+    # Synthetic example ingest with provenance
+    def ingest_synthetic(example: Example, *, purpose: LacunaPurpose,
+                         generator: GeneratorRef) -> StoredExample:
+        if not purpose.is_registered():
+            raise IngestError("synthetic data without registered purpose")
+        if not GENERATOR_REGISTRY.audited(generator, for_attrs=purpose.attrs):
+            raise IngestError(f"generator {generator.id} not audited for "
+                              f"{purpose.attrs}")
+        tags = {
+            "synthetic": True,
+            "generator_id": generator.id,
+            "gen_params_hash": generator.params_hash,
+            "generated_at": now(),
+            "purpose_id": purpose.id,
+            "sunset_date": purpose.sunset_date,
+        }
+        return DATASET.append(example, tags=tags)
+
+    # Pre-release ratio and impact check
+    def synthetic_gate(release: Release,
+                       *, policy: SyntheticPolicy) -> GateDecision:
+        for slice_ in release.dataset.slices(policy.slice_dimensions):
+            ratio = slice_.count(tag="synthetic") / slice_.count()
+            if ratio > policy.max_ratio_for(slice_):
+                return GateDecision.block(f"synthetic ratio "
+                                          f"{ratio:.2f} > cap in {slice_}")
+        impact = compare_disaggregated(release.model, release.baseline)
+        if impact.any_group_regressed(threshold=policy.seesaw_threshold):
+            return GateDecision.block(f"regression: {impact.regressed_groups()}")
+        return GateDecision.pass_()
+  notes: >
+    Ingest-time and release-time gates. The ingest gate enforces
+    declared-purpose and audited-generator preconditions; the release
+    gate enforces volume cap and no-seesaw invariants.
+
+evidence_production:
+
+  - evidence_numeral: I
+    how_to_produce: >
+      Publish the synthetic-data charter with per-cohort entries:
+      purpose, gap addressed, why real data not feasible, generator
+      used, generator audit reference, volume cap, sunset/refresh
+      plan, monitoring plan. Versioned; reviewed per-release for
+      active cohorts.
+
+  - evidence_numeral: II
+    how_to_produce: >
+      Emit pre-release synthetic impact reports: per-slice synthetic
+      ratio (actual vs cap), disaggregated metric deltas pre- and
+      post-synthetic inclusion, seesaw and mode-collapse detector
+      outputs. Retained per release as signed artifacts; surfaced in
+      release notes.
+
+  - evidence_numeral: III
+    how_to_produce: >
+      Maintain a time-series dashboard per synthetic cohort: size over
+      time, downstream behavioural metrics, sunset status, replacement
+      progress (real data acquired against lacuna). Quarterly review in
+      the Information Integrity Register; retirements documented with
+      post-hoc impact assessment.
+
+confidence: medium
+needs_human_review: true
+review_notes: >
+  Medium-confidence — synthetic data practice is evolving quickly and
+  the "right" volume cap is context-dependent. Calls:
+    (1) Display ID D2.2̲ (underlined) shares number with D2.2
+        (transparency of information sources). Same structural note as
+        D2.8: intentional in the source framework; consolidation should
+        verify rendering.
+    (2) The feedback-loop framing (agent outputs silently re-entering
+        training) is a frontier concern. The pattern names it but does
+        not deeply prescribe; implementers will need to adapt to their
+        training-data pipeline specifics.
+    (3) Cross-suite: overlap with I3 (context degradation — synthetic
+        recursion) and potentially I6 (market concentration — if
+        synthetic monoculture emerges across labs). Consolidation to
+        wire.
+
+drafted_by: claude-opus-4.7-author
+drafted_at: 2026-04-16
+anchor_exemplar: D3.2-sandboxing
+version_compat:
+  framework_version_min: "1.0"
+  framework_version_max: "1.x"
+  pattern_layer_version: "v1-draft"

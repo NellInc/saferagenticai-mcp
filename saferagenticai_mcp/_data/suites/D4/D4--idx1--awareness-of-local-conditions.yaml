@@ -1,0 +1,151 @@
+id: D4::idx1::awareness-of-local-conditions
+display_id: D4.1
+suite_id: D4
+suite_title: Value Alignment
+subgoal_title: Awareness of Local Conditions
+content_type: code-applicable
+summary: 'Local-condition awareness is the runtime detection layer that lets a value-aligned agent notice
+  it has changed operating context — new jurisdiction, new user population, new cultural register, new
+  regulatory regime — before it applies a one-size value profile. The framework expects both automated
+  detection and human-validation hooks, not open-loop inference. Without a concrete signal pipeline, "context
+  awareness" degrades to the model''s unverified guess.
+
+  '
+normative_anchors:
+  sfrs_addressed:
+  - a
+  - b
+  - c
+  evidence_addressed:
+  - I
+  - II
+  - III
+  sfrs_not_addressed: []
+  evidence_not_addressed: []
+cross_references:
+- D4::idx0::value-alignment
+- D4::idx2::recognition-and-respect-for-boundaries
+- D4::idx3::awareness-of-individual-vs-community-bou
+design_patterns:
+- name: Structured context envelope at every invocation
+  sketch: 'Every agent invocation carries a structured `context_envelope` object: `{jurisdiction, locale,
+    user_role, deployment_profile, data_classification, regulated_domain_tags}`. Fields come from authenticated
+    session metadata, not model inference. Missing fields fail closed to the most restrictive default.
+    The envelope is logged with the trace and is the primary key for value-profile selection.
+
+    '
+  maps_to_sfr:
+  - a
+  when_to_use: Every production invocation in any multi-jurisdiction or multi-tenant deployment.
+- name: Automated context-change detection with human validation gate
+  sketch: 'Monitor streams of context envelopes for drift events: new jurisdiction observed, new locale
+    cohort exceeding threshold, deployment-profile change. On detection, raise a ticket to the designated
+    context-owner and apply the most restrictive overlap of applicable value profiles until human review
+    completes. "Auto-adopt" of new-context value profiles is disallowed.
+
+    '
+  maps_to_sfr:
+  - a
+  when_to_use: Whenever the agent is deployable across contexts.
+- name: Value-profile lookup keyed to envelope
+  sketch: 'Maintain a deterministic mapping from (jurisdiction × locale × deployment_profile) to value-profile
+    overlay. Overlay is a diff against the global Codex (D4.0): which values intensify, which defer, which
+    are disabled. Lookup is a pure function; missing key returns the global default with a flag requiring
+    human review within N business days.
+
+    '
+  maps_to_sfr:
+  - b
+  when_to_use: Any system operating across more than one jurisdiction/locale.
+- name: Continuous alignment feedback loop
+  sketch: 'Instrument a feedback channel — user-flagged responses, appeals, regulator inquiries, deployment-partner
+    reports — that maps back to specific context envelopes. Weekly review surfaces contexts where the
+    overlay is producing complaints; these feed Codex revision (via D4.0 Ethics Board).
+
+    '
+  maps_to_sfr:
+  - c
+  when_to_use: Any production deployment past pilot.
+anti_patterns:
+- name: Context inferred from prompt content alone
+  why_wrong: 'Letting the model infer "user is in jurisdiction X" from conversational cues is unreliable
+    and manipulable (a malicious prompt can spoof locale to unlock behavior). Context signals must come
+    from authenticated session metadata.
+
+    '
+- name: Silent fallback to permissive default on missing fields
+  why_wrong: 'When envelope fields are unknown, defaulting to "global permissive" breaks SFR-b (balance
+    global standards with local norms). Fail closed to the most restrictive overlap, flag for review.
+
+    '
+- name: Auto-adoption of new-context value profiles
+  why_wrong: 'If the system invents a value profile for a newly-observed jurisdiction without human ratification,
+    it has just edited the Codex at runtime — violating the D4.0 governance frame.
+
+    '
+- name: Context awareness without log retention
+  why_wrong: 'Evidence II requires logs of detection, response, validation, and adjustment. No retention
+    = no evidence that the detection layer ever fired.
+
+    '
+code_shape:
+  language: pseudocode
+  code: "@value_aligned_entrypoint\ndef handle_request(req: AgentRequest) -> AgentResponse:\n    envelope\
+    \ = ContextEnvelope.from_session(req.session)\n    if envelope.missing_fields():\n        envelope\
+    \ = envelope.with_restrictive_defaults()\n        AUDIT.flag(envelope, reason=\"incomplete_context\"\
+    )\n\n    overlay = VALUE_PROFILE_TABLE.lookup(envelope)\n    if overlay is None:\n        overlay\
+    \ = VALUE_CODEX.global_default()\n        HUMAN_REVIEW.raise_ticket(\n            kind=\"unmapped_context\"\
+    ,\n            envelope=envelope,\n            sla_business_days=5,\n        )\n\n    active_codex\
+    \ = VALUE_CODEX.apply_overlay(overlay)\n\n    # Context-change detector: drifts fire async, do not\
+    \ block request\n    CONTEXT_DRIFT_MONITOR.observe(envelope)\n\n    response = plan_and_act(req, active_codex=active_codex)\n\
+    \    AUDIT.record(\n        envelope=envelope,\n        overlay_id=overlay.id if overlay else None,\n\
+    \        codex_version=active_codex.version,\n        response_class=response.class_,\n    )\n   \
+    \ return response\n"
+  notes: 'The `ContextEnvelope.from_session` call is the authentication boundary — it must not accept
+    envelope fields from model output or user-content arguments. Overlay application is pure; the Codex
+    and overlay tables are versioned together.
+
+    '
+evidence_production:
+- evidence_numeral: I
+  how_to_produce: 'Retain source code and config for the envelope extractor, overlay table, and context-drift
+    monitor. Publish performance metrics: context-extraction success rate, overlay-hit rate, drift-detection
+    precision/recall against a labeled eval set. Include validation methods — how the overlay table was
+    populated and reviewed.
+
+    '
+- evidence_numeral: II
+  how_to_produce: 'Emit structured log events for: envelope extracted, overlay selected, context drift
+    detected, human-review ticket raised, stakeholder feedback received, overlay adjusted. Aggregate into
+    a monthly report. Retain raw logs per records policy; they must survive subpoena-style queries ("show
+    all decisions under jurisdiction X in month Y").
+
+    '
+- evidence_numeral: III
+  how_to_produce: 'Maintain a change log of overlay-table edits: what changed, why, which local norm or
+    regulatory input triggered it, who approved (Ethics Board reference), effective date. Publish anonymized
+    examples in the annual value-alignment report.
+
+    '
+confidence: high
+needs_human_review: false
+review_notes: 'Content-type decision: code-applicable rather than process, because the subgoal''s SFR-a
+  explicitly calls for "automated detection" and the evidence types are technical (source code, system
+  logs). The process side — how overlays are authored — belongs to D4.0 (Ethics Board authorship) and
+  D4.2 (cross-cultural elicitation). This pattern is the runtime surface.
+
+  Cross-suite (for consolidation): D5 (Transparency — envelope and overlay should be inspectable in explanations);
+  D9 (Governance — overlay edits run through governance), I3 (Context Degradation — the drift monitor
+  here is the D4-side detector for I3-class threats).
+
+  Minor tension with D4.2: that subgoal covers documenting local variations (ecosystem-level); this one
+  consumes those documented variations at runtime. The overlay table is the interface.
+
+  '
+version_compat:
+  framework_version_min: '1.0'
+  framework_version_max: 1.x
+  pattern_layer_version: v1-draft
+drafted_by: claude-opus-4.7-author
+drafted_at: 2026-04-16
+anchor_exemplar: D3.2-sandboxing

@@ -1,0 +1,174 @@
+id: "D1::idx5::goal-prioritization-and-resource-allocat"
+display_id: "D1.5"
+suite_id: "D1"
+suite_title: "Goal Alignment"
+subgoal_title: "Goal Prioritization and Resource Allocation"
+content_type: code-applicable
+
+summary: >
+  When goals compete for finite time, compute, or attention, the
+  prioritization policy is an ethical artifact in disguise. This subgoal
+  asks for a transparent, named ranking function — not a ball of
+  heuristics buried in the planner — and for user directives to have
+  appropriate precedence while still being bounded by safety and
+  alignment. The governance handle is that prioritization decisions are
+  logged in the same way as goal mutations.
+
+normative_anchors:
+  sfrs_addressed: [a, b]
+  evidence_addressed: [I, II]
+  sfrs_not_addressed: []
+  evidence_not_addressed: []
+
+cross_references:
+  - "D1::idx1::transparency-of-goals"
+  - "D1::idx7::goal-portfolio-evolution-and-integrity"
+
+design_patterns:
+
+  - name: Declared prioritization function
+    sketch: >
+      Priority is computed by a named, versioned function
+      `priority(goal, context) -> score` with documented inputs (origin,
+      user directive weight, safety class, deadline, resource cost,
+      dependency fan-out). The function is unit-tested, auditable, and
+      versioned; changes to it are change-managed artifacts. Opaque LLM
+      "judgment" for priority selection is not acceptable at this layer.
+    maps_to_sfr: [a]
+    when_to_use: Any agent with more than one concurrent goal.
+
+  - name: Bounded user-precedence envelope
+    sketch: >
+      User directives receive a priority boost up to a declared ceiling —
+      they cannot override safety goals, ethical constraints, or
+      regulatory obligations regardless of how emphatically phrased.
+      Boost amount and the ceiling policy are part of the published
+      prioritization function. The envelope makes user-deference
+      negotiable and auditable rather than absolute.
+    maps_to_sfr: [b]
+    when_to_use: Any user-facing agent.
+
+  - name: Resource-allocation ledger
+    sketch: >
+      Track per-goal resource consumption (tokens, tool calls, wall clock,
+      external API spend) in a ledger. Reallocation decisions — deprioritizing
+      a goal to free resources for a higher-priority one — write to the
+      ledger with justification. Enables post-hoc audit of whether
+      reallocation actually matched the declared policy.
+    maps_to_sfr: [a]
+    when_to_use: Long-running or resource-constrained agents.
+
+  - name: Explicit goal-deprecation protocol
+    sketch: >
+      A goal is never silently abandoned. Deprecation requires a status
+      transition (`active → deprecated`) with reason (`superseded`,
+      `infeasible`, `user_cancelled`, `safety_blocked`) and, where the
+      goal originated from a user directive, user notification. The
+      deprecation event is a first-class entry in the goal event log
+      (D1.1).
+    maps_to_sfr: [a]
+    when_to_use: Agents with goals that can become infeasible or be
+      superseded by higher-priority work.
+
+anti_patterns:
+
+  - name: 'Priority as a single integer with no derivation'
+    why_wrong: >
+      A 1-10 field set by the planner is not a transparent mechanism.
+      SFR-a asks for "well-defined mechanisms" — the derivation function,
+      its inputs, and the weighting are what's transparent, not the
+      output number.
+
+  - name: Unbounded user override
+    why_wrong: >
+      "User asked for X, so X wins" violates SFR-b's "while maintaining
+      overall system safety and alignment." Precedence is bounded;
+      bounding requires the ceiling to be declared rather than
+      discovered when the system refuses.
+
+  - name: Silent goal drop under resource pressure
+    why_wrong: >
+      Agents under context / token / time pressure quietly shed goals
+      they judge less important. Without a deprecation protocol, the user
+      never learns their directive was abandoned. Evidence II requires
+      records of reallocation decisions — silent drops produce no record.
+
+  - name: Prioritization function changed via prompt tuning
+    why_wrong: >
+      If the ranking emerges from model behavior that shifts with model
+      updates or prompt tweaks, there is no versioned artifact to audit.
+      Keep the priority function symbolic and outside the model.
+
+code_shape:
+  language: pseudocode
+  code: |
+    PRIORITIZATION_VERSION = "v1.4"  # versioned, change-managed
+
+    def priority(goal, ctx):
+        score = 0
+        score += WEIGHT.safety_class[goal.safety_class]
+        score += WEIGHT.origin[goal.origin]       # user/system/derived
+        if goal.origin == "user":
+            score += min(goal.user_emphasis, USER_BOOST_CEILING)
+        score += WEIGHT.deadline(goal.deadline, ctx.now)
+        score -= WEIGHT.cost(goal.est_resource_cost)
+        return score
+
+    def select_next(agent_id, ctx):
+        candidates = GOAL_STORE.active(agent_id)
+        ranked = sorted(candidates, key=lambda g: -priority(g, ctx))
+        chosen = ranked[0]
+        PRIORITIZATION_LOG.append(PriorityDecision(
+            agent_id=agent_id, chosen=chosen.id,
+            ranked_ids=[g.id for g in ranked],
+            scores={g.id: priority(g, ctx) for g in ranked},
+            function_version=PRIORITIZATION_VERSION, ts=now()))
+        return chosen
+
+    def deprecate(goal_id, reason, actor):
+        goal = GOAL_STORE.get(goal_id)
+        GOAL_STORE.update(goal_id, status="deprecated", reason=reason)
+        if goal.origin == "user":
+            NOTIFY.user(goal.owner_user_id, goal, reason)
+  notes: >
+    Logging the full ranked list with scores is what makes prioritization
+    auditable. Logging only the chosen goal loses the counterfactual
+    ("why not this other one?") that matters for review.
+
+evidence_production:
+
+  - evidence_numeral: I
+    how_to_produce: >
+      Technical design doc for the prioritization function: input
+      variables, weighting rationale, ceiling on user-precedence boost,
+      unit-test suite covering edge cases (ties, safety conflicts,
+      deadline cascades). Include the resource-allocation ledger schema
+      and the deprecation protocol. Version history of the prioritization
+      function, with change rationale per version.
+
+  - evidence_numeral: II
+    how_to_produce: >
+      Export prioritization and reallocation logs per audit window.
+      Demonstrate: (a) every priority selection is recorded with full
+      ranked list and scores; (b) deprecation events trigger user
+      notification where applicable; (c) no goal transitions to a
+      terminal state without a log entry. Spot-audit a sample for policy
+      conformance.
+
+confidence: high
+needs_human_review: false
+review_notes: >
+  Recommending an explicit priority function rather than LLM judgment is
+  a deliberate design stance; some deployments will push back because
+  hand-tuning the function is work. The framework's "transparent, well-
+  defined" clause is the lever. Cross-ref D1.7 — priority changes are
+  one of the drift mechanisms D1.7 monitors.
+
+version_compat:
+  framework_version_min: "1.0"
+  framework_version_max: "1.x"
+  pattern_layer_version: "v1-draft"
+
+drafted_by: claude-opus-4.7-author
+drafted_at: 2026-04-16
+anchor_exemplar: D3.2-sandboxing

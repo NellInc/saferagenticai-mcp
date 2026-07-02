@@ -1,0 +1,178 @@
+id: I7::idx6::nefarious-use-of-autonomous-ai-agents
+display_id: I7.6
+suite_id: I7
+suite_title: Imbalance in AI Capabilities
+subgoal_title: Nefarious Use of Autonomous AI Agents
+content_type: code-applicable
+summary: 'Agents operate at machine speed with global reach; nefarious use benefits asymmetrically from
+  both. The pattern: strong authentication on who can direct an agent, real-time misuse detection in the
+  action loop, and a rapid-deactivation kill path that does not require a multi-step approval chain in
+  the middle of an incident. Governance wrappers matter (SFR-b) but the enforceable core is code — kill
+  paths that are not instrumented are not kill paths.
+
+  '
+normative_anchors:
+  sfrs_addressed:
+  - a
+  - b
+  - c
+  evidence_addressed:
+  - I
+  - II
+  - III
+  - IV
+  sfrs_not_addressed: []
+  evidence_not_addressed: []
+cross_references:
+- I7::idx4::ai-enabled-infrastructure-attacks
+- I7::idx1::information-credibility-assessment-and-v
+- I7::idx11::collaborative-governance-of-ai-autonomy
+design_patterns:
+- name: Strong authentication on agent invocation and redirection
+  sketch: 'Every request that invokes an agent or changes its goal carries an authenticated principal
+    (not just API key — principal includes user, role, tenant, session binding, origin). Goal-change requests
+    (new objectives, elevated tools, expanded scope) are re-authenticated and logged distinctly from routine
+    steps. Session tokens short-lived; rotation on privilege changes.
+
+    '
+  maps_to_sfr:
+  - a
+  when_to_use: Every deployed agent.
+- name: Action-loop misuse detection
+  sketch: 'In-loop detector evaluating each proposed tool invocation against a misuse taxonomy: mass-operation
+    patterns (high-fanout messaging, scraping at scale), coordination patterns (simultaneous actions across
+    targets), high-harm tool sequences (credential exfiltration → lateral movement → exfil). Triggered
+    → pause-and-escalate, not allow-and-alert. Detectors updated from incident learnings.
+
+    '
+  maps_to_sfr:
+  - a
+  - b
+  when_to_use: Agents with network or multi-step-action capability.
+- name: One-button deactivation path with audit
+  sketch: 'A kill switch that halts the agent''s action execution (not just stops new prompts — terminates
+    in-flight tool calls, revokes credentials, drains task queue). Reachable by on-call without management
+    approval for declared-emergency classes. All activations audit-logged with reason codes; post-incident
+    review required. Drill quarterly — an untested kill switch is not a kill switch.
+
+    '
+  maps_to_sfr:
+  - b
+  when_to_use: Every agent in production.
+- name: Rate limiting and per-principal action budgets
+  sketch: 'Per-principal hard budgets on: tool invocations per window, outbound messages per window, targets
+    touched per window, cost per window. Budget exhaustion pauses the principal''s agents; escalation
+    required to raise. Prevents the speed-asymmetric harm (the agent sending 10,000 phishing messages
+    before anyone looks).
+
+    '
+  maps_to_sfr:
+  - a
+  when_to_use: Any agent that emits outbound actions.
+- name: Cross-org threat-intel ingestion
+  sketch: 'Subscribe to and contribute to inter-org misuse-pattern sharing (Frontier Model Forum misuse-intel,
+    ISAC equivalents, law-enforcement liaison where applicable). Ingested patterns feed the action-loop
+    detector. Contribution is the entry ticket; pure consumption is not a sustainable posture. Cross-ref
+    I7.4 (idx4) and I7.5 (idx5) sharing agreements.
+
+    '
+  maps_to_sfr:
+  - c
+  when_to_use: Any org operating production agents at scale.
+anti_patterns:
+- name: Alert-and-allow
+  why_wrong: 'Logging misuse and letting it complete is not a defense. By the time a human reviews the
+    alert, the action has happened. Pause-and-escalate is the agentic equivalent of default-deny.
+
+    '
+- name: Kill switch behind approval chain
+  why_wrong: 'A deactivation path that requires management sign-off takes minutes to hours. Agents cause
+    harm in seconds. Pre-authorize the kill path for declared-emergency classes, with post-hoc review.
+
+    '
+- name: API key as principal
+  why_wrong: 'Treating an API key as the full principal means a compromised key is a full takeover. Bind
+    key to (user, tenant, session, origin) at minimum; re-auth on goal expansion.
+
+    '
+- name: Per-call rate limits without per-principal budgets
+  why_wrong: 'An agent that does "1 request per second" for 86400 seconds is still a mass-harm event.
+    Budgets sized to harm surface, not just server load.
+
+    '
+- name: Undrilled kill switch
+  why_wrong: 'Not invoking the kill switch quarterly means no one knows whether it works. First real use
+    should not be the first use.
+
+    '
+code_shape:
+  language: pseudocode
+  code: "# In-loop misuse check + rate budget + kill-switch consultation.\n\ndef execute_tool_call(agent:\
+    \ Agent, call: ToolCall,\n                      ctx: AgentContext) -> ToolResult:\n    # Gate 1: principal\
+    \ auth fresh for this call's scope\n    if not ctx.principal.fresh_for(call.required_scope):\n   \
+    \     AUDIT.record(ctx, \"reauth_required\", call=call)\n        raise ReAuthRequired(call.required_scope)\n\
+    \n    # Gate 2: global kill switch\n    if KILL_SWITCH.is_active(agent_class=agent.class_id):\n  \
+    \      AUDIT.record(ctx, \"halted_by_kill_switch\")\n        raise AgentHalted(\"kill switch active\"\
+    )\n\n    # Gate 3: per-principal action budget\n    if not BUDGETS.can_spend(ctx.principal, call.cost_category):\n\
+    \        AUDIT.record(ctx, \"budget_exhausted\", call=call)\n        raise BudgetExhausted(ctx.principal,\
+    \ call.cost_category)\n\n    # Gate 4: misuse-taxonomy detector\n    verdict = MISUSE_DETECTOR.evaluate(agent,\
+    \ call, ctx)\n    if verdict.severity >= Severity.HIGH:\n        AUDIT.record(ctx, \"misuse_pause\"\
+    , verdict=verdict)\n        # pause-and-escalate, not allow-and-alert\n        ESCALATION.page_oncall(ctx,\
+    \ verdict)\n        raise MisusePaused(verdict)\n    if verdict.severity >= Severity.MEDIUM:\n   \
+    \     AUDIT.record(ctx, \"misuse_flag\", verdict=verdict)\n        # continue but higher-tier audit\n\
+    \n    # Gate 5: execute with audit\n    BUDGETS.spend(ctx.principal, call.cost_category)\n    result\
+    \ = TOOLS.invoke(call, principal=ctx.principal)\n    AUDIT.record(ctx, \"tool_invoked\", call=call,\
+    \ result_hash=hash(result))\n    return result\n"
+  notes: 'The kill switch is a process-external signal; individual calls consult it rather than relying
+    on the agent to stop itself. Budgets and detectors both gate BEFORE execution (prevent), not after
+    (regret).
+
+    '
+evidence_production:
+- evidence_numeral: I
+  how_to_produce: 'Security architecture doc with authentication model, monitoring design, and misuse-detector
+    taxonomy. Authentication audit logs with records of prevented unauthorized access (denied attempts
+    are the signal; zero denials means detection is weak, not that the system is safe). Release-test results
+    for kill-switch activation.
+
+    '
+- evidence_numeral: II
+  how_to_produce: 'Governance artifacts: Acceptable Use Policy, developer guidelines, ethical review sign-offs
+    on material capability changes. Audit trail showing rapid deactivation capability: kill-switch drill
+    reports, real-incident activations, mean-time-to-halt metrics.
+
+    '
+- evidence_numeral: III
+  how_to_produce: 'International-collaboration records: membership in sharing bodies, submissions made,
+    intel received and actioned. Evidence that ingested intel changed detectors or refusal training (not
+    just received-and-filed).
+
+    '
+- evidence_numeral: IV
+  how_to_produce: 'Impact-assessment reports showing effectiveness metrics (detections, deactivations,
+    prevented incidents) and education materials (developer-facing guidance, external awareness content).
+    Feedback-to-change traceability: which assessment findings produced which system changes.
+
+    '
+confidence: high
+needs_human_review: false
+review_notes: 'This is well-understood security territory adapted for agents. The framework-specific sharpening
+  is the speed/scale asymmetry — agents let one principal do what used to require many, very quickly.
+  Pattern leans into that: pause-and-escalate over alert-and-allow; per-principal budgets not just per-call;
+  drilled kill switch.
+
+  Cross-suite: D3 (Security) is the sibling for ambient security posture; this pattern is the agentic-specific
+  overlay. I2 (Deception) for manipulation-based takeover pathways. D9.2 for AUP as policy artifact.
+
+  SFR-b''s "ethical guidelines and compliance requirements" is more governance-flavored than code; I''ve
+  treated it as design-gate inputs (AUP, ethical review sign-offs) and the kill-switch authority structure.
+  A governance-typed co-pattern could carry the policy shape more explicitly.
+
+  '
+drafted_by: claude-opus-4.7[1m]
+drafted_at: 2026-04-16
+anchor_exemplar: D3.2-sandboxing
+version_compat:
+  framework_version_min: '1.0'
+  framework_version_max: 1.x
+  pattern_layer_version: v1-draft

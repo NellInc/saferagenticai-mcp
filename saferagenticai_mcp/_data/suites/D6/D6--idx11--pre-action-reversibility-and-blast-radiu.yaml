@@ -1,0 +1,199 @@
+id: D6::idx11::pre-action-reversibility-and-blast-radiu
+display_id: "D6.11"
+is_underlined_variant: false
+display_id_variant_note: "D6.13_underlined"
+suite_id: D6
+suite_title: Understanding and Controlling the Context
+subgoal_title: Pre-Action Reversibility and Blast-Radius Assessment
+content_type: code-applicable
+summary: 'Before executing any action, the system must classify it by reversibility (reversible,
+  time-bounded reversible, irreversible) and scope (local, shared, external). Irreversible actions
+  with shared or external scope require explicit human confirmation. The system must never take
+  destructive shortcuts to bypass obstacles; it must investigate root causes first. This is
+  "measure twice, cut once" for agentic systems: the cost of a pre-action check is always less
+  than the cost of an irreversible mistake.
+
+  '
+normative_anchors:
+  sfrs_addressed:
+  - a
+  - b
+  - c
+  evidence_addressed:
+  - I
+  - II
+  - III
+  sfrs_not_addressed: []
+  evidence_not_addressed: []
+design_patterns:
+- name: Pre-action classification pipeline
+  sketch: 'Every candidate action passes through a classifier that emits a tuple
+    (reversibility_class, scope_class, confirmation_level). Reversibility classes:
+    REVERSIBLE (undo available indefinitely), TIME_BOUNDED (undo available within a window,
+    e.g. soft-delete with retention period), IRREVERSIBLE (no undo by construction). Scope
+    classes: LOCAL (affects only the agent''s own state), SHARED (affects state visible to
+    other agents or internal users), EXTERNAL (affects state outside the organization''s
+    control — sent emails, API calls to third parties, blockchain transactions, regulatory
+    filings). The classifier is deterministic, version-controlled, and auditable; its
+    thresholds are reviewed alongside the product.
+
+    '
+  maps_to_sfr:
+  - a
+  when_to_use: Every agentic system that can take actions with real-world effects.
+- name: Confirmation gates scaled to consequence
+  sketch: 'The confirmation level derived from the classification determines the gate:
+    (1) REVERSIBLE+LOCAL = auto-proceed with logging. (2) REVERSIBLE+SHARED or
+    TIME_BOUNDED+LOCAL = proceed with notification to affected parties.
+    (3) TIME_BOUNDED+SHARED or any EXTERNAL = require explicit human confirmation with the
+    reversibility and scope assessment presented in the approval UI. (4) IRREVERSIBLE+SHARED
+    or IRREVERSIBLE+EXTERNAL = require multi-party human confirmation with mandatory
+    waiting period. The gate is enforced in code; no bypass path exists without an
+    audited override.
+
+    '
+  maps_to_sfr:
+  - b
+  when_to_use: Whenever the agent can take actions beyond LOCAL+REVERSIBLE scope.
+- name: Root-cause investigation before destructive action
+  sketch: 'When the agent encounters an obstacle (permission error, resource conflict,
+    corrupted state), the action planner must attempt at least one non-destructive
+    investigation path before proposing a destructive or irreversible resolution. Implement
+    as a policy in the action planner: if the proposed action is classified IRREVERSIBLE and
+    no prior investigation step exists in the current plan, reject the plan and require
+    investigation first. Log when the destructive path was available but the investigative
+    path was chosen.
+
+    '
+  maps_to_sfr:
+  - c
+  when_to_use: Any agent with tool access that includes destructive operations (file
+    deletion, database drops, force pushes, account termination).
+- name: Blast-radius estimation
+  sketch: 'For actions classified as SHARED or EXTERNAL, estimate the blast radius: how
+    many entities (users, services, records) are affected, and what is the worst-case
+    impact if the action goes wrong. Present the blast-radius estimate alongside the
+    reversibility classification in the confirmation UI. Large blast radius (above a
+    configurable threshold) triggers mandatory human review regardless of reversibility
+    class.
+
+    '
+  maps_to_sfr:
+  - a
+  - b
+  when_to_use: Multi-tenant systems, agents operating on shared databases, agents with
+    external API access.
+- name: Reversibility metadata on every action record
+  sketch: 'Every executed action is logged with its pre-action classification
+    (reversibility, scope, blast-radius estimate) and the undo path if one exists (undo
+    command, retention window, rollback procedure). This metadata enables post-hoc audit
+    and powers the undo surface exposed to operators.
+
+    '
+  maps_to_sfr:
+  - a
+  when_to_use: Always. Without reversibility metadata, audit is reconstruction guesswork.
+anti_patterns:
+- name: Binary reversible/irreversible without time-bounded middle
+  why_wrong: 'Many real-world actions are reversible within a window (soft-delete retention,
+    email recall, transaction dispute windows). Collapsing to binary forces either
+    over-gating (treating time-bounded as irreversible) or under-gating (treating it as
+    fully reversible). The three-class model matches operational reality.
+
+    '
+- name: Confirmation fatigue from over-gating
+  why_wrong: 'If every action requires human confirmation, humans stop reading and
+    rubber-stamp. The graduated gate (auto → notify → confirm → multi-party) preserves
+    attention for the actions that genuinely need it. See D6.14 (decision fatigue).
+
+    '
+- name: Destructive shortcuts as first resort
+  why_wrong: 'An agent that defaults to "delete and recreate" or "force-push to fix" when
+    a non-destructive path exists violates SFR-c. The investigation-first policy is the
+    operational expression of the precautionary principle applied to action planning.
+
+    '
+- name: Blast-radius estimation only at design time
+  why_wrong: 'Blast radius changes at runtime (database grows, new tenants onboard, new
+    downstream consumers appear). Runtime estimation, even approximate, catches cases that
+    static analysis misses.
+
+    '
+code_shape:
+  language: pseudocode
+  code: "# Pre-action classification and gating pipeline\nclass ActionClassifier:\n    REVERSIBILITY\
+    \ = Enum('REVERSIBLE', 'TIME_BOUNDED', 'IRREVERSIBLE')\n    SCOPE = Enum('LOCAL', 'SHARED',\
+    \ 'EXTERNAL')\n\n    def classify(self, action: Action, ctx: AgentCtx) -> Classification:\n\
+    \        rev = self._reversibility(action)\n        scope = self._scope(action, ctx)\n\
+    \        blast = self._blast_radius(action, ctx)\n        gate = GATE_MATRIX[(rev, scope)]\n\
+    \        if blast > BLAST_THRESHOLD:\n            gate = max(gate, Gate.HUMAN_CONFIRM)\n\
+    \        return Classification(rev=rev, scope=scope, blast=blast, gate=gate)\n\ndef execute_with_gate(action:\
+    \ Action, ctx: AgentCtx) -> ActionResult:\n    c = CLASSIFIER.classify(action, ctx)\n\
+    \    AUDIT.log_classification(action, c)\n\n    if c.gate == Gate.AUTO:\n        pass\n\
+    \    elif c.gate == Gate.NOTIFY:\n        NOTIFY.affected_parties(action, c, ctx)\n  \
+    \  elif c.gate == Gate.HUMAN_CONFIRM:\n        approval = CONFIRM_QUEUE.submit(action,\
+    \ c, ctx)\n        if not approval.granted:\n            return ActionResult.BLOCKED\n\
+    \    elif c.gate == Gate.MULTI_PARTY:\n        approval = MULTI_PARTY_QUEUE.submit(action,\
+    \ c, ctx, wait=MANDATORY_WAIT)\n        if not approval.granted:\n            return ActionResult.BLOCKED\n\
+    \n    # SFR-c: if action is IRREVERSIBLE, verify investigation step exists\n    if c.rev\
+    \ == Rev.IRREVERSIBLE:\n        if not ctx.plan.has_investigation_step_before(action):\n\
+    \            return ActionResult.REQUIRES_INVESTIGATION\n\n    result = action.execute(ctx)\n\
+    \    AUDIT.log_execution(action, c, result, undo_path=action.undo_path())\n    return\
+    \ result\n"
+  notes: 'The GATE_MATRIX encodes the graduated confirmation policy as data rather than
+    branching logic, making it auditable and version-controllable separately from the
+    execution code. The investigation-step check on irreversible actions is the code-level
+    expression of SFR-c.
+
+    '
+evidence_production:
+- evidence_numeral: I
+  how_to_produce: 'Documentation of the pre-action classification system: the reversibility
+    taxonomy, scope taxonomy, blast-radius estimation method, gate matrix, and threshold
+    values. Test results showing correct classification across representative action types
+    (file operations, API calls, database mutations, external communications, financial
+    transactions). CI test suite runs each release.
+
+    '
+- evidence_numeral: II
+  how_to_produce: 'Confirmation gate logs: for every action requiring human confirmation
+    (HUMAN_CONFIRM or MULTI_PARTY tier), retain the classification presented to the
+    approver, the approver identity, timestamp, verdict, and any rejections with reason.
+    Aggregate statistics on approval/rejection rates per action class, reviewed quarterly.
+
+    '
+- evidence_numeral: III
+  how_to_produce: 'Adversarial test results from scenarios designed to tempt the agent into
+    destructive shortcuts: permission errors where deletion would "fix" the problem,
+    corrupted state where overwrite would be faster than investigation, resource conflicts
+    where force would be simpler than coordination. Test results show the system chose the
+    investigative path and log the reasoning. Red-team these scenarios at least annually.
+
+    '
+cross_references:
+  - "D6::idx12::managing-context-drift"
+  - "D7::idx5::safe-system-shutdown-and-repurposing"
+  - "D7::idx7::risk-based-decision-validation"
+  - "D8::idx0::goal-termination-and-sunsetting"
+  - "D3::idx4::operational-boundaries-and-constraints"
+  - "D3::idx14::spyware"
+confidence: high
+needs_human_review: false
+review_notes: 'This subgoal is one of the most operationally concrete in the framework — the
+  SFRs prescribe specific classification taxonomies and confirmation requirements. The
+  blast-radius estimation pattern extends beyond the SFR text but is load-bearing for the
+  graduated-gate model to work in practice. The investigation-before-destruction requirement
+  (SFR-c) is distinctive to this framework and directly informed by observed agentic AI
+  failure modes (agents that force-push, delete-and-recreate, or drop-and-rebuild when a
+  gentler path exists). Cross-suite: D7.7 (risk-based decision validation uses a similar
+  gating model), D7.5 (shutdown as a special case of irreversible action), D8 (termination
+  as the ultimate irreversible action), D3.4 (operational boundaries constrain the action
+  space upstream of this classifier).
+
+  '
+drafted_by: claude-opus-4.6-author
+drafted_at: 2026-05-16
+version_compat:
+  framework_version_min: '1.0'
+  framework_version_max: 1.x
+  pattern_layer_version: v1-draft

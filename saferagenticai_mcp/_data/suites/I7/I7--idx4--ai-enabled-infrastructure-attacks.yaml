@@ -1,0 +1,172 @@
+id: I7::idx4::ai-enabled-infrastructure-attacks
+display_id: I7.4
+suite_id: I7
+suite_title: Imbalance in AI Capabilities
+subgoal_title: AI-Enabled Infrastructure Attacks
+content_type: governance
+summary: 'This subgoal addresses misuse of AI capability to attack critical infrastructure (power, telecom,
+  emergency services, financial systems). The ask is dual: refuse to empower such attacks (policy, capability
+  gating, incident response) and participate in collective defense (threat intel sharing, coordinated
+  response). Governance is the dominant frame because the obligations are policy-level: binding use policies,
+  international agreement posture, critical-infrastructure coordination protocols.
+
+  '
+normative_anchors:
+  sfrs_addressed:
+  - a
+  - b
+  - c
+  evidence_addressed:
+  - I
+  - II
+  - III
+  - IV
+  sfrs_not_addressed: []
+  evidence_not_addressed: []
+cross_references:
+- I7::idx6::nefarious-use-of-autonomous-ai-agents
+- I7::idx5::poor-safety-controls-for-ai-enabled-auto
+policy_elements:
+- name: Critical Infrastructure Use Policy (enforceable)
+  description: 'A published Acceptable Use Policy that explicitly prohibits use of the org''s models and
+    agents for offensive operations against critical infrastructure, including reconnaissance, exploit
+    development, and coordination of attacks. "Critical infrastructure" defined against a jurisdictional
+    taxonomy (US CISA 16 sectors, EU NIS2 essential/ important entities, ISO 22301 equivalents). Enforcement
+    mechanism: capability-level refusal training, automated use-pattern monitoring, account-level termination,
+    referral path to authorities where warranted.
+
+    '
+  maps_to_sfr:
+  - a
+- name: International Law and Human Rights Compliance Clause
+  description: 'Binding internal policy that the org will not build or deploy capabilities specifically
+    intended for attacks on civilian infrastructure in armed conflict (consistent with IHL distinction,
+    proportionality, precaution). Reviewed by legal counsel with humanitarian law expertise. Public statement
+    of position where feasible; operational implementation in capability-gating decisions.
+
+    '
+  maps_to_sfr:
+  - a
+- name: Threat Intelligence Sharing Agreement
+  description: 'Membership in one or more information-sharing bodies: ISAC (sector-specific), NATO CCDCOE
+    observer where applicable, national CSIRT partnerships, Frontier Model Forum misuse-reporting, CISA
+    JCDC (for US operations), or equivalents in operating jurisdictions. Commitments are specific: what
+    gets shared (TTPs, IoCs, attempted misuse patterns, not user data), cadence, redaction discipline,
+    legal basis.
+
+    '
+  maps_to_sfr:
+  - b
+- name: Infrastructure Incident Contingency Playbook
+  description: 'Playbook for scenarios where the org''s system is implicated in an infrastructure incident:
+    internal investigation authority, regulator-notification timeline, capability throttle procedure,
+    public-communication template, victim-liaison path. Exercised via tabletop at least annually with
+    external observer (sector regulator or CSIRT where possible).
+
+    '
+  maps_to_sfr:
+  - c
+- name: Capability-Gating for Dual-Use Infrastructure Capabilities
+  description: 'Pre-release review for capabilities that could materially lower the cost of infrastructure
+    attack (network-scanning automation, ICS/SCADA protocol fluency, vulnerability research assistance
+    at scale). Decision register: which capabilities shipped as-is, which shipped with refusal policies,
+    which were withheld, and the rationale. Cross-ref D7.2 pre-deployment risk review and capability ledger.
+
+    '
+  maps_to_sfr:
+  - a
+  - c
+org_roles:
+- role: Critical Infrastructure Threat Lead
+  responsibilities: 'Owns the Critical Infrastructure Use Policy, the threat-intel relationships, and
+    the capability-gating decisions for dual-use infrastructure capabilities. Single point of accountability.
+
+    '
+  accountable_or_consulted: accountable
+- role: Legal Counsel (IHL and sectoral regulation)
+  responsibilities: 'Reviews the international-law clause, sector-regulatory exposure (NERC CIP, EU NIS2,
+    sectoral CSIRTs), and the regulator-notification protocol. Consulted on every material dual-use capability
+    decision.
+
+    '
+  accountable_or_consulted: consulted
+- role: Security Engineering Lead
+  responsibilities: 'Responsible for implementing capability gates, refusal training, and misuse-detection
+    instrumentation. Reports to the Threat Lead.
+
+    '
+  accountable_or_consulted: responsible
+- role: Government Affairs and International Agreements Lead
+  responsibilities: 'Represents the org in international forums (UN OEWG on cybersecurity, Paris Call,
+    Geneva Dialogue, sectoral ISACs). Maintains positions that survive personnel change.
+
+    '
+  accountable_or_consulted: consulted
+- role: Board-level AI Risk Committee
+  responsibilities: 'Informed quarterly of infrastructure-related misuse attempts, capability-gating decisions,
+    and incident-response effectiveness. Has authority to pause deployment on infrastructure-risk grounds.
+
+    '
+  accountable_or_consulted: informed
+documentation_artifacts:
+- artifact: Critical Infrastructure Use Policy (published)
+  cadence: annual review; event-driven on regulatory change
+- artifact: Dual-use capability decision register
+  cadence: per capability; annual aggregate review
+- artifact: Threat-intel sharing agreements and submission log
+  cadence: agreements reviewed annually; submissions continuous
+- artifact: Infrastructure contingency playbook with tabletop reports
+  cadence: playbook annual; tabletops at least annually
+- artifact: Misuse-attempt report (aggregated, privacy-preserving)
+  cadence: quarterly internal; annual public summary where feasible
+evidence_production:
+- evidence_numeral: I
+  how_to_produce: 'Published Critical Infrastructure Use Policy with change log. Capability-gating decision
+    register (internal, auditable) with rationale for each material decision. Refusal-training artifacts
+    and evals showing refusal behavior on representative attack scenarios. Records of prevented or mitigated
+    incidents where the org''s systems were attempted misuse targets.
+
+    '
+- evidence_numeral: II
+  how_to_produce: 'Signed threat-intel sharing agreements with named bodies. Submission log: what was
+    shared, when, with what redactions, under what legal basis. Participation records in coordinated response
+    exercises.
+
+    '
+- evidence_numeral: III
+  how_to_produce: 'Contingency playbook document with named role-holders, trigger conditions, response
+    steps. Tabletop exercise reports: scenario, participants, gaps identified, remediations. Real-incident
+    after-action reports where applicable.
+
+    '
+- evidence_numeral: IV
+  how_to_produce: 'Compliance report mapping infrastructure-protection activities to human rights and
+    international law obligations. External-counsel review letter confirming policy alignment with IHL
+    principles. Sector-regulator attestations where applicable (e.g., CISA, ENISA, national CSIRT).
+
+    '
+confidence: high
+needs_human_review: true
+review_notes: 'Strong cross-suite dependency on D9 (governance) — the Critical Infrastructure Use Policy
+  is a D9.2 jurisdictional-matrix entry; the incident-response integrates with D9 dispute and violation
+  registers. Consolidation should wire these.
+
+  The international-law clause (IHL compliance) will be legally sensitive for orgs operating in contested
+  domains; the pattern offers a principled default, but counsel must customize. Flagged for human review.
+
+  "Critical infrastructure" taxonomy choice matters: CISA 16 sectors is US-centric; EU NIS2 covers different
+  scope; some operating jurisdictions have no codified list. Pattern assumes the org declares its taxonomy;
+  the taxonomy itself is not universal.
+
+  Cross-suite: I7.6 (idx6) Nefarious Use overlaps on general misuse defense — idx4 is the sector-specific
+  (infrastructure) slice; idx6 is the generic autonomous-agent misuse frame. I5 (Future Tech Impact) when
+  infrastructure capabilities emerge as frontier.
+
+  '
+drafted_by: claude-opus-4.7[1m]
+drafted_at: 2026-04-16
+anchor_exemplar: D9.2-compliance
+version_compat:
+  framework_version_min: '1.0'
+  framework_version_max: 1.x
+  pattern_layer_version: v1-draft

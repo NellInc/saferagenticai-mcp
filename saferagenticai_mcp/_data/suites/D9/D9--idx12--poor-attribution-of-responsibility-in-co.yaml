@@ -1,0 +1,196 @@
+id: D9::idx12::poor-attribution-of-responsibility-in-co
+display_id: "D9_3"
+suite_id: D9
+suite_title: Responsible Governance of AAI Safety
+subgoal_title: Poor Attribution of Responsibility in Complex Systems
+content_type: code-applicable
+summary: 'Attribution failure is a policy failure masquerading as a technical limit: without unique identifiers
+  for each agent, durable linkage to the principal on whose behalf each agent acts, and tamper-evident
+  tracing, "no one is to blame" becomes the default. This subgoal expects concrete identity-and-tracing
+  machinery similar to business registration — every AAI instance registered, every action traceable to
+  a principal, every attribution claim backed by cryptographic proofs. The technical controls are the
+  attribution policy.
+
+  '
+normative_anchors:
+  sfrs_addressed:
+  - a
+  - b
+  - c
+  - d
+  - e
+  evidence_addressed:
+  - I
+  - II
+  - III
+  - IV
+  sfrs_not_addressed: []
+  evidence_not_addressed: []
+cross_references:
+- D9::idx0::responsible-governance-of-aai-safety
+- D9::idx6::cryptographic-governance-of-data-models-
+- D9::idx7::appropriate-accountability-transparency-
+- D9::idx8::limited-legal-identity-for-agentic-ai-sy
+- D9::idx11::undefined-multi-agent-interaction-safety
+design_patterns:
+- name: AAI Agent Registry
+  sketch: 'Authoritative registry of every deployed AAI agent instance, analogous to business registration:
+    unique immutable agent ID, agent template / class, deploying org unit, issuing principal, fallback
+    principal, issued capability scope, license reference (D9::8), status (active, suspended, retired),
+    registration date. Registry is queryable; every action-taking agent must resolve to a live registry
+    entry or be refused.
+
+    '
+  maps_to_sfr:
+  - a
+- name: Principal linkage record
+  sketch: 'Each registry entry carries a durable record linking the agent to (primary principal, fallback
+    principal, deploying organisation, legal entity). Record retention exceeds agent lifetime — a retired
+    agent''s attribution chain is preserved for the org''s retention horizon. Updates to linkage require
+    signed approval and are append-only; the prior record is never destroyed.
+
+    '
+  maps_to_sfr:
+  - b
+- name: Traceable action emission
+  sketch: 'Every action an agent takes (tool call, external message, state mutation) is emitted as a signed,
+    tamper-evident event carrying the agent ID, current principal linkage snapshot, capability token in
+    effect, and correlation ID linking to the agent''s internal reasoning trace where captured. Events
+    flow to an append-only log (see D9::6). External recipients can, on demand, receive a proof bundle
+    (event + signature + registry snapshot) for a specific action.
+
+    '
+  maps_to_sfr:
+  - c
+- name: Attribution-under-uncertainty protocol
+  sketch: 'When direct attribution is blocked (log loss, cross-org interaction without protocol, adversarial
+    obfuscation), a defined protocol specifies: what partial evidence is collected, who investigates,
+    what conclusions are defensible (from "attributed with proof" through "attributed by inference" to
+    "unattributed with named evidence gap"), and what remediation follows each class. Produces honest
+    attribution statements rather than false certainty.
+
+    '
+  maps_to_sfr:
+  - d
+- name: Resource-constrained attribution mode
+  sketch: 'For resource-limited deployments (edge, embedded, disconnected), a minimal attribution profile:
+    agent ID and a signed attestation chain, buffered locally and synchronised to the registry when connectivity
+    permits. Commitments (hashes) emitted in the limited case, full records on reconnection. No deployment
+    operates entirely outside the scheme.
+
+    '
+  maps_to_sfr:
+  - e
+- name: Attribution-deterrence publication
+  sketch: 'Make the attribution scheme public: external researchers, harmed parties, and regulators know
+    that agent actions are traceable and how. The deterrent against harmful use comes from demonstrable
+    traceability, not merely internal hope. Publication includes redress paths for those seeking attribution
+    of an action that affected them.
+
+    '
+  maps_to_sfr:
+  - c
+anti_patterns:
+- name: Shared "service account" identity across agents
+  why_wrong: 'If multiple agents share a single identity, attribution collapses at the first step — "agent
+    X did this" is unprovable. SFRs-a and SFR-b require per-instance unique IDs and principal linkage.
+
+    '
+- name: Registry as a spreadsheet
+  why_wrong: 'An unsigned, mutable document cannot back an attribution claim under adversarial conditions.
+    Registry integrity is part of the control — tamper-evidence, access logging, backup, and recovery
+    are required.
+
+    '
+- name: Action logs without correlation to reasoning traces
+  why_wrong: 'When an agent''s action is controversial, the attribution question is "on what basis did
+    the agent do this." Action logs without a correlation ID to the reasoning trace answer "what" but
+    not "why," leaving principal responsibility unprovable.
+
+    '
+- name: '"Resource-constrained" as an attribution exemption'
+  why_wrong: 'Edge / embedded deployments are where attribution is hardest and most often abandoned. A
+    minimal attribution profile is required; no deployment is outside the scheme.
+
+    '
+- name: Attribution kept internal only
+  why_wrong: 'Deterrence against misuse depends on external parties knowing traceability exists. A purely
+    internal scheme protects the org from internal investigations but does not provide public confidence
+    or deterrent effect.
+
+    '
+code_shape:
+  language: pseudocode
+  code: "# Registry-backed action emission\ndef emit_action(agent_ctx, action_type, payload):\n    # 1.\
+    \ Resolve registry entry; refuse if missing or suspended\n    reg = REGISTRY.resolve(agent_ctx.agent_id)\n\
+    \    if reg is None or reg.status != \"active\":\n        raise AttributionError(\"agent not in active\
+    \ registry\")\n\n    # 2. Snapshot current principal linkage (may have changed since issue)\n    principals\
+    \ = {\n        \"primary\": reg.primary_principal,\n        \"fallback\": reg.fallback_principal,\n\
+    \        \"org\": reg.deploying_org,\n        \"legal_entity\": reg.legal_entity,\n        \"linkage_version\"\
+    : reg.linkage_version,\n    }\n\n    # 3. Generate correlation ID linking to reasoning trace (if captured)\n\
+    \    correlation_id = agent_ctx.reasoning_trace_id or new_correlation_id()\n\n    # 4. Build and sign\
+    \ the action event\n    event = {\n        \"agent_id\": agent_ctx.agent_id,\n        \"principals\"\
+    : principals,\n        \"capability_token\": agent_ctx.capability_token.id,\n        \"action_type\"\
+    : action_type,\n        \"payload_hash\": sha256_canonical(payload),\n        \"correlation_id\":\
+    \ correlation_id,\n        \"ts\": trusted_time_now(),\n    }\n    sig = agent_ctx.identity.sign(event)\n\
+    \n    # 5. Append to tamper-evident log (D9::6)\n    LOG.append_chained({**event, \"sig\": sig})\n\
+    \n    # 6. Return a proof bundle suitable for external attribution\n    return ProofBundle(event=event,\
+    \ sig=sig,\n                       registry_snapshot=reg.snapshot_hash)\n"
+  notes: 'Demonstrates registry resolution, principal-linkage snapshotting, correlation to reasoning trace,
+    signed event emission, and externalisable proof bundle — the core of an attribution-capable action
+    path.
+
+    '
+evidence_production:
+- evidence_numeral: I
+  how_to_produce: 'Registry export: agent ID, class, deploying unit, principals, license reference (D9::8),
+    status, issuance and retirement dates. Tamper-evidence (hash chain, signed snapshots) documented.
+    Coverage statement: proportion of active agents in registry (goal 100%); any exceptions named with
+    justification.
+
+    '
+- evidence_numeral: II
+  how_to_produce: 'Combined export covering principal linkage and tracing protocols: (a) sample linkage
+    records with their version history; (b) the tracing protocol specification (what is captured, retention,
+    access); (c) sample proof bundles for specific historical actions demonstrating end-to-end attribution.
+    Cross-reference to D9::6 cryptographic machinery.
+
+    '
+- evidence_numeral: III
+  how_to_produce: 'Resource-constrained attribution documentation: deployment classes that use the minimal
+    profile, the minimal profile spec, buffering and reconciliation protocol, sample buffered-then- reconciled
+    attribution chain, gap analysis for the buffered window.
+
+    '
+- evidence_numeral: IV
+  how_to_produce: 'Deterrence evidence: the public-facing attribution scheme description, the redress
+    path for affected parties, case statistics (attribution requests received, attributions made, partial
+    attributions, unattributable with documented reason). Shows traceability is both possible and exercised.
+
+    '
+confidence: high
+needs_human_review: true
+review_notes: 'Content-type chosen as code-applicable because the SFRs prescribe concrete mechanisms (unique
+  identifiers, registry, tracing, protocols under resource constraints) that map to code and infrastructure.
+  An alternative reading is governance (registration scheme as policy), but the exemplar-match is closer
+  to code- applicable: specific engineering controls with clear anti-patterns. Confidence high on the
+  pattern; the technical shape is well- established (PKI, signed event logs, business-registration analogues).
+  Open questions: (1) external attribution-request handling intersects privacy law and adversarial-security
+  concerns — the pattern proposes a redress path but the specific disclosure terms are legal counsel''s
+  call; (2) the correlation to reasoning traces raises questions where reasoning traces contain sensitive
+  content (tool outputs, user data) — the pattern uses correlation IDs rather than direct embedding, which
+  should usually suffice but requires retention policy alignment. Cross-suite: heavy dependency on D9::6
+  (cryptographic enforcement), D9::7 (accountability protocol), D9::8 (licensing as the principal-linkage
+  source of truth), D9::11 (multi-agent attribution follows from per-agent attribution), D5 (Control)
+  for agent revocation paths.
+
+  '
+drafted_by: claude-opus-4.7-subagent-D9
+drafted_at: 2026-04-16
+anchor_exemplar: D3.2-sandboxing
+version_compat:
+  framework_version_min: '1.0'
+  framework_version_max: 1.x
+  pattern_layer_version: v1-draft
+display_id_variant_note: D9.3_underlined
+is_underlined_variant: true

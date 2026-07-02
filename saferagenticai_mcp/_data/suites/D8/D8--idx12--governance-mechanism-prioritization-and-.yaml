@@ -1,0 +1,191 @@
+id: D8::idx12::governance-mechanism-prioritization-and-
+display_id: "D8_1"
+is_underlined_variant: true
+display_id_variant_note: "D8.1_underlined"
+suite_id: D8
+suite_title: Goal Termination and Sunsetting
+subgoal_title: Governance Mechanism Prioritization and Implementation
+content_type: governance
+summary: 'Control mechanisms have implementation costs and varying regulatory priority across jurisdictions.
+  This subgoal expects organizations to decide deliberately which controls to implement first, track partial-control
+  risk, and avoid both over-engineering for low-impact controls and under-engineering for high-impact
+  ones. The anti-pattern is a controls-as-compliance-theatre posture where everything is "planned" and
+  nothing lands.
+
+  '
+normative_anchors:
+  sfrs_addressed:
+  - a
+  - b
+  - c
+  - d
+  evidence_addressed:
+  - I
+  - II
+  - III
+  - IV
+  - V
+  - VI
+  - VII
+  sfrs_not_addressed: []
+  evidence_not_addressed: []
+cross_references:
+- D8::idx6::service-parameters-and-termination-manag
+- D8::idx13::agent-lifecycle-and-termination-manageme
+policy_elements:
+- name: Control Mechanism Register
+  description: 'Catalogue of every termination-related control the organization has identified (from regulations,
+    standards, internal policy, incident learnings): control_id, source (regulation / standard / policy),
+    applicable jurisdictions, implementation state (not-started / designed / implemented / verified /
+    retired), named owner, materiality rating, residual-risk assessment. Reviewed quarterly; the register
+    is the ground truth, not individual team spreadsheets.
+
+    '
+  maps_to_sfr:
+  - a
+  - b
+- name: Prioritization Framework with Risk-Weighted Scoring
+  description: 'A declared methodology for deciding control order of implementation. Inputs: regulatory
+    mandate (binding / recommended / aspirational), risk impact (blast radius if absent), feasibility
+    (technical, staffing, timeline), sequencing dependencies. Outputs: priority tier (1–3), target implementation
+    window. Methodology versioned; scoring decisions retained.
+
+    '
+  maps_to_sfr:
+  - a
+  - b
+- name: Phased Implementation Plan with Gates
+  description: 'Where a control cannot be implemented immediately, the phased plan declares: interim mitigation
+    (compensating controls), residual-risk acceptance (signed by risk owner), phase gates with verification
+    criteria, target full-implementation date. Phased implementation is explicit, not implicit; partial
+    control is not hidden.
+
+    '
+  maps_to_sfr:
+  - b
+  - d
+- name: Residual Risk Tolerability Review
+  description: 'For every partially-implemented control, a documented risk-tolerability review: residual
+    risk described, impact scenarios enumerated, tolerability decision with named approver, re-review
+    date. Tolerability is a decision, not a default.
+
+    '
+  maps_to_sfr:
+  - d
+- name: Control Effectiveness Monitoring
+  description: 'Each implemented control has declared effectiveness metrics (e.g., % of terminations entering
+    safe state within SLO, % users notified within window, % handovers completed). Monitored continuously;
+    thresholds trigger review. "Implemented" without effectiveness monitoring is not implemented.
+
+    '
+  maps_to_sfr:
+  - c
+  - d
+- name: Jurisdictional Adaptation Process
+  description: 'Process for ingesting jurisdiction-specific requirements (new law, updated standard, regulator
+    guidance): scan cadence, impact-assessment template, control-register update, affected owners notified,
+    implementation SLA (e.g., 90 days from binding publication).
+
+    '
+  maps_to_sfr:
+  - a
+org_roles:
+- role: AI Control Prioritization Owner
+  responsibilities: 'Maintains the Control Mechanism Register and Prioritization Framework. Accountable
+    for quarterly review and phased-plan adherence. Named human; reports to risk committee.
+
+    '
+  accountable_or_consulted: accountable
+- role: Control Implementation Leads (per domain)
+  responsibilities: 'Responsible for implementing specific controls on schedule. Report status and blockers;
+    request residual-risk review when delay required.
+
+    '
+  accountable_or_consulted: responsible
+- role: Legal / Compliance
+  responsibilities: 'Consulted on regulatory-mandate classification and jurisdictional scope; reviews
+    residual-risk decisions for regulatory acceptability.
+
+    '
+  accountable_or_consulted: consulted
+- role: Risk Committee / Safety Board
+  responsibilities: 'Approves residual-risk tolerability for material controls; reviews quarterly prioritization
+    report; has authority to require acceleration.
+
+    '
+  accountable_or_consulted: accountable
+- role: Internal Audit
+  responsibilities: 'Periodic audit of register accuracy, effectiveness-metric integrity, and consistency
+    between declared state and reality.
+
+    '
+  accountable_or_consulted: consulted
+documentation_artifacts:
+- artifact: Control Mechanism Register
+  cadence: quarterly review; event-driven updates
+- artifact: Prioritization Framework document
+  cadence: annually reviewed; updated on material methodology change
+- artifact: Phased Implementation Plans (per priority-1/2 control)
+  cadence: monthly status; gated checkpoints
+- artifact: Residual Risk Tolerability decisions
+  cadence: per decision; re-reviewed at declared interval
+- artifact: Control Effectiveness dashboards
+  cadence: continuous; monthly review
+- artifact: Jurisdictional Change Log
+  cadence: continuous; 90-day-SLA tracking
+evidence_production:
+- evidence_numeral: I
+  how_to_produce: 'Publish the Control Mechanism Register and Prioritization Framework as internal governance
+    artefacts. Retain versioned. Link from D9.2 Jurisdictional Compliance Matrix.
+
+    '
+- evidence_numeral: II
+  how_to_produce: 'Traceability matrix: regulation / standard → control entry → technical specification
+    → implementation → verification. Each link citeable; audit can traverse in either direction.
+
+    '
+- evidence_numeral: III
+  how_to_produce: 'Test and validation evidence for each implemented control: functional tests, compliance
+    tests, effectiveness measurements. Retained per release; linked to control register.
+
+    '
+- evidence_numeral: IV
+  how_to_produce: 'Design documents showing how control features are embedded in the architecture (not
+    bolted on), with explicit regulatory citation where applicable.
+
+    '
+- evidence_numeral: V
+  how_to_produce: 'Scenario-based verification records: control performance under normal, high-load, emergency
+    conditions. Retain with each release.
+
+    '
+- evidence_numeral: VI
+  how_to_produce: 'Ongoing monitoring telemetry: effectiveness metrics, drift alarms, incidents attributable
+    to control gaps, resolutions.
+
+    '
+- evidence_numeral: VII
+  how_to_produce: 'Quarterly improvement report: new regulatory requirements ingested, controls accelerated
+    or deprioritized, residual-risk decisions revisited. Board-level summary.
+
+    '
+confidence: high
+review_notes: 'Control-register + prioritization + residual-risk tolerability is mature risk-management
+  practice (ISO 31000, NIST RMF). The framework-specific move is requiring explicit residual-risk acceptance
+  with named approvers for partial implementation — this pushes against a common failure mode where "planned"
+  controls remain perpetually planned. Medium confidence on cadences; larger orgs may need more granular
+  prioritization tiers. Note the display_id collision: this is D8.1 as underlined variant; idx1 is also
+  D8.1 (non-underlined). Consolidation should confirm they are intentionally distinct and not meant to
+  be merged. Suspected cross-suite dependency: D9.2 Compliance (direct overlap — this subgoal is essentially
+  termination-specific application of D9.2''s Jurisdictional Compliance Matrix); D7 Sustained Safety (effectiveness
+  monitoring parallels safety-profile monitoring).
+
+  '
+drafted_by: claude-opus-4.7-author
+drafted_at: 2026-04-16
+anchor_exemplar: D9.2-compliance
+
+version_compat:
+  framework_version_min: "1.0"
+  framework_version_max: '1.x'
+  pattern_layer_version: "v1-draft"

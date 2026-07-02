@@ -1,0 +1,127 @@
+id: D7::idx12::preventing-operator-skill-degradation
+display_id: "D7_5"
+is_underlined_variant: true
+display_id_variant_note: "D7.5_underlined"
+suite_id: D7
+suite_title: Achieving and Sustaining a Safe System Profile
+subgoal_title: Preventing Operator Skill Degradation
+content_type: code-applicable
+summary: 'As agents automate entry-level and routine tasks, operators lose the foundational skills required
+  to oversee agents, detect subtle errors, and operate manually when agents fail. This subgoal asks organizations
+  to: (1) map core oversight competencies distinct from mere system operation, (2) regularly assess operator
+  skill levels and detect degradation trends, (3) maintain and exercise manual operation procedures, (4)
+  design agentic workflows that preserve learning pathways for junior operators, and (5) plan for business
+  continuity under agent unavailability. The compounding risk is that more capable agents produce less
+  capable overseers until the oversight relationship inverts.
+
+  '
+normative_anchors:
+  sfrs_addressed:
+  - a
+  - b
+  - c
+  - d
+  - e
+  evidence_addressed:
+  - I
+  - II
+  - III
+  - IV
+  - V
+  sfrs_not_addressed: []
+  evidence_not_addressed: []
+design_patterns:
+- name: Oversight competency matrix
+  sketch: 'Map each agentic system to the domain competencies humans need to genuinely oversee it (not
+    just operate it). Distinguish "can operate the system" from "can detect when the system is wrong."
+    For each competency, define observable indicators, minimum proficiency thresholds, and a measurement
+    cadence. Review annually as agent capabilities change — increasing agent capability typically raises
+    the competency bar for meaningful oversight, not lowers it.
+
+    '
+  maps_to_sfr:
+  - a
+  when_to_use: Any deployment where humans review agent work.
+- name: Periodic manual-mode drill
+  sketch: 'Schedule regular exercises where operators perform critical workflows without agent assistance,
+    analogous to fire drills or backup power tests. Track performance metrics over time to detect skill
+    decay trends. Frequency is proportional to criticality of the manual fallback capability: high-criticality
+    workflows drill quarterly; lower-criticality annually. Results logged; declining performance triggers
+    remedial training before the next cycle.
+
+    '
+  maps_to_sfr:
+  - c
+  when_to_use: Any system where agent unavailability would require manual operation to maintain safety
+    or continuity.
+- name: Apprenticeship-preserving workflow design
+  sketch: 'When automating tasks that traditionally serve as training for junior staff, explicitly preserve
+    a learning layer: junior operators work alongside the agent on a defined subset of real tasks, reviewing
+    agent work rather than being replaced by it. Structured debrief follows each session. The design goal
+    is skill acquisition, not throughput. Document which task categories are preserved for human learning
+    and audit annually.
+
+    '
+  maps_to_sfr:
+  - d
+  when_to_use: Domains where entry-level tasks are the primary skill-building mechanism (e.g., legal
+    review, clinical assessment, code auditing, financial analysis).
+anti_patterns:
+- name: Full delegation with review theater
+  why_wrong: 'Assigning a human to "review" agent outputs without ensuring the human has the domain knowledge
+    to detect errors. The review becomes rubber-stamping, creating accountability theater. The oversight
+    relationship exists in name only; skill degradation has already occurred and the human reviewer is
+    a liability shield, not a safety control.
+
+    '
+evidence_production:
+- evidence_numeral: I
+  how_to_produce: 'Oversight competency matrix documentation: list of agentic systems, mapped competencies,
+    proficiency thresholds, measurement cadence, and most recent assessment results. Version-controlled
+    with review dates.
+
+    '
+- evidence_numeral: II
+  how_to_produce: 'Manual-drill schedule and results log: drill dates, participants, task scope, performance
+    metrics, and trend analysis. Any declining-performance flags and the remedial actions taken in response.
+
+    '
+- evidence_numeral: III
+  how_to_produce: 'Apprenticeship workflow documentation: which task categories are human-learning-preserved,
+    how junior operator participation is structured, debrief format, and annual audit results confirming
+    the learning layer is active.
+
+    '
+- evidence_numeral: IV
+  how_to_produce: 'Business continuity plan for agent unavailability: documented manual procedures per
+    critical workflow, last-tested date, personnel certified to execute, and escalation path. Plan reviewed
+    when agent scope or criticality changes.
+
+    '
+- evidence_numeral: V
+  how_to_produce: 'Annual skill-degradation assessment: competency scores over time per operator cohort,
+    trend analysis, and interventions planned or completed. External review recommended for high-stakes
+    domains.
+
+    '
+confidence: medium
+needs_human_review: true
+review_notes: 'The "oversight competency matrix" and "apprenticeship-preserving workflow design" patterns
+  require organizational buy-in that will compete with throughput incentives. The risk of oversight inversion
+  — more capable agents producing less capable overseers — is theoretically well-grounded but empirical
+  measurement methods are still maturing. Cross-suite: D7::idx11 (AI addiction/dependency), D9::idx13
+  (automation bias monitoring), I4 (human oversight), D9::idx3 (ex-ante impact on well-being).
+
+  RELABELED 2026-06-10: content_type changed from process to code-applicable to match the
+  design_patterns/anti_patterns blocks this file actually carries (schema contract). The prose is
+  org/process-facing, so a human reviewer may prefer restructuring into process_elements/triggers
+  instead.
+
+  '
+version_compat:
+  framework_version_min: '1.0'
+  framework_version_max: 1.x
+  pattern_layer_version: v1-draft
+drafted_by: claude-sonnet-4-6-author
+drafted_at: 2026-05-21
+anchor_exemplar: D7::idx11::preventing-ai-addiction-and-dependency

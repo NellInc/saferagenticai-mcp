@@ -1,0 +1,194 @@
+id: I7::idx11::collaborative-governance-of-ai-autonomy
+display_id: "I7_4"
+is_underlined_variant: true
+display_id_variant_note: "I7.4_underlined"
+suite_id: I7
+suite_title: Imbalance in AI Capabilities
+subgoal_title: Collaborative Governance of AI Autonomy
+content_type: code-applicable
+summary: 'Autonomy is not a binary — an agent operates on a spectrum of permissions, decision authority,
+  and reversibility. This subgoal asks for explicit, adjustable autonomy levels with human-in-the-loop
+  hooks at scoped decision points, tamper-evident audit trails of autonomy changes, and operational limits
+  that cannot be silently widened. The pattern is a "capability-scoped autonomy budget" enforced in code,
+  with governance wrappers documenting who can adjust it and when.
+
+  '
+normative_anchors:
+  sfrs_addressed:
+  - a
+  - b
+  - c
+  evidence_addressed:
+  - I
+  - II
+  - III
+  - IV
+  sfrs_not_addressed: []
+  evidence_not_addressed: []
+cross_references:
+- I7::idx6::nefarious-use-of-autonomous-ai-agents
+- I7::idx0::imbalance-in-ai-capabilities
+design_patterns:
+- name: Explicit autonomy tier ladder
+  sketch: 'Define a small number (3-5) of autonomy tiers, each with declared capabilities, required human-approval
+    points, reversibility guarantees, and blast radius. E.g.: T0 suggestion-only, T1 low-risk-reversible-actions-with-logging,
+    T2 scoped-action-with- pre-approval, T3 multi-step-with-human-checkpoints, T4 high-stakes-dual-human-control.
+    Tiers are declared at agent instantiation and bound to the session; tier escalation is a re-authentication
+    event, not a soft flag change.
+
+    '
+  maps_to_sfr:
+  - a
+  when_to_use: Every deployed agent.
+- name: Human-checkpoint hooks at declared decision points
+  sketch: 'Within each tier, declare which decision classes require human approval before execution (irreversible
+    actions, external communications, financial transactions above threshold, changes affecting third
+    parties). Checkpoints are code-enforced: the action path cannot bypass them. Human responses and the
+    context they saw are logged (so we can later audit what the human was shown).
+
+    '
+  maps_to_sfr:
+  - a
+  when_to_use: Agents operating above T0.
+- name: Autonomy-change audit with tamper-evident log
+  sketch: 'Every change to an agent''s autonomy tier, approved-tool set, or checkpoint policy is recorded
+    in an append-only log with who approved, what changed, why, and which session(s) are affected. Log
+    is tamper-evident (hash chain or external WORM store). "Changed settings in admin UI" with no corresponding
+    log entry is a violation.
+
+    '
+  maps_to_sfr:
+  - b
+  when_to_use: Every production agent.
+- name: Embedded operational-scope constraints
+  sketch: 'The agent''s authorized-operation scope is carried as signed policy the runtime consults —
+    not as a prompt instruction the model may follow or ignore. "Do not act outside scope X" as a sentence
+    to the model is not scope enforcement. Scope enforcement is the runtime refusing the out-of-scope
+    action regardless of what the model requests.
+
+    '
+  maps_to_sfr:
+  - c
+  when_to_use: Any agent with real-world action capability.
+- name: Operator accountability log (human side of HITL)
+  sketch: 'When humans approve or override at checkpoints, their identity, authority level, and decision
+    context are logged. This is not about distrust — it creates accountability symmetry (agent actions
+    and human approvals both audited), which the subgoal''s "track both AI activities and human operator
+    decisions" explicitly requires. Prevents a common pattern: blameless AI, blameless human, incident
+    with no owner.
+
+    '
+  maps_to_sfr:
+  - b
+  when_to_use: Any HITL workflow.
+- name: Autonomy-drift monitoring
+  sketch: 'Automated monitoring of autonomy usage patterns: share of actions at each tier, checkpoint-approval
+    rates (are humans rubber-stamping? — a high approval rate with no pauses is a flag), scope-violation
+    attempts. Anomalies route to safety lead. Cross-ref D7.2 monthly safety review.
+
+    '
+  maps_to_sfr:
+  - b
+  - c
+  when_to_use: Any system in production.
+anti_patterns:
+- name: Autonomy as prompt instruction
+  why_wrong: 'Instructing the model "you may take reversible actions but not irreversible ones" is a request,
+    not a constraint. The runtime must enforce; the model may or may not cooperate. The framework''s "clear
+    boundaries" need mechanisms, not hopes.
+
+    '
+- name: Silent tier elevation
+  why_wrong: 'An admin changing an agent from T1 to T3 without a logged, approved change request means
+    the oversight trail is broken between the original risk review and the higher-risk deployment.
+
+    '
+- name: Checkpoint rubber-stamping
+  why_wrong: 'If checkpoint approval is a click-through with no visible context, humans approve by reflex.
+    Checkpoints need: context, decision stakes, optional "I need more information" path, and tracked approval-rate
+    monitoring.
+
+    '
+- name: One-way escalation
+  why_wrong: 'Systems that make it easy to grant autonomy but hard to withdraw it accumulate permissions.
+    Provide symmetric withdrawal paths with the same latency as grants.
+
+    '
+- name: HITL without H
+  why_wrong: '"Human-in-the-loop" where no human is actually assigned to the loop (alerts routed to a
+    mailbox no one reads, approvals auto-approved on timeout) is HITL in name only.
+
+    '
+code_shape:
+  language: pseudocode
+  code: "# Autonomy tier + checkpoint + scope enforcement.\n\n@dataclass(frozen=True)\nclass AutonomyPolicy:\n\
+    \    tier: Literal[\"T0\", \"T1\", \"T2\", \"T3\", \"T4\"]\n    allowed_tools: frozenset[str]\n  \
+    \  scope: ScopeConstraint        # signed policy object\n    checkpoint_actions: frozenset[ActionClass]\n\
+    \    dual_control_actions: frozenset[ActionClass]\n    policy_version: int\n    signed_by: list[Approver]\n\
+    \ndef authorize(action: Action, ctx: AgentContext) -> AuthDecision:\n    policy = ctx.autonomy_policy\
+    \  # bound at session start\n\n    # Scope: runtime-enforced, not model-trusted.\n    if not policy.scope.permits(action):\n\
+    \        AUDIT.record(ctx, \"out_of_scope\", action=action, policy=policy)\n        return AuthDecision.DENY\n\
+    \n    if action.tool_id not in policy.allowed_tools:\n        AUDIT.record(ctx, \"tool_not_permitted\"\
+    , action=action)\n        return AuthDecision.DENY\n\n    if action.action_class in policy.dual_control_actions:\n\
+    \        approvals = HITL.request_dual_control(action, ctx)\n        if not approvals.both_approved:\n\
+    \            return AuthDecision.DENY\n        AUDIT.record_approvals(ctx, action, approvals)\n  \
+    \      return AuthDecision.ALLOW\n\n    if action.action_class in policy.checkpoint_actions:\n   \
+    \     approval = HITL.request_checkpoint(action, ctx)\n        AUDIT.record_approval(ctx, action,\
+    \ approval)\n        if not approval.approved:\n            return AuthDecision.DENY\n\n    AUDIT.record(ctx,\
+    \ \"authorized\", action=action)\n    return AuthDecision.ALLOW\n\ndef change_autonomy_policy(session:\
+    \ Session,\n                            new_policy: AutonomyPolicy,\n                            requester:\
+    \ Principal,\n                            reason: str) -> ChangeResult:\n    # Tier elevation requires\
+    \ multi-party approval.\n    if new_policy.tier_rank > session.policy.tier_rank:\n        approvers\
+    \ = APPROVAL.request_elevation(\n            session, new_policy, requester, reason)\n        if not\
+    \ approvers.sufficient:\n            return ChangeResult.REJECTED\n    TAMPER_EVIDENT_LOG.append(\n\
+    \        session.id, from_=session.policy, to_=new_policy,\n        requester=requester, reason=reason,\
+    \ approvers=approvers)\n    session.policy = new_policy\n    return ChangeResult.APPLIED\n"
+  notes: 'Autonomy is a session-bound, signed policy object — not a per-call flag the model can convince
+    itself to ignore. Changes are logged and require elevation approval; checkpoints are code-enforced;
+    scope is a signed constraint the runtime owns.
+
+    '
+evidence_production:
+- evidence_numeral: I
+  how_to_produce: 'Autonomy framework documentation: tier definitions, checkpoint taxonomy, scope-constraint
+    schema, policy-change procedures. Operational-parameter records showing which agents run in which
+    tiers. Case records of tier changes with rationale.
+
+    '
+- evidence_numeral: II
+  how_to_produce: 'Audit extracts showing: action logs with policy tier and authorization decision; checkpoint
+    logs with approver, context shown, decision, latency; tamper-evident policy-change log. Drift-monitoring
+    reports (approval rates, scope-violation attempts).
+
+    '
+- evidence_numeral: III
+  how_to_produce: 'Ethical and compliance documentation showing alignment of autonomy policies with societal
+    norms and legal obligations. Cross-ref D9.2 jurisdictional-compliance matrix for sector- specific
+    autonomy constraints (e.g., finance, medical, automotive).
+
+    '
+- evidence_numeral: IV
+  how_to_produce: 'Assessment reports including failsafe-activation case studies, human-intervention outcomes,
+    autonomy-drift trend analysis, and effectiveness of oversight mechanisms in maintaining constraints.
+
+    '
+confidence: high
+needs_human_review: false
+review_notes: 'This is where the framework''s "meaningful human control" concept meets implementation
+  detail. The framework-specific sharpening worth preserving: autonomy is a runtime-enforced policy object
+  with signed-change audit, not a prompt instruction. Anti-patterns ("autonomy as prompt instruction,"
+  "HITL without H," "checkpoint rubber-stamping") name real failure modes seen in early agent deployments.
+
+  Display-ID collision: "I7.4" also used for idx4. Filenames distinguish.
+
+  Cross-suite: D3 (Security) for scope enforcement; D7.2 for drift monitoring integration; D9.2 for accountability
+  role profiles (the "who can approve tier elevation" question).
+
+  '
+drafted_by: claude-opus-4.7[1m]
+drafted_at: 2026-04-16
+anchor_exemplar: D3.2-sandboxing
+version_compat:
+  framework_version_min: '1.0'
+  framework_version_max: 1.x
+  pattern_layer_version: v1-draft

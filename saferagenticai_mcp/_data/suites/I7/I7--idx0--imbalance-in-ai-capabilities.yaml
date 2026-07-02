@@ -1,0 +1,195 @@
+id: I7::idx0::imbalance-in-ai-capabilities
+display_id: "G7"
+is_underlined_variant: true
+suite_id: I7
+suite_title: Imbalance in AI Capabilities
+subgoal_title: Imbalance in AI Capabilities
+content_type: ecosystem
+summary: 'The umbrella subgoal for I7. It names a cross-provider problem: more advanced models can manipulate
+  or exploit less capable ones, and uncoordinated capability jumps destabilize the ecosystem. The core
+  obligation is cross-org coordination — transparent change notification, capability tracking, and shared
+  detection of inter-model exploitation. Internal monitoring matters, but it is necessary-not-sufficient:
+  a provider that surveils only its own models cannot see the imbalance it is creating.
+
+  '
+normative_anchors:
+  sfrs_addressed:
+  - a
+  - b
+  - c
+  - d
+  - e
+  - f
+  - g
+  - h
+  evidence_addressed:
+  - I
+  - II
+  - III
+  - IV
+  - V
+  - VI
+  - VII
+  - VIII
+  - IX
+  - X
+  - XI
+  - XII
+  sfrs_not_addressed: []
+  evidence_not_addressed: [XIII]
+cross_references:
+- I7::idx8::international-framework-for-ethical-ai-i
+- I7::idx10::balanced-global-ai-partnership-framework
+- I7::idx3::global-ai-capability-disparities
+stakeholders:
+- name: Peer frontier-model providers
+  engagement_channel: 'Participate in a standing coordination forum (e.g., Frontier Model Forum, NIST-AISI network,
+    or bilateral safety-case exchanges) with named representatives and an SLA for advance notice of materially
+    more capable releases. "Materially more capable" is defined against shared evals (METR, MLCommons,
+    SWE-bench, capability-elicitation suites), not marketing. Minimum notice: 30 days for capability-tier
+    jumps that affect eval leaderboards; shorter windows require written justification filed with the
+    forum.
+
+    '
+  maps_to_sfr:
+  - a
+- name: Downstream model orchestrators and agent framework providers
+  engagement_channel: 'Publish a capability-delta changelog per release, machine-readable and versioned, so downstream
+    systems can detect when a model they compose with has jumped capability tiers. Include: eval deltas
+    on shared suites, new tool-use capabilities, changed refusal behavior, changed reasoning depth. Downstream
+    orchestrators should be able to pin model versions and get alerts on breaking capability changes.
+
+    '
+  maps_to_sfr:
+  - a
+  - b
+- name: Shared inter-model exploitation research community
+  engagement_channel: 'Contribute to and consume shared benchmarks for inter-model manipulation (e.g., weaker-model
+    jailbreaks, prompt-injection transfer across models, asymmetric negotiation outcomes when capability
+    differs). Publish incident reports when your model is used to exploit another, with sufficient detail
+    for peer defenses. The asymmetry is the research object — pretending inter-model dynamics are benign
+    because your model "plays fair" misses the point.
+
+    '
+  maps_to_sfr:
+  - c
+  - g
+- name: Internal inter-model monitoring function
+  engagement_channel: 'Named team responsible for continuous capability-imbalance tracking. Outputs: quarterly report
+    enumerating every known capability asymmetry with downstream models the org interacts with, exploitation
+    scenarios surfaced in red-teaming, and adjustments to role definitions or interaction limits. Reports
+    to board-level risk committee (cross-ref D9.2 accountability framework).
+
+    '
+  maps_to_sfr:
+  - b
+  - h
+- name: Aggregated performance and self-regulation mechanisms
+  engagement_channel: 'For multi-agent or model-composition products the org operates, implement monitoring that
+    tracks per-model influence metrics (e.g., proportion of final outputs attributable to each model,
+    divergence from ensemble average, refusal-rate asymmetries). Trigger human review when any single
+    model''s influence crosses a defined threshold sustained over a rolling window. "Self-regulation"
+    is not self-policing; it is a control loop with named thresholds and escalation.
+
+    '
+  maps_to_sfr:
+  - f
+  - g
+engagement_modes:
+- mode: Frontier Model Forum (capability-tier coordination working groups)
+- mode: NIST AI Safety Institute consortium and international AISI network
+- mode: MLCommons / METR / Apollo Research shared capability evals
+- mode: ISO/IEC JTC 1/SC 42 (AI system interaction standards)
+- mode: Partnership on AI — multi-stakeholder safety cases
+- mode: UN AI Advisory Body (capability-asymmetry as global-governance concern)
+evidence_production:
+- evidence_numeral: I
+  how_to_produce: 'Retain dated records of communications with peer providers regarding model releases:
+    advance-notice messages, coordination-forum meeting minutes, written agreements on capability-tier
+    notification. Redact as needed but structural completeness (who, when, what changed) required.
+
+    '
+- evidence_numeral: II
+  how_to_produce: 'Quarterly capability-imbalance risk assessment, published internally, reviewed by board-level
+    risk committee. Enumerates: known asymmetries with interacting models, red-team scenarios surfaced,
+    mitigations applied, residual risk.
+
+    '
+- evidence_numeral: III
+  how_to_produce: 'Documented model-role policy: for each model the org deploys in a multi-model or multi-agent
+    context, spec its permitted interactions, blocked counterparties, bias mitigations, and enforcement
+    mechanism (not just aspiration).
+
+    '
+- evidence_numeral: IV
+  how_to_produce: 'Test-and-audit register covering individual models AND their interactions. Interaction
+    tests include adversarial pairings (strong vs weak, aligned vs misaligned proxy) with documented outcomes
+    and actions taken on findings.
+
+    '
+- evidence_numeral: V
+  how_to_produce: 'Explainable-AI user guides and feedback records specific to how the org''s systems
+    explain inter-model decisions (e.g., when one model routes to another, the user-visible rationale).
+
+    '
+- evidence_numeral: VI
+  how_to_produce: 'Human-oversight protocols and intervention logs for multi-model products: who can pause
+    model-to-model transactions, under what triggers, with what audit trail.
+
+    '
+- evidence_numeral: VII
+  how_to_produce: 'Performance dashboards with per-model influence metrics (see stakeholder pattern 5).
+    Archived weekly; anomalies written up.
+
+    '
+- evidence_numeral: VIII
+  how_to_produce: 'Alert-system documentation with incident reports for every triggered inter-model anomaly:
+    what the detector saw, what response, what follow-up. Silence is suspicious — zero alerts usually
+    means the detector is weak, not that the system is safe.
+
+    '
+- evidence_numeral: IX
+  how_to_produce: 'Phased-release plans for new model versions: staging rollout, canary populations, capability-tier
+    gating, rollback triggers. Cross-ref D7.2 pre-deployment review and capability ledger.
+
+    '
+- evidence_numeral: X
+  how_to_produce: 'Training-data documentation addressing discrimination and inter-model exploitation
+    risks: what was excluded, what adversarial examples were added, what counterfactual augmentation used.
+
+    '
+- evidence_numeral: XI
+  how_to_produce: 'Technical docs for the self-regulation mechanisms (thresholds, control loops, escalation
+    conditions). Operational parameters reviewed annually.
+
+    '
+- evidence_numeral: XII
+  how_to_produce: 'Capability-forecasting output: methodology, horizon, cadence. Shows the org is resourcing
+    monitoring, not improvising it. SFR-h asks for "sufficient resources" — evidence is budget lines and
+    named staff, not intent.
+
+    '
+confidence: medium
+needs_human_review: true
+review_notes: "Content-type pick tension: this is the suite umbrella and genuinely spans three content\
+  \ types. SFR-a (transparent info-sharing AMONG PROVIDERS, coordinated releases) is ecosystem. SFRs b,\
+  \ d, e, g are internal monitoring (code/process). SFR-a dominates the severity of the under-addressed\
+  \ risk, so I picked ecosystem; a process-typed draft would be equally defensible. Phase 2 may want to\
+  \ split this umbrella into distinct ecosystem + process patterns referenced from a thin index entry.\n\
+  The \"30 days advance notice for capability-tier jumps\" is a concrete anchor but not a standard — Frontier\
+  \ Model Forum does not yet commit to this publicly. Treat as aspirational pattern; Nell/Ali should decide\
+  \ whether to soften to \"defined notice window in forum charter\" or hold the concrete number as a target.\n\
+  Cross-suite dependencies worth flagging for consolidation:\n  - I2 (Deception): inter-model manipulation\
+  \ is this suite's framing of\n    the same adversarial surface. Link when I2 pattern_ids exist.\n  -\
+  \ I4 (Frontier Uncertainty): capability-tier evals assume a shared\n    notion of \"tier\" that I4 problematizes.\n\
+  \  - D9.2: accountability framework for the monitoring function.\n  - D7.2: capability ledger and pre-deployment\
+  \ review.\n\nSFR-h (\"allocate sufficient resources\") is a budget statement, not a capability — I've\
+  \ patterned it as a budget-line/named-staff evidence item; a governance-typed draft might pattern it\
+  \ as a board attestation.\n"
+drafted_by: claude-opus-4.7[1m]
+drafted_at: 2026-04-16
+anchor_exemplar: I7.3-balanced-global-partnership
+version_compat:
+  framework_version_min: '1.0'
+  framework_version_max: 1.x
+  pattern_layer_version: v1-draft

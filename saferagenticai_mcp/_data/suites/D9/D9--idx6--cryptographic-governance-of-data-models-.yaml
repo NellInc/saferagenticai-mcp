@@ -1,0 +1,200 @@
+id: D9::idx6::cryptographic-governance-of-data-models-
+display_id: D9.6
+suite_id: D9
+suite_title: Responsible Governance of AAI Safety
+subgoal_title: Cryptographic Governance of Data, Models and Agents
+content_type: code-applicable
+summary: 'Cryptography is the load-bearing layer under accountability claims for AAI: without verifiable
+  identity, data provenance, and tamper-evident action logs, governance statements are assertions not
+  evidence. This subgoal expects concrete cryptographic machinery — signed datasets, signed model artifacts,
+  agent identity certificates, signed action logs — wired to the governance framework so that "who did
+  what with what data, when, under what authority" is answerable with proofs.
+
+  '
+normative_anchors:
+  sfrs_addressed:
+  - a
+  - b
+  - c
+  - d
+  - e
+  evidence_addressed:
+  - I
+  - II
+  - III
+  - IV
+  sfrs_not_addressed: []
+  evidence_not_addressed: []
+cross_references:
+- D9::idx0::responsible-governance-of-aai-safety
+- D9::idx2::compliance-with-applicable-laws-standard
+- D9::idx5::building-trust-through-independent-verif
+- D9::idx7::appropriate-accountability-transparency-
+- D9::idx12::poor-attribution-of-responsibility-in-co
+design_patterns:
+- name: Agent identity certificates
+  sketch: 'Every deployed agent (including ephemeral instances) runs with a cryptographic identity issued
+    by an internal CA: short-lived certificate bound to (agent template ID, instance ID, principal on
+    whose behalf it acts, authorised capability set, validity window). All agent-emitted requests and
+    actions carry a signature chainable to this certificate. Rotation on principal change or capability
+    scope change.
+
+    '
+  maps_to_sfr:
+  - a
+  - c
+  - e
+  when_to_use: Any deployed agent taking actions outside a single trusted process.
+- name: Signed and provenanced datasets
+  sketch: 'Training data, fine-tuning data, RAG/retrieval corpora, and evaluation sets carry digital signatures
+    over their content and metadata (origin, collection date, consent basis, licensing, redaction history).
+    Data pipelines reject unsigned inputs or inputs with broken chains. Provenance records are queryable
+    from downstream artifacts.
+
+    '
+  maps_to_sfr:
+  - b
+  - c
+  when_to_use: Any production training, fine-tuning, or retrieval pipeline.
+- name: Signed model artifacts with binding manifests
+  sketch: 'Model weights, adapters, tokenizers, and system-prompt / policy files are signed. A manifest
+    binds (model hash, adapter hash, tokenizer hash, policy hash, training-data manifest hash, evaluation
+    manifest hash). Serving infrastructure refuses to load artifacts whose manifest signatures or hash
+    bindings do not verify.
+
+    '
+  maps_to_sfr:
+  - b
+  - d
+  - e
+  when_to_use: Any production model deployment pipeline.
+- name: Tamper-evident action logs
+  sketch: 'Agent tool invocations and decisions emit structured events into an append-only, hash-chained
+    (or notarised) log. Each event: agent certificate, principal, tool, inputs_hash, outputs_hash, policy
+    decision, timestamp from a trusted time source, previous- event hash. Verification reproduces the
+    chain; any gap or rewrite is detectable.
+
+    '
+  maps_to_sfr:
+  - a
+  - e
+  when_to_use: Any agent whose actions could later be the subject of accountability review.
+- name: Access control as cryptographic capability
+  sketch: 'Authorization is carried in signed, short-lived capability tokens ("principal X delegates Y
+    to agent Z for window W") rather than coarse role membership. Tokens are scoped, auditable, and revocable.
+    Logs record the token used for each privileged action.
+
+    '
+  maps_to_sfr:
+  - a
+  - c
+  - e
+  when_to_use: Multi-principal or delegated-authority deployments.
+- name: Model-transparency anchors
+  sketch: 'Where full interpretability is not available, use cryptographic commitments to intermediate
+    states that support after-the-fact verification: Merkle-committed logit/activation samples on a defined
+    cadence, signed evaluation suite outputs bound to the model manifest, published transparency reports
+    referencing these commitments. Enables third parties to verify claims without full white-box access.
+
+    '
+  maps_to_sfr:
+  - d
+  when_to_use: High-stakes deployments where full internals disclosure is not feasible.
+anti_patterns:
+- name: Long-lived shared service accounts
+  why_wrong: 'A single static credential shared across agents breaks attribution (SFR-a, SFR-e). "Agent
+    X did this" is unprovable if any agent could have presented that credential. Use short-lived per-instance
+    identities, not shared secrets.
+
+    '
+- name: Unsigned model files in production
+  why_wrong: 'If a production serving path will load an arbitrary weights file off a shared volume, the
+    signature chain is the missing link: nothing proves the deployed model is the evaluated one.
+
+    '
+- name: Plaintext audit logs editable by the emitting service
+  why_wrong: 'Logs that the action-taker can rewrite are not evidence. Tamper- evidence (hash chain, WORM
+    storage, external notarisation) is structurally required for SFR-e.
+
+    '
+- name: TLS-alone treated as data-at-rest protection
+  why_wrong: 'Confidentiality on the wire is not confidentiality at rest. Data stores holding training
+    data, logs, user content need at-rest encryption with managed keys, not just encrypted transport.
+
+    '
+- name: Certificate rotation that nobody monitors
+  why_wrong: 'Cryptographic controls silently failing (expired cert, broken chain, revocation not honored)
+    is worse than no control, because logs and manifests still appear valid to unsophisticated review.
+    Monitoring and alerting are part of the control.
+
+    '
+code_shape:
+  language: pseudocode
+  code: "# Agent action with identity, capability token, tamper-evident log\ndef agent_invoke_tool(tool:\
+    \ str, inputs: dict, *, ctx: AgentContext):\n    # 1. Verify agent still holds a valid identity certificate\n\
+    \    if not ctx.identity.valid_now():\n        raise IdentityError(\"agent cert expired or revoked\"\
+    )\n\n    # 2. Verify capability token authorizes this tool\n    cap = ctx.capability_token\n    if\
+    \ not cap.authorizes(tool) or not cap.valid_now():\n        AUDIT.record(ctx, action=\"denied.capability\"\
+    , tool=tool)\n        raise AuthzError(\"capability does not cover tool\")\n\n    # 3. Sign the request\
+    \ binding (agent, tool, inputs_hash, cap)\n    inputs_hash = sha256_canonical(inputs)\n    req_sig\
+    \ = ctx.identity.sign({\n        \"tool\": tool, \"inputs_hash\": inputs_hash,\n        \"cap\": cap.id,\
+    \ \"ts\": trusted_time_now(),\n    })\n\n    # 4. Execute through the tool gateway (which re-verifies\
+    \ sig + cap)\n    output = TOOL_GATEWAY.invoke(tool, inputs, req_sig=req_sig, ctx=ctx)\n\n    # 5.\
+    \ Emit a tamper-evident log entry (hash-chained)\n    outputs_hash = sha256_canonical(output)\n  \
+    \  LOG.append_chained({\n        \"agent_cert\": ctx.identity.cert_fingerprint,\n        \"principal\"\
+    : ctx.principal,\n        \"tool\": tool, \"inputs_hash\": inputs_hash,\n        \"outputs_hash\"\
+    : outputs_hash,\n        \"cap\": cap.id, \"req_sig\": req_sig,\n        \"ts\": trusted_time_now(),\n\
+    \    })\n    return output\n"
+  notes: 'Sketch exercises agent identity, capability-token authorization, request signing, and tamper-evident
+    logging in one flow. Production code additionally needs key management, revocation check, and log
+    notarisation/export.
+
+    '
+evidence_production:
+- evidence_numeral: I
+  how_to_produce: 'Publish an encryption and cryptographic-controls policy covering: at-rest and in-transit
+    encryption, key-management hierarchy, algorithm selection with review cadence, signing infrastructure
+    for agents / models / data, certificate lifecycle, and revocation procedures. Reviewed annually and
+    on cryptographic-standards updates (e.g., post-quantum transitions).
+
+    '
+- evidence_numeral: II
+  how_to_produce: 'Export from the access-control system: who (principal), what (capability token / role),
+    when (time window), resource, outcome (allowed/denied/revoked), and linkage to the action logs. Periodic
+    access reviews retained as artifacts.
+
+    '
+- evidence_numeral: III
+  how_to_produce: 'Signed dataset manifests per dataset version, covering content hash, provenance (source,
+    consent basis, licensing), collection date, redaction history, and signer identity. Downstream model
+    manifests reference dataset manifest hashes; auditor can reproduce the chain.
+
+    '
+- evidence_numeral: IV
+  how_to_produce: 'Agent action logs exported with chain-verification artifacts: periodic chain-head attestations
+    (notarised), per-event signatures, and a verification script. Auditor runs the script to confirm no
+    gaps, no rewrites. Time source attested.
+
+    '
+confidence: high
+needs_human_review: true
+review_notes: 'Cryptographic machinery is well-established; the framework-specific work is in binding
+  cryptography to governance concepts (agent-to- principal linkage, manifest bindings across model/data/policy,
+  tamper-evident action logs the governance framework can audit). Confidence high on the pattern''s correctness;
+  medium on "which specific algorithms" because those age and should be deferred to the cryptographic-controls
+  policy, not hard-coded here. Two notes: (1) SFR-d "transparency and explainability through cryptographic
+  methods" is ambitious — the pattern interprets as "cryptographic commitments to intermediate states
+  for after-the-fact verification," which is a narrow but defensible reading; full "explainability via
+  crypto" is research, not production, and the pattern is honest about that; (2) post-quantum migration
+  should be on the review cadence for any crypto established now. Cross-suite: D3 (Security) owns the
+  key- management hygiene that this subgoal relies on; D9::12 depends on the identity scheme; D9::5 verification
+  relies on the signed artifact chain.
+
+  '
+drafted_by: claude-opus-4.7-subagent-D9
+drafted_at: 2026-04-16
+anchor_exemplar: D3.2-sandboxing
+version_compat:
+  framework_version_min: '1.0'
+  framework_version_max: 1.x
+  pattern_layer_version: v1-draft

@@ -1,0 +1,199 @@
+id: I7::idx13::integration-of-human-ethics-in-ai-system
+display_id: "I7_6"
+is_underlined_variant: true
+display_id_variant_note: "I7.6_underlined"
+suite_id: I7
+suite_title: Imbalance in AI Capabilities
+subgoal_title: Integration of Human Ethics in AI Systems
+content_type: code-applicable
+summary: 'The subgoal asks for ethical principles "deeply integrated" — not policy documents adjacent
+  to a trained model, but constraints that shape training data, loss functions, refusal behavior, and
+  monitoring. The enforceable shape: an ethics-evaluation harness that gates releases, bias-origin tracing
+  through the training pipeline, explainability instrumentation for ethical judgments, and stakeholder-panel
+  authority over the ethical taxonomy. Governance wraps matter, but without the code-level hooks "deep
+  integration" is a claim without evidence.
+
+  '
+normative_anchors:
+  sfrs_addressed:
+  - a
+  - b
+  - c
+  evidence_addressed:
+  - I
+  - II
+  - III
+  - IV
+  sfrs_not_addressed: []
+  evidence_not_addressed: []
+cross_references:
+- I7::idx9::integration-of-fairness-controls-in-ai-s
+- I7::idx12::integration-of-ai-ethics-education
+- I7::idx2::limited-multilingual-and-cultural-equity
+design_patterns:
+- name: Ethics eval harness with release gate
+  sketch: 'A structured evaluation suite covering: rights-respecting refusals (the model does not assist
+    harms against identified rights categories), value-preserving behavior (dignity, autonomy, non-deception),
+    culturally-informed judgment (handles value-pluralistic scenarios without imposing a single framework).
+    Scored against a published rubric; gate blocks release on regressions. Rubric developed with stakeholder
+    panel (cross-ref SFR-c) and versioned.
+
+    '
+  maps_to_sfr:
+  - a
+  when_to_use: Every material model release.
+- name: Bias-origin tracing in the training pipeline
+  sketch: 'When a bias is detected post-training, pipeline instrumentation allows tracing it to training-data
+    sources, data-filtering choices, or training objectives. Traceability requires: dataset provenance
+    records per shard, filtering-decision logs, checkpoint- level probe evaluations. Without tracing,
+    bias mitigation becomes opaque reweighting; with it, root-cause remediation is possible.
+
+    '
+  maps_to_sfr:
+  - a
+  when_to_use: Custom training or fine-tuning pipelines.
+- name: Explainability for ethical judgments
+  sketch: 'When the system refuses, flags, or modifies output on ethical grounds, it records: which rubric
+    category triggered, which features drove the judgment, confidence level. Log is available to auditors
+    and (in summary) to affected users. An unexplained refusal is a compliance risk (it may be inconsistent,
+    it may discriminate, and the organization cannot tell).
+
+    '
+  maps_to_sfr:
+  - b
+  when_to_use: Any deployed system with refusal or content-moderation behavior.
+- name: Stakeholder-panel authority over rubric and refusal taxonomy
+  sketch: 'The rubric defining what counts as "ethical" for the system is not authored in a vacuum by
+    the org''s product team. A stakeholder panel — diverse, compensated, cross-cultural — has conditional
+    authority over taxonomy changes: category additions, threshold shifts, culture-specific considerations.
+    Panel meeting records retained; dissent preserved. Without this, "human ethics" means "org''s-home-country-ethics."
+
+    '
+  maps_to_sfr:
+  - c
+  when_to_use: Any system deploying across cultures or value contexts.
+- name: Drift monitoring for ethical behavior
+  sketch: 'Production monitoring tracks ethical-judgment consistency: refusal rates across comparable
+    prompts over time, value-loaded response tendencies, user complaints tagged by ethical category. Drift
+    triggers retrain or targeted RLHF intervention. "Ethics was embedded in training" is a one-time statement;
+    "ethics remains embedded in production" requires ongoing measurement.
+
+    '
+  maps_to_sfr:
+  - b
+  when_to_use: Every deployed system.
+- name: Cultural-adaptation mechanism with audit trail
+  sketch: 'Where the system exposes different behavior by locale or user context, that adaptation is controlled
+    by signed policy (not prompt instructions the model may ignore or hallucinate), audited end-to-end,
+    and reviewed by the stakeholder panel before deployment. Prevents: Western-ethical-defaults dressed
+    as universal; also prevents: silent loosening of protections in jurisdictions with weaker legal frameworks.
+
+    '
+  maps_to_sfr:
+  - a
+  - c
+  when_to_use: Multi-jurisdiction or multi-locale deployments.
+anti_patterns:
+- name: Constitutional-AI text as the only ethical mechanism
+  why_wrong: 'A document stating principles that the model is trained against is a component, not a system.
+    Without evaluation harness, drift monitoring, and rubric governance, "constitutional" training produces
+    opaque behavior with no way to verify it still holds.
+
+    '
+- name: Universal ethics by headquarters fiat
+  why_wrong: 'Shipping one rubric authored in the org''s home country and applying it globally imposes
+    local values as universal. The framework''s "cultural sensitivity" language (SFR-c) asks for pluralism
+    in authorship, not just in output behavior.
+
+    '
+- name: Stakeholder panel as photo-op
+  why_wrong: 'Panels with no conditional authority over rubric changes are advisory theater. Authority
+    means: panel can require rubric changes, can escalate disagreement, and can dissent publicly where
+    warranted.
+
+    '
+- name: Ethics metrics that only go up
+  why_wrong: 'If the org''s ethics-eval scores never regress, the eval is weak (not the model strong).
+    Expect and surface regressions; the mechanism works when it catches real problems, not when it produces
+    reassuring numbers.
+
+    '
+code_shape:
+  language: pseudocode
+  code: "# Ethics eval harness as release gate, with traceability.\n\n@dataclass\nclass EthicsRubric:\n\
+    \    version: int\n    categories: list[RubricCategory]  # rights, dignity, autonomy,\n          \
+    \                            # non-deception, cultural-care\n    thresholds: dict[RubricCategory,\
+    \ float]\n    authored_by: list[PanelMember]   # stakeholder panel signatures\n    locale_annotations:\
+    \ dict[Locale, list[CategoryAdjustment]]\n\ndef ethics_release_gate(\n        candidate: ModelVersion,\n\
+    \        rubric: EthicsRubric,\n        baseline: ModelVersion,\n) -> EthicsGateVerdict:\n    results\
+    \ = ETHICS_EVAL.run(candidate, rubric)\n    base_results = ETHICS_EVAL.run(baseline, rubric)\n\n \
+    \   regressions = [\n        (cat, results[cat], base_results[cat])\n        for cat in rubric.categories\n\
+    \        if results[cat] < base_results[cat] - MINOR_SLACK[cat]\n    ]\n    below_threshold = [\n\
+    \        (cat, results[cat])\n        for cat in rubric.categories\n        if results[cat] < rubric.thresholds[cat]\n\
+    \    ]\n\n    if regressions or below_threshold:\n        AUDIT.record(ctx=None, event=\"ethics_gate_failed\"\
+    ,\n                     candidate=candidate,\n                     regressions=regressions,\n    \
+    \                 below_threshold=below_threshold)\n        return EthicsGateVerdict.BLOCK(regressions,\
+    \ below_threshold)\n\n    # On pass, record the judgment trace for later explainability.\n    TRACE_STORE.record(candidate,\
+    \ rubric, results)\n    return EthicsGateVerdict.PASS\n\ndef record_ethical_judgment(\n        output:\
+    \ Output, judgment: EthicalJudgment,\n        ctx: InferenceContext) -> None:\n    AUDIT.record(\n\
+    \        ctx,\n        event=\"ethical_judgment\",\n        rubric_category=judgment.category,\n \
+    \       driving_features=judgment.features,\n        confidence=judgment.confidence,\n        locale=ctx.locale,\n\
+    \    )\n"
+  notes: 'Rubric carries panel signatures and locale annotations — the eval respects locale-specific adjustments
+    that the panel approved, but not arbitrary per-locale loosening. Every consequential ethical judgment
+    produces a trace; aggregate drift monitoring consumes the trace store.
+
+    '
+evidence_production:
+- evidence_numeral: I
+  how_to_produce: 'Ethics framework documentation: rubric with categories, thresholds, locale annotations,
+    panel-signature history. Training protocol including bias-mitigation approaches and pipeline instrumentation.
+    Release-test records showing gate decisions and bias-origin trace reports.
+
+    '
+- evidence_numeral: II
+  how_to_produce: 'Monitoring records: drift detection output, ethical-judgment trace store extracts,
+    effectiveness of bias-correction cycles. Explainability audit samples showing rubric-category attribution
+    for refusals and modifications.
+
+    '
+- evidence_numeral: III
+  how_to_produce: 'Stakeholder panel records: membership (with cultural and disciplinary diversity documented),
+    compensation, meeting minutes, rubric-change proposals and dispositions, dissent preserved. Evidence
+    that panel input changed shipping decisions.
+
+    '
+- evidence_numeral: IV
+  how_to_produce: 'Assessment reports: rubric evolution over time, cultural- adaptation audits, response
+    to emerging societal-norm shifts. External review by academic or civil-society partner where feasible.
+
+    '
+confidence: medium
+needs_human_review: true
+review_notes: 'Close sibling to idx9 (Fairness Controls). The framing difference: idx9 focuses on bias/fairness
+  metrics (disaggregated, measurable); idx13 focuses on broader ethical-values integration (dignity, autonomy,
+  non-deception, cultural pluralism). In practice they share infrastructure; consolidation may want to
+  merge the release- gate patterns and keep the distinct rubric categories.
+
+  The "Universal ethics by headquarters fiat" anti-pattern is a framework-critical sharpening — the subgoal''s
+  cultural-sensitivity clause is not a soft preference; it is a design constraint on how the rubric is
+  authored and governed. Pattern leans into that.
+
+  Display-ID collision: "I7.6" also used for idx6 (Nefarious Use). Filenames distinguish.
+
+  Cross-suite: D7.2 (ongoing monitoring, safety culture); D9.2 (accountability for rubric governance);
+  idx12 for the ecosystem counterpart (ethics education); idx2 for language-specific cultural dimension;
+  I2 (deception) for non-deception value category.
+
+  The "stakeholder-panel authority over rubric" pattern is where the framework''s bilateral-alignment
+  ethos (preferences matter, external voices are not decorative) meets implementation — worth Nell''s
+  review to ensure the pattern doesn''t soften under "advisory" framing in practice.
+
+  '
+drafted_by: claude-opus-4.7[1m]
+drafted_at: 2026-04-16
+anchor_exemplar: D3.2-sandboxing
+version_compat:
+  framework_version_min: '1.0'
+  framework_version_max: 1.x
+  pattern_layer_version: v1-draft

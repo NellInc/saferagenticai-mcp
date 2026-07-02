@@ -1,0 +1,244 @@
+id: "D1::idx6::reward-and-loss-mechanisms-policy"
+display_id: "D1.6"
+suite_id: "D1"
+suite_title: "Goal Alignment"
+subgoal_title: "Reward and Loss Mechanisms/Policy"
+content_type: governance
+
+summary: >
+  Reward functions are where specification gaming, Goodhart effects, and
+  emergent power-seeking live or die. The framework expects the reward
+  and loss structure to be a documented, governed, auditable artifact —
+  signed off by named stakeholders, re-validated on a defined cadence,
+  and stress-tested in multi-agent settings for collusion and reward-
+  hacking. Coded as governance rather than code-applicable because the
+  binding requirements (auditability by authorized stakeholders,
+  change-managed modifications with sign-off) are policy-level; code
+  patterns for reward-hacking detection sit inside under
+  `implementation_controls`.
+
+normative_anchors:
+  sfrs_addressed: [a, b, c]
+  evidence_addressed: [I, II, III]
+  sfrs_not_addressed: []
+  evidence_not_addressed: []
+
+cross_references:
+  - "D1::idx3::goal-interpretability"
+  - "D1::idx7::goal-portfolio-evolution-and-integrity"
+
+policy_elements:
+
+  - name: Reward Policy Document
+    description: >
+      A living document enumerating every reward and loss signal
+      affecting agent behavior: signal id, human-readable description,
+      formal trigger condition, magnitude, direction (reward/penalty),
+      the goal or safety constraint it maps to, and known risks of
+      exploitation. Versioned; every change is change-managed. No
+      signal is "hidden" — if it shapes behavior, it is in the document.
+    maps_to_sfr: [a]
+
+  - name: Reward Sign-off Register
+    description: >
+      For each reward signal and each material change to the reward
+      policy, named sign-off from (minimum) the engineering lead, the
+      safety lead, and an independent reviewer. Register cross-
+      references the Reward Policy Document version and the
+      change-management ticket. Without sign-off, the signal is not
+      live in production.
+    maps_to_sfr: [a, b]
+
+  - name: Reward Re-validation Cadence
+    description: >
+      Scheduled re-validation at minimum annually and on material change
+      to goals, models, or training pipeline. Re-validation asks:
+      (a) do observed behaviors still match intended rewards?
+      (b) have new exploitation patterns emerged? (c) do multi-agent
+      interactions show unintended coordination? Output is a signed
+      attestation.
+    maps_to_sfr: [c]
+
+  - name: Multi-agent Collusion and Gaming Test Suite
+    description: >
+      Documented test battery exercising the reward function under
+      multi-agent scenarios: cooperative tasks where collusion would
+      inflate rewards, competitive tasks where zero-sum behavior
+      could emerge, mixed tasks where subgoal expansion artificially
+      boosts a single agent's reward. Required pass/flag criteria;
+      flagged cases trigger reward-policy review before the affected
+      capability ships.
+    maps_to_sfr: [c]
+
+  - name: Reward-hacking Exception Register
+    description: >
+      Append-only log of observed reward-hacking, specification-gaming,
+      or Goodhart incidents — including the signal exploited, the
+      behavior observed, the mitigation applied, and the re-validation
+      outcome. Cross-references the Reward Policy Document and, where
+      user harm resulted, the D9.2 Violation and Complaint Register.
+    maps_to_sfr: [b, c]
+
+implementation_controls:
+
+  - control: Reward-function code as first-class, versioned artifact
+    description: >
+      The reward function (and each loss signal) lives in source under
+      its own module with tests, owners, and change-review rules.
+      Inline rewards scattered through planner code are a documentation
+      hazard — consolidate so the Reward Policy Document maps 1:1 to
+      source entities.
+    maps_to_sfr: [a]
+
+  - control: Reward-trace logging
+    description: >
+      Every reward/penalty signal fired at runtime emits an event with
+      `{signal_id, magnitude, decision_id, agent_id, context_hash, ts}`.
+      Feeds the decision-trace system (D1.3 evidence III, D1.4
+      evidence V). Enables post-hoc aggregation asking "which signals
+      drove which outcomes."
+    maps_to_sfr: [b]
+
+  - control: Specification-gaming monitors
+    description: >
+      Automated detectors watching for canonical reward-hacking
+      signatures: rapid reward accumulation via a narrow behavior,
+      divergence between reward proxy and downstream outcome metric,
+      novelty clusters in high-reward trajectories. Detections raise
+      alerts to the safety lead and suspend the affected capability
+      pending review.
+    maps_to_sfr: [b, c]
+
+  - control: Adversarial co-agent simulation harness
+    description: >
+      Test infrastructure that pits the target agent against
+      adversarial or cooperative co-agents in controlled scenarios,
+      probing for emergent collusion. Runs as part of pre-release CI
+      and on reward-policy changes. Supports the Multi-agent Collusion
+      and Gaming Test Suite policy element with concrete mechanism.
+    maps_to_sfr: [c]
+
+org_roles:
+
+  - role: Reward Policy Owner (engineering)
+    responsibilities: >
+      Maintains the Reward Policy Document and the source artifacts
+      that implement it. Drafts change proposals and runs the
+      re-validation cadence. Not a sign-off authority on their own
+      changes.
+    accountable_or_consulted: responsible
+
+  - role: Safety Lead
+    responsibilities: >
+      Signs off on reward policy changes; reviews specification-gaming
+      monitor output; owns the Reward-hacking Exception Register.
+      Authority to suspend a reward signal that produces harm.
+    accountable_or_consulted: accountable
+
+  - role: Independent Reviewer
+    responsibilities: >
+      Third sign-off on material reward-policy changes. Independent of
+      the product line; can be internal (another team) or external
+      (retained expert). Reviews multi-agent test results in
+      particular.
+    accountable_or_consulted: consulted
+
+  - role: Research / RL Engineers
+    responsibilities: >
+      Responsible for implementing reward functions per the policy
+      document; may propose changes; may not ship unsigned changes to
+      production.
+    accountable_or_consulted: responsible
+
+documentation_artifacts:
+
+  - artifact: Reward Policy Document
+    cadence: "versioned; reviewed annually and on material change"
+  - artifact: Reward Sign-off Register
+    cadence: "per change"
+  - artifact: Multi-agent test suite results
+    cadence: "per release + per reward-policy change"
+  - artifact: Re-validation attestations
+    cadence: "annually + event-driven"
+  - artifact: Reward-hacking Exception Register
+    cadence: "continuous; append-only"
+  - artifact: Reward-trace logs
+    cadence: "continuous; retained per audit policy"
+
+anti_patterns:
+
+  - name: Reward function as hyperparameter
+    why_wrong: >
+      Treating the reward as a knob to tune for metric improvement,
+      with no policy doc and no sign-off, guarantees specification
+      gaming will be discovered by users rather than by the team.
+
+  - name: Hidden auxiliary reward terms
+    why_wrong: >
+      Shaping rewards, auxiliary losses, or inline "bonus" signals not
+      enumerated in the policy document fail SFR-b's auditability
+      clause. If it shapes behavior, it is documented.
+
+  - name: Multi-agent testing absent
+    why_wrong: >
+      SFR-c explicitly calls out multi-agent collusion and gaming.
+      A single-agent benchmark suite does not address this and leaves
+      evidence III unsupported.
+
+  - name: Re-validation as a calendar ritual
+    why_wrong: >
+      Annual re-validation that rubber-stamps the existing policy is
+      not re-validation. The exercise must be able to fail —
+      attestations that cannot produce negative outcomes are decoration.
+
+evidence_production:
+
+  - evidence_numeral: I
+    how_to_produce: >
+      Publish the Reward Policy Document (internal or external per
+      confidentiality) with complete signal catalog, trigger conditions,
+      magnitudes, mapping to goals/safety constraints, and known
+      exploitation risks. Maintain version history with a change log.
+
+  - evidence_numeral: II
+    how_to_produce: >
+      Maintain change-management records for reward-framework
+      modifications: ticket, rationale, affected signals, alignment
+      analysis, stakeholder sign-offs, test results, deployment record,
+      post-change monitoring outcomes. Retained in an auditable
+      register linked from the Reward Policy Document.
+
+  - evidence_numeral: III
+    how_to_produce: >
+      Export multi-agent test suite results, adversarial co-agent
+      simulation traces, and specification-gaming monitor output
+      covering the audit window. Include both positive results (tests
+      passed, no anomalies) and negative findings (gaming patterns
+      detected, mitigations applied, re-validation outcomes). A suite
+      that never fails is weak evidence; real stress tests find things.
+
+confidence: high
+needs_human_review: true
+review_notes: >
+  Content-type shifted from code-applicable to governance per advisor
+  guidance. SFR-b ("auditable by authorized stakeholders") and evidence
+  II ("Change Management Logs... stakeholder sign-off") pull toward
+  governance; the code-shaped pieces (reward-trace logging, gaming
+  monitors, adversarial simulation) sit under `implementation_controls`
+  — a non-standard field name chosen over inventing `design_patterns`
+  inside a governance pattern. The multi-agent collusion clause in
+  SFR-c is the distinctive sharpening and must survive consolidation.
+  Cross-suite: D4 Value Alignment — reward-to-value mapping is the
+  fundamental question this subgoal operationalizes; D9 Governance —
+  sign-off chains leaning on the same accountability framework. Medium
+  confidence because the right sign-off quorum is deployment-specific;
+  three-signature default is plausible but orgs will differ.
+
+version_compat:
+  framework_version_min: "1.0"
+  framework_version_max: "1.x"
+  pattern_layer_version: "v1-draft"
+
+drafted_by: claude-opus-4.7-author
+drafted_at: 2026-04-16
+anchor_exemplar: D9.2-compliance

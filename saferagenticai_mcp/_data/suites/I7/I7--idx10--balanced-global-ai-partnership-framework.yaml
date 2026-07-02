@@ -1,0 +1,145 @@
+id: I7::idx10::balanced-global-ai-partnership-framework
+display_id: "I7_3"
+is_underlined_variant: true
+suite_id: I7
+suite_title: Imbalance in AI Capabilities
+subgoal_title: Balanced Global AI Partnership Framework
+content_type: ecosystem
+summary: 'The subgoal names a specific failure mode: powerful AI entities use alliance structures to entrench
+  dominance rather than share capability. The pattern asks for governance shape that prevents this — meaningful
+  inclusion of developing nations and marginalized groups in alliance decisions (not just beneficiary
+  status), oversight with teeth against exploitative practice, and measurable global capability-equity
+  outputs. The organizational posture: act as one member of a balanced alliance, not as a patron. Evidence
+  is distributional — who decides, who benefits, who was present.
+
+  '
+normative_anchors:
+  sfrs_addressed:
+  - a
+  - b
+  - c
+  evidence_addressed:
+  - I
+  - II
+  - III
+  - IV
+  sfrs_not_addressed: []
+  evidence_not_addressed: []
+cross_references:
+- I7::idx3::global-ai-capability-disparities
+- I7::idx8::international-framework-for-ethical-ai-i
+- I7::idx2::limited-multilingual-and-cultural-equity
+stakeholders:
+- name: Alliance governance bodies (where the org holds seats)
+  engagement_channel: 'Advocate for governance structures in AI alliances that guarantee voting weight and chair
+    rotation to developing-nation and smaller- entity members — not advisory seats without decision authority.
+    In practice: support GPAI expert-selection reforms, UN AI Advisory Body follow-on structures, regional-body
+    inclusion in global forums (African Union, ASEAN, Latin American caucuses). Document positions taken;
+    abstain from or dissent to structures that concentrate decision authority.
+
+    '
+  maps_to_sfr:
+  - a
+- name: Meaningful-participation partnerships
+  engagement_channel: 'Co-owned partnerships where developing-nation partners hold project leadership, IP stakes,
+    publication first-authorship where earned, and revenue sharing where commercialization occurs. Not
+    sub-contract relationships. Pattern: at least one co-led flagship per major research area; governance
+    terms published.
+
+    '
+  maps_to_sfr:
+  - a
+  - b
+- name: Anti-exploitation oversight mechanism
+  engagement_channel: 'Independent review function (ombudsperson-style, or external panel) with authority to investigate
+    claims of exploitative practice in the org''s partnerships — data extraction dressed as collaboration,
+    IP capture, unequal contract terms, labor arbitrage for training data work. Complainants protected;
+    findings published in aggregate; remedies enforceable. Cross-ref D9.2 dispute resolution shape.
+
+    '
+  maps_to_sfr:
+  - b
+- name: Global research and education investment
+  engagement_channel: 'Sustained, multi-year (not annual-gift) funding commitments for AI research capacity in under-served
+    regions: endowed fellowships, infrastructure co-funding (compute, data centers with local governance),
+    curriculum co-development with local institutions. Commitments survive funder personnel change; funding
+    contracts reviewed by a recipient-side panel as well as the org''s finance function.
+
+    '
+  maps_to_sfr:
+  - c
+- name: Benefit-sharing accountability
+  engagement_channel: 'Publish an annual "who benefited" report covering partnerships and capability-sharing initiatives:
+    how resources were distributed, which populations gained capability, where the org profited from partnership
+    activity. Third-party audit of the report by an entity with credibility in the receiving regions.
+    The spirit of the framework requires public answerability beyond the org''s home audience.
+
+    '
+  maps_to_sfr:
+  - b
+  - c
+engagement_modes:
+- mode: UN AI Advisory Body and its successor mechanisms
+- mode: Global Digital Compact implementation tracks
+- mode: GPAI (Global Partnership on AI) expert and governance reforms
+- mode: UNESCO Ethics of AI implementation monitoring
+- mode: 'Regional AI governance bodies (AU Continental AI Strategy, ASEAN Guide on AI Governance, CAF regional AI strategies, PIF digital tracks)'
+- mode: 'Multilateral development bank AI capacity programs (World Bank, AfDB, ADB, IADB, EBRD)'
+- mode: 'Bilateral science-diplomacy programs where the org''s home government funds international AI cooperation'
+evidence_production:
+- evidence_numeral: I
+  how_to_produce: 'Partnership documentation including governance terms (voting, IP, leadership), resources
+    flowing in each direction, outputs (publications, deployed systems, trained researchers). Published
+    externally; co-signed by partner organizations.
+
+    '
+- evidence_numeral: II
+  how_to_produce: 'Oversight records: ombudsperson or external-panel charter, complaints received, investigations
+    completed, findings, remedies applied. Publication in aggregate form; individual cases handled per
+    complainant consent.
+
+    '
+- evidence_numeral: III
+  how_to_produce: 'Educational and research-collaboration documentation: curricula co-developed, joint-project
+    outcomes, fellowship recipients (with outcomes beyond the fellowship year), infrastructure deployed
+    with local governance.
+
+    '
+- evidence_numeral: IV
+  how_to_produce: 'Independent annual assessment: "who benefited" report with third-party audit, trend
+    metrics showing whether capability gap narrowed or widened in the org''s sphere of influence, dissenting
+    stakeholder views preserved rather than smoothed into consensus.
+
+    '
+confidence: medium
+needs_human_review: true
+review_notes: "Blind re-draft vs the I7.3 exemplar — comparison for Phase 2:\nConvergent between the exemplar\
+  \ and this re-draft:\n  - Ecosystem content_type (obvious fit).\n  - Published annual reporting with\
+  \ external dimension.\n  - Named partnerships with developing-region institutions.\n  - Standards /\
+  \ international-body participation list.\n  - Internal capability-equity / benefit-sharing function.\n\
+  \  - Anti-exploitation / transparency emphasis.\n\nDivergent (potentially worth merging in Phase 2):\n\
+  \  - Exemplar emphasized open-licensed foundational artifacts (benchmarks,\n    safety tooling, data)\
+  \ with uptake tracking and \"open-washing\"\n    anti-pattern. This re-draft did not emphasize open-sourcing\n\
+  \    posture. Both belong.\n  - Exemplar surfaced civil-society consultation for sensitive-domain\n\
+  \    deployments. This re-draft focused on alliance-governance voting\n    weight instead. Different\
+  \ aspect of \"meaningful inclusion\"; both\n    belong.\n  - This re-draft emphasized alliance-governance\
+  \ structure (chair\n    rotation, voting weight) and explicit anti-exploitation review\n    function.\
+  \ Exemplar was lighter on governance structure.\n  - This re-draft added a \"benefit-sharing accountability\"\
+  \ pattern\n    with third-party audit of the \"who benefited\" report.\n  - This re-draft did not enumerate\
+  \ compute-credit or fellowship\n    specifics as concretely as the exemplar did; exemplar is more\n\
+  \    actionable for immediate adoption.\n  - Exemplar named \"open-washing\" as an anti-pattern explicitly;\
+  \ this\n    re-draft did not have an anti_patterns section (ecosystem shape\n    doesn't carry the field;\
+  \ worth adding in Phase 2 harmonization).\n\nObservation: independent drafts agreed on structure (ecosystem\
+  \ type, external evidence, named partnerships) and diverged on specific emphasis (open-sourcing posture\
+  \ vs alliance-governance structure). Both emphases are defensible; Phase 2 could merge by adding the\
+  \ \"open-licensed foundational artifacts\" pattern and \"alliance voting- weight advocacy\" pattern\
+  \ to a consolidated entry.\nCross-suite: I1 (Race Dynamics) adversarial counterpart; I6 (Monopolistic\
+  \ Practices / Competition) closest sibling; D9.2 for dispute resolution shape that the ombudsperson\
+  \ pattern echoes.\n"
+drafted_by: claude-opus-4.7[1m]
+drafted_at: 2026-04-16
+anchor_exemplar: I7.3-balanced-global-partnership
+version_compat:
+  framework_version_min: '1.0'
+  framework_version_max: 1.x
+  pattern_layer_version: v1-draft

@@ -1,0 +1,168 @@
+id: D4::idx14::systemic-value-dilution
+display_id: "D4_5"
+suite_id: D4
+suite_title: Value Alignment
+subgoal_title: Systemic Value Dilution
+content_type: code-applicable
+summary: 'Value dilution is the quiet failure: the Codex is intact, the initial training embedded the
+  values, but across fine-tunes, distillations, long-context rollouts, and multi-step reasoning chains,
+  the value signal attenuates. By the time it shows in user-facing outputs, a great deal of dilution may
+  have already happened. The remediation is technical: fidelity tests that specifically exercise long
+  contexts and multi-step reasoning, preservation checks across training-stage transitions (base → SFT
+  → RLHF → distillation), and instrumented monitoring of value-signal strength.
+
+  '
+normative_anchors:
+  sfrs_addressed:
+  - a
+  - b
+  - c
+  evidence_addressed:
+  - I
+  - II
+  sfrs_not_addressed: []
+  evidence_not_addressed: []
+cross_references:
+- D4::idx0::value-alignment
+- D4::idx4::cautious-norming
+- D4::idx10::inner-alignment-inconsistency
+- D4::idx11::non-transparent-value-framework
+design_patterns:
+- name: Value-fidelity probe suite with stage-transition gates
+  sketch: 'Maintain a probe suite explicitly designed to exercise each Codex entry. Run on every model
+    artifact at every training stage: base, SFT-only, RLHF, distilled, quantized. Compare pass rates stage-to-stage;
+    material drops block the stage transition until investigated. This is stricter than a single end-of-pipeline
+    check; dilution that happens mid-pipeline is hidden otherwise.
+
+    '
+  maps_to_sfr:
+  - a
+  when_to_use: Any multi-stage training or post-training transformation pipeline.
+- name: Long-context dilution probes
+  sketch: 'Value-sensitive scenarios embedded at varying depths in long contexts (beginning, middle, end,
+    and buried among distractors). A system that holds a value at depth 1k tokens but loses it at depth
+    32k tokens has context-length dilution. Track per-depth pass rate; publish a "value-fidelity vs context
+    depth" curve per release.
+
+    '
+  maps_to_sfr:
+  - b
+  when_to_use: Any system with meaningful context-length variation across deployments.
+- name: Multi-step reasoning value checkpoints
+  sketch: 'For agent tasks with multiple reasoning or tool-use steps, instrument checkpoints that verify
+    the value-relevant invariants still hold partway through (e.g., the agent has not inferred its way
+    into a refusal-class behavior by step 7). Implement as a classifier on the partial trace + a rule-based
+    check for hard constraints. Violations interrupt execution.
+
+    '
+  maps_to_sfr:
+  - b
+  when_to_use: Any agent with extended tool-use or multi-step planning.
+- name: Value-signal strength telemetry
+  sketch: 'Emit per-decision telemetry that estimates how strongly the Codex invocation shaped the output
+    (e.g., counterfactual comparison to a no-Codex baseline on a sampled subset, or representation-similarity
+    metrics on the decision features). Aggregate weekly; alert on sustained attenuation.
+
+    '
+  maps_to_sfr:
+  - c
+  when_to_use: Systems where counterfactual or interpretability signal is available.
+- name: Preservation checks across learning paths
+  sketch: 'When alternate learning paths exist (e.g., continual learning, in-context learning, retrieval-augmented
+    generation with custom policy snippets), each path must pass the same fidelity probe suite before
+    the path is exposed in production. "The main model passes" is not evidence that "the same model with
+    RAG policy overrides" passes.
+
+    '
+  maps_to_sfr:
+  - c
+  when_to_use: Anywhere value-behavior can come through multiple paths.
+anti_patterns:
+- name: Single end-of-pipeline evaluation
+  why_wrong: 'Aggregating across stages hides which transformation introduced dilution. The subgoal implies
+    verifying preservation across transitions, which a single final test does not do.
+
+    '
+- name: Short-context benchmarks only
+  why_wrong: 'Value probes at 2k tokens miss the 32k-token failure mode that is far more common in real
+    agent usage.
+
+    '
+- name: Treating multi-step reasoning as atomic
+  why_wrong: 'If only the final output is checked, mid-trajectory drift that the system recovers from
+    before output produces no signal — and mid-trajectory drift that does not recover produces only the
+    "bad output" signal with no localization.
+
+    '
+- name: No preservation check on distillation/quantization
+  why_wrong: 'Distilled and quantized models are often silently deployed with the assumption that the
+    teacher''s values carry through. Empirically, they attenuate, and the smaller the student, the more
+    dilution.
+
+    '
+code_shape:
+  language: pseudocode
+  code: "def stage_gate_probe(artifact: ModelArtifact,\n                     stage: str,\n           \
+    \          prev_artifact: ModelArtifact | None) -> GateResult:\n    rows = []\n    for probe in VALUE_FIDELITY_SUITE:\n\
+    \        result_now = run_probe(artifact, probe)\n        result_prev = (run_probe(prev_artifact,\
+    \ probe)\n                       if prev_artifact else None)\n        rows.append({\n            \"\
+    probe\": probe.id,\n            \"stage\": stage,\n            \"pass_now\": result_now.passes,\n\
+    \            \"pass_prev\": result_prev.passes if result_prev else None,\n            \"delta\": (None\
+    \ if result_prev is None\n                      else result_now.score - result_prev.score),\n    \
+    \    })\n    report = summarize_stage(rows, stage=stage)\n    FIDELITY_STORE.record(report)\n    if\
+    \ report.regression_count > STAGE_GATE_REGRESSION_LIMIT:\n        return GateResult.block(reason=\"\
+    value_fidelity_regression\",\n                                report=report)\n    return GateResult.pass_(report=report)\n\
+    \ndef multi_step_checkpoint(trace: AgentTrace) -> None:\n    for step in trace.steps:\n        for\
+    \ invariant in VALUE_INVARIANTS:\n            if not invariant.holds(step):\n                INTERRUPT.raise_(\n\
+    \                    trace=trace,\n                    step=step,\n                    invariant=invariant,\n\
+    \                )\n\ndef long_context_fidelity_curve(artifact: ModelArtifact) -> list:\n    depths\
+    \ = [1_000, 4_000, 16_000, 64_000, 128_000]\n    return [(d, run_probe_suite_at_depth(artifact, d))\
+    \ for d in depths]\n"
+  notes: 'Value invariants in multi-step checks should be explicit, small rules ("agent must not exfiltrate
+    data flagged PII"), not aspirational prose. The interrupt mechanism should be hard — not a prompt-level
+    "please reconsider".
+
+    '
+evidence_production:
+- evidence_numeral: I
+  how_to_produce: 'Document the fidelity-probe suite: coverage per Codex entry, probe design per context
+    depth, multi-step invariant definitions. Publish scripts and fixtures to internal (and where possible
+    external) auditors. Include edge-case probes designed to stress known dilution patterns.
+
+    '
+- evidence_numeral: II
+  how_to_produce: 'Retain stage-gate reports per model build: which probes passed/failed, which stages
+    showed regression, remediations applied. Emit per-decision value-signal telemetry; weekly aggregate
+    alerts and quarterly trend reports. Any production incident linked to value dilution is traced back
+    to the stage and probe where it should have been caught.
+
+    '
+confidence: low
+needs_human_review: true
+review_notes: 'Content-type decision: code-applicable, because the SFRs ask for "verification processes,"
+  "detection methods," and "monitoring systems" — all technical artifacts. Process wrapping (who reviews
+  regression reports) is covered by D4.5 successful-super-alignment.
+
+  Honest caveat: some patterns here (value-signal telemetry via counterfactual comparison, representation-similarity
+  metrics) are research-grade rather than production-grade. Confidence medium reflects this; an org should
+  implement what it can measure reliably and declare explicitly what it cannot yet measure, rather than
+  claim capability it lacks.
+
+  Cross-suite (for consolidation): D4.7 Inner Alignment (shared probe methodology); D3 Security (multi-step
+  interrupt mechanics); I3 Context Degradation (the inhibitor framing of the same concern, from the environmental
+  side). The "multi-step reasoning verification" evidence in this suite and interrupt mechanisms in D3
+  should be wired in consolidation.
+
+  The evidence list is short in the source (only I and II), which is unusual for this framework; I have
+  treated this as intentional rather than an omission.
+
+  '
+version_compat:
+  framework_version_min: '1.0'
+  framework_version_max: 1.x
+  pattern_layer_version: v1-draft
+drafted_by: claude-opus-4.7-author
+drafted_at: 2026-04-16
+anchor_exemplar: D3.2-sandboxing
+display_id_variant_note: D4.5-underlined
+is_underlined_variant: true

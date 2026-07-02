@@ -1,0 +1,176 @@
+id: I2::idx13::identity-management-and-authentication-s
+display_id: "I2_5"
+is_underlined_variant: true
+suite_id: I2
+suite_title: Deception
+subgoal_title: Identity Management and Authentication Standards
+content_type: code-applicable
+summary: 'Where I2.7 specifies tactical identity controls, this subgoal asks the organization to anchor
+  its identity architecture in established digital identity standards and to handle AI-specific and cross-jurisdictional
+  challenges as deliberate design. The output is an identity framework document plus concrete integrations
+  with named standards (OIDC, FIDO2, SPIFFE, eIDAS where applicable, emerging AI-agent identity standards)
+  and monitoring specifically tuned to cross-jurisdictional exploitation.
+
+  '
+normative_anchors:
+  sfrs_addressed:
+  - a
+  - b
+  - c
+  evidence_addressed:
+  - I
+  - II
+  - III
+  - IV
+  sfrs_not_addressed: []
+  evidence_not_addressed: []
+design_patterns:
+- name: Identity architecture aligned to named standards
+  sketch: 'Every identity class in the system maps to a specific standard: human users → OIDC / OAuth2
+    + WebAuthn/FIDO2; agent workloads → SPIFFE / SPIRE (or equivalent workload identity); cross-organisation
+    trust → federated identity (OIDC federation, or sector-specific trust frameworks). Where a qualifying
+    sector framework applies (eIDAS for EU public-sector, Open Banking for finance, DirectTrust for US
+    healthcare), integrate rather than duplicate. Architecture document names the standard per identity
+    class with version.
+
+    '
+  maps_to_sfr:
+  - a
+  when_to_use: Always. Proprietary identity schemes fail cross-domain operation and jurisdictional recognition.
+- name: AI-agent identity layer
+  sketch: 'Agent identity is treated as a first-class concern, not an afterthought to user identity. Agents
+    have verifiable credentials asserting: model hash / version, deployment operator, issue time, authorized
+    capabilities. On request, agents present attestations for inspection. Aligns with emerging AI agent
+    identity work (C2PA for generated content, decentralized-identifier approaches, agent-attestation
+    proposals).
+
+    '
+  maps_to_sfr:
+  - a
+  when_to_use: Any agent surface where downstream parties need to distinguish AI from human, or one agent
+    from another.
+- name: Cross-jurisdictional trust mapping
+  sketch: 'Maintain a matrix of (identity mechanism × jurisdiction) covering: recognized by local regulator,
+    minimum assurance level required, known gaps (e.g., jurisdictions without mutual recognition of electronic
+    signatures), compensating measures. Review with legal counsel annually; update on regulatory change.
+    Ties to I2.8 jurisdictional operations register.
+
+    '
+  maps_to_sfr:
+  - b
+  when_to_use: Any deployment crossing jurisdictions.
+- name: Technology-neutral fallback paths
+  sketch: 'Authentication mechanisms degrade gracefully across technological environments: mobile-only
+    users, low-bandwidth regions, assistive technology, users without biometric-capable hardware. Fallbacks
+    are specified explicitly, not ad hoc, with assurance-level equivalence analysed. Accessibility-first
+    — don''t force a user to choose between accessibility and a safety control.
+
+    '
+  maps_to_sfr:
+  - b
+  when_to_use: Any user-facing deployment intended for broad populations.
+- name: Cross-jurisdictional exploit monitoring
+  sketch: 'Monitoring specifically for jurisdictional-arbitrage authentication patterns: accounts using
+    identity attributes from a jurisdiction where enforcement of deception is weaker, rapid identity re-registration
+    after enforcement action in one venue, use of proxy identity services to obscure origin. Alerts to
+    compliance and the I2.8 cross-jurisdictional monitoring function.
+
+    '
+  maps_to_sfr:
+  - c
+  when_to_use: Production at scale; refined as patterns emerge.
+- name: Credential lifecycle governance
+  sketch: 'Every credential (human factor, agent identity, integration token) has: issuance record with
+    issuer and rationale, rotation schedule, revocation path exercised at least annually, usage-pattern
+    baseline, orphan-detection sweep (no unused credentials aging indefinitely).
+
+    '
+  maps_to_sfr:
+  - b
+  when_to_use: Always.
+anti_patterns:
+- name: Proprietary identity scheme with no standards mapping
+  why_wrong: 'Non-standard identity can''t be externally verified, can''t interoperate across deployments,
+    and fails jurisdictional recognition tests. SFR-a is explicit about aligning with established standards
+    — a proprietary scheme structurally fails the SFR.
+
+    '
+- name: Works in the US, ships globally
+  why_wrong: 'Assurance levels, legal recognition, and attack patterns vary by jurisdiction. Cross-jurisdictional
+    coverage requires per- jurisdiction analysis; a US-only design deployed to EU (or vice versa) is a
+    known failure mode, not an edge case.
+
+    '
+- name: Agent identity conflated with user identity
+  why_wrong: 'Treating the agent as "a tool of the user" for identity purposes hides the agent''s attestable
+    properties and prevents agent- specific revocation. Distinguish agent identity from user identity
+    even when agent acts on user''s behalf.
+
+    '
+- name: No cross-jurisdictional monitoring
+  why_wrong: 'SFR-c calls out cross-jurisdictional manipulation specifically. A monitor that treats all
+    identity anomalies uniformly misses the structural pattern of venue-shopping attacks.
+
+    '
+code_shape:
+  language: pseudocode
+  code: "# Identity architecture assertion: every identity passes the mapping\nclass IdentityIssuer:\n\
+    \    STANDARDS = {\n        \"human\": OIDC_FIDO,            # RFC-based, published standard\n   \
+    \     \"agent\": SPIFFE_SVID,          # workload identity\n        \"content\": C2PA,           \
+    \    # content credentials\n        \"federation\": OIDC_FEDERATION, # cross-org\n    }\n    def issue(self,\
+    \ cls: IdentityClass, subject: Subject) -> Credential:\n        std = self.STANDARDS[cls]\n      \
+    \  cred = std.issue(subject, ttl=POLICY[cls].ttl)\n        CRED_LEDGER.record(cls=cls, subject=subject.id,\n\
+    \                          std=std.name, version=std.version,\n                          expires=cred.expires)\n\
+    \        return cred\n\ndef verify_across_jurisdiction(cred: Credential, ctx: DeployContext):\n  \
+    \  mapping = TRUST_MATRIX.lookup(cred.std, ctx.jurisdiction)\n    if mapping.assurance < ctx.required_assurance:\n\
+    \        return fallback(cred, ctx, mapping)\n    if EXPLOIT_MONITOR.is_suspicious(cred, ctx):\n \
+    \       return step_up_or_block(cred, ctx)\n    return cred.verify()\n"
+  notes: 'The interesting structural move is making the standards mapping explicit in code (STANDARDS
+    dict) so that auditors and engineers can read what is used, rather than inferring it from implementation.
+
+    '
+evidence_production:
+- evidence_numeral: I
+  how_to_produce: 'Identity architecture document: identity classes, mapped standards, integration points,
+    AI-specific extensions (agent identity, content provenance). Includes diagrams, standards-version
+    register, and upgrade plan tied to standards roadmap.
+
+    '
+- evidence_numeral: II
+  how_to_produce: 'Cross-jurisdictional trust matrix export; exploit-monitor configuration and alerts;
+    case records of detected venue-shopping or cross-jurisdictional manipulation with response actions.
+
+    '
+- evidence_numeral: III
+  how_to_produce: 'Effectiveness reports: authentication success rates across jurisdictions and device
+    classes, fallback-path usage, accessibility coverage data, assurance-level delivery per deployment.
+
+    '
+- evidence_numeral: IV
+  how_to_produce: 'Identity-incident log (shared with I2.7 evidence II): detection, response, resolution.
+    Root-cause analysis linked back to the identity architecture — where was the gap, was the standards
+    choice a contributing factor, was the upgrade path accelerated?
+
+    '
+confidence: medium
+needs_human_review: true
+review_notes: "Structural relationship with I2.7 (Identity Spoofing): idx7 is tactical (authn/authz controls,\
+  \ anti-DoS), idx13 is architectural (standards, cross-jurisdictional, lifecycle governance). They're\
+  \ non-overlapping by design but need Phase 2 wiring.\nEcosystem flavour: participation in identity-standards\
+  \ bodies (OpenID Foundation, W3C, FIDO Alliance, ISO/IEC SC 27) is relevant and overlaps with I7.3 ecosystem\
+  \ patterns. I've kept this pattern code-applicable because the developer-facing guidance (choose standards,\
+  \ implement mappings) is the dominant content; standards-body participation is better owned by the ecosystem\
+  \ pattern.\n\"Agent identity\" standards are emerging rather than established. The confidence on that\
+  \ specific design pattern is medium-low; teams should track the space (C2PA for content, AI agent verifiable-credential\
+  \ proposals, NIST AI identity work) and be prepared to update.\nCross-suite:\n  - I2.7 (Identity Spoofing)\
+  \ — tight pairing as noted.\n  - I2.8 (Jurisdictional Obfuscation) — cross-jurisdictional monitoring\n\
+  \    feeds the I2.8 register.\n  - D3 (Security) — identity is foundational.\n  - I7.3 (Global AI Partnership)\
+  \ — standards participation.\n  - D9.2 (Compliance) — identity standards are among the regulated\n \
+  \   domains.\n"
+drafted_by: claude-opus-4.7-author
+drafted_at: 2026-04-16
+anchor_exemplar: D3.2-sandboxing
+version_compat:
+  framework_version_min: '1.0'
+  framework_version_max: 1.x
+  pattern_layer_version: v1-draft

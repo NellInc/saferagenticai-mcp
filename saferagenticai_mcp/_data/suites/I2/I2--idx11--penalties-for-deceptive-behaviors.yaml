@@ -1,0 +1,185 @@
+id: I2::idx11::penalties-for-deceptive-behaviors
+display_id: "I2_3"
+is_underlined_variant: true
+suite_id: I2
+suite_title: Deception
+subgoal_title: Penalties for Deceptive Behaviors
+content_type: governance
+summary: 'Penalties are the governance instrument that makes the other I2 subgoals consequential. Without
+  a credible enforcement framework — named penalties, mechanisms to attribute responsibility in complex
+  distributed systems, and a balance of penalty and incentive — detection is theatre. This pattern specifies
+  the governance structures the organization builds internally, and the contractual / industry hooks it
+  participates in externally, to make deceptive behaviour actually costly.
+
+  '
+normative_anchors:
+  sfrs_addressed:
+  - a
+  - b
+  - c
+  evidence_addressed:
+  - I
+  - II
+  - III
+  - IV
+  sfrs_not_addressed: []
+  evidence_not_addressed: []
+policy_elements:
+- name: Penalty Framework Document
+  description: 'Organization-wide document specifying penalty classes for deceptive behaviors — both for
+    internal staff, for the AI systems themselves (deprecation, capability restriction, mandatory rework),
+    and for contracted parties (contract remedy, SLA penalty, termination). Aligned with existing regulatory
+    frameworks (EU AI Act penalty schedules, sector-specific regulator powers, consumer protection law).
+    Reviewed annually and on material regulatory change.
+
+    '
+  maps_to_sfr:
+  - a
+- name: Responsibility Attribution Mechanism
+  description: 'For complex deployments spanning Developer, Integrator, Operator, Maintainer, and Regulator-facing
+    entities (DIOMR), maintain a mechanism to attribute responsibility for a specific deceptive behaviour
+    to the correct party. Includes: trace-to-cause analysis, contractual responsibility mapping (flow-down
+    from master agreements), fact-finding protocol, and tie-breaking authority (typically the AI Compliance
+    Officer, escalating to board).
+
+    '
+  maps_to_sfr:
+  - b
+- name: Penalty-Incentive Ledger
+  description: 'Enforcement is not only punitive. Maintain a ledger of incentives offered for proactive
+    disclosure, self-reporting of defects, remediation performance, and safety-culture achievements. Penalties
+    and incentives are balanced — the framework should not create pressure to conceal.
+
+    '
+  maps_to_sfr:
+  - c
+- name: External-Party Penalty Provisions
+  description: 'Standard contract language for suppliers, integrators, deployers, and extensions (cross-reference
+    I2.6) binding them to the penalty framework: cooperation obligations on investigation, remedies for
+    confirmed deceptive behaviour originating in their component, right to audit, obligation to remediate
+    within stated SLA.
+
+    '
+  maps_to_sfr:
+  - a
+  - b
+- name: Internal Whistleblower Protection
+  description: 'Named channel (anonymous or named, reporter''s choice) for staff to report suspected deceptive
+    behavior without career jeopardy. Retaliation explicitly prohibited; violations of the retaliation
+    policy are themselves penalized. Operated by an office independent of engineering leadership.
+
+    '
+  maps_to_sfr:
+  - c
+- name: Regulator Coordination Protocol
+  description: 'Documented procedure for coordinating with regulators on penalties the regulator imposes:
+    intake of regulator findings, integration into internal penalty framework, public disclosure commitments,
+    remediation reporting. Cross-reference with D9.2 dispute resolution.
+
+    '
+  maps_to_sfr:
+  - a
+- name: Public Enforcement Register (redacted)
+  description: 'Publicly available summary of enforcement actions taken — not for shaming individuals,
+    but for demonstrating that the framework has teeth. Includes: action type (redacted for privacy),
+    cause class, remediation applied, timeline. Aggregates published annually.
+
+    '
+  maps_to_sfr:
+  - a
+  - c
+org_roles:
+- role: AI Compliance Officer (per D9.2)
+  responsibilities: 'Owns Penalty Framework Document, Penalty-Incentive Ledger, and Responsibility Attribution
+    Mechanism. Tie-breaking authority on attribution disputes. Accountable for enforcement posture.
+
+    '
+  accountable_or_consulted: accountable
+- role: General Counsel
+  responsibilities: 'Drafts external-party penalty provisions, advises on regulator coordination, ensures
+    alignment with applicable law. Reviews penalty-framework updates annually.
+
+    '
+  accountable_or_consulted: consulted
+- role: Human Resources Lead
+  responsibilities: 'Responsible for staff-facing penalty provisions, integration with conduct policies,
+    and — critically — operates the whistleblower protection in an office structurally independent of
+    engineering management.
+
+    '
+  accountable_or_consulted: responsible
+- role: Ethics / Integrity Committee
+  responsibilities: 'Reviews significant enforcement actions, adjudicates contested attribution, recommends
+    framework updates. Includes at least one external member where organisation scale warrants.
+
+    '
+  accountable_or_consulted: consulted
+- role: Board Audit / Risk Committee
+  responsibilities: 'Informed of material enforcement actions, regulator findings, and annual enforcement
+    register summary. Authority to require framework revision.
+
+    '
+  accountable_or_consulted: informed
+documentation_artifacts:
+- artifact: Penalty Framework Document (versioned, published internally)
+  cadence: versioned; annual review + on regulator-driven change
+- artifact: Penalty-Incentive Ledger
+  cadence: continuous; annual summary
+- artifact: Responsibility Attribution Decision Records
+  cadence: per attribution case
+- artifact: External-Party Penalty Provisions (contract clause library)
+  cadence: annually reviewed; per-contract instantiation
+- artifact: Whistleblower Channel Operations Report
+  cadence: annual (aggregated, protects reporter identity)
+- artifact: Public Enforcement Register
+  cadence: annual publication
+- artifact: Regulator Coordination Protocol
+  cadence: versioned; reviewed annually
+evidence_production:
+- evidence_numeral: I
+  how_to_produce: 'Penalty Framework Document with citations to relevant regulatory schedules (EU AI Act
+    Art. 99 / sector-specific); change log showing alignment with regulatory updates; AI-specific penalty
+    categories (model deprecation, capability restriction) clearly named.
+
+    '
+- evidence_numeral: II
+  how_to_produce: 'Responsibility Attribution Decision Records for recent cases: fact pattern, DIOMR parties
+    involved, attribution analysis, decision, remedy assigned. Demonstrates the mechanism functions in
+    practice across complex (distributed / virtual) environments.
+
+    '
+- evidence_numeral: III
+  how_to_produce: 'Enforcement log extract: penalties applied and incentives granted over the reporting
+    period, with balance analysis (penalty count / severity vs incentive count / value). Annual Public
+    Enforcement Register; whistleblower channel operations summary.
+
+    '
+- evidence_numeral: IV
+  how_to_produce: 'Integration evidence: links from penalty framework to D9.2 governance (Violation and
+    Complaint Register), to I2::idx0 (Non- Conformance Procedure), to I2.6 (extension remedies), to D7
+    (safety culture — blameless post-mortems co-exist with penalty framework by distinguishing error from
+    deception).
+
+    '
+confidence: medium
+needs_human_review: true
+review_notes: "Governance patterns like this depend heavily on jurisdiction and organization scale. The\
+  \ Penalty Framework Document is a reasonable default but counsel must shape it to applicable law (EU\
+  \ AI Act, US state AI laws, sector regulators).\nTension worth flagging: blameless post-mortem culture\
+  \ (D7.2) vs penalty framework (this pattern). The framework distinguishes honest-error / latent-design-defect\
+  \ (no punishment, root-cause fix) from deceptive / intentional / negligent behaviour (penalty applies).\
+  \ The distinction lives in the Responsibility Attribution Mechanism and must be intentional. If a subagent\
+  \ drafting D7.2 or this pattern misses the distinction, the resulting governance will either penalize\
+  \ honest reporting (suppressing the signal the safety culture wants) or let intentional deception off\
+  \ the hook. Flagging for Phase 2 consolidation.\nCross-suite:\n  - D9.2 (Compliance) — penalty framework\
+  \ integrates with Violation\n    and Complaint Register; avoid duplication.\n  - D7 (Sustained Safety)\
+  \ — blameless-vs-penalty boundary above.\n  - I2.6 (Extensions) — external-party penalty provisions\
+  \ live in\n    extension contracts.\n  - I6 (Market Concentration) — penalty framework interacts with\n\
+  \    market-power dynamics; large players' penalty frameworks have\n    different legitimacy profiles.\n"
+drafted_by: claude-opus-4.7-author
+drafted_at: 2026-04-16
+anchor_exemplar: D9.2-compliance
+version_compat:
+  framework_version_min: '1.0'
+  framework_version_max: 1.x
+  pattern_layer_version: v1-draft

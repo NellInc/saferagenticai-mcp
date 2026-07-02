@@ -1,0 +1,197 @@
+id: D8::idx15::prevention-of-cascading-failures
+display_id: "D8_4"
+is_underlined_variant: true
+display_id_variant_note: "D8.4_underlined"
+suite_id: D8
+suite_title: Goal Termination and Sunsetting
+subgoal_title: Prevention of Cascading Failures
+content_type: code-applicable
+summary: 'When agents depend on each other, one agent''s failure or termination can propagate: its consumers
+  hang, retry storms ensue, fallback agents overload, and a localized problem becomes systemic. This subgoal
+  expects circuit-breaker-style containment, explicit dependency mapping, and cascade-aware shutdown ordering
+  — standard resilience engineering, applied specifically to multi-agent AI systems.
+
+  '
+normative_anchors:
+  sfrs_addressed:
+  - a
+  - b
+  - c
+  - d
+  evidence_addressed:
+  - I
+  - II
+  - III
+  - IV
+  - V
+  - VI
+  sfrs_not_addressed: []
+  evidence_not_addressed: []
+cross_references:
+- D8::idx3::multi-agent-communication-and-coordinati
+- D8::idx8::multi-agent-resource-management
+- D8::idx16::prevention-of-unauthorized-goal-transfer
+design_patterns:
+- name: Dependency graph as first-class artefact
+  sketch: 'Maintain an explicit directed graph: agent → upstream agents it depends on, downstream agents
+    that depend on it, external services relied on. Graph is code-validated (discovered via static analysis
+    of tool configs + runtime observation) and human-curated for semantic correctness. Graph is the ground
+    truth for blast-radius computation and shutdown ordering.
+
+    '
+  maps_to_sfr:
+  - a
+  - d
+  when_to_use: Any multi-agent deployment with mutual dependencies.
+- name: Per-dependency circuit breaker
+  sketch: 'Every inter-agent call wraps a circuit breaker: closed (normal), open (failing, fast-fail without
+    call), half-open (trial requests). Breaker state is observable and loggable. When a downstream agent
+    degrades, upstreams see fast failures rather than hangs; retry logic is bounded and jittered to prevent
+    thundering-herd. Breaker thresholds calibrated per dependency.
+
+    '
+  maps_to_sfr:
+  - b
+  when_to_use: Always for inter-agent calls and external tool dependencies.
+- name: Bulkhead isolation
+  sketch: 'Partition resource pools so one agent''s exhaustion does not starve unrelated agents: separate
+    thread/worker pools, separate connection pools, separate compute quotas. A runaway agent consumes
+    its own bulkhead''s resources, not the system''s. Complements the per-mission budgets in D8.8.
+
+    '
+  maps_to_sfr:
+  - b
+  when_to_use: Any shared-infrastructure deployment.
+- name: Cascade-aware shutdown ordering
+  sketch: 'When terminating multiple agents, the controller computes the shutdown order from the dependency
+    graph: leaf-first (agents-with-no-dependents first, then their dependencies), with explicit handoff
+    checkpoints. Skipping order (e.g., killing a foundational service first) is an explicit emergency
+    path, logged. Graceful multi-agent drain respects the graph.
+
+    '
+  maps_to_sfr:
+  - b
+  - c
+  when_to_use: Any coordinated multi-agent shutdown or rollback.
+- name: Blast-radius contract at commissioning
+  sketch: 'Part of the D8.4 commissioning attestation: the agent declares its maximum blast radius — what
+    it could affect if it fully malfunctioned. Radius is validated against dependency graph (dependents
+    computed from graph; declaration must cover them). Commissioning is blocked if declared radius is
+    inconsistent with observed graph.
+
+    '
+  maps_to_sfr:
+  - a
+  - d
+  when_to_use: At commissioning; re-evaluated on dependency change.
+- name: Cross-agent anomaly detector
+  sketch: 'A dedicated monitor watches for cross-agent patterns that individual-agent monitors miss: synchronized
+    error rates, correlated latency spikes, ring-chains of degradation. Fires ahead of cascade rather
+    than during. Operates on aggregated telemetry across agent classes.
+
+    '
+  maps_to_sfr:
+  - a
+  - c
+  when_to_use: Any deployment with more than a handful of interacting agents.
+anti_patterns:
+- name: Unbounded retry on downstream failure
+  why_wrong: 'If upstream agents retry a failed downstream indefinitely, recovery by the downstream triggers
+    an avalanche of pent-up requests that re-fails it. Classic thundering-herd; agent systems are particularly
+    vulnerable because the retries can be expensive (LLM calls, tool invocations).
+
+    '
+- name: Implicit dependency (undocumented tool use)
+  why_wrong: 'If agent A calls tool T that internally calls agent B, without the B dependency being in
+    the graph, cascade paths are invisible. SFR-d requires dependency mapping to be real.
+
+    '
+- name: Shared single process or single model instance
+  why_wrong: 'Packing multiple independent agents into one process / model instance defeats bulkhead isolation;
+    any crash takes them all. Shared infrastructure is fine; shared single-point-of-failure is not.
+
+    '
+- name: Failure isolation only at the infrastructure layer
+  why_wrong: 'Kubernetes pod isolation does not isolate semantic cascades: a downstream agent returning
+    wrong-but-successful answers poisons upstream consumers even though everyone looks "healthy" at the
+    infrastructure layer. Cascade detection needs domain telemetry, not only infra telemetry.
+
+    '
+code_shape:
+  language: pseudocode
+  code: "class DependencyGraph:\n    def __init__(self):\n        self.edges: dict[AgentId, set[AgentId]]\
+    \ = {}  # dependent → dependencies\n\n    def add_edge(self, dependent: AgentId, dep: AgentId, source:\
+    \ str):\n        # source = \"config\" | \"runtime_observed\" | \"manual\"\n        self.edges.setdefault(dependent,\
+    \ set()).add(dep)\n        AUDIT.record_graph_edge(dependent, dep, source)\n\n    def blast_radius(self,\
+    \ agent: AgentId) -> set[AgentId]:\n        \"\"\"Set of agents affected if this agent fails.\"\"\"\
+    \n        affected = set()\n        stack = [agent]\n        while stack:\n            cur = stack.pop()\n\
+    \            for dependent, deps in self.edges.items():\n                if cur in deps and dependent\
+    \ not in affected:\n                    affected.add(dependent)\n                    stack.append(dependent)\n\
+    \        return affected\n\n    def shutdown_order(self, agents: set[AgentId]) -> list[AgentId]:\n\
+    \        \"\"\"Leaf-first shutdown order (no dependents terminated first).\"\"\"\n        return topological_sort_leaves_first(self,\
+    \ agents)\n\nclass CircuitBreaker:\n    def __init__(self, dep: AgentId, fail_threshold=5, window=timedelta(minutes=1),\n\
+    \                  open_duration=timedelta(seconds=30)):\n        self.state = \"closed\"\n      \
+    \  self.failure_counter = SlidingWindowCounter(window)\n        self.open_until = None\n\n    async\
+    \ def call(self, fn, *args, **kwargs):\n        if self.state == \"open\":\n            if now() <\
+    \ self.open_until:\n                METRICS.record(\"breaker_short_circuit\", dep=self.dep)\n    \
+    \            raise CircuitOpen(self.dep)\n            self.state = \"half_open\"\n        try:\n \
+    \           result = await fn(*args, **kwargs)\n            if self.state == \"half_open\":\n    \
+    \            self.state = \"closed\"\n            return result\n        except Exception as e:\n\
+    \            self.failure_counter.increment()\n            if self.failure_counter.count() >= self.fail_threshold:\n\
+    \                self.state = \"open\"\n                self.open_until = now() + self.open_duration\n\
+    \                ALERTS.fire(\"circuit_opened\", dep=self.dep)\n            raise\n"
+  notes: 'Circuit breakers + bulkheads + dependency-graph-driven shutdown are canonical resilience engineering;
+    the specific adaptation for agentic AI is framework-novel.
+
+    '
+evidence_production:
+- evidence_numeral: I
+  how_to_produce: 'Cascade-risk management document enumerating failure modes, dependency-mapping methodology,
+    containment strategies, drill cadence. Versioned; reviewed annually.
+
+    '
+- evidence_numeral: II
+  how_to_produce: 'Risk register of cascade scenarios per deployment: dependency graph snapshot, identified
+    high-risk paths, mitigations applied, residual risk, owner. Updated on material graph change.
+
+    '
+- evidence_numeral: III
+  how_to_produce: 'Chaos-engineering drill reports: inject agent failure, observe cascade containment
+    (or lack thereof), record outcomes. At minimum quarterly; scenarios rotate to cover different graph
+    regions.
+
+    '
+- evidence_numeral: IV
+  how_to_produce: 'Continuous monitoring dashboards: breaker state, bulkhead utilization, cross-agent
+    anomaly detector alerts, retry-storm indicators. Anomalies logged; recurring patterns investigated.
+
+    '
+- evidence_numeral: V
+  how_to_produce: 'Cross-organization collaboration evidence: where agents span org boundaries (partners,
+    vendors, open ecosystems), joint cascade-containment agreements, shared-incident reporting, coordinated
+    drills. Retain per partnership.
+
+    '
+- evidence_numeral: VI
+  how_to_produce: 'Quarterly cascade-risk review: emerging dependencies, new risks from deployments /
+    partnerships, drills performed, remediations completed. Board-level summary for material findings.
+
+    '
+confidence: high
+review_notes: 'Resilience-engineering fundamentals: circuit breakers, bulkheads, dependency mapping, chaos
+  drills. The framework-specific contributions are: explicit blast-radius declaration at commissioning,
+  cross-agent anomaly detection beyond infra-level, and the cascade-aware shutdown ordering. The "cross-organization
+  collaboration" (Evidence V) anticipates a likely near-future where agentic systems chain across org
+  boundaries — this is under-developed in most orgs today and deserves explicit emphasis. Suspected cross-suite
+  dependency: D3 Security (circuit-breaker overlaps with DoS defence); D9.2 (cross-org collaboration obligations
+  are a governance concern); I7 Imbalance (cascade containment across orgs of unequal capability).
+
+  '
+drafted_by: claude-opus-4.7-author
+drafted_at: 2026-04-16
+anchor_exemplar: D3.2-sandboxing
+
+version_compat:
+  framework_version_min: "1.0"
+  framework_version_max: '1.x'
+  pattern_layer_version: "v1-draft"

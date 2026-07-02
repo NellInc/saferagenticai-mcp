@@ -1,0 +1,20 @@
+{
+  "$schema": "https://static.modelcontextprotocol.io/schemas/2025-12-11/server.schema.json",
+  "name": "io.github.NellInc/saferagenticai-mcp",
+  "description": "Read-only tools over the Safer Agentic AI framework: 238 patterns + 14 heuristics.",
+  "version": "0.3.3",
+  "repository": {
+    "url": "https://github.com/NellInc/saferagenticai-mcp",
+    "source": "github"
+  },
+  "packages": [
+    {
+      "registryType": "pypi",
+      "identifier": "saferagenticai-mcp",
+      "version": "0.3.3",
+      "transport": {
+        "type": "stdio"
+      }
+    }
+  ]
+}

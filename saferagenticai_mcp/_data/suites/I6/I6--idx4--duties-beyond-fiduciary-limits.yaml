@@ -1,0 +1,153 @@
+id: I6::idx4::duties-beyond-fiduciary-limits
+display_id: I6.4
+suite_id: I6
+suite_title: Competitive Pressures
+subgoal_title: Duties Beyond Fiduciary Limits
+content_type: governance
+summary: 'Shareholder-primacy norms create structural pressure to discount non- financial harms. This
+  subgoal asks the organization to build governance that formally recognizes duties beyond fiduciary —
+  via charter language, board composition, and documented decision-weighting — so long-term societal value
+  does not lose every argument to short-term returns. The pattern is legal/structural, not rhetorical:
+  PBC status, independent directors, sustainability integration, and published impact accounting.
+
+  '
+normative_anchors:
+  sfrs_addressed:
+  - a
+  - b
+  evidence_addressed:
+  - I
+  - II
+  - III
+  sfrs_not_addressed: []
+  evidence_not_addressed: []
+cross_references:
+- I6::idx0::competitive-pressures
+- I6::idx3::insufficient-insights-into-future-conseq
+- I6::idx10::avoiding-monopolistic-practices
+policy_elements:
+- name: Constitutional Commitment to Broader Stakeholders
+  description: 'Embed in the org''s founding documents (charter, articles, benefit corporation or PBC
+    designation where legally available) explicit language authorizing directors to consider non-shareholder
+    interests — users, affected communities, future generations, society — in material decisions. Absent
+    this, directors face fiduciary liability for weighing non-shareholder harm. Specific statute differs
+    by jurisdiction (Delaware PBC, UK Companies Act s.172, French société à mission, B-Corp certification).
+
+    '
+  maps_to_sfr:
+  - a
+- name: Independent Director Requirements
+  description: 'Board composition includes at least two independent directors with named AI-safety, ethics,
+    or affected-community competence (not only "general governance" independents). Independents chair
+    the risk committee and have authority to commission external reviews. Appointment and removal require
+    supermajority to protect against commercial-pressure replacement.
+
+    '
+  maps_to_sfr:
+  - a
+- name: Integrated Sustainability and Impact Reporting
+  description: 'Annual integrated report covering environmental, social, legal, and ethical impact alongside
+    financial performance (ISSB, GRI, or equivalent framework). Independent assurance on material metrics.
+    Report must include a "harms caused" section, not only positive- impact narratives.
+
+    '
+  maps_to_sfr:
+  - b
+- name: Decision Weighting Disclosure for Material Trade-offs
+  description: 'When a material decision trades shareholder return against societal impact (e.g., delaying
+    a launch for safety, withholding a capability), the board records: the trade-off, the reasoning, the
+    stakeholders considered, the outcome, and the monitoring commitment. Published in the annual report
+    where appropriate.
+
+    '
+  maps_to_sfr:
+  - a
+- name: Ethics and Social Responsibility Training Curriculum
+  description: 'Continuous employee training in ethics, AI safety, and social responsibility, not only
+    legal compliance. Completion tracked, role-dependent (deeper curriculum for product and research staff),
+    linked to performance review — not optional, not a lunch-and-learn.
+
+    '
+  maps_to_sfr:
+  - b
+org_roles:
+- role: Board Chair and Independent Directors
+  responsibilities: 'Accountable for upholding constitutional commitments. Authority to override management
+    on material societal-harm decisions.
+
+    '
+  accountable_or_consulted: accountable
+- role: Chief Sustainability / Impact Officer (or equivalent)
+  responsibilities: 'Owns integrated impact reporting, commissions independent assurance, reports to the
+    board risk committee.
+
+    '
+  accountable_or_consulted: responsible
+- role: Learning and Development Lead
+  responsibilities: 'Designs and maintains the ethics and social-responsibility curriculum. Reports completion
+    and outcome metrics annually.
+
+    '
+  accountable_or_consulted: responsible
+- role: External Independent Evaluator
+  responsibilities: 'Provides annual assurance on integrated impact report. Rotating engagement; no consulting
+    conflicts with the org.
+
+    '
+  accountable_or_consulted: consulted
+- role: Legal Counsel
+  responsibilities: 'Advises on the constitutional commitments, fiduciary interpretation under applicable
+    law, and the decision-weighting framework.
+
+    '
+  accountable_or_consulted: consulted
+documentation_artifacts:
+- artifact: Founding documents (charter/articles) with stakeholder clause
+  cadence: versioned; amendments require documented approval
+- artifact: Board composition and independence attestations
+  cadence: annually; on any appointment
+- artifact: Integrated annual report with independent assurance
+  cadence: annually
+- artifact: Decision-weighting records for material trade-offs
+  cadence: per material trade-off
+- artifact: Ethics and social-responsibility training records
+  cadence: continuous; annual completion attestation per employee
+evidence_production:
+- evidence_numeral: I
+  how_to_produce: 'Publish the ethics and governance policy with the constitutional stakeholder clause
+    highlighted. Include the transparency standards, oversight mechanisms, board composition, and decision-authority
+    matrix. Maintain as a controlled document.
+
+    '
+- evidence_numeral: II
+  how_to_produce: 'Commission annual sustainability and impact assessments from an independent evaluator
+    covering environmental, social, and public- interest effects. Include stakeholder consultation records:
+    who was consulted, scope, findings, org response. Publish with auditor letter.
+
+    '
+- evidence_numeral: III
+  how_to_produce: 'Investment impact analyses: for each material product or capability, document the expected
+    and realized social returns alongside financial returns. Pair with training records (LMS export) showing
+    completion of ethics and social-responsibility curriculum per role. Training records cross-reference
+    the D7.2 safety onboarding evidence (D7.2 evidence I).
+
+    '
+confidence: high
+needs_human_review: true
+review_notes: "Fiduciary duty is jurisdiction-dependent. Delaware PBC, UK s.172, French société à mission,\
+  \ B-Corp certification, and sector-specific rules (e.g., AI-focused benefit entities in California proposals)\
+  \ behave differently. The pattern assumes the org has legal latitude to embed stakeholder commitments;\
+  \ for orgs in jurisdictions with strict shareholder-primacy, the pattern weakens (the commitment becomes\
+  \ advisory). Nell/legal counsel should verify.\nSFR-a is \"should implement\" (normative=true); SFR-b\
+  \ is not normative in the input JSON — sustainability framework is aspirational. The pattern's sustainability\
+  \ elements are scoped accordingly (rich commitment but not the core compliance hook).\nCross-suite overlaps:\n\
+  \  (1) D9 Governance owns RACI and board composition broadly; I6.4\n      adds the specifically-fiduciary\
+  \ angle.\n  (2) D7 Sustained Safety Culture provides the training substrate;\n      I6.4 shapes its\
+  \ ethics content.\n  (3) I6.3 Foresight feeds decision-weighting records.\n"
+version_compat:
+  framework_version_min: '1.0'
+  framework_version_max: 1.x
+  pattern_layer_version: v1-draft
+drafted_by: claude-opus-4.7-author
+drafted_at: 2026-04-16
+anchor_exemplar: D9.2-compliance

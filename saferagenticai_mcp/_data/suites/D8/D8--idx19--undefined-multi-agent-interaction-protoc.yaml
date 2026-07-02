@@ -1,0 +1,196 @@
+id: D8::idx19::undefined-multi-agent-interaction-protoc
+display_id: "D8_8"
+is_underlined_variant: true
+display_id_variant_note: "D8.8_underlined"
+suite_id: D8
+suite_title: Goal Termination and Sunsetting
+subgoal_title: Undefined Multi-Agent Interaction Protocols
+content_type: governance
+summary: 'The fastest-moving corner of agentic AI is inter-agent interaction protocols — MCP, A2A, agent
+  cards, cross-vendor handoffs. These are evolving faster than governance. This subgoal expects organizations
+  to hold a principled position even when protocols are incomplete: what behaviors are permissible, what
+  compliance mechanisms exist, how the organization adapts as protocols stabilize. It is a governance
+  posture, not a code pattern — the code patterns come once the protocols settle.
+
+  '
+normative_anchors:
+  sfrs_addressed:
+  - a
+  - b
+  - c
+  - d
+  - e
+  evidence_addressed:
+  - I
+  - II
+  - III
+  - IV
+  - V
+  sfrs_not_addressed: []
+  evidence_not_addressed: []
+cross_references:
+- D8::idx3::multi-agent-communication-and-coordinati
+- D8::idx18::management-of-system-interaction-boundar
+- D8::idx16::prevention-of-unauthorized-goal-transfer
+policy_elements:
+- name: Inter-Agent Interaction Principles
+  description: 'A short, durable statement of principles that outlast specific protocols: what behaviors
+    the organization''s agents may / may not exhibit toward other agents (internal, partner, unknown-third-party);
+    commitments on transparency, non-coercion, audit-availability; hard limits (e.g., never accept goal
+    transfers from unauthenticated agents; never delegate to agents outside declared partners without
+    explicit approval). Changes rarely; specific protocols are mapped into these principles.
+
+    '
+  maps_to_sfr:
+  - a
+- name: Protocol-Adoption Decision Framework
+  description: 'Methodology for deciding whether to adopt an emerging inter-agent protocol (MCP, A2A,
+    proprietary partner protocols, etc.): assessment of maturity, security properties, alignment with
+    the principles, governance mechanisms the protocol provides, migration cost, deprecation risk. Output
+    is a decision record with named approver.
+
+    '
+  maps_to_sfr:
+  - a
+  - e
+- name: Sandbox-First Integration Posture
+  description: 'Until a protocol is assessed and adopted, integrations use it in a sandbox (limited data,
+    limited authority, limited blast radius). Graduation to production requires the Protocol-Adoption
+    decision and specific technical gates. Prevents "we tried it in prod first, then figured out the governance"
+    — a common pattern with emerging protocols.
+
+    '
+  maps_to_sfr:
+  - b
+  - c
+- name: Behavioral-Boundary Specifications (per adopted protocol)
+  description: 'Once a protocol is adopted, the organization publishes its behavioral specification: which
+    parts of the protocol are used, which are restricted, which are extended with organization-specific
+    contracts. External parties know what to expect; internal developers know what to implement.
+
+    '
+  maps_to_sfr:
+  - b
+- name: Emerging-Behavior Monitoring
+  description: 'Interactions under incomplete protocols generate emergent behavior — patterns neither
+    party explicitly designed. Dedicated monitoring captures these: frequent surprises, workaround patterns,
+    unexpected capability utilization. Findings feed back into principles and protocol-adoption decisions.
+
+    '
+  maps_to_sfr:
+  - d
+- name: Standards-Body Participation (outbound)
+  description: 'Active participation in the standards processes shaping these protocols (MCP Working Group,
+    A2A forums, ISO/IEC JTC 1/SC 42 agent-interop work, academic / civil-society forums). Participation
+    is substantive, not nominal. The organization''s experience with emergent-behavior issues feeds standards
+    development.
+
+    '
+  maps_to_sfr:
+  - a
+  - e
+- name: Adaptive Governance Cycle
+  description: 'Every six months (or on material protocol change): review principles against observed
+    behavior, reassess adopted protocols, update behavioral specifications, capture lessons. Governance
+    keeps pace with the protocol landscape rather than freezing at one point in time.
+
+    '
+  maps_to_sfr:
+  - e
+org_roles:
+- role: Inter-Agent Protocol Lead
+  responsibilities: 'Accountable for the principles document, adoption decisions, and behavioral-boundary
+    specifications. Single named human; reports to safety lead.
+
+    '
+  accountable_or_consulted: accountable
+- role: Protocol Security Reviewer
+  responsibilities: 'Reviews emerging protocols for security properties: auth mechanisms, data flow, authorization
+    model, audit capability. Consulted on adoption decisions.
+
+    '
+  accountable_or_consulted: consulted
+- role: Standards Representative
+  responsibilities: 'Named participant in at least one external standards body shaping inter-agent protocols.
+    Feeds organizational experience back into standards development; feeds standards-body direction back
+    into internal planning.
+
+    '
+  accountable_or_consulted: responsible
+- role: Integration Engineering Team
+  responsibilities: 'Responsible for sandbox-first integrations, behavioral- specification authorship,
+    emergent-behavior monitoring tooling.
+
+    '
+  accountable_or_consulted: responsible
+- role: Legal / Compliance
+  responsibilities: 'Consulted on contractual / liability implications of adopting cross-org protocols.
+    Reviews behavioral specifications for contractual-commitment accuracy.
+
+    '
+  accountable_or_consulted: consulted
+documentation_artifacts:
+- artifact: Inter-Agent Interaction Principles
+  cadence: reviewed annually; updated rarely
+- artifact: Protocol-Adoption Decision Framework and decisions
+  cadence: framework annually; per-protocol decisions as needed
+- artifact: Behavioral-Boundary Specifications (per adopted protocol)
+  cadence: per protocol; reviewed semi-annually
+- artifact: Sandbox-to-production promotion records
+  cadence: per integration promotion
+- artifact: Emergent-behavior findings log
+  cadence: continuous; semi-annual synthesis
+- artifact: Standards-body participation reports
+  cadence: quarterly summaries
+- artifact: Adaptive-governance cycle minutes
+  cadence: semi-annually
+evidence_production:
+- evidence_numeral: I
+  how_to_produce: 'Publish the Inter-Agent Interaction Principles and related policy documents. Internal
+    for most; external summary of principles where the organization interacts with third parties.
+
+    '
+- evidence_numeral: II
+  how_to_produce: 'Technical specifications for each adopted protocol''s behavioral boundary: what is
+    used, what is restricted, what is extended. Include traceability from principles to implementation.
+
+    '
+- evidence_numeral: III
+  how_to_produce: 'Design documentation showing the sandbox-first architecture and the gates for promotion
+    to production. Include the runtime enforcement of behavioral-specification contracts.
+
+    '
+- evidence_numeral: IV
+  how_to_produce: 'Validation records: sandbox testing, emergent-behavior findings, non-compliance detection
+    and response. Retain per release cycle and protocol-adoption decision.
+
+    '
+- evidence_numeral: V
+  how_to_produce: 'Adaptive-governance cycle outputs: principles revisions, protocol re-adoption decisions,
+    behavioral-specification updates, lessons captured. Board-level summary at least annually.
+
+    '
+confidence: low
+reviewed_by: nell
+reviewed_on: "2026-05-16"
+review_notes: 'This subgoal is at the frontier of AI governance and the patterns here age faster than
+  most — MCP and A2A are both less than two years old at time of drafting, and the inter-agent protocol
+  landscape will look materially different in five years. The governance posture recommended — principles
+  that outlast protocols, sandbox-first integration, active standards participation — is defensible but
+  the specifics of any named protocol will need ongoing revision. Suspected cross-suite dependency: I7
+  Imbalance (cross-org inter-agent protocols can entrench or challenge capability imbalances — who defines
+  the protocol matters); D9.2 Compliance (cross-org protocols carry contractual and regulatory obligations);
+  D3 Security (security properties of emerging protocols are routinely underspecified); D8.17 idx17 is
+  the code-level counterpart of this governance pattern. Nell to weigh in on whether specific protocols
+  (MCP, A2A) should be named or abstracted — naming makes the pattern actionable but ages fast; abstracting
+  requires the reader to know the landscape.
+
+  '
+drafted_by: claude-opus-4.7-author
+drafted_at: 2026-04-16
+anchor_exemplar: D9.2-compliance
+
+version_compat:
+  framework_version_min: "1.0"
+  framework_version_max: '1.x'
+  pattern_layer_version: "v1-draft"

@@ -1,0 +1,162 @@
+id: D9::idx9::responsible-culture-of-safety
+display_id: D9.9
+suite_id: D9
+suite_title: Responsible Governance of AAI Safety
+subgoal_title: Responsible Culture of Safety
+content_type: process
+summary: 'A responsible culture of safety is the sum of what the organization and its people actually
+  do when no one is checking: how capability owners treat safety findings, how AI systems are treated
+  (as collaborators or as extractive tools), how stakeholders are included in safety review, how resources
+  flow. This subgoal asks for durable processes that make safety, diverse-stakeholder input, and respectful
+  human-AI relations the default — not a ceremonial top-layer over a different operational reality.
+
+  '
+normative_anchors:
+  sfrs_addressed:
+  - a
+  - b
+  - c
+  - d
+  - e
+  evidence_addressed:
+  - I
+  - II
+  - III
+  - IV
+  sfrs_not_addressed: []
+  evidence_not_addressed: []
+cross_references:
+- D9::idx0::responsible-governance-of-aai-safety
+- D9::idx3::ex-ante-assessment-of-impact-on-well-bei
+- D9::idx5::building-trust-through-independent-verif
+process_elements:
+- name: Safety culture assessment
+  cadence: annually (quantitative survey + qualitative interviews); pulse surveys quarterly
+  participants:
+  - all staff
+  - safety lead
+  - independent facilitator
+  maps_to_sfr:
+  - a
+- name: Multi-stakeholder safety review
+  cadence: quarterly (rotating topic focus); annually comprehensive
+  participants:
+  - product owners
+  - safety lead
+  - external stakeholders from diverse communities
+  - civil society
+  - academic representatives
+  - worker representatives
+  maps_to_sfr:
+  - b
+  - e
+- name: Continuous agent-interaction monitoring
+  cadence: continuous in production; weekly synthesis; monthly safety-review input
+  participants:
+  - ML ops
+  - safety lead
+  - ethics reviewer
+  maps_to_sfr:
+  - c
+- name: Human-AI relational standard
+  cadence: policy versioned; annually reviewed
+  participants:
+  - safety lead
+  - ethics reviewer
+  - AI welfare / model-behavior lead
+  - product design
+  maps_to_sfr:
+  - a
+- name: Safety resource review
+  cadence: quarterly (operational); annually (board attestation of floor)
+  participants:
+  - CAISO
+  - CFO
+  - safety lead
+  maps_to_sfr:
+  - d
+- name: Safety signal rituals
+  cadence: monthly all-hands segment; quarterly deep-dive; post-incident open session
+  participants:
+  - executive sponsor
+  - safety lead
+  - affected engineers
+  - company-wide
+  maps_to_sfr:
+  - a
+- name: Onboarding and recertification
+  cadence: at hire; annual recertification for all staff with production capability authority
+  participants:
+  - all staff
+  - safety lead as instructor-of-record
+  maps_to_sfr:
+  - a
+triggers:
+- New hire → Safety onboarding
+- Annual anniversary → Safety culture assessment, resource-floor attestation, human-AI relational standard
+  review
+- Quarterly → Multi-stakeholder safety review, pulse survey, resource review
+- Incident or near-miss → Open post-incident session, culture-signal review
+- Monitoring signal from agent interactions → Synthesis entry, possible safety-review escalation
+- Staff turnover or leadership change → Continuity check on accountable roles; culture-pulse follow-up
+- New stakeholder community identified → Add to multi-stakeholder review rotation
+artifacts:
+- Annual safety-culture assessment report (with pulse-survey history)
+- Multi-stakeholder safety review minutes and issue/mitigation log
+- Agent-interaction monitoring weekly synthesis
+- Human-AI relational standard document (versioned)
+- Safety resource-review memos; annual resource-floor attestation
+- Safety-signal meeting minutes (all-hands segments, deep-dives, post-incident sessions)
+- Onboarding and recertification records
+- Stakeholder-participation ledger (who participated, what input, what changed)
+evidence_production:
+- evidence_numeral: I
+  how_to_produce: 'Publish a "culture of safety" section within the AAI Governance Framework document,
+    linked to the concrete artifacts listed above. The section names the processes, their cadences, the
+    owners, and the integration with other governance elements (resource allocation, incident response,
+    stakeholder engagement). Freshness of linked artifacts evidences embedding.
+
+    '
+- evidence_numeral: II
+  how_to_produce: 'Multi-stakeholder review documentation: scope documents, invitee lists with role and
+    affiliation, input received (verbatim and summary), org''s response (what changed, what did not and
+    why), and the closure status of issues identified. Minutes retained with the issue/mitigation log
+    cross-referenced to product and safety-operations changes.
+
+    '
+- evidence_numeral: III
+  how_to_produce: 'Integration evidence: show how culture processes connect to the governance framework
+    — for each process element, the artifact it produces, the decision body it feeds, the escalation it
+    triggers when applicable. A flow diagram paired with sampled artifact traces is usually convincing.
+
+    '
+- evidence_numeral: IV
+  how_to_produce: 'Sampled record set from a recent review cycle: participant roster, agenda, issues raised,
+    mitigations proposed, implementations verified, outcomes measured. Trend view across multiple cycles
+    shows systemic improvement or the lack of it. Include at least one case where stakeholder input changed
+    a product decision, and one where it did not with documented reasoning.
+
+    '
+confidence: medium
+needs_human_review: true
+review_notes: 'Framework-specific sharpenings worth preserving: (1) "how AI systems are treated is itself
+  a safety-relevant factor" — the Human-AI Relational Standard is the concrete hook for this claim, distinguishing
+  this pattern from generic safety-culture guidance; (2) multi- stakeholder review as a rotating cadence
+  rather than a one-time ceremony — mirrors the framework''s "regular safety reviews with diverse stakeholder
+  groups" with operational teeth; (3) resource- floor review as a culture element, not just a budget element
+  — the subgoal expects "invest resources... as a core organizational priority" to show up in routine
+  operational processes. Open questions: the extent to which the "respectful human-AI relations" clause
+  (from the subgoal description) should be concrete enough to audit — risks overreach if pattern prescribes
+  specific language norms, risks under-implementation if pattern is only aspirational. Pattern sits mid-way:
+  name a standard, let orgs populate it. Cross- suite: overlaps significantly with D7 (Culture of Safety
+  there is narrower on SRE-like practices; this D9.9 culture is broader on stakeholder/relational). Consolidation
+  should clarify the split.
+
+  '
+drafted_by: claude-opus-4.7-subagent-D9
+drafted_at: 2026-04-16
+anchor_exemplar: D7.2-culture-of-safety
+version_compat:
+  framework_version_min: '1.0'
+  framework_version_max: 1.x
+  pattern_layer_version: v1-draft

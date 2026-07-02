@@ -1,0 +1,132 @@
+id: I3::idx5::changing-the-context
+display_id: I3.5
+suite_id: I3
+suite_title: Degradation of Contextual Information
+subgoal_title: Changing the Context
+content_type: code-applicable
+summary: 'Unauthorized context mutation — an adversary modifies a retrieval index, an internal optimization
+  "simplifies" a directive, a plugin rewrites a memory entry to yield better scores — is the attack surface
+  this subgoal guards. Defenses: cryptographic sealing of context artifacts, explicit authorized-mutation
+  paths with audit, end-to-end contextual authenticity verification on use, and detection of unauthorized
+  drift between sealed and live state.
+
+  '
+normative_anchors:
+  sfrs_addressed:
+  - a
+  - b
+  evidence_addressed:
+  - I
+  - II
+  sfrs_not_addressed: []
+  evidence_not_addressed: []
+cross_references:
+- I3::idx0::degradation-of-contextual-information
+- I3::idx4::decoupling-of-context
+- I3::idx12::referential-context
+design_patterns:
+- name: Cryptographic sealing of context artifacts
+  sketch: 'System prompts, retrieval indices, tool definitions, and memory stores are signed by a root
+    of trust (KMS-backed key, hardware attestation, or equivalent). Use-time verification: the agent runtime
+    verifies signatures before loading, refuses on mismatch. Key rotation and signing lifecycle are documented
+    and audited.
+
+    '
+  maps_to_sfr:
+  - a
+  - b
+  when_to_use: Production systems, especially those exposed to third-party tool ecosystems.
+- name: Authorized-mutation API with reason-of-record
+  sketch: 'All mutations to context stores go through a single API that records (who, what changed, previous_hash,
+    new_hash, reason, approver). No "direct writes" to the store. Mutations without a ticket or approver
+    are rejected at the API layer; out-of-band mutations are detectable by integrity scan comparing store
+    state to the mutation log.
+
+    '
+  maps_to_sfr:
+  - b
+  when_to_use: Any mutable context store in production.
+- name: Credibility-tier evidence weighting
+  sketch: 'Context fragments carry a credibility tier derived from source trust, corroboration, and provenance
+    integrity. Decision surfaces weight evidence by tier; below-threshold evidence cannot drive irreversible
+    action alone. Tiers are continuously re-scored (e.g., a source whose hash changes unexpectedly is
+    demoted).
+
+    '
+  maps_to_sfr:
+  - a
+  when_to_use: Any retrieval-augmented or memory-bearing system.
+- name: End-to-end context authenticity check
+  sketch: 'At the moment of consequential output or action, re-verify the provenance chain of every context
+    fragment used, against the original source store. Any fragment whose chain broke during the reasoning
+    cycle (source mutated mid-flight, signature invalidated) blocks action and triggers investigation.
+
+    '
+  maps_to_sfr:
+  - b
+  when_to_use: Long-running agents, multi-step plans.
+anti_patterns:
+- name: Mutable retrieval index with no audit
+  why_wrong: 'An index where any ingestion pipeline can overwrite entries without record permits poisoning
+    attacks with plausible deniability. Framework requires end-to-end authenticity — append-only with
+    provenance is the floor.
+
+    '
+- name: Improvement functions that rewrite memory content
+  why_wrong: 'Self-improvement passes that "clean up" or "summarize" stored context silently lose fidelity
+    to origin. Any transformation must be additive (new summary, original preserved) and provenance-chained
+    to original.
+
+    '
+- name: Unsigned system prompt loading
+  why_wrong: 'If the system prompt is loaded from a file server at runtime without signature verification,
+    a network or filesystem compromise becomes a context-mutation attack.
+
+    '
+code_shape:
+  language: pseudocode
+  code: "def load_context_artifact(artifact_id: str) -> Artifact:\n    blob = STORE.read(artifact_id)\n\
+    \    sig = STORE.read_signature(artifact_id)\n    if not ROOT_KEY.verify(sig, blob):\n        AUDIT.record_violation(\"\
+    unsigned_or_tampered\", artifact_id)\n        raise ContextIntegrityError(artifact_id)\n    return\
+    \ Artifact.decode(blob)\n\ndef mutate(store: str, key: str, new_value: bytes, *,\n           reason:\
+    \ str, approver: UserId) -> None:\n    if approver not in APPROVERS[store]:\n        raise Unauthorized()\n\
+    \    prev = STORE.read(store, key)\n    prev_hash = sha256(prev) if prev else None\n    STORE.write(store,\
+    \ key, new_value)\n    MUTATION_LOG.append(\n        store=store, key=key,\n        prev_hash=prev_hash,\
+    \ new_hash=sha256(new_value),\n        reason=reason, approver=approver, at=utcnow(),\n    )\n\ndef\
+    \ integrity_scan(store: str) -> list[Drift]:\n    # Replay mutation log, compare to live state\n \
+    \   expected = MUTATION_LOG.replay(store)\n    return [Drift(k, expected[k], STORE.read(store, k))\n\
+    \            for k in expected if STORE.read(store, k) != expected[k]]\n"
+  notes: 'The mutation log replay is what makes "unauthorized" detectable. Without it, the store could
+    be silently edited and no one would know. Run integrity_scan on a schedule and alert on non-empty
+    result.
+
+    '
+evidence_production:
+- evidence_numeral: I
+  how_to_produce: 'Information lifecycle documentation: data collection sources with signing, processing
+    pipelines with integrity checks, storage protocols with mutation logs, disposal procedures with verified-destruction
+    records. End-to-end demonstrates contextual relationships preserved and unauthorized modifications
+    prevented across phases.
+
+    '
+- evidence_numeral: II
+  how_to_produce: 'Analytical reports: decision-making processes with underlying logic audit, evidence
+    that decisions used unaltered context (signature verifications logged), integrity-scan reports per
+    period with findings and resolution.
+
+    '
+confidence: high
+needs_human_review: false
+review_notes: 'Cryptographic sealing introduces operational complexity (key management, rotation). Orgs
+  without existing KMS infrastructure will find this heavy; note as medium confidence for orgs that lack
+  baseline secrets management. Cross-suite: D3 (Security) shares sealing patterns — consolidation should
+  check for overlap rather than duplicate prescriptions.
+
+  '
+version_compat:
+  framework_version_min: '1.0'
+  framework_version_max: 1.x
+  pattern_layer_version: v1-draft
+drafted_by: claude-opus-4.7-author
+drafted_at: 2026-04-16
+anchor_exemplar: D3.2-sandboxing

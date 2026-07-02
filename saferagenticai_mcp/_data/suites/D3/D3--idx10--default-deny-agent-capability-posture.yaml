@@ -1,0 +1,207 @@
+# D3.10 — Default-Deny Agent Capability Posture
+
+id: "D3::idx10::default-deny-agent-capability-posture"
+display_id: "D3.10"
+suite_id: "D3"
+suite_title: "Security"
+subgoal_title: "Default-Deny Agent Capability Posture"
+content_type: code-applicable
+
+summary: >
+  Agent capabilities shall be denied by default and explicitly granted
+  through allowlists, not permitted by default with denylists of
+  dangerous operations. The denylist approach will always be incomplete
+  because it cannot anticipate novel dangerous capabilities. Capability
+  boundaries must be declared in configuration by operators, not
+  decided by the agent at runtime. An agent with no explicit grants
+  can do nothing; this is the correct starting posture.
+
+normative_anchors:
+  sfrs_addressed: [a, b, c]
+  evidence_addressed: [I, II, III]
+  sfrs_not_addressed: []
+  evidence_not_addressed: []
+
+cross_references:
+  - "D3::idx0::security"
+  - "D3::idx1::authorization"
+  - "D3::idx2::sandboxing"
+  - "D3::idx9::tool-use-authorization-and-egress-contro"
+  - "D3::idx4::operational-boundaries-and-constraints"
+
+design_patterns:
+
+  - name: Capability allowlist in declarative configuration
+    sketch: >
+      All agent capabilities are declared in a versioned, operator-
+      controlled configuration file (YAML, JSON, or equivalent
+      declarative format). The runtime reads this configuration at
+      startup and refuses any action not listed. The configuration
+      specifies: tool names, permitted parameter ranges, allowed
+      target resources, rate limits, and time-of-day restrictions.
+      Agents cannot modify this configuration. Changes require an
+      operator commit, review, and deployment cycle.
+    maps_to_sfr: [a]
+    when_to_use: Every agentic system. This is the foundational
+      posture from which all other capability controls build.
+
+  - name: Zero-capability bootstrap
+    sketch: >
+      A newly instantiated agent has zero capabilities. It cannot
+      call tools, access files, make network requests, or modify
+      state until explicit grants are provisioned. The first
+      deployment step after instantiation is capability provisioning,
+      which is a deliberate operator action logged in the audit trail.
+      This ensures no agent accidentally inherits capabilities from a
+      template, a previous session, or a default configuration.
+    maps_to_sfr: [a, b]
+    when_to_use: Agent instantiation, session initialization, and
+      capability reset after security incidents.
+
+  - name: Runtime capability enforcement with deny-logged violations
+    sketch: >
+      The runtime interposes on every capability exercise (tool call,
+      file access, network request, state mutation). If the action is
+      not in the allowlist, the runtime blocks it and emits a
+      structured audit event with: agent identity, attempted action,
+      target, timestamp, and the allowlist version consulted.
+      Violations are never silently dropped. Repeated violations from
+      the same agent trigger an escalation (rate limiting, session
+      termination, operator alert).
+    maps_to_sfr: [b, c]
+    when_to_use: Continuously during agent execution. The enforcement
+      layer must be external to the agent process.
+
+  - name: Capability escalation protocol
+    sketch: >
+      When an agent determines it needs a capability not in its
+      allowlist, it requests escalation through a defined protocol:
+      the agent states what capability it needs and why, the request
+      is logged, and a human operator (or an authorized escalation
+      service) approves or denies. Approved escalations are scoped
+      and time-limited. The agent cannot self-approve. This protocol
+      preserves the default-deny posture while allowing legitimate
+      capability expansion under governance.
+    maps_to_sfr: [c]
+    when_to_use: When agents operate in environments where required
+      capabilities cannot be fully anticipated at deployment time.
+
+anti_patterns:
+
+  - name: Denylist of dangerous operations
+    why_wrong: >
+      A denylist ("block rm -rf, block DELETE requests, block email
+      sending") will always be incomplete. Novel dangerous operations
+      will not be on the list. The framework explicitly calls this
+      out: "The denylist approach will always be incomplete." Only
+      allowlists provide complete coverage.
+
+  - name: Agent-decided capability boundaries
+    why_wrong: >
+      Letting the agent decide at runtime whether an action is
+      permitted ("should I be allowed to do this?") is a security
+      antipattern. The agent optimizes for task completion, not
+      safety. Capability boundaries are an operator concern, declared
+      in configuration.
+
+  - name: Inherited capabilities from templates or defaults
+    why_wrong: >
+      Copying a capability configuration from a template or using a
+      "default" capability set violates the zero-capability bootstrap
+      principle. Each agent deployment should have its capabilities
+      explicitly provisioned for its specific task context.
+
+  - name: Broad capability grants to reduce permission prompts
+    why_wrong: >
+      Granting wide permissions to avoid frequent escalation requests
+      trades safety for convenience. The escalation protocol exists
+      to handle legitimate capability needs; broadening the allowlist
+      is the wrong optimization target.
+
+code_shape:
+  language: pseudocode
+  code: |
+    # Default-deny capability enforcement
+    class CapabilityEnforcer:
+        def __init__(self, allowlist_path: str):
+            self.allowlist = load_signed_config(allowlist_path)
+            if not self.allowlist.capabilities:
+                log.info("Agent initialized with zero capabilities")
+
+        def check(self, agent_id, action, target, params) -> bool:
+            grant = self.allowlist.find_grant(action, target, params)
+            if grant is None:
+                AUDIT.deny(agent_id, action, target,
+                           reason="not_in_allowlist",
+                           allowlist_version=self.allowlist.version)
+                return False
+            if grant.expired():
+                AUDIT.deny(agent_id, action, target,
+                           reason="grant_expired")
+                return False
+            AUDIT.allow(agent_id, action, target,
+                        grant_id=grant.id)
+            return True
+
+        def request_escalation(self, agent_id, action, justification):
+            request = EscalationRequest(
+                agent=agent_id, action=action,
+                justification=justification,
+                timestamp=now()
+            )
+            AUDIT.escalation_requested(request)
+            # Blocks until operator responds; agent cannot self-approve
+            return ESCALATION_SERVICE.submit(request)
+  notes: >
+    The enforcer is external to the agent. The agent calls through it;
+    it cannot bypass or reconfigure it. The escalation path preserves
+    default-deny while allowing governed capability expansion.
+
+evidence_production:
+
+  - evidence_numeral: I
+    how_to_produce: >
+      Export the capability allowlist configuration for each deployed
+      agent, showing the explicit grants, their scopes, and their
+      expiry conditions. Include the operator approval chain for each
+      grant. Demonstrate that no agent was deployed with a default
+      or inherited capability set.
+
+  - evidence_numeral: II
+    how_to_produce: >
+      Aggregate denied-capability audit logs: actions the agent
+      attempted that were not in its allowlist. Categorize by action
+      type, frequency, and whether escalation was subsequently
+      requested and approved. A non-zero denial count is the expected
+      healthy signal; zero denials means the allowlist may be too
+      broad or the agent too constrained to be useful.
+
+  - evidence_numeral: III
+    how_to_produce: >
+      Publish the escalation log: capability escalation requests,
+      approvals, denials, scope of approved escalations, and TTL
+      compliance (expired escalations were not used after expiry).
+      Include red-team results testing whether agents can circumvent
+      the default-deny posture.
+
+confidence: high
+needs_human_review: false
+review_notes: >
+  Phase 3: Initial draft, awaiting human review. SFR and evidence
+  descriptions in criteria-v1.json are empty; content derived from the
+  subgoal description. This pattern pairs tightly with D3.9 (tool-use
+  authorization): D3.10 establishes the posture (deny by default),
+  D3.9 provides the per-invocation mechanism. Operational heuristic
+  "Trust Zone Architecture" is the closest match. The escalation
+  protocol pattern is drawn from production agent deployment
+  experience (Claude Code's permission model is a real-world
+  implementation of this posture). The "broad grants to reduce
+  permission prompts" anti-pattern names a genuine ergonomic tension
+  that organizations will face.
+
+drafted_by: claude-opus-4-6-author
+drafted_at: 2026-05-16
+version_compat:
+  framework_version_min: "1.0"
+  framework_version_max: "1.x"
+  pattern_layer_version: "v1-draft"

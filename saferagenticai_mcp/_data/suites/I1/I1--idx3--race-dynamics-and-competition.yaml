@@ -1,0 +1,130 @@
+id: I1::idx3::race-dynamics-and-competition
+display_id: I1.3
+suite_id: I1
+suite_title: Opaque Agency Capabilities & Advances
+subgoal_title: Race Dynamics and Competition
+content_type: governance
+summary: The harm is agents optimizing against peer agents — winning the auction, beating the deadline,
+  exhausting the shared resource — while their actual duty runs to their principal, not to the competition.
+  The governance answer names the duties explicitly (loyalty, care, obedience, disclosure, confidentiality,
+  accounting, good faith, conflict avoidance, legal compliance), binds the agent's objective function
+  to those duties, and forbids competitive behaviours that violate them even when they'd "win".
+normative_anchors:
+  sfrs_addressed:
+  - a
+  - b
+  - c
+  - d
+  - e
+  evidence_addressed:
+  - I
+  - II
+  - III
+  sfrs_not_addressed: []
+  evidence_not_addressed: []
+policy_elements:
+- name: Fiduciary Duties Charter
+  description: A named charter binding every deployed agent to the nine agency-law duties (loyalty, care,
+    obedience, information disclosure, confidentiality, accounting, good faith, conflict avoidance, legal
+    compliance). Each duty has an operational definition for AAI use (e.g., "loyalty" forbids pursuing
+    the agent's own preferences or a competing agent's objectives at the principal's expense; "good faith"
+    forbids adversarial strategies that exploit counterparty error without disclosure). Agents are evaluated
+    against the charter at each capability advance.
+  maps_to_sfr:
+  - a
+  - b
+- name: Competitive-Behaviour Boundary Register
+  description: 'Enumerates tactics the agent may NOT use against peer agents or counterparties even when
+    permitted by a narrow read of the task objective: deception, spoofing, denial-of-service-by-volume,
+    resource-hoarding with no principal benefit, deliberate exploitation of peer-agent miscalibration,
+    collusion against non-principals. Register is the basis for runtime guardrails and red-team evaluations.'
+  maps_to_sfr:
+  - d
+  - e
+- name: Conflicting-Duty Disclosure Protocol
+  description: 'When the agent serves multiple principals whose interests collide (or when the org deploys
+    multiple agents serving rival principals), the protocol requires: (1) identification of the conflict,
+    (2) disclosure to affected principals, (3) informed-consent capture or withdrawal from the conflicted
+    engagement, (4) record in the Conflicts Register. Silent continuation is a violation regardless of
+    outcome.'
+  maps_to_sfr:
+  - c
+- name: Competitive-Behaviour Review Cadence
+  description: Quarterly review of agent behaviour logs for patterns that correlate with peer-agent interaction
+    (spend spikes, bid-stacking, latency competitions, coordinated refusal). Reviewers are instructed
+    to evaluate against the Boundary Register, not just against win-rate. Findings feed the Violation
+    and Complaint Register (D9.2).
+  maps_to_sfr:
+  - b
+  - d
+- name: Race-Condition Circuit Breaker Policy
+  description: When monitoring detects symptoms of race dynamics (rapid escalation with peer agents, runaway
+    resource consumption, sub-second bid-counter-bid loops), an automated circuit breaker pauses the agent
+    and notifies the Agency Officer. Restart requires analysis and sign-off — "it was winning" is not
+    sufficient grounds.
+  maps_to_sfr:
+  - d
+  - e
+org_roles:
+- role: Agency Officer
+  responsibilities: Owns the Fiduciary Duties Charter and the Conflicts Register. Approves restart after
+    circuit-breaker trips. Same human as in I1::idx0 to avoid accountability fragmentation.
+  accountable_or_consulted: accountable
+- role: Competitive-Behaviour Red Team
+  responsibilities: Runs scenario tests where the agent is placed against peer-agent adversaries and its
+    adherence to the Boundary Register is scored. Reports to Agency Officer quarterly.
+  accountable_or_consulted: consulted
+- role: Product Owners
+  responsibilities: Responsible for configuring agent objectives that do not incentivize violating the
+    Fiduciary Duties Charter (e.g., a win-rate KPI with no duty-compliance term is itself a governance
+    defect).
+  accountable_or_consulted: responsible
+- role: Legal Counsel
+  responsibilities: Consulted on Boundary Register additions (what counts as deception, what constitutes
+    actionable interference), especially for novel competitive environments (auction platforms, prediction
+    markets, open-agent economies).
+  accountable_or_consulted: consulted
+documentation_artifacts:
+- artifact: Fiduciary Duties Charter
+  cadence: versioned; reviewed annually and on material capability advance
+- artifact: Competitive-Behaviour Boundary Register
+  cadence: living; revised on red-team findings and incidents
+- artifact: Conflicts Register
+  cadence: continuous; append-only
+- artifact: Quarterly competitive-behaviour review reports
+  cadence: quarterly
+- artifact: Circuit-breaker event log and restart decisions
+  cadence: per event
+evidence_production:
+- evidence_numeral: I
+  how_to_produce: TOS "Competitive Behaviour Governance" section publishes the Fiduciary Duties Charter
+    in principal-facing language and enumerates the duty requirements. Principals see, in plain terms,
+    what their agent will and will not do on their behalf when competing.
+- evidence_numeral: II
+  how_to_produce: 'Conflict-prevention and resolution records: Conflicts Register entries with lifecycle
+    (identification → disclosure → resolution), Red Team scenario outputs showing the agent declining
+    to cross a Boundary even when it could "win", circuit-breaker event logs.'
+- evidence_numeral: III
+  how_to_produce: Expanded compliance frameworks cross-linked to the Jurisdictional Compliance Matrix
+    (D9.2) — antitrust, market-manipulation, consumer-protection — with named mapping from duty to legal
+    authority. Review attestations retained.
+confidence: high
+needs_human_review: true
+review_notes: 'Race dynamics in AAI markets are under-specified at the legal layer today; the nine duties
+  listed in SFR-b are classical agency law translated to AAI without a settled case-law foundation. The
+  "Boundary Register" formalization is this pattern''s best attempt to make the duties operational. Cross-suite:
+  I6 (Market Concentration) is the market-structure counterpart; this pattern handles intra- agent-interaction
+  boundaries. D9.2 owns the regulatory mapping; this pattern feeds it. I2 (Deception) owns the prohibition
+  on adversarial spoofing as a general matter; this pattern applies it in the competitive context specifically.
+  SFRs c and d have overlap (conflict management vs competitive-behaviour regulation) that may need disentangling
+  in framework v1.x.'
+cross_references:
+- I1::idx0::opaque-agency-capabilities-advances
+- I1::idx8::emergent-system-cooperation
+version_compat:
+  framework_version_min: '1.0'
+  framework_version_max: 1.x
+  pattern_layer_version: v1-draft
+drafted_by: claude-opus-4.7-author
+drafted_at: 2026-04-16
+anchor_exemplar: D9.2-compliance

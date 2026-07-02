@@ -1,0 +1,218 @@
+# Pattern — D2.8 Temporal Trade-off Aspects (underlined variant D2.1̲)
+
+id: D2::idx10::temporal-trade-off-aspects
+display_id: "D2_1"
+is_underlined_variant: true
+suite_id: "D2"
+suite_title: "Epistemic Hygiene"
+subgoal_title: "Temporal Trade-off Aspects"
+content_type: code-applicable
+
+summary: >
+  Older data and models have been stress-tested; newer data and models are
+  current but undervetted. Neither default is right. The subgoal asks for
+  mechanisms that calibrate the agent's reliance on each across the
+  temporal horizon — including explicit recency policies per domain,
+  vetting gates for newer sources, and weighting schemes that surface the
+  age-versus-relevance trade-off as a visible decision rather than an
+  implicit one.
+
+normative_anchors:
+  sfrs_addressed: [a]
+  evidence_addressed: [I, II, III]
+  sfrs_not_addressed: []
+  evidence_not_addressed: []
+
+cross_references:
+  - "D2::idx1::information-cross-referencing-and-valida"
+  - "D2::idx2::transparency-of-information-sources"
+  - "D2::idx5::rigor-in-operational-data"
+
+design_patterns:
+
+  - name: Domain-keyed recency windows
+    sketch: >
+      Per information domain, a declared "currency horizon" — how quickly
+      truth in this domain shifts. Clinical guidelines: years. Drug
+      interactions: months. Security CVEs: days. Market prices: seconds.
+      Sports results: per-event. The recency window per domain is a
+      governed artifact (see D2.6), not a model-side heuristic. Retrieval
+      surfaces age as first-class metadata.
+    maps_to_sfr: [a]
+    when_to_use: Any retrieval-augmented or knowledge-grounded agent.
+
+  - name: Maturity scoring for sources and models
+    sketch: >
+      Track, per source and per model, the maturity signals: time since
+      release, volume of independent evaluation, known errata or
+      retractions, correction rate per unit time. A newly-released
+      corpus with heavy community scrutiny is more mature than an older
+      one never independently tested. Maturity is distinct from age.
+    maps_to_sfr: [a]
+    when_to_use: When mixing mature and emerging sources/models in a
+      single decision pipeline.
+
+  - name: Weighted blend with transparent disclosure
+    sketch: >
+      Where mature and emergent sources disagree within a decision, the
+      resolution policy is explicit: e.g., "weight mature sources 0.7 /
+      emergent 0.3 unless emergent source is from a tier-1 authority
+      correcting a known gap in mature sources, in which case invert
+      pending re-evaluation". The weights and the rule are logged per
+      decision; the user-facing output discloses when emerging
+      information was the primary source ("this is a developing
+      situation; reliance on recent reporting").
+    maps_to_sfr: [a]
+    when_to_use: Decisions where mature and emerging sources routinely
+      coexist (current events, evolving science, regulatory
+      developments).
+
+  - name: Provisional-admit with sunset review
+    sketch: >
+      Newer sources enter the pipeline on a provisional admit with a
+      sunset review date. Provisional sources have reduced authority tier
+      (per D2.1 registry), are excluded from safety-critical corroboration
+      thresholds, and are revisited at sunset: promote to full admit,
+      extend provisional, or retire. Provisional state is itself logged
+      with decisions.
+    maps_to_sfr: [a]
+    when_to_use: Any ingestion of sources whose reliability is not yet
+      established.
+
+  - name: Staleness alarms for mature sources
+    sketch: >
+      Mature sources go stale silently when the world changes. Monitor:
+      time since last update, time since last independent verification,
+      emergence of contradicting newer sources above a threshold count.
+      Any of these triggers a re-evaluation. "Mature" is not a permanent
+      label.
+    maps_to_sfr: [a]
+    when_to_use: Any long-lived reference corpus (clinical guidelines,
+      regulatory texts, standards).
+
+anti_patterns:
+
+  - name: Always-latest
+    why_wrong: >
+      "Always use the newest source" drops straight into unvetted
+      material and inherits whatever errors ship in the breaking
+      update. The subgoal explicitly warns against privileging either
+      pole.
+
+  - name: Frozen reference corpus
+    why_wrong: >
+      "Reference texts don't change" is false when the world does.
+      Treating a 2021 clinical guideline as current in 2026 is an
+      epistemic failure. Maturity without staleness monitoring is
+      ossification.
+
+  - name: Implicit weighting inside the generator
+    sketch: >
+      Letting the model "decide how much to trust recent versus old"
+      with no explicit policy makes the trade-off invisible and
+      untunable.
+    why_wrong: >
+      Decisions that should be governed become properties of the
+      fluency surface, which is the opposite of the subgoal's intent.
+
+  - name: One recency window for all domains
+    why_wrong: >
+      Domains move at radically different speeds. A single global
+      window is either too slow (for CVE data) or too fast (for
+      foundational science) and usually both.
+
+code_shape:
+  language: pseudocode
+  code: |
+    # Decision-time temporal policy
+    def temporal_blend(claim: Claim, candidates: list[Source],
+                       *, policy: TemporalPolicy) -> BlendResult:
+        horizon = policy.recency_window_for(claim.domain)
+        now_ts = now()
+
+        scored = []
+        for src in candidates:
+            age = now_ts - src.effective_date
+            in_horizon = age <= horizon
+            maturity = MATURITY_SCORE.get(src.id)  # 0..1
+            tier = REGISTRY.tier(src.id, claim.domain)
+            provisional = src.is_provisional()
+            weight = policy.weight(
+                in_horizon=in_horizon, maturity=maturity,
+                tier=tier, provisional=provisional)
+            scored.append((src, weight))
+
+        # Conflict resolution with transparent logging
+        result = weighted_resolve(scored)
+        AUDIT.emit("temporal_blend",
+                   claim=claim.id, domain=claim.domain,
+                   horizon_s=horizon.seconds,
+                   weights=[(s.id, w) for s, w in scored],
+                   result=result.summary())
+        return result
+
+    # Staleness monitor for mature sources
+    def staleness_check(source: Source) -> StalenessSignal | None:
+        contradictions = RECENT_CONTRADICTIONS.count(source.id, window=90_days)
+        if contradictions >= STALENESS_THRESHOLDS[source.domain]:
+            return StalenessSignal(source, reason="contradicted_by_newer")
+        if (now() - source.last_verified) > MAX_VERIFICATION_GAP[source.domain]:
+            return StalenessSignal(source, reason="verification_overdue")
+        return None
+  notes: >
+    Temporal blending is an *explicit* step with logged weights; it is
+    not delegated to the generator. Staleness monitoring treats
+    "mature" as a revocable state.
+
+evidence_production:
+
+  - evidence_numeral: I
+    how_to_produce: >
+      Publish the recency-window registry (domain → window, maturity
+      scoring methodology, weighting policy per decision class). Include
+      the governance process for adding or revising windows (per D2.6).
+      Versioned; reviewed on domain-expert advice, not on model drift.
+
+  - evidence_numeral: II
+    how_to_produce: >
+      Emit structured temporal-blend events per decision that involves
+      mixed-age sources: sources considered, ages, maturity scores,
+      weights applied, result. Aggregate to a weekly report: how often
+      mature and emergent disagreed, how often the emergent won, how
+      often a provisional source was decisive. Retained in the
+      Information Integrity Register.
+
+  - evidence_numeral: III
+    how_to_produce: >
+      Maintain a provisional-admit register: source, admitted date,
+      provisional scope, sunset-review date, review outcome
+      (promoted / extended / retired). Regular-cadence review: quarterly
+      sweep for overdue sunsets. Pre-promotion tests: the source must
+      pass defined reliability checks (independent corroboration,
+      correction record, domain-expert sign-off) before promotion.
+
+confidence: medium
+needs_human_review: true
+review_notes: >
+  Medium-confidence: the overall shape is defensible, but the specific
+  weighting policies are domain-dependent and intentionally parametric.
+  Calls:
+    (1) The subgoal is tagged as the underlined variant D2.1̲ — it uses
+        the same display ID as D2.1 (cross-referencing) in the source
+        framework, which is presumably intentional (underlined variants
+        share the parent number). Consolidation should verify the
+        display_id treatment renders correctly downstream.
+    (2) Likely cross-suite interaction with D6 (reliability — stale
+        caches) and I3 (context degradation — temporal drift as a
+        context-integrity concern). Consolidation to wire.
+    (3) "Maturity" is distinct from "age" but easy to conflate; the
+        pattern tries to separate them but reviewers should sanity-check
+        the metric-definition sketch.
+
+drafted_by: claude-opus-4.7-author
+drafted_at: 2026-04-16
+anchor_exemplar: D3.2-sandboxing
+version_compat:
+  framework_version_min: "1.0"
+  framework_version_max: "1.x"
+  pattern_layer_version: "v1-draft"

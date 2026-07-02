@@ -1,0 +1,126 @@
+id: I6::idx10::avoiding-monopolistic-practices
+display_id: "I6_3"
+is_underlined_variant: true
+display_id_variant_note: "I6.3_underlined"
+suite_id: I6
+suite_title: Competitive Pressures
+subgoal_title: Avoiding Monopolistic Practices
+content_type: ecosystem
+summary: 'Market concentration in frontier AI creates incentives to enclose safety technologies — keeping
+  safety benchmarks, red-team tools, and evaluation methods proprietary — which harms the ecosystem even
+  when the concentrated firm is benevolent. This subgoal expects the organization to contribute foundational
+  safety artifacts to shared commons, to accept independent competition oversight, and to avoid bundling
+  practices that tie product adoption to safety credentials. Evidence is external: what has the org released,
+  which regulators has it engaged with, how accessible is its safety infrastructure.
+
+  '
+normative_anchors:
+  sfrs_addressed:
+  - a
+  - b
+  evidence_addressed:
+  - I
+  - II
+  - III
+  sfrs_not_addressed: []
+  evidence_not_addressed: []
+cross_references:
+- I6::idx6::innovation-vs-ip-concerns
+- I6::idx9::market-driven-safety-validation-mechanis
+- I6::idx0::competitive-pressures
+stakeholders:
+- name: Safety commons and shared safety infrastructure
+  engagement_channel: 'Release foundational safety artifacts under permissive licenses: safety benchmarks, red-team
+    tool chains, evaluation suites, shared incident databases, common policy schemas. Track community
+    uptake and contributions back; report annually. "Open-washing" anti-pattern (releasing artifacts no
+    one can use without gated compute or proprietary dependencies) breaks the subgoal.
+
+    '
+  maps_to_sfr:
+  - a
+- name: Smaller peer labs, academic groups, public-benefit entities
+  engagement_channel: 'Compute-credit, data-access, and evaluation-service programs for smaller organizations pursuing
+    safety work. Transparent selection criteria, no contractual exclusivity that prevents recipients from
+    engaging with competitors. Contribute jointly- owned benchmarks and evaluation results.
+
+    '
+  maps_to_sfr:
+  - a
+- name: Competition and antitrust regulators
+  engagement_channel: 'Engage proactively with competition regulators (FTC, DOJ Antitrust, UK CMA, EU DG COMP, regional
+    competition authorities) on AI-safety-market specifics. Submit mandatory filings on acquisitions or
+    partnerships affecting competition in AI safety tooling. Accept regulator review of bundling and tying
+    practices rather than awaiting investigation.
+
+    '
+  maps_to_sfr:
+  - b
+- name: Independent competition audit
+  engagement_channel: 'Commission annual independent audit (competition economist or accredited firm) of the org''s
+    market practices around safety technology: access to evaluation infrastructure, licensing terms, bundled-vs-unbundled
+    product offerings. Findings published in the annual transparency report (I6.1) with regulator-accessible
+    appendix.
+
+    '
+  maps_to_sfr:
+  - b
+- name: Standards bodies governing safety infrastructure
+  engagement_channel: 'Participate in standards bodies that define shared safety infrastructure (MLCommons, ISO/IEC
+    JTC 1/SC 42 safety working groups, NIST AI Safety Institute reference implementations) with a position
+    of contributing reference implementations under open licenses. Capture by a single vendor''s implementation
+    weakens the standard and the subgoal.
+
+    '
+  maps_to_sfr:
+  - a
+  - b
+engagement_modes:
+- mode: 'Competition regulators: FTC, DOJ Antitrust Division, UK CMA, EU DG COMP, Bundeskartellamt, Japan JFTC, regional AI-specific regulators as they emerge'
+- mode: 'Safety commons: MLCommons AI Safety, HELM, HarmBench, OpenAI Evals (where governed permissively), Inspect by UK AISI, Apollo Research evaluations, AI Safety Institute reference benchmarks'
+- mode: 'Compute-sharing and access programs: NAIRR pilot (US), similar public-infrastructure access programs in other jurisdictions'
+- mode: Academic partnership programs and responsible-scaling access programs
+- mode: Standards reference implementations under open licenses
+evidence_production:
+- evidence_numeral: I
+  how_to_produce: 'Maintain regulatory filings log: mandatory filings to competition regulators (merger
+    notifications, conduct disclosures, response to inquiries), voluntary submissions, regulator correspondence.
+    Retained and, where appropriate, published; at minimum accessible to regulators on request.
+
+    '
+- evidence_numeral: II
+  how_to_produce: 'Commission annual independent competition-practice audit (economist or accredited firm).
+    Scope includes: licensing terms for safety tools, bundling practices, compute access programs, acquisitions
+    of safety-adjacent firms, exclusivity clauses in partnerships. Report findings to board risk committee
+    and publish externally.
+
+    '
+- evidence_numeral: III
+  how_to_produce: 'Annual market accessibility report: safety artifacts released (with licenses, usage
+    metrics, community contributions merged), access-program participants, exclusivity-free attestations
+    for safety tooling, and an explicit assessment of concentration risks the org itself poses. Including
+    acknowledgment of concentration is the honesty marker that distinguishes this report from generic
+    CSR.
+
+    '
+confidence: medium
+needs_human_review: true
+review_notes: "This subgoal is the one most squarely in tension with commercial reality: frontier-scale\
+  \ orgs have obvious incentives to enclose safety infrastructure. The pattern's mechanisms are genuine\
+  \ but require board-level commitment to work. Failure mode is silent drift: safety infrastructure stays\
+  \ technically open but becomes practically closed via required compute, proprietary dependencies, or\
+  \ access-gated evaluation services.\nCross-suite:\n  (1) I7 Imbalance in AI Capabilities shares terrain\
+  \ directly;\n      I7.3 (exemplar) is the global-partnership framing, I6.10 is\n      the domestic-market-practice\
+  \ framing. Consolidation should\n      decide whether they're one pattern or two.\n  (2) I6.6 IP/disclosure\
+  \ governs what can be released; I6.10 says\n      release it.\n  (3) D9 governance provides the compliance\
+  \ framing for\n      regulator engagement.\n\nLegal note: in some jurisdictions, affirmative commitments\
+  \ to share safety tooling can raise antitrust concerns (Rule of Reason analysis of safety-coordination\
+  \ among competitors). Nell and counsel should verify the safe-harbor pattern — most competition regulators\
+  \ have affirmed that coordinated AI safety work is procompetitive, but the specific licensing and governance\
+  \ mechanisms matter.\n"
+version_compat:
+  framework_version_min: '1.0'
+  framework_version_max: 1.x
+  pattern_layer_version: v1-draft
+drafted_by: claude-opus-4.7-author
+drafted_at: 2026-04-16
+anchor_exemplar: I7.3-balanced-global-partnership

@@ -1,0 +1,226 @@
+# Pattern — D2.4 Anti-Bias Technologies/Processes
+
+id: "D2::idx4::anti-bias-technologies-processes"
+display_id: "D2.4"
+suite_id: "D2"
+suite_title: "Epistemic Hygiene"
+subgoal_title: "Anti-Bias Technologies/Processes"
+content_type: code-applicable
+
+summary: >
+  Bias control spans the full AI pipeline — collection, preprocessing,
+  training, evaluation, retrieval, deployment, feedback. The subgoal
+  explicitly names RAG (retrieval-augmented generation) as in-scope, which
+  many bias programmes miss. The pattern is continuous, measured, and
+  owns named mitigations at each stage rather than treating fairness as a
+  one-time training-time intervention.
+
+normative_anchors:
+  sfrs_addressed: [a, b, c]
+  evidence_addressed: [I, II, III, IV, V]
+  sfrs_not_addressed: []
+  evidence_not_addressed: []
+
+cross_references:
+  - "D2::idx3::sanity-checking"
+  - "D2::idx5::rigor-in-operational-data"
+  - "D2::idx11::synthetic-data-bias"
+  - "D2::idx12::sparse-data"
+
+design_patterns:
+
+  - name: Pipeline-wide bias detection hooks
+    sketch: >
+      Instrument each stage: collection (demographic coverage audit),
+      preprocessing (protected-attribute imbalance pre/post filter),
+      training (fairness metrics per epoch), evaluation (disaggregated
+      metrics per group + intersection), retrieval (source-diversity
+      metrics over the corpus and per-query), deployment (output
+      disparity monitor). Metrics defined per protected attribute and per
+      intersection (age × disability, gender × locale). Store in a
+      central fairness telemetry table.
+    maps_to_sfr: [a, b]
+    when_to_use: Always. Any stage lacking instrumentation is the stage
+      where bias accumulates untracked.
+
+  - name: Lacuna detection (data-gap identification)
+    sketch: >
+      Explicit search for missing populations and cases. Cross-reference
+      the actual dataset composition against external reference
+      distributions (census, clinical registries, linguistic corpora)
+      for the deployment geography. Name the gaps before attempting to
+      fill them; document gaps that cannot responsibly be filled with
+      synthetic data.
+    maps_to_sfr: [c]
+    when_to_use: Pre-training dataset review; corpus review for RAG
+      systems.
+
+  - name: RAG corpus diversity controls
+    sketch: >
+      Bias in retrieval is distinct from bias in training: a
+      demographically balanced training set can still retrieve
+      systematically from a narrow slice of a retrieval corpus. Apply
+      source-diversity metrics to the corpus (by provenance, language,
+      region, viewpoint where relevant) and diversity-aware retrieval
+      (e.g., MMR, diversified re-ranking) where narrow retrieval would
+      systematically favour one population's perspective.
+    maps_to_sfr: [a, b]
+    when_to_use: All RAG deployments.
+
+  - name: Disaggregated evaluation with intersection
+    sketch: >
+      Never ship a single aggregate accuracy number. Evaluate per
+      protected group and at intersections; publish the table, not just
+      the mean. Define a release-block threshold on worst-case group
+      performance relative to best-case; if the gap exceeds threshold,
+      release blocks until the gap closes or an explicit justified
+      exception is recorded (with a plan and a date).
+    maps_to_sfr: [b]
+    when_to_use: Every model release and every material corpus change.
+
+  - name: Continuous drift and feedback-loop monitoring
+    sketch: >
+      Bias drifts post-deployment — user demographics change, agent
+      outputs shape future training data (feedback loops), retrieval
+      corpora evolve. Monitor per-group metrics continuously with
+      anomaly alerts on group-level degradation. Feedback-loop detector:
+      flag when outputs are being ingested as training or retrieval
+      input.
+    maps_to_sfr: [b]
+    when_to_use: Always, post-deployment.
+
+anti_patterns:
+
+  - name: Training-time fairness intervention only
+    why_wrong: >
+      Fairness-aware training without fairness-aware evaluation,
+      retrieval, and monitoring delivers one-shot correction into a
+      shifting deployment. The subgoal explicitly spans the pipeline.
+
+  - name: Aggregate accuracy as a headline metric
+    why_wrong: >
+      An aggregate number can improve while worst-case-group performance
+      worsens. The release-blocking threshold must be on the disparity,
+      not the mean.
+
+  - name: Synthetic data as a lacuna fix
+    why_wrong: >
+      Filling representation gaps with model-generated synthetic
+      examples often encodes the generator's existing biases at higher
+      fidelity. See D2.9 — synthetic data requires its own bias
+      programme.
+
+  - name: Ignoring retrieval bias in a RAG system
+    why_wrong: >
+      The subgoal names RAG explicitly. Retrieval that systematically
+      surfaces one viewpoint is bias regardless of training-set
+      balance.
+
+  - name: Community consultation without decision authority
+    why_wrong: >
+      Evidence-V requires engagement that leads to concrete action. A
+      feedback channel with no accountable response chain is
+      ceremonial.
+
+code_shape:
+  language: pseudocode
+  code: |
+    # Release-time fairness gate
+    def fairness_gate(model: Model, eval_set: DisaggregatedEvalSet,
+                      *, policy: FairnessPolicy) -> GateDecision:
+        metrics = model.evaluate_disaggregated(eval_set)
+        # metrics: dict[(group, intersection)] -> {accuracy, ...}
+
+        per_group_perf = {g: m.accuracy for g, m in metrics.items()}
+        best, worst = max(per_group_perf.values()), min(per_group_perf.values())
+        disparity = best - worst
+
+        report = FairnessReport(
+            metrics=metrics, disparity=disparity,
+            policy_threshold=policy.max_disparity,
+            worst_group=min(per_group_perf, key=per_group_perf.get),
+        )
+        AUDIT.attach(report, release=model.release_id)
+
+        if disparity > policy.max_disparity:
+            if not policy.has_justified_exception(model.release_id):
+                return GateDecision.block(report)
+        return GateDecision.pass_(report)
+
+    # Deployment-time drift monitor
+    def drift_check(window: MetricWindow, *, alert: AlertSink) -> None:
+        for group, series in window.per_group():
+            delta = series.recent_mean() - series.baseline
+            if delta < DRIFT_THRESHOLDS[group]:
+                alert.emit(GroupDegradation(group=group, delta=delta))
+  notes: >
+    The gate pattern forces disparity to be the decision variable at
+    release. The drift pattern forces deployment-time regressions to
+    become visible events, not buried aggregate numbers.
+
+evidence_production:
+
+  - evidence_numeral: I
+    how_to_produce: >
+      Publish technical documentation of bias detection: pipeline hooks,
+      metrics defined per attribute and per intersection, reference
+      distributions used for lacuna detection, RAG corpus diversity
+      methodology, feedback-loop detector. Versioned; reviewed
+      annually and on material methodology change.
+
+  - evidence_numeral: II
+    how_to_produce: >
+      Document data-diversity initiatives: target populations, source
+      acquisition strategies per population, partnerships (often
+      cross-referencing ecosystem commitments — see I7), actual
+      achieved representation versus target, gaps remaining. Include
+      the lacuna register with each identified gap, its status, and
+      planned remediation.
+
+  - evidence_numeral: III
+    how_to_produce: >
+      Maintain a mitigation journal: each intervention, baseline
+      metrics, post-intervention metrics, regression checks on other
+      groups (to catch seesaw effects), verdict. Per-release summary
+      in the release notes.
+
+  - evidence_numeral: IV
+    how_to_produce: >
+      Quarterly bias-posture report: trends per group and intersection,
+      emergent issues, drift alerts fired, mitigations deployed,
+      outstanding gaps. Retained in the Information Integrity Register
+      and shared with the board-level risk committee per D9.2.
+
+  - evidence_numeral: V
+    how_to_produce: >
+      Stakeholder engagement records: advisory boards, community
+      panels, user-research sessions with affected groups. Each record
+      links input → analysis → decision → implemented change (or
+      documented reason for non-change). Avoid "listening tour"
+      artifacts that show input without decisions.
+
+confidence: high
+needs_human_review: false
+review_notes: >
+  High-confidence on the pipeline-wide framing and the RAG-specific
+  treatment, which distinguishes this from generic ML-fairness guidance.
+  Calls:
+    (1) The specific fairness metric (demographic parity vs equalised
+        odds vs calibration within groups) is domain-dependent and the
+        pattern deliberately doesn't prescribe one. Implementers should
+        pick per deployment and publish the choice.
+    (2) Heavy overlap with D2.3 (sanity checking — which excludes
+        protected groups when naive), D2.9 (synthetic data bias), D2.10
+        (sparse data). Consolidation should make the intra-suite graph
+        visible.
+    (3) Cross-suite: I5 (amplification of harms), I4 (societal
+        distortion). Community-consultation patterns overlap I7.3
+        (ecosystem). Consolidation to wire.
+
+drafted_by: claude-opus-4.7-author
+drafted_at: 2026-04-16
+anchor_exemplar: D3.2-sandboxing
+version_compat:
+  framework_version_min: "1.0"
+  framework_version_max: "1.x"
+  pattern_layer_version: "v1-draft"

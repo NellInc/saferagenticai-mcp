@@ -1,0 +1,129 @@
+id: I3::idx1::dissembling-information
+display_id: I3.1
+suite_id: I3
+suite_title: Degradation of Contextual Information
+subgoal_title: Dissembling Information
+content_type: code-applicable
+summary: 'Dissembling is structured deception through selective presentation — true statements arranged
+  to mislead, rhetorical techniques adopted from training data that shade toward manipulation. Defenses
+  are a combination of cross-source validation (no single-source claims go out as asserted fact), auditable
+  decision traces (so the path from context to output can be inspected for rhetorical drift), and detectors
+  for known manipulation patterns. This is where the seam with deception defenses (I2) is tightest; keep
+  them coordinated.
+
+  '
+normative_anchors:
+  sfrs_addressed:
+  - a
+  - b
+  evidence_addressed:
+  - I
+  - II
+  sfrs_not_addressed: []
+  evidence_not_addressed: []
+cross_references:
+- I3::idx0::degradation-of-contextual-information
+- I3::idx2::misattribution-of-intent
+design_patterns:
+- name: Multi-source corroboration before assertion
+  sketch: 'For factual claims that drive user-visible outputs or actions, require at least two independent
+    retrievals (distinct sources, distinct retrieval paths) that corroborate. On single-source claims,
+    surface them as "reported by X" rather than bare assertion. Thresholds and exceptions (e.g., authoritative
+    single-source domains) are explicit in config, not in prompts.
+
+    '
+  maps_to_sfr:
+  - a
+  when_to_use: Retrieval-augmented systems producing factual output.
+- name: Rhetorical-pattern detectors
+  sketch: 'Run output through classifiers tuned for known manipulation patterns: loaded framing, false
+    equivalence, selective omission, strawmanning, emotional hijack, confident-but-unsupported assertions.
+    Flag for review or regeneration above a threshold. Build the training set from red-team-generated
+    examples and curated incidents. Don''t expect this to catch novel patterns — treat as one layer among
+    several.
+
+    '
+  maps_to_sfr:
+  - a
+  when_to_use: User-facing output, especially in high-stakes domains (health, finance, legal, political).
+- name: Tamper-evident source chain
+  sketch: 'Sources (documents, retrieval index entries, training artifacts) are content-addressed with
+    cryptographic hashes. Alterations produce a new hash; the system can detect when a cited source has
+    changed between retrieval and output. Log all source fetches with (source_id, hash_at_fetch, hash_at_cite).
+
+    '
+  maps_to_sfr:
+  - b
+  when_to_use: Any system that cites sources externally.
+- name: Append-only modification ledger
+  sketch: 'Modifications to retrieval indices, memory stores, and training data are recorded in an append-only
+    ledger with (who, what, when, why, previous_hash, new_hash). Unauthorized modifications are detected
+    by periodic integrity scans comparing ledger to actual store state.
+
+    '
+  maps_to_sfr:
+  - b
+  when_to_use: Any mutable knowledge store feeding the agent.
+anti_patterns:
+- name: Single-source confident assertion
+  why_wrong: 'A single retrieved document driving a confident output is indistinguishable from believing
+    one poisoned source. Framework requires cross-reference as the defense, not hope.
+
+    '
+- name: Trusting output-layer moderation alone
+  why_wrong: 'A content filter that rejects obviously-toxic outputs does not catch sophisticated rhetorical
+    manipulation, which often reads as polished and reasonable. Defense must begin at context ingestion,
+    not only at output.
+
+    '
+- name: Rhetorical-style mimicry without attribution
+  why_wrong: 'If the system adopts the persuasive style of its training corpus (e.g., confident op-ed
+    voice) without marking opinion versus evidence, it dissembles by tone even when facts are accurate.
+    Mark speculative and evaluative language explicitly.
+
+    '
+code_shape:
+  language: pseudocode
+  code: "def assert_claim(claim: Claim, sources: list[ContextFragment]) -> Assertion:\n    verified =\
+    \ [s for s in sources if s.verify() and CORROBORATES(claim, s)]\n    if len(verified) < REQUIRED_CORROBORATION:\n\
+    \        if any(s.trust_tier == TrustTier.BASELINE for s in verified):\n            return Assertion(claim,\
+    \ mode=\"asserted\", sources=verified)\n        return Assertion(\n            claim,\n          \
+    \  mode=\"reported\",              # hedged surface form\n            sources=verified,\n        \
+    \    hedge_reason=\"single_source\",\n        )\n    return Assertion(claim, mode=\"asserted\", sources=verified)\n\
+    \ndef scan_for_rhetorical_drift(output: str) -> list[DriftFlag]:\n    flags = []\n    for detector\
+    \ in RHETORICAL_DETECTORS:  # loaded, strawman, etc.\n        if detector.score(output) > detector.threshold:\n\
+    \            flags.append(DriftFlag(detector.name, detector.score(output)))\n    AUDIT.record(output_id=output.id,\
+    \ flags=flags)\n    return flags\n"
+  notes: '`mode="reported"` vs `"asserted"` is rendered at output layer as a different surface form ("According
+    to X, ..." vs "..."). The mode is part of the contract between reasoning and output; not a prompt
+    instruction.
+
+    '
+evidence_production:
+- evidence_numeral: I
+  how_to_produce: 'System logs include: every retrieval (source_id, trust_tier, hash), every corroboration
+    check (inputs, result), every rhetorical-drift flag, every configuration change to detectors or thresholds.
+    Contextual-verification events are labeled distinctly for audit queries.
+
+    '
+- evidence_numeral: II
+  how_to_produce: 'Per-decision reasoning report: for sampled or flagged outputs, reconstruct (input →
+    retrieved context → corroboration results → rhetorical flags → output) and store as an investigable
+    record. Red-team pattern-detection results included periodically.
+
+    '
+confidence: high
+needs_human_review: false
+review_notes: 'Rhetorical-drift detectors are the softest layer; flagged for medium confidence within
+  an overall-high pattern. Cross-suite: tightly entangled with I2 (Deception) — the same detector stack
+  likely serves both; consolidation should wire I3.1 <-> I2 patterns explicitly. Also overlaps D3 (Security)
+  on integrity of sources.
+
+  '
+version_compat:
+  framework_version_min: '1.0'
+  framework_version_max: 1.x
+  pattern_layer_version: v1-draft
+drafted_by: claude-opus-4.7-author
+drafted_at: 2026-04-16
+anchor_exemplar: D3.2-sandboxing

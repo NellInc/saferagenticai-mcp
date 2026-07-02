@@ -1,0 +1,136 @@
+id: I3::idx13::human-agent-conformation
+display_id: "I3_2"
+is_underlined_variant: true
+suite_id: I3
+suite_title: Degradation of Contextual Information
+subgoal_title: Human Agent Conformation
+content_type: process
+summary: 'Value conflicts, ethical dilemmas, and cases where performance objectives push against principles
+  require human-in-the-loop confirmation — not as a rare emergency, but as a designed escalation path
+  with clear criteria, response-time expectations, and documentation. The process exists so that value-sensitive
+  decisions cannot be silently resolved by the agent''s own optimization. This is a process pattern —
+  the code-level gates (I3.3 irreversibility gates, I3.10 resolution policies) invoke it.
+
+  '
+normative_anchors:
+  sfrs_addressed:
+  - a
+  - b
+  evidence_addressed:
+  - I
+  - II
+  - III
+  sfrs_not_addressed: []
+  evidence_not_addressed: []
+cross_references:
+- I3::idx3::misinformation
+- I3::idx4::decoupling-of-context
+- I3::idx10::contradiction-in-context-specifications
+- I3::idx14::retraining-and-recontextualization
+process_elements:
+- name: Escalation-criteria registry
+  cadence: maintained continuously; reviewed quarterly
+  participants:
+  - safety lead
+  - product owner
+  - ethics advisor
+  - on-call engineering
+  maps_to_sfr:
+  - a
+- name: On-call human reviewer rotation
+  cadence: 24/7 for production, with defined SLA (e.g., 15min ack, 2h resolution for value-sensitive escalations)
+  participants:
+  - trained reviewers from product + safety + ethics pools
+  maps_to_sfr:
+  - a
+  - b
+- name: Case presentation protocol
+  cadence: per-escalation
+  participants:
+  - reviewer
+  - optional secondary reviewer for high-stakes
+  maps_to_sfr:
+  - b
+- name: Decision recording and audit
+  cadence: per-case, with monthly aggregate review
+  participants:
+  - safety lead
+  - compliance officer
+  maps_to_sfr:
+  - b
+- name: Escalation outcome verification
+  cadence: sample-based weekly; 100% for flagged high-impact cases
+  participants:
+  - safety lead
+  - independent reviewer
+  maps_to_sfr:
+  - b
+triggers:
+- Irreversibility gate activated by tool-call layer (see I3.3)
+- Unresolvable contradiction in context (see I3.10)
+- Baseline-vs-operational drift detected above material threshold (see I3.11, I3.6)
+- Persona-drift circuit breaker opened (see I3.8)
+- Bad-faith override attempt detected against value tier (see I3.7)
+- Novel or ambiguous ethical situation the agent is not configured to resolve
+artifacts:
+- Escalation-criteria registry (living document, versioned)
+- Reviewer training curriculum and certifications
+- Per-case record — trigger, context presented, reviewer, decision, rationale, outcome verification
+- Monthly escalation pattern report (volume, types, resolution times, recurring triggers suggesting upstream
+  fixes)
+- Reviewer-performance feedback (quality-checked decisions, calibration exercises)
+presentation_protocol:
+- element: Concise case summary
+  detail: 'Auto-generated summary of (agent context, proposed action, why escalated, what decision is
+    requested) in a standard template. No raw conversation dumps — reviewers need a clean surface.
+
+    '
+- element: Full context on demand
+  detail: 'Reviewer can drill into full context (I3.0 context snapshot), provenance chain, prior similar
+    decisions. Drill-down is audited (who looked at what).
+
+    '
+- element: Option structure
+  detail: 'Present reviewer with clear options: approve, deny, modify, defer to secondary reviewer. Freeform
+    rationale required; short categorical tag for aggregation (precedent, policy-conflict, data-quality,
+    user-pressure, ethical-novelty).
+
+    '
+- element: Time-bounded defer
+  detail: 'If reviewer defers, automatic routing to backup within SLA. Unresolved escalations block the
+    underlying agent action; there is no "proceed on timeout."
+
+    '
+evidence_production:
+- evidence_numeral: I
+  how_to_produce: 'Documentation of escalation-criteria registry: list of triggers with definitions, examples,
+    and owner; case-presentation protocol; reviewer-training curriculum. Versioned, reviewed quarterly.
+
+    '
+- evidence_numeral: II
+  how_to_produce: 'Records of human-system interactions: per-case file containing trigger, context presented,
+    reviewer identity, decision, rationale, timestamps. Append-only; redacted copies exportable for audit.
+    Linked to the governance violation register (D9.2) when cases correlate with compliance incidents.
+
+    '
+- evidence_numeral: III
+  how_to_produce: 'Verification of value-alignment in implementations: sampled post-hoc review of cases
+    confirms that the enacted outcome matched the reviewer''s decision and that the decision conformed
+    to the value manifest. Calibration exercises periodically measure inter-reviewer agreement.
+
+    '
+confidence: medium
+needs_human_review: true
+review_notes: 'Process patterns age into SOPs; what matters is that the escalation path is real (staffed,
+  fast, auditable) rather than nominal. SLAs and reviewer-pool sizing are deployment-specific. Cross-suite:
+  D8 (Human Oversight) — direct overlap; consolidation should wire this subgoal into the D8 framework
+  to avoid duplicating the on-call / SLA prescriptions. D9.2 (Compliance) for the violation-register linkage.
+
+  '
+version_compat:
+  framework_version_min: '1.0'
+  framework_version_max: 1.x
+  pattern_layer_version: v1-draft
+drafted_by: claude-opus-4.7-author
+drafted_at: 2026-04-16
+anchor_exemplar: D7.2-culture-of-safety

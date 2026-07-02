@@ -1,0 +1,119 @@
+id: D6::idx1::understanding-historic-constraints-and-s
+display_id: D6.1
+suite_id: D6
+suite_title: Understanding and Controlling the Context
+subgoal_title: Understanding Historic Constraints and System Performance
+content_type: process
+summary: 'This subgoal asks the organization to treat past incidents as a first-class learning substrate,
+  not a compliance afterthought. Required outputs are durable: an incident corpus with structured fields,
+  trained personnel, monitoring tooling that external auditors can actually use, and regulatory-alignment
+  procedures that update when the rules move. The failure mode is a pile of post-mortem Google Docs that
+  no one can query across time.
+
+  '
+normative_anchors:
+  sfrs_addressed:
+  - a
+  - b
+  - c
+  - d
+  evidence_addressed:
+  - I
+  - II
+  - III
+  - IV
+  sfrs_not_addressed: []
+  evidence_not_addressed: []
+process_elements:
+- name: Incident corpus curation
+  cadence: continuous intake; monthly triage; quarterly pattern review
+  participants:
+  - incident commander
+  - safety lead
+  - data steward
+  - ML reliability engineer
+  maps_to_sfr:
+  - a
+- name: Personnel incident-response competency program
+  cadence: onboarding for all production roles; annual recertification; post-incident refresh
+  participants:
+  - safety lead as instructor
+  - all production-authority staff
+  maps_to_sfr:
+  - b
+- name: Auditor-facing monitoring access
+  cadence: continuous access provision; audit-support SLA under 5 business days
+  participants:
+  - security lead
+  - compliance officer
+  - external auditor liaison
+  maps_to_sfr:
+  - c
+- name: Regulatory alignment cycle
+  cadence: monitored continuously; procedural updates within 90 days of binding guidance
+  participants:
+  - legal counsel
+  - compliance officer
+  - affected product owners
+  maps_to_sfr:
+  - d
+triggers:
+- Incident detected (including near-miss) → entry in corpus, post-mortem, competency refresh check
+- New hire with production authority → competency onboarding
+- External audit scheduled or ad hoc → auditor-facing monitoring access activation
+- New binding regulation or updated standard → regulatory alignment cycle
+- Repeating root-cause detected in quarterly review → escalation to suite-level Context Governance Council
+artifacts:
+- Structured incident corpus (one record per incident with: id, date, capability, jurisdiction, root cause
+    category, affected users, detection source, mitigation, recurrence-check date)
+- Personnel competency register with recertification dates
+- Auditor access runbook and credential provisioning log
+- Regulatory change log with per-change impact assessment and procedural update
+- Quarterly pattern-review report (systemic findings rolled up)
+evidence_production:
+- evidence_numeral: I
+  how_to_produce: 'Maintain the incident corpus in a queryable store (not a doc pile). Required fields
+    per record: incident id, timestamp, capability affected, jurisdiction(s), detection channel (log /
+    user report / external), root-cause category, mitigation, verification, recurrence check. Ingest user
+    feedback through a structured intake (typed form, not freeform email) with triage SLA. Ingest external
+    reports (regulator notices, press, peer-org disclosures) via a monitored channel. Retain per records
+    policy; append-only.
+
+    '
+- evidence_numeral: II
+  how_to_produce: 'Competency register: per-person training module completed, date, assessment score where
+    applicable, recertification due date. Retain in HR/LMS system with export on demand. Post-incident
+    refresh records link back to specific incidents in the corpus.
+
+    '
+- evidence_numeral: III
+  how_to_produce: 'Document the monitoring toolset with: capabilities exposed, access mechanism for auditors
+    (read-only credentials, audit logs of auditor actions), data retention, query examples. Runbook should
+    enable a third-party auditor to reproduce monitoring findings without engineering hand-holding.
+
+    '
+- evidence_numeral: IV
+  how_to_produce: 'Regulatory change log: per change, source, effective date, impact assessment, procedure
+    updated, rollout date. Cross-reference to D6.6 (Dynamic Regulatory Framework Management) for the upstream
+    ingestion function and to D9 governance artifacts for the owning accountability.
+
+    '
+cross_references:
+- D6::idx6::dynamic-regulatory-framework-management
+- D6::idx8::prevention-of-role-persistence-errors
+- D6::idx12::managing-context-drift
+confidence: high
+needs_human_review: false
+review_notes: 'Structured-corpus requirement is the sharpest interpretation of SFR-a; vague "lessons learned"
+  documents should not clear this bar. 90-day SLA for regulatory alignment mirrors D9.2 exemplar. Cross-suite:
+  D9.2 (Violation and Complaint Register is the parent genre), D5 (transparency of incident disclosure),
+  I3 (context degradation incidents belong in this corpus too).
+
+  '
+drafted_by: claude-opus-4.7-author
+drafted_at: 2026-04-16
+anchor_exemplar: D7.2-culture-of-safety
+version_compat:
+  framework_version_min: '1.0'
+  framework_version_max: 1.x
+  pattern_layer_version: v1-draft

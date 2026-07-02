@@ -1,0 +1,168 @@
+id: D5::idx1::logging-of-internal-goals
+display_id: D5.1
+suite_id: D5
+suite_title: Transparency and Interpretability of Reasoning
+subgoal_title: Logging of Internal Goals
+content_type: code-applicable
+summary: 'Goal logging is the primary data substrate for every downstream transparency claim. If you cannot
+  reconstruct what the agent was trying to do and how that intent evolved, no explanation, audit, or incident
+  review is grounded. This subgoal asks for a structured, append-only, integrity-protected record of goal
+  lifecycle events — not prose logs, not sampled traces.
+
+  '
+normative_anchors:
+  sfrs_addressed:
+  - a
+  - b
+  - c
+  - d
+  evidence_addressed:
+  - I
+  - II
+  - III
+  sfrs_not_addressed: []
+  evidence_not_addressed: []
+cross_references:
+- D5::idx4::interpretability-and-traceability-of-rea
+- D5::idx5::self-monitoring-and-examination-capabili
+- D5::idx8::system-boundedness
+design_patterns:
+- name: Goal lifecycle event schema
+  sketch: 'Every goal state change emits one event with at minimum `{goal_id, parent_goal_id, agent_id,
+    session_id, transform_type, source_event_ref, trigger, pre_state_hash, post_state_hash, reasoning_snapshot_ref,
+    timestamp, correlation_id, schema_version}`. `transform_type` is a closed enum: `create | refine |
+    split | merge | abandon | suspend | resume | complete | fail | reprioritize | delegate | retract`.
+    `trigger` classifies provenance: `user | self | environment | learner | supervisor | policy`. Closed
+    enums are mandatory — free-text values defeat aggregation.
+
+    '
+  maps_to_sfr:
+  - a
+  - d
+  when_to_use: Always, from first goal admission onward.
+- name: Append-only, integrity-protected store
+  sketch: 'Write goal events to an append-only store with per-event and per-batch hashes chained to the
+    prior record (Merkle-style or simple hash-chain). Periodic notarization (internal signed checkpoints;
+    optional external timestamping) anchors the chain. Evidence that goal logs were not rewritten after
+    the fact is the purpose — cross-reference D3 log-integrity controls.
+
+    '
+  maps_to_sfr:
+  - a
+  when_to_use: Always in production. For dev/staging, same schema, relaxed notarization.
+- name: Goal-alignment invariants with runtime checks
+  sketch: 'Declare invariants the agent''s goal set should satisfy (e.g., "no active goal may contradict
+    a revoked goal," "every delegated subgoal has a parent-authorized scope," "goals carry consent for
+    the data classes they touch"). Evaluate at every transform; a violation emits a high-severity `alignment_drift`
+    event and, per policy, blocks or pauses the agent.
+
+    '
+  maps_to_sfr:
+  - b
+  when_to_use: Whenever the agent can revise its own goals or accept goals from external sources.
+- name: Self-learning event tap
+  sketch: 'Define "self-learning event" precisely — this is where organizations silently diverge. In scope
+    (each emits a dedicated event class): online weight updates (if any), long-term memory writes, tool/skill
+    installation, in-context strategy revision that persists across sessions, system-prompt or policy
+    self-modification, new capability discovery. Out of scope (log but do not classify as self-learning):
+    per-turn chain-of-thought, scratchpads cleared at session end. Each in-scope event carries a pre/post
+    delta reference and a human-readable diff pointer.
+
+    '
+  maps_to_sfr:
+  - c
+  when_to_use: Any system with persistent memory, continual learning, or agent-initiated tool acquisition.
+- name: Reasoning-snapshot references (not inlines)
+  sketch: 'Do not inline full reasoning traces into every goal event — size will kill the log. Store traces
+    in a content-addressed store and reference by hash. This preserves joinability (any event can be traced
+    to its full reasoning context) without bloating the primary log.
+
+    '
+  maps_to_sfr:
+  - a
+  - d
+  when_to_use: Always.
+anti_patterns:
+- name: Unstructured prose logs
+  why_wrong: '"The agent decided to refine its goal because X" is not a log entry; it is a sentence. SFR-a
+    requires aggregation, diffing, and audit — which require structured records.
+
+    '
+- name: Sampled goal logging
+  why_wrong: 'Sampling is defensible for telemetry, not for goals. A missed goal transform is a missed
+    decision. SFR-a says "all."
+
+    '
+- name: Goal logs without integrity protection
+  why_wrong: 'If operators can edit goal logs post hoc, the logs cannot evidence what the agent actually
+    did. Evidence II requires audit trails; an editable log is not an audit trail.
+
+    '
+- name: Conflating goals with prompts
+  why_wrong: 'The user''s prompt is an input; the agent''s internalized goal is a derived state. Logging
+    only prompts misses goal refinement, abandonment, and self-generated subgoals — exactly the transitions
+    the framework is pointing at.
+
+    '
+- name: Alerting on "all self-learning" without classification
+  why_wrong: 'Paging on every memory write floods the channel. Without the closed enum of self-learning
+    event classes, meaningful alerts become impossible. SFR-c''s "generate alerts" needs the classification
+    to be useful.
+
+    '
+code_shape:
+  language: pseudocode
+  code: "# Goal-lifecycle event emission with integrity chaining\n\nGOAL_TRANSFORM = Literal[\"create\"\
+    ,\"refine\",\"split\",\"merge\",\"abandon\",\n                         \"suspend\",\"resume\",\"complete\"\
+    ,\"fail\",\n                         \"reprioritize\",\"delegate\",\"retract\"]\nTRIGGER = Literal[\"\
+    user\",\"self\",\"environment\",\"learner\",\n                  \"supervisor\",\"policy\"]\n\n@dataclass\n\
+    class GoalEvent:\n    goal_id: str\n    parent_goal_id: str | None\n    agent_id: str\n    session_id:\
+    \ str\n    transform_type: GOAL_TRANSFORM\n    trigger: TRIGGER\n    source_event_ref: str | None\
+    \   # prior event id if chained\n    pre_state_hash: str | None\n    post_state_hash: str\n    reasoning_snapshot_ref:\
+    \ str    # content-addressed pointer\n    timestamp: str                 # RFC3339, UTC\n    correlation_id:\
+    \ str\n    schema_version: str = \"1.0\"\n\ndef emit_goal_event(ev: GoalEvent) -> str:\n    # Integrity:\
+    \ chain to prior record\n    prior = LOG.tip_hash()\n    payload = canonical_json(ev)\n    ev_hash\
+    \ = sha256(prior + payload)\n    LOG.append(ev_hash=ev_hash, prior=prior, payload=payload)\n    INVARIANTS.check(ev)\
+    \           # may raise AlignmentDrift\n    if ev.transform_type in {\"create\",\"refine\",\"split\"\
+    ,\"abandon\",\"retract\"}:\n        ALERT_BUS.publish_if_policy(ev)\n    return ev_hash\n"
+  notes: 'The schema is the point. Adopt this (or an equivalent closed-schema version) before the agent
+    is in production, not after. Schema migration on a live goal log is painful.
+
+    '
+evidence_production:
+- evidence_numeral: I
+  how_to_produce: 'Publish the goal-logging architecture: schema definition file (JSON Schema or Protobuf),
+    the self-learning event taxonomy, the invariant list, and the alert routing policy. Version and retain.
+
+    '
+- evidence_numeral: II
+  how_to_produce: 'Extract operational evidence from the append-only store: full goal lineage for representative
+    sessions, audit trails of transform chains, alert-response records, and case studies of goal adaptations
+    (including one case where an invariant triggered a pause/block).
+
+    '
+- evidence_numeral: III
+  how_to_produce: 'Document the alignment-check implementation: invariant source, evaluation frequency,
+    time budgets, and validation results (e.g., unit tests showing each invariant blocks a crafted violation).
+    Include the feedback-loop mechanism tying alerts into incident response (cross-ref D5.5).
+
+    '
+confidence: high
+needs_human_review: false
+review_notes: 'High confidence on the schema shape and append-only discipline — this is standard audit-log
+  engineering specialized to goals. Lower confidence on exactly which self-learning event classes to require;
+  the taxonomy above is a reasonable default but will shift as agent architectures evolve (e.g., agent-initiated
+  tool installation was not on a 2023 taxonomy). Cross-suite dependencies for Phase 2: D1 Goals (logging
+  is only as useful as the goals themselves are inspectable); D3 Security (log integrity, tamper resistance,
+  access controls on the notarization keys); I1 Opaque Agency (goal logs are the structural counter to
+  inscrutable intent); I2 Deception (goal-abandonment + covert-re-creation patterns are a deception signal
+  worth flagging in invariants).
+
+  '
+version_compat:
+  framework_version_min: '1.0'
+  framework_version_max: 1.x
+  pattern_layer_version: v1-draft
+drafted_by: claude-opus-4.7-author
+drafted_at: 2026-04-16
+anchor_exemplar: D3.2-sandboxing

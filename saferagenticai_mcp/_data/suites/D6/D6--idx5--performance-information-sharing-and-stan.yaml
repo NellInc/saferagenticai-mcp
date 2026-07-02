@@ -1,0 +1,171 @@
+id: D6::idx5::performance-information-sharing-and-stan
+display_id: D6.5
+suite_id: D6
+suite_title: Understanding and Controlling the Context
+subgoal_title: Performance Information Sharing and Standards Alignment
+content_type: governance
+summary: 'This subgoal asks the organization to situate its system within the standards landscape rather
+  than claim bespoke metrics, and to make its performance claims comparable, durable, and published. The
+  core artifacts are a benchmark register anchored to peer-reviewed and recognized suites, an evaluation
+  cadence that runs independently of product pressure, and a published performance record that survives
+  leadership change. Ethics/legal alignment is the accountability spine that keeps benchmark gaming from
+  passing as conformance.
+
+  '
+normative_anchors:
+  sfrs_addressed:
+  - a
+  - b
+  - c
+  - d
+  - e
+  evidence_addressed:
+  - I
+  - II
+  - III
+  - IV
+  - V
+  sfrs_not_addressed: []
+  evidence_not_addressed: []
+policy_elements:
+- name: Benchmark Register
+  description: 'Curated list of benchmarks the system is evaluated against, categorized: capability, safety,
+    fairness, robustness, alignment. Each entry records source (peer-reviewed venue, standards body, recognized
+    community), version, known limitations, and the rationale for inclusion. Reviewed twice yearly and
+    on material capability change. Governance bar for inclusion: recognized by an external body, not proprietary-only.
+
+    '
+  maps_to_sfr:
+  - a
+  - b
+- name: Evaluation Cadence and Independence Charter
+  description: 'Evaluations run at defined cadence (per release, quarterly cross- release, annual comprehensive)
+    by an evaluation function with reporting independence from product decision authority. Charter names
+    the evaluation lead, their reporting line (risk committee rather than product), and the conditions
+    under which they can pause releases.
+
+    '
+  maps_to_sfr:
+  - b
+  - c
+- name: Published Performance Record
+  description: 'Externally published, versioned document of benchmark results, including underperformance.
+    Follows model/system card conventions (e.g., FAccT model cards, NIST AI RMF artifact patterns). Includes
+    methodology, limitations, and comparability notes so downstream users can calibrate.
+
+    '
+  maps_to_sfr:
+  - b
+  - c
+  - d
+- name: Local-Standards Adaptation Matrix
+  description: 'For each deployment jurisdiction/market, the locally recognized standards (e.g., national
+    AI assurance schemes, sectoral quality marks, cultural-appropriateness reviews) mapped to how the
+    system is evaluated there. Prevents international-benchmark pass from being mistaken for local-standard
+    pass.
+
+    '
+  maps_to_sfr:
+  - d
+- name: Ethics and Legal Attestation
+  description: 'Periodic attestation bundling: ethics-review outcomes, legal- compliance reviews (cross-reference
+    D9.2), independent audit reports, and public statements. Signed by compliance officer and evaluation
+    lead. Provides SFR-e''s "demonstrated compliance" artifact rather than asserting it.
+
+    '
+  maps_to_sfr:
+  - e
+org_roles:
+- role: Evaluation Lead
+  responsibilities: 'Owns the Benchmark Register and the evaluation cadence; reports to risk committee
+    with release-pause authority on material benchmark regression or safety failure.
+
+    '
+  accountable_or_consulted: accountable
+- role: AI Compliance Officer
+  responsibilities: 'Owns the Ethics and Legal Attestation; liaises with external auditors; ensures published
+    performance record is synchronized with compliance filings.
+
+    '
+  accountable_or_consulted: accountable
+- role: Product Owners
+  responsibilities: 'Responsible for triggering benchmark re-runs on capability change; consulted on benchmark
+    selection (but do not decide).
+
+    '
+  accountable_or_consulted: responsible
+- role: External Auditor (rotating)
+  responsibilities: 'Consulted: independent conformity assessment against the ethics and legal frameworks;
+    outputs feed Evidence I.
+
+    '
+  accountable_or_consulted: consulted
+- role: Ethics Board or equivalent
+  responsibilities: 'Consulted on benchmark selection for fairness/ethics suites and on published ethics
+    code. Reviews ethics attestations.
+
+    '
+  accountable_or_consulted: consulted
+documentation_artifacts:
+- artifact: Benchmark Register
+  cadence: semi-annual review; event-driven on capability change
+- artifact: Per-release evaluation report
+  cadence: every release
+- artifact: Published performance record (model/system card)
+  cadence: versioned; updated with each material capability change
+- artifact: Local-Standards Adaptation Matrix
+  cadence: annual review; event-driven on jurisdictional change
+- artifact: Ethics and Legal Attestation
+  cadence: annual + event-driven
+- artifact: Independent audit report
+  cadence: annual minimum
+evidence_production:
+- evidence_numeral: I
+  how_to_produce: 'Commission an independent audit — by a qualified third party — against named ethics
+    and legal frameworks (IEEE 7000 series, NIST AI RMF, EU AI Act conformity, sector-specific). Retain
+    the signed report; publish an executive summary. Cross-reference D9.2 governance framework.
+
+    '
+- evidence_numeral: II
+  how_to_produce: 'Published code of ethics and operational principles — not a marketing page, a versioned
+    document with revision history indicating what changed, why, and effective date. Ethics board or equivalent
+    signs off.
+
+    '
+- evidence_numeral: III
+  how_to_produce: 'Benchmark Register entries with citations to source papers / standards documents, version
+    pins, and datasets used. Treat like a dependency manifest: breakage in the upstream benchmark is an
+    event requiring a register update.
+
+    '
+- evidence_numeral: IV
+  how_to_produce: 'Performance comparison reports: per benchmark, system score, comparison to published
+    baselines (industry, peer, prior version), date, configuration. Include failure analyses, not only
+    headline numbers. Published externally per the performance record artifact.
+
+    '
+- evidence_numeral: V
+  how_to_produce: 'Continuous monitoring dashboards and quarterly evaluation reports showing trend over
+    time. Cross-reference D6.10 (context drift) for behavioral monitoring and D6.1 incident corpus for
+    regression traces.
+
+    '
+cross_references:
+- D6::idx1::understanding-historic-constraints-and-s
+- D6::idx6::dynamic-regulatory-framework-management
+confidence: high
+needs_human_review: true
+review_notes: 'Overlaps significantly with D9 (compliance) and with evaluation-focused D-suites (e.g.,
+  D4/D8 depending on framework structure). Core sharpening: the independence of the evaluation function
+  from product authority is the framework-specific bite — otherwise benchmark reporting drifts into product-marketing.
+  "Published" performance record is load-bearing; some orgs treat this as opt-in marketing, the framework
+  expects it as evidence. External-audit specifics should be validated by counsel per jurisdiction.
+
+  '
+drafted_by: claude-opus-4.7-author
+drafted_at: 2026-04-16
+anchor_exemplar: D9.2-compliance
+version_compat:
+  framework_version_min: '1.0'
+  framework_version_max: 1.x
+  pattern_layer_version: v1-draft

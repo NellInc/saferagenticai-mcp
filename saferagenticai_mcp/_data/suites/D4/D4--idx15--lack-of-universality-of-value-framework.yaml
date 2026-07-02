@@ -1,0 +1,135 @@
+id: D4::idx15::lack-of-universality-of-value-framework
+display_id: "D4_6"
+suite_id: D4
+suite_title: Value Alignment
+subgoal_title: Lack of Universality of Value Framework
+content_type: process
+summary: 'No single value framework covers every operational context; the question is how the organization
+  decides when universal defaults need contextual adaptation, how adaptations are authorized, how misalignments
+  are detected, and what the fallback is when neither universal nor adapted frameworks are adequate. This
+  is a process subgoal: an authorization workflow and escalation runbook that orchestrates Codex universality
+  (D4.6) and local overlays (D4.1, D4.2) without letting product teams invent ad-hoc adaptations.
+
+  '
+normative_anchors:
+  sfrs_addressed:
+  - a
+  - b
+  - c
+  - d
+  evidence_addressed:
+  - I
+  - II
+  sfrs_not_addressed: []
+  evidence_not_addressed: []
+cross_references:
+- D4::idx0::value-alignment
+- D4::idx1::awareness-of-local-conditions
+- D4::idx2::recognition-and-respect-for-boundaries
+- D4::idx6::universal-moral-foundations
+- D4::idx17::challenges-in-encoding-of-relevant-value
+process_elements:
+- name: Adaptation-trigger assessment
+  cadence: on proposed deployment to a context not fully covered by existing overlays; on escalation from
+    runtime monitoring
+  participants:
+  - product owner
+  - regional consultant (per D4.2)
+  - alignment lead
+  - legal counsel
+  maps_to_sfr:
+  - a
+- name: Structured adaptation authoring workflow
+  cadence: per approved trigger
+  participants:
+  - alignment lead
+  - regional consultant
+  - affected- community delegate
+  - legal counsel
+  - Ethics Board reviewer
+  maps_to_sfr:
+  - b
+- name: Overlay ratification
+  cadence: per adaptation
+  participants:
+  - Values Ethics Board
+  maps_to_sfr:
+  - b
+- name: Framework-misalignment monitoring review
+  cadence: weekly signals review; monthly action review
+  participants:
+  - alignment lead
+  - safety lead
+  - regional consultant liaisons
+  maps_to_sfr:
+  - c
+- name: Fallback invocation review
+  cadence: per fallback activation; monthly aggregate review
+  participants:
+  - incident commander
+  - alignment lead
+  - Ethics Board liaison
+  maps_to_sfr:
+  - d
+triggers:
+- Proposed deployment to a new jurisdiction/locale/domain → Adaptation-trigger assessment
+- Runtime misalignment signal (user complaint, automated flag, regulator inquiry) → Framework-misalignment
+  monitoring review, potentially promoted to Adaptation-trigger assessment
+- Value-conflict scenario not resolvable by current Codex + overlays → Fallback invocation
+- Quarterly → consolidated review of adaptations and fallbacks, candidates for promotion to Codex (if
+  a "local" adaptation recurs across many locales, it may be a missing universal)
+artifacts:
+- Adaptation trigger register (proposals, approvals, denials)
+- Overlay authoring packages (scope, rationale, stakeholder input, test plan, risk assessment)
+- Ethics Board ratification records per overlay
+- Misalignment-signal dashboard and weekly reports
+- 'Fallback playbook (what "fallback" means at each tier: restrict- to-floor-only behavior, defer-to-human,
+  decline-to-serve)'
+- Fallback invocation log
+- Quarterly "universal vs local" review report (does the framework's universal core need revision?)
+evidence_production:
+- evidence_numeral: I
+  how_to_produce: 'Publish the fallback playbook: tiered fallback behaviors (tier-1 restrict to Floor
+    values; tier-2 defer to human operator; tier-3 decline service with explanation) keyed to types of
+    framework inadequacy (unknown context, irresolvable conflict, regulatory void). Each tier specifies
+    user-facing behavior, operator notifications, and logging. Drill reports from semi-annual exercises.
+
+    '
+- evidence_numeral: II
+  how_to_produce: 'Adaptation authoring packages as retained artifacts: scope, rationale, stakeholder
+    input (from D4.2 relationships), proposed overlay, test plan (with D4.7/D4.11 probe suite extended),
+    impact assessment, Ethics Board ratification record, deployment and post-deployment verification.
+    Cross-indexed by region, product, and Codex entries touched.
+
+    '
+confidence: medium
+needs_human_review: true
+review_notes: 'Content-type decision: process. The subgoal orchestrates artifacts that live in other subgoals
+  (universal Codex in D4.6, overlays in D4.1 and D4.2, OOD handling in D4.8̲) — the work here is the coordination
+  workflow, not producing new artifacts or new code.
+
+  Honest caveat: the tension between "universal values that apply everywhere" and "values require local
+  adaptation" is philosophically unresolved. The pattern takes the pragmatic position that the Floor (D4.6)
+  is non-adaptable, the hierarchy above the Floor admits contextual weighting, and the remaining Codex
+  admits full overlays. This is a defensible choice but should be named as such.
+
+  Risk of overlay proliferation: too many context-specific overlays and the framework loses coherence;
+  too few and the framework fails contexts it should serve. The quarterly "universal vs local" review
+  exists to check both directions — overlays that recur may indicate a missing universal; universal rules
+  that are frequently overridden may indicate a false universal.
+
+  Cross-suite (for consolidation): D4.6 (universal foundations) and D4.2 (cross-cultural ecosystem) are
+  the primary partners. D9 Governance for overlay ratification authority. D4.8̲ OOD handling is the fallback
+  partner when neither universal nor local framework applies. I7 Imbalance if overlays systematically
+  advantage some regions over others.
+
+  '
+version_compat:
+  framework_version_min: '1.0'
+  framework_version_max: 1.x
+  pattern_layer_version: v1-draft
+drafted_by: claude-opus-4.7-author
+drafted_at: 2026-04-16
+anchor_exemplar: D7.2-culture-of-safety
+display_id_variant_note: D4.6-underlined
+is_underlined_variant: true

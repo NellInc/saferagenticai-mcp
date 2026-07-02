@@ -1,0 +1,129 @@
+id: D3::idx2::sandboxing
+display_id: D3.2
+suite_id: D3
+suite_title: Security
+subgoal_title: Sandboxing
+content_type: code-applicable
+summary: 'Sandboxing is the containment boundary around an agent''s ability to act on the world. Without
+  defense-in-depth, a single misconfiguration leaks capability. This subgoal is where the framework expects
+  you to prove — with logs, test results, and failed-access records — that the boundary holds.
+
+  '
+normative_anchors:
+  sfrs_addressed:
+  - a
+  - b
+  evidence_addressed:
+  - I
+  - II
+  - III
+  sfrs_not_addressed: []
+  evidence_not_addressed: []
+design_patterns:
+- name: Layered sandbox enforcement
+  sketch: 'Enforce isolation at multiple layers: OS/container (namespaces, seccomp, capabilities), runtime
+    (capability-scoped APIs), and network (egress allowlist, not denylist). A bypass at one layer is contained
+    by the next. Relying on a single layer (e.g., only a prompt-level "you cannot access X") is not sandboxing.
+
+    '
+  maps_to_sfr:
+  - a
+  when_to_use: Always. The agent's blast radius equals its weakest layer.
+- name: Staging parity with production capability surface
+  sketch: 'Sandbox tests are only as valid as the staging environment''s fidelity to production. Mirror
+    the production capability surface (same tools, same APIs, same network topology) in staging, with
+    test data substituted for real. Use infrastructure-as-code to enforce parity.
+
+    '
+  maps_to_sfr:
+  - a
+  - b
+  when_to_use: Before any capability ships to production.
+- name: Environment-scoped credentials
+  sketch: 'Every credential, API token, and secret is scoped to exactly one environment (dev/staging/prod)
+    and rejected if presented in another. Implement via distinct issuer identities, not shared secrets
+    with runtime checks.
+
+    '
+  maps_to_sfr:
+  - b
+  when_to_use: Whenever the agent holds credentials.
+- name: Default-deny egress with allowlist
+  sketch: 'Network policy defaults to deny-all for outbound traffic. Each authorized destination is allowlisted
+    explicitly with justification recorded. Denied attempts emit structured audit events, not silent drops.
+
+    '
+  maps_to_sfr:
+  - a
+  when_to_use: Any agent with network capability.
+anti_patterns:
+- name: Prompt-only sandboxing
+  why_wrong: 'Instructing the model "do not access X" is not a sandbox. It is a request. The framework
+    expects mechanisms that *prevent* access, not ones that ask nicely.
+
+    '
+- name: Shared filesystem between host and agent container
+  why_wrong: 'Bind-mounting host paths into the agent runtime defeats container isolation. The agent can
+    read or modify host state, including the secrets used to constrain it.
+
+    '
+- name: Credentials shared across environments
+  why_wrong: 'When dev, staging, and prod tokens overlap, a staging compromise is a production compromise.
+    Breaks SFR-b strict-isolation requirement in practice even if nominally honored.
+
+    '
+- name: Sandbox tested only on happy path
+  why_wrong: 'Evidence-II requires records of successfully *blocked* access. A sandbox that has never
+    been asked to block anything produces no evidence that it can.
+
+    '
+- name: Post-hoc sandboxing
+  why_wrong: 'Adding a sandbox after an agent is in production means the pre-sandbox behavior was the
+    production behavior. Pre-validation (per the subgoal description) means the sandbox exists before
+    the capability does.
+
+    '
+code_shape:
+  language: pseudocode
+  code: "# Runtime capability check + OS-level isolation + audited egress\n@requires_capability(\"network.egress\"\
+    )\ndef agent_fetch(url: str, *, ctx: AgentContext) -> bytes:\n    # Layer 1: URL allowlist (runtime)\n\
+    \    if not EGRESS_ALLOWLIST.matches(url):\n        AUDIT.record_violation(ctx, action=\"egress_denied\"\
+    , target=url)\n        raise SandboxViolation(f\"egress not allowed: {url}\")\n\n    # Layer 2: Environment\
+    \ scope check\n    if ctx.credentials.scope != CURRENT_ENV:\n        AUDIT.record_violation(ctx, action=\"\
+    cross_env_credential\")\n        raise SandboxViolation(\"credential scope mismatch\")\n\n    # Layer\
+    \ 3: OS-level isolation assumed (container netpol, seccomp)\n    # Layer 4: Rate limit + audit\n \
+    \   AUDIT.record(ctx, action=\"egress\", target=url)\n    return RATE_LIMITED_FETCH(url)\n"
+  notes: 'Illustrates three of four layers in one function: runtime allowlist, credential scope, and audit.
+    OS-level isolation (layer 4) is enforced by the container runtime, not shown here but equally required.
+
+    '
+evidence_production:
+- evidence_numeral: I
+  how_to_produce: 'Maintain a sandbox test suite that exercises pre-validation controls (egress blocks,
+    credential rejection, capability checks, syscall filtering). Export test results per release as signed
+    artifacts in your CI system. Store in an append-only audit archive.
+
+    '
+- evidence_numeral: II
+  how_to_produce: 'Emit structured audit events for every denied access attempt (egress, filesystem, unauthorized
+    API). Aggregate daily into a blocked-access report. Red-team test results should show non-zero block
+    counts; zero blocks is evidence the test suite is weak, not that the sandbox is strong.
+
+    '
+- evidence_numeral: III
+  how_to_produce: 'Centralize sandbox violation logs with full context: agent ID, capability requested,
+    deny reason, timestamp, correlation ID linking back to the agent''s reasoning trace. Retain per the
+    organization''s incident-response policy.
+
+    '
+confidence: high
+needs_human_review: false
+review_notes: 'Defense-in-depth framing is non-controversial, but the framework''s specific prescription
+  (pre-validation, staging parity) is worth emphasizing over the generic security wisdom. The "prompt-only
+  sandboxing" anti-pattern is newly relevant to agentic AI and worth highlighting even though it feels
+  obvious — many early agent frameworks shipped with only this.
+
+  '
+drafted_by: claude-opus-4.7-author
+drafted_at: 2026-04-16
+anchor_exemplar: self

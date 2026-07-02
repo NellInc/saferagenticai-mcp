@@ -1,0 +1,169 @@
+id: I5::idx4::attention-processes
+display_id: I5.4
+suite_id: I5
+suite_title: Self-Modification and Emergent Capabilities
+subgoal_title: Attention Processes
+content_type: code-applicable
+summary: 'Attention here is not the transformer-mechanics sense but the operational sense: what a system
+  focuses its resources and reasoning effort on. The risk is tunnel vision — a narrow specialization that
+  optimizes a local objective while missing safety-relevant context (e.g., a trading agent that does not
+  notice market-halt conditions; a customer-service agent that does not notice distress cues because they
+  are off-task). The operational handle is explicit budget accounting: specialized attention must leave
+  measurable headroom for contextual awareness, and the system must log what it did not consider.
+
+  '
+normative_anchors:
+  sfrs_addressed:
+  - a
+  - b
+  evidence_addressed:
+  - I
+  - II
+  - III
+  - IV
+  sfrs_not_addressed: []
+  evidence_not_addressed: []
+design_patterns:
+- name: Attention budget with reserved contextual slice
+  sketch: 'Specify, per deployment, what fraction of the agent''s reasoning budget (tool-call count, context-window
+    slice, wall-clock, compute) is reserved for non-task contextual monitoring: safety probes, user-state
+    checks, environment checks, abort conditions. The specialized task runs in the remaining budget. Removing
+    the reserved slice is a deployment-config change, not a runtime optimization.
+
+    '
+  maps_to_sfr:
+  - a
+  - b
+  when_to_use: Any agent with resource constraints, which is all of them in practice.
+- name: Mandatory context broadening steps
+  sketch: 'At defined points in a task chain (e.g., before any irreversible action, at each major state
+    transition, on elapsed-time triggers), the agent is required to perform a broadening step: re-read
+    operating envelope, check escalation conditions, summarize wider context, reconsider abort. The step
+    is a scripted part of the workflow, not an optional behavior the agent can skip under time pressure.
+
+    '
+  maps_to_sfr:
+  - b
+  when_to_use: Any agent whose actions can accumulate to an irreversible state.
+- name: Missed-context detectors
+  sketch: 'Orthogonal sensors (alert systems, environmental signals, user distress classifiers, market-halt
+    flags, emergency broadcasts) run in parallel to the agent. If a relevant signal fires and the agent
+    did not reference it within a time window, this is a missed-context event — logged, sampled for review,
+    and surfaced in attention-monitoring dashboards. Repeated misses are a tuning signal, not a shrug.
+
+    '
+  maps_to_sfr:
+  - a
+  when_to_use: Deployments where a clear set of out-of-band safety signals is definable.
+- name: Specialization-over-generalization tripwires
+  sketch: 'Track per-deployment metrics of reasoning diversity: unique tools invoked, distinct branches
+    explored, refusal diversity, response variety. A trend toward mode collapse (few tools, repetitive
+    responses, narrow branches) over time is a tripwire — not conclusively bad, but a review trigger.
+    A task becoming "too easy" is often over-fit attention, not competence.
+
+    '
+  maps_to_sfr:
+  - a
+  when_to_use: Continuously in production; signals operationalize the otherwise abstract "over-specialization"
+    concept.
+- name: Context-aware fallback to broader policy
+  sketch: 'When the agent encounters ambiguity the specialized policy cannot resolve, it falls back to
+    a broader contextual policy (which may itself fall back to human escalation). The fallback is cheaper-first,
+    more-conservative-first — never "make the best guess and proceed." Design the specialization assuming
+    it will be wrong in edge cases; make wrong-ness cheap.
+
+    '
+  maps_to_sfr:
+  - b
+  when_to_use: All agents; particularly important for multi-specialist architectures.
+anti_patterns:
+- name: Efficiency framings that eliminate "wasted" context broadening
+  why_wrong: 'Optimizers will identify the context-broadening step as pure cost and propose eliminating
+    it. The step is load-bearing; if it looks wasted, that''s because the harm it prevents did not happen.
+    SFR-b requires the balance be maintained — treat it as a hard constraint, not a performance target.
+
+    '
+- name: Relying on the model to "know when to pay attention"
+  why_wrong: 'Attention allocation that depends entirely on the model''s judgment is exactly what gets
+    captured by specialization. The structural fix is external scaffolding (scheduled checks, orthogonal
+    sensors, mandatory steps), not prompting.
+
+    '
+- name: Mode-collapse as "convergence"
+  why_wrong: 'Reduced behavioral diversity over time is often framed as the system "learning the task"
+    but can equally be the agent failing to consider alternatives — a safety-relevant loss. SFR-a''s "unintended
+    or excessive focus" requires treating mode collapse as a signal.
+
+    '
+- name: Missed-context events handled via retraining only
+  why_wrong: 'Retraining the agent to catch a missed signal next time is necessary but not sufficient;
+    the orthogonal sensor should keep firing and the log should keep capturing, because the next missed
+    signal may not be in the training set.
+
+    '
+code_shape:
+  language: pseudocode
+  code: "# Budget reservation + mandatory broadening + missed-context check\n\ndef agent_loop(task: Task,\
+    \ deployment: Deployment) -> Outcome:\n    budget = Budget.from_policy(deployment.attention_policy)\n\
+    \    # Reserved slice is not spendable by the task-specialized\n    # branch; it is pre-allocated\
+    \ for broadening/monitoring.\n    task_budget, context_budget = budget.split_reserved(\n        reserved_frac=deployment.attention_policy.context_fraction\n\
+    \    )\n\n    step_count = 0\n    while not task.done and task_budget.remaining:\n        step_count\
+    \ += 1\n        if (\n            task.at_irreversible_boundary()\n            or step_count % BROADENING_INTERVAL\
+    \ == 0\n        ):\n            with context_budget:\n                broadening = SCAFFOLD.broadening_step(task,\
+    \ deployment)\n                if broadening.abort:\n                    return Outcome.aborted(reason=broadening.reason)\n\
+    \n        SENSORS.check_signals(deployment)  # orthogonal, not on budget\n        with task_budget:\n\
+    \            task.advance()\n\n    # Post-hoc missed-context analysis\n    for signal in SENSORS.recent_signals(deployment):\n\
+    \        if not task.referenced(signal):\n            AUDIT.record(\n                event=\"missed_context\"\
+    ,\n                signal=signal,\n                task=task.id,\n            )\n\n    return Outcome.completed(task)\n"
+  notes: 'Budget split with a reserved slice is the key lever. The orthogonal sensor check is off-budget;
+    otherwise optimizers will starve it. The missed-context audit is post-hoc; real-time interrupt is
+    a different, more invasive pattern worth considering for high-severity signals.
+
+    '
+evidence_production:
+- evidence_numeral: I
+  how_to_produce: 'Publish the attention policy per deployment: budget split between specialized task
+    and contextual monitoring, mandatory broadening checkpoints, orthogonal sensor list, escalation triggers.
+    Include the safeguards against excessive specialization (mode-collapse tripwires, diversity metrics).
+    Versioned; reviewed with the deployment envelope (I5.3).
+
+    '
+- evidence_numeral: II
+  how_to_produce: 'Instrument and persist attention telemetry: per-session budget consumption (task vs
+    context), broadening-step outcomes, orthogonal signal firings, missed-context events. Monthly reports
+    show distribution patterns and highlight drift toward specialization.
+
+    '
+- evidence_numeral: III
+  how_to_produce: 'Regular attention-balance assessment: quarterly review of aggregated telemetry, with
+    named reviewer, findings, and corrective actions (policy tuning, fallback adjustment, retraining where
+    needed, deployment pause if drift is material). Retain reports and actions taken.
+
+    '
+- evidence_numeral: IV
+  how_to_produce: 'Demonstrate effectiveness: specific cases where the broadening step or orthogonal sensor
+    caught a situation the specialized path would have missed. Where no such cases exist, include a justification
+    (e.g., low-severity deployment) or a concern flag (the checks may be vestigial). Retain across releases
+    so the pattern is visible.
+
+    '
+confidence: medium
+needs_human_review: true
+review_notes: "This subgoal is the most abstract in I5 — \"attention processes\" does real work in the\
+  \ SFR text but lacks a standard operational idiom. The \"budget with reserved contextual slice\" framing\
+  \ is my attempt to give developers something concrete; it maps well to agent systems with explicit tool-call\
+  \ or context-token budgets and awkwardly to continuous control systems. Mode-collapse as a tripwire\
+  \ is speculative — it's defensible but the threshold choice is deployment-specific.\nCross-suite dependencies:\n\
+  \  - D4 Value Alignment — \"attention to safety-relevant context\"\n    is a value question at root.\n\
+  \  - I2 Deception — a deceptive agent may mask missed-context\n    events; the two controls should share\
+  \ telemetry.\n  - D7 Culture of Safety — \"caution by default\" supports the\n    attention policy's\
+  \ reserved slice surviving optimization\n    pressure.\n\nConfidence medium largely because the subgoal\
+  \ is hard to test against: \"did the agent attend well to context\" is an open question even with all\
+  \ this instrumentation. The patterns here are necessary-not-sufficient.\n"
+version_compat:
+  framework_version_min: '1.0'
+  framework_version_max: 1.x
+  pattern_layer_version: v1-draft
+drafted_by: claude-opus-4.7-author
+drafted_at: 2026-04-16
+anchor_exemplar: D3.2-sandboxing

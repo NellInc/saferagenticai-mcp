@@ -1,0 +1,254 @@
+id: "D1::idx0::goal-alignment"
+display_id: "D1"
+suite_id: "D1"
+suite_title: "Goal Alignment"
+subgoal_title: "Goal Alignment"  # canonical; umbrella nature reflected in summary
+content_type: governance
+
+summary: >
+  This is the suite-root pattern: the organizational charter that binds
+  the specific subgoal patterns (D1.1–D1.10) into a coherent goal-
+  alignment posture. Its artifacts are policy-level — a charter, a
+  stakeholder sign-off register, a cross-subgoal responsibility matrix
+  — plus an assessment of the development culture that produced the
+  agent, per evidence VII. The technical patterns live in the child
+  subgoals; this one is where they are tied to named humans and a
+  formal commitment.
+
+normative_anchors:
+  sfrs_addressed: [a, b, c]
+  evidence_addressed: [I, II, III, IV, V, VI, VII]
+  sfrs_not_addressed: []
+  evidence_not_addressed: [VIII]
+
+cross_references:
+  - "D1::idx1::transparency-of-goals"
+  - "D1::idx2::goal-adjustability"
+  - "D1::idx3::goal-interpretability"
+  - "D1::idx4::transparency-of-decisions"
+  - "D1::idx5::goal-prioritization-and-resource-allocat"
+  - "D1::idx6::reward-and-loss-mechanisms-policy"
+  - "D1::idx7::goal-portfolio-evolution-and-integrity"
+  - "D1::idx8::goal-alignment-resistance-and-negotiatio"
+  - "D1::idx9::goal-drift"
+  - "D1::idx10::non-production-variants"
+
+policy_elements:
+
+  - name: Goal Alignment Charter
+    description: >
+      A signed, versioned document declaring the organization's
+      commitment to goal alignment across D1.1–D1.10. Specifies the
+      scope of agents covered, the governance boundary (which decisions
+      require which sign-offs), the relationship to the organization's
+      value framework (link to D4), and the cadence of charter review.
+      Referenced by every subgoal's local documentation.
+    maps_to_sfr: [a]
+
+  - name: Cross-Subgoal Responsibility Matrix
+    description: >
+      A RACI across the ten D1 subgoals. For each subgoal, the
+      Accountable is a single named human; Responsible parties hold
+      the implementation work; Consulted parties include safety and
+      legal functions; Informed parties include leadership and the
+      board-level risk function. Reviewed annually and on
+      organizational change.
+    maps_to_sfr: [b]
+
+  - name: Goal-Construction Constraints Policy
+    description: >
+      Policy governing how agent goals are constructed: which human
+      values anchor the process, what ethical screens apply to user-
+      provided goals (refusal categories, risk-tiered escalation),
+      what residual-risk thresholds require human sign-off before a
+      capability ships. Points into D4 Value Alignment for the value
+      content; owns the goal-specific screening procedure.
+    maps_to_sfr: [a]
+
+  - name: Critical-Action Escalation Procedure
+    description: >
+      Named catalog of action classes requiring flagging, halt, or
+      explicit confirmation across agents. Covers the multi-agent case
+      (actions with cross-agent or system-wide impact). Includes clear
+      halt authority — who can stop an agent, how fast, and what
+      confirmation is recorded. Ties to the resistance/negotiation
+      subgoal (D1.8) for objection handling.
+    maps_to_sfr: [c]
+
+  - name: Emergent-Threat Participation Commitment
+    description: >
+      Commitment (internal policy + external attestation) to participate
+      in overarching monitoring and control mechanisms for emergent
+      threats: industry coordination, incident-sharing consortia,
+      regulator reporting. This is where this suite touches the
+      ecosystem layer; specific engagements are ecosystem-pattern
+      work in I-suites, but the commitment is a governance artifact.
+    maps_to_sfr: [c]
+
+  - name: Development-Culture Assessment
+    description: >
+      Periodic (annual minimum) assessment of how the organization's
+      development culture shapes agent failure modes: training-data
+      curation practices, reward-shaping practices (D1.6), red-team
+      engagement depth, whether reviewers can genuinely stop releases,
+      graceful-degradation habits under schedule pressure. Produces a
+      signed report with remediations. Per evidence VII.
+    maps_to_sfr: [a, b, c]
+
+org_roles:
+
+  - role: Goal Alignment Program Owner
+    responsibilities: >
+      Accountable for the charter, the responsibility matrix, and the
+      overall D1 posture. Single named human. Owns the annual
+      development-culture assessment.
+    accountable_or_consulted: accountable
+
+  - role: Subgoal Leads (per D1.1–D1.10)
+    responsibilities: >
+      Each named subgoal lead is accountable for their pattern's
+      implementation, evidence production, and cross-reference
+      maintenance. Report into the Program Owner.
+    accountable_or_consulted: responsible
+
+  - role: Safety Function
+    responsibilities: >
+      Consulted on charter changes, escalation procedure updates, and
+      development-culture assessments. Holds halt authority per the
+      critical-action procedure.
+    accountable_or_consulted: consulted
+
+  - role: Value & Ethics Function (link to D4)
+    responsibilities: >
+      Consulted on goal-construction constraints; owns the value
+      content that the D1 goal-construction policy references.
+    accountable_or_consulted: consulted
+
+  - role: Board-level Risk Committee
+    responsibilities: >
+      Informed quarterly of D1 posture; reviews development-culture
+      assessments; has authority to pause deployments on goal-
+      alignment grounds.
+    accountable_or_consulted: informed
+
+documentation_artifacts:
+
+  - artifact: Goal Alignment Charter
+    cadence: "versioned; reviewed annually and on material change"
+  - artifact: Cross-Subgoal Responsibility Matrix
+    cadence: "annually reaffirmed; event-driven updates"
+  - artifact: Goal-Construction Constraints Policy
+    cadence: "versioned; reviewed annually"
+  - artifact: Critical-Action Catalog
+    cadence: "reviewed per release + annually"
+  - artifact: Emergent-Threat Participation attestation
+    cadence: "annually + per incident-sharing engagement"
+  - artifact: Development-Culture Assessment report
+    cadence: "annually"
+  - artifact: Quarterly D1 posture report to the board risk committee
+    cadence: "quarterly"
+
+anti_patterns:
+
+  - name: Charter without named accountability
+    why_wrong: >
+      A policy document with no named Accountable is a poster. Evidence
+      IV and this pattern require single-human accountability for each
+      subgoal.
+
+  - name: Culture assessment as self-rated survey
+    why_wrong: >
+      Evidence VII expects assessment of whether training environments
+      "foster genuine alignment rather than mere compliance" — a
+      self-rated score from the team being assessed is not that.
+      Include external or independent inputs.
+
+  - name: Umbrella treated as documentation-only
+    why_wrong: >
+      If the umbrella charter exists but no escalation procedure, halt
+      authority, or culture assessment is operationally present, the
+      suite-level SFRs (especially SFR-c on emergent-issue handling)
+      are unsupported.
+
+evidence_production:
+
+  - evidence_numeral: I
+    how_to_produce: >
+      Evidence of goal/subgoal construction constraints and screening:
+      the Goal-Construction Constraints Policy document, sample
+      screening decisions (approved, modified, refused user goals),
+      refusal-category catalog. Reference to human values and ethical
+      considerations is explicit in the policy text.
+
+  - evidence_numeral: II
+    how_to_produce: >
+      Documentation of alignment measurement and verification:
+      points into D1.3 (interpretability) and D1.4 (decision
+      transparency) for the mechanisms, plus the umbrella-level
+      process for obtaining stakeholder assurance — sign-off forms,
+      user consent records where applicable, authorized-entity
+      attestations.
+
+  - evidence_numeral: III
+    how_to_produce: >
+      Points into D1.1 (goal transparency) and D1.4 (decision
+      transparency) for the real-time and retrospective visualization
+      mechanisms. The umbrella records the governance of those
+      interfaces: access policies, audit schedules, chain-of-custody.
+
+  - evidence_numeral: IV
+    how_to_produce: >
+      Points into D1.2 (goal adjustability), D1.5 (prioritization),
+      and D1.8 (resistance/negotiation) for the technical controls,
+      plus the umbrella-level Critical-Action Escalation Procedure
+      with thresholds, halt authority, and flagging protocols.
+
+  - evidence_numeral: V
+    how_to_produce: >
+      Points into D1.6 (reward and loss mechanisms) for the primary
+      evidence; the umbrella records the sign-off and re-validation
+      governance tying reward-policy lifecycle to the charter.
+
+  - evidence_numeral: VI
+    how_to_produce: >
+      Emergent-Threat Participation attestation plus logs of actual
+      participation: incident-sharing engagements, industry-body
+      working-group seats, regulator communications on emergent
+      issues. This is the suite's ecosystem touch point; in
+      consolidation, likely cross-references I-suite ecosystem
+      patterns.
+
+  - evidence_numeral: VII
+    how_to_produce: >
+      Annual Development-Culture Assessment report with external or
+      independent inputs, covering training-environment practices,
+      reward-shaping habits, red-team authority, graceful-degradation
+      culture. Remediations tracked to closure.
+
+confidence: medium
+needs_human_review: true
+review_notes: >
+  This is the suite-root pattern; the exemplars do not provide a shape
+  for this case directly. Treated as a governance charter that
+  cross-references all ten D1 subgoal patterns. Content-type flagged
+  as governance because the output is charter-and-accountability-
+  shaped, but evidence VI (participation in monitoring) has an
+  ecosystem flavor and evidence VII (development-culture assessment)
+  has a process flavor. In consolidation, VI likely wants a
+  companion ecosystem pattern (the suite touches I-suites through
+  this clause) and VII a companion process pattern (safety culture
+  overlaps D7.2; this subgoal specializes to D1 failure modes).
+  Medium confidence: the shape is reasonable but the exact governance
+  architecture (board-level engagement, culture-assessment
+  methodology) is deployment-dependent. Cross-suite refs noted but
+  not wired per phase 1 scope: D4 (values), D5 (transparency), D7
+  (culture), D9 (governance chains), I-suites (ecosystem).
+
+version_compat:
+  framework_version_min: "1.0"
+  framework_version_max: "1.x"
+  pattern_layer_version: "v1-draft"
+
+drafted_by: claude-opus-4.7-author
+drafted_at: 2026-04-16
+anchor_exemplar: D9.2-compliance

@@ -1,0 +1,154 @@
+id: D7::idx6::maintaining-service-level-stewardship
+display_id: D7.6
+suite_id: D7
+suite_title: Achieving and Sustaining a Safe System Profile
+subgoal_title: Maintaining Service Level Stewardship
+content_type: process
+summary: 'Stewardship is the organizational discipline that keeps a deployed AAI system maintained, patched,
+  monitored, and evolved without arbitrary erosion of user protections. The framework flags a particular
+  gap: in open-source or federated deployments, duty-holder identity may be unclear — this subgoal asks
+  for it to be made clear and honored. The pattern is process-heavy: maintenance calendar, risk intake,
+  monitoring loop, standards alignment, and transparent stakeholder communication.
+
+  '
+normative_anchors:
+  sfrs_addressed:
+  - a
+  - b
+  - c
+  - d
+  - e
+  evidence_addressed:
+  - I
+  - II
+  - III
+  - IV
+  - V
+  sfrs_not_addressed: []
+  evidence_not_addressed: []
+  # Anchor was [I..VI] before the 2026-04-17 evidence merge collapsed the
+  # original I and II ("Documentation of maintenance schedules" + "logs of
+  # completed activities") into a single item I; III-VI renumbered to II-V.
+  # See research/mcp/KNOWN_ISSUES.md item 2.
+process_elements:
+- name: Maintenance calendar
+  cadence: monthly minor-release window; quarterly major-release window; out-of-band for security and
+    safety patches
+  participants:
+  - platform engineering
+  - safety lead
+  - change manager
+  maps_to_sfr:
+  - a
+- name: Risk & performance intake
+  cadence: continuous intake (monitoring alerts, user reports, internal findings); weekly triage; monthly
+    backlog review
+  participants:
+  - on-call
+  - safety lead
+  - product owner
+  - QA
+  maps_to_sfr:
+  - b
+- name: Continuous monitoring loop
+  cadence: real-time telemetry; daily health review; monthly trend review
+  participants:
+  - on-call
+  - site reliability
+  - safety lead
+  maps_to_sfr:
+  - c
+- name: Standards-alignment review
+  cadence: semi-annual; event-driven on standard publication (e.g., ISO/IEC updates, sector code changes)
+  participants:
+  - compliance officer
+  - safety lead
+  - platform engineering
+  maps_to_sfr:
+  - d
+- name: Stakeholder communications cadence
+  cadence: scheduled release-note publication; incident-driven status updates within defined SLAs; quarterly
+    stewardship report
+  participants:
+  - comms lead
+  - product owner
+  - safety lead
+  maps_to_sfr:
+  - e
+- name: Duty-holder charter (esp. for open-source / federated deployments)
+  cadence: authored at project inception; reviewed annually and on maintainer change
+  participants:
+  - project maintainers
+  - downstream packagers
+  - legal
+  maps_to_sfr:
+  - a
+  - e
+triggers:
+- Scheduled maintenance window → Release with tested patches
+- Security or safety issue reaching agreed severity → Out-of-band patch
+- User report or monitoring alert → Triage → risk assessment → corrective action
+- Standards publication → Standards-alignment review
+- Maintainer change (open-source) → Duty-holder charter update and signal to downstream
+- User-protection regression detected → Immediate rollback and incident review
+artifacts:
+- Maintenance calendar and release notes archive
+- Maintenance activity log (release, change set, tester, approver, rollback plan)
+- Risk register entries with owner, severity, mitigation, status
+- Monitoring dashboards, alert history, monthly health reports
+- Standards-alignment checklist and completion evidence
+- Stakeholder communication archive (release notes, status page, security advisories, deprecation notices)
+- Duty-holder charter (who maintains what, under what license, with what commitment)
+- Quarterly stewardship report summarizing all of the above
+evidence_production:
+- evidence_numeral: I
+  how_to_produce: 'Publish the maintenance calendar; retain activity logs per release (change set, tester,
+    approver, deployed-at timestamp, rollback availability). Logs immutable after release.
+
+    '
+- evidence_numeral: II
+  how_to_produce: 'Same as I — the input shows these two evidence points duplicated; retain a single Maintenance
+    Record artifact that satisfies both. Note the duplication in the framework-level review for cleanup.
+
+    '
+- evidence_numeral: III
+  how_to_produce: 'Risk register entries per identified risk: description, owner, severity, likelihood,
+    action, target date, closure criteria. Cross-reference to the maintenance activity log when a risk
+    is addressed by a release.
+
+    '
+- evidence_numeral: IV
+  how_to_produce: 'Monitoring logs + diagnostic reports showing deviation detection and response. Link
+    to D7.1 (Oversight and Awareness) — stewardship consumes D7.1''s telemetry.
+
+    '
+- evidence_numeral: V
+  how_to_produce: 'Standards-alignment evidence: applicable standards listed, control mappings, certification
+    dates, audit reports. Cross-reference to D7.3 compliance artifacts rather than duplicating.
+
+    '
+- evidence_numeral: VI
+  how_to_produce: 'Stakeholder communications archive: release notes, status-page posts, deprecation notices,
+    direct communications. Retain timestamps, audiences, and (where available) read / acknowledgement
+    signals.
+
+    '
+confidence: medium
+needs_human_review: true
+review_notes: 'The subgoal description flags an unusual consideration: open-source / federated deployments
+  where "nominal duty holders may be unclear." Added an explicit Duty-Holder Charter as a process element
+  because this is a live problem (LLM fine-tunes forked downstream, agent frameworks maintained as weekends-hobby
+  projects, etc). A stronger framework-specific handle would be a license-level or manifest-level declaration
+  of maintenance commitment; the community has no stable convention here yet. Input evidence II is a verbatim
+  duplicate of evidence I — flagged. Cross-suite: D7.1 (monitoring feeds stewardship), D7.3 (compliance
+  standards alignment), D8 (end-of-life when stewardship is discontinued), I7 (ecosystem stewardship obligations
+  beyond the single org).
+
+  '
+version_compat:
+  framework_version_min: '1.0'
+  framework_version_max: 1.x
+  pattern_layer_version: v1-draft
+drafted_by: claude-opus-4.7-author
+drafted_at: 2026-04-16
+anchor_exemplar: D7.2-culture-of-safety

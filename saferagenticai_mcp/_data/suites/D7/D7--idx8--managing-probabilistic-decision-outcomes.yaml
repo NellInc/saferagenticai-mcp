@@ -1,0 +1,163 @@
+id: D7::idx8::managing-probabilistic-decision-outcomes
+display_id: "D7_1"
+is_underlined_variant: true
+display_id_variant_note: "D7.1_underlined"
+suite_id: D7
+suite_title: Achieving and Sustaining a Safe System Profile
+subgoal_title: Managing Probabilistic Decision Outcomes
+content_type: code-applicable
+summary: 'Agent outputs are distributions, not points. This subgoal asks the system to reason explicitly
+  about that distribution: enumerate plausible outcomes, quantify uncertainty, mitigate high-probability-high-impact
+  scenarios first, monitor for deviation in outcome likelihoods, and escalate to humans when uncertainty
+  crosses a documented threshold. Close sibling of D7.7 (human validation) — D7.7 gates on decision *risk*;
+  D7.8 gates on decision *uncertainty*.
+
+  '
+normative_anchors:
+  sfrs_addressed:
+  - a
+  - b
+  - c
+  - d
+  evidence_addressed:
+  - I
+  - II
+  - III
+  - IV
+  - V
+  sfrs_not_addressed: []
+  evidence_not_addressed: []
+design_patterns:
+- name: Outcome enumeration and weighting
+  sketch: 'For safety-relevant decisions, produce not a single action but a ranked set of plausible outcomes
+    with estimated probabilities and impact assessments. Sources of probability: ensemble disagreement,
+    Monte Carlo rollouts, confidence calibration on held-out sets, or explicit world-model simulation
+    where available. Record the method per decision.
+
+    '
+  maps_to_sfr:
+  - a
+  when_to_use: High-impact or high-novelty decisions.
+- name: Risk-weighted mitigation prioritization
+  sketch: 'Mitigate scenarios in order of probability × impact. Cheap mitigations that defuse high-probability-high-impact
+    paths (e.g., pre-flight checks, reversibility tests) ship before speculative tail-risk controls. Document
+    the priority order and the residual risk after mitigations.
+
+    '
+  maps_to_sfr:
+  - a
+  when_to_use: Design phase; revisit quarterly and after incidents.
+- name: Outcome-likelihood drift monitor
+  sketch: 'Track the realized vs. predicted outcome distribution over time. If realized outcomes drift
+    from predicted (e.g., a "low probability" failure starts occurring), raise an alert and force reweighting.
+    Distinguishes model miscalibration from environment change.
+
+    '
+  maps_to_sfr:
+  - b
+  when_to_use: Any system whose probabilistic outputs inform action.
+- name: Uncertainty-threshold human escalation
+  sketch: 'Define per-domain uncertainty thresholds (entropy, variance across samples, confidence intervals).
+    When a decision exceeds the threshold, route to human oversight rather than auto-proceed. The threshold
+    is published, not hidden — users and auditors know when the agent defers.
+
+    '
+  maps_to_sfr:
+  - c
+  when_to_use: Any agent making decisions with non-trivial variance.
+- name: Calibration maintenance
+  sketch: 'Regularly evaluate the agent''s probability estimates against realized outcomes (Brier score,
+    ECE, reliability diagrams). Poor calibration degrades every pattern above; treat calibration drift
+    as a safety regression, not a performance nit.
+
+    '
+  maps_to_sfr:
+  - a
+  - b
+  when_to_use: Continuous.
+anti_patterns:
+- name: Point-estimate decisions where distribution matters
+  why_wrong: 'Taking the argmax and discarding the distribution hides the very uncertainty this subgoal
+    wants to surface. Keep the distribution at least as far as the risk/uncertainty gate.
+
+    '
+- name: Uncalibrated confidence presented as probability
+  why_wrong: 'Softmax outputs or "confidence" self-reports from LLMs are famously miscalibrated. Using
+    them as probabilities without calibration turns the rest of the system into security theatre.
+
+    '
+- name: Fixed uncertainty thresholds in a drifting system
+  why_wrong: 'As task mix changes, the "normal" uncertainty level changes too. Thresholds need periodic
+    re-fit or the escalation rate will diverge from intended.
+
+    '
+- name: Tail risks ignored because probability is "low"
+  why_wrong: 'High-impact, low-probability outcomes still dominate expected harm. Prioritization by (prob
+    × impact) is the minimum; consider also decision-theoretic tail-weighting where warranted.
+
+    '
+code_shape:
+  language: pseudocode
+  code: "# Probabilistic decision with outcome enumeration and uncertainty gate.\nUNCERTAINTY_ESCALATE\
+    \ = DOMAIN_THRESHOLDS  # published per domain\n\ndef decide(request: Request, ctx: AgentCtx) -> Decision:\n\
+    \    outcomes = agent.enumerate_outcomes(request, ctx, n_samples=K)\n    # outcomes: List[Outcome(action,\
+    \ prob, impact_estimate)]\n    outcomes = calibrator.recalibrate(outcomes, domain=ctx.domain)\n\n\
+    \    top = max(outcomes, key=lambda o: o.prob)\n    risk_weighted = sorted(outcomes,\n           \
+    \                key=lambda o: o.prob * o.impact_score(),\n                           reverse=True)\n\
+    \n    u = uncertainty(outcomes)  # entropy or variance over outcomes\n    PROBREG.log(ctx, outcomes,\
+    \ u, top)\n\n    if u >= UNCERTAINTY_ESCALATE[ctx.domain]:\n        AUDIT.record(ctx, \"uncertainty_escalation\"\
+    , u=u, outcomes=outcomes)\n        return HUMAN_QUEUE.submit(request, outcomes, ctx)\n\n    for mitigation\
+    \ in mitigations_for(risk_weighted):\n        mitigation.apply(ctx)\n\n    return Decision.execute(top.action,\
+    \ rationale=outcomes)\n\n# Calibration maintenance runs out-of-band:\ndef nightly_calibration_audit():\n\
+    \    realized = PROBREG.realized_outcomes(window=\"7d\")\n    predicted = PROBREG.predicted_outcomes(window=\"\
+    7d\")\n    metrics = calibration_metrics(predicted, realized)  # Brier, ECE\n    if metrics.degraded_vs(baseline):\n\
+    \        ALERT.safety(\"calibration_regression\", metrics=metrics)\n"
+  notes: '`enumerate_outcomes` is domain-specific (MC rollouts, ensemble vote, world-model sim); the gate
+    shape is what matters. Calibration audit runs separately from request handling so it cannot be starved
+    by load.
+
+    '
+evidence_production:
+- evidence_numeral: I
+  how_to_produce: 'Per-decision record: outcomes considered, probabilities, impact scores, method used,
+    calibration version applied. Stored in a probabilistic-decision register (`PROBREG`) with retention
+    per data policy.
+
+    '
+- evidence_numeral: II
+  how_to_produce: 'Mitigation register: prioritized list of mitigations per decision class with residual
+    risk. Revisit quarterly; link to incident register when a mitigation fails.
+
+    '
+- evidence_numeral: III
+  how_to_produce: 'Drift monitor outputs: realized-vs-predicted distribution comparisons, alerts fired,
+    reweighting actions. Calibration metric time series (Brier, ECE).
+
+    '
+- evidence_numeral: IV
+  how_to_produce: 'Human oversight protocol for uncertainty escalations: queue, SLA, verdict record, link
+    back to the original decision''s outcome distribution.
+
+    '
+- evidence_numeral: V
+  how_to_produce: 'Training records for personnel interpreting probabilistic outputs: curriculum on calibration,
+    distribution visualization, decision- theoretic basics. Cross-reference to D7.2 training pipeline.
+
+    '
+confidence: high
+needs_human_review: true
+review_notes: 'Heavy sibling overlap with D7.7 (risk-based validation): D7.7 gates on *impact* (risk tier),
+  D7.8 gates on *uncertainty* (confidence). A real implementation composes both gates. Calibration maintenance
+  is not in any SFR text but is load-bearing — without it, probabilities are fiction. SFR-d''s training
+  requirement was marked non-normative in the input but is what makes the rest work; drafted it as substantive.
+  Cross-suite: D4 (interpretability — outcome enumeration intersects explainability), I4 (frontier uncertainty
+  as a distinctive case), D7.1 (monitoring consumes the calibration time series).
+
+  '
+version_compat:
+  framework_version_min: '1.0'
+  framework_version_max: 1.x
+  pattern_layer_version: v1-draft
+drafted_by: claude-opus-4.7-author
+drafted_at: 2026-04-16
+anchor_exemplar: D3.2-sandboxing

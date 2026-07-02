@@ -1,0 +1,139 @@
+id: I1::idx17::manage-interactions-on-the-deep-dark-web
+display_id: "I1_5"
+is_underlined_variant: true
+suite_id: I1
+suite_title: Opaque Agency Capabilities & Advances
+subgoal_title: Manage Interactions on the Deep & Dark Web
+content_type: process
+summary: Non-indexed network environments — credentialed intranets, paywalled archives, onion services,
+  private forums — are where agent authentication, content provenance, and counterparty-identity are weakest
+  and where systemic risk is highest. The process response is to declare whether the agent operates in
+  these spaces at all, specify authentication and verification procedures per environment, adopt shared-responsibility
+  models for uncontrolled risks, and monitor interaction-volume growth so that exponential scaling doesn't
+  slip past governance.
+normative_anchors:
+  sfrs_addressed:
+  - a
+  - b
+  - c
+  - d
+  - e
+  evidence_addressed:
+  - I
+  - II
+  - III
+  - IV
+  sfrs_not_addressed: []
+  evidence_not_addressed: []
+process_elements:
+- name: Non-indexed environment declaration
+  cadence: per deployment; revised on scope change
+  participants:
+  - Agency Officer
+  - safety lead
+  - Legal Counsel
+  - CISO
+  maps_to_sfr:
+  - a
+  - c
+- name: Authentication and verification SOP per environment class
+  cadence: per environment class; reviewed semi-annually
+  participants:
+  - CISO
+  - safety lead
+  - platform engineering
+  maps_to_sfr:
+  - c
+- name: Shared-responsibility risk agreements
+  cadence: per counterparty or consortium; renewed per contract cadence
+  participants:
+  - Legal Counsel
+  - CISO
+  - Agency Officer
+  maps_to_sfr:
+  - a
+  - b
+- name: Volume-growth monitoring and throttles
+  cadence: continuous; weekly triage
+  participants:
+  - SRE
+  - safety lead
+  maps_to_sfr:
+  - d
+- name: Emerging-risk review council
+  cadence: quarterly; ad-hoc on material incident
+  participants:
+  - safety lead
+  - CISO
+  - Legal Counsel
+  - external observer where available
+  maps_to_sfr:
+  - b
+  - e
+- name: Exit / containment drill
+  cadence: annual minimum
+  participants:
+  - on-call rotation
+  - safety lead
+  - CISO
+  maps_to_sfr:
+  - e
+triggers:
+- New deployment proposes non-indexed access → Declaration + SOP + shared-responsibility review
+- Content encountered in a non-indexed environment cannot be authenticated → Default to refuse / quarantine,
+  log as risk event
+- Interaction volume exceeds trailing-window baseline by a defined factor → Throttle + review
+- Novel systemic risk identified (e.g., new class of malicious content, new adversary pattern) → Emerging-risk
+  review council session + mitigation plan
+- Scheduled annual → Exit / containment drill
+artifacts:
+- Non-indexed environment declarations per deployment
+- Authentication/verification SOPs per environment class (credentialed indexed, authenticated paywall,
+  onion service, closed forum, peer-to-peer network)
+- Shared-responsibility agreements (self-insurance records, industry ISAC / consortium memberships, peer-org
+  response protocols)
+- Volume-growth dashboards with alert configuration
+- Emerging-risk review minutes and mitigation decisions
+- Exit / containment drill reports
+- Incident records for non-indexed-environment events
+evidence_production:
+- evidence_numeral: I
+  how_to_produce: 'TOS "Non-Indexed Network Operations" section: whether the agent operates in non-indexed
+    environments, the classes of environment if so, the governance around those interactions, principal
+    rights (to restrict, to be notified, to opt out entirely). If the agent does NOT operate in non-indexed
+    environments, say so plainly — opting out is a governance answer and must be documentable.'
+- evidence_numeral: II
+  how_to_produce: 'Risk-sharing evidence: self-insurance policy records with AAI-relevant coverage terms,
+    ISAC or industry-consortium membership documentation, signed peer-org response protocols (who alerts
+    whom on cross-org risk events). Not marketing memberships — retained contract text and activation
+    records.'
+- evidence_numeral: III
+  how_to_produce: Authentication and verification SOPs per environment class, with test evidence that
+    the SOPs are implementable and regularly exercised. Records of content refused because authentication
+    failed (non-zero refusal count is evidence the SOP has teeth; a zero count suggests the verification
+    is cosmetic).
+- evidence_numeral: IV
+  how_to_produce: 'Incident records for emerging / systemic risks encountered: intake, initial assessment,
+    emerging-risk council adjudication, containment actions, post-incident analysis. Cross-linked to the
+    Violation and Complaint Register (D9.2) and to the exit / containment drill history.'
+confidence: medium
+needs_human_review: true
+review_notes: 'Most organizations will answer the non-indexed-environment question as "we don''t operate
+  there" and that''s a valid governance answer — this pattern specifies how to document that posture rather
+  than assume all orgs have deep/dark-web deployments. Where orgs do operate in those spaces (threat intelligence,
+  journalism research, red-teaming, certain compliance investigations), the SOP-per-class and shared-responsibility
+  elements become load-bearing. Cross-suite: D3 Security owns the technical authentication primitives;
+  I2 Deception owns protection against content-provenance spoofing; I5 Future Tech Impact owns the forward-looking
+  emerging-risk surveillance; D9 Governance owns the overall incident-response framework. SFR-d (exponential
+  growth monitoring) is non-normative but is the most likely early-warning signal for this inhibitor,
+  worth implementing even where not strictly required.'
+cross_references:
+- I1::idx14::operational-environment-constraints
+- I1::idx15::security-driven-constraints
+version_compat:
+  framework_version_min: '1.0'
+  framework_version_max: 1.x
+  pattern_layer_version: v1-draft
+drafted_by: claude-opus-4.7-author
+drafted_at: 2026-04-16
+anchor_exemplar: D7.2-culture-of-safety

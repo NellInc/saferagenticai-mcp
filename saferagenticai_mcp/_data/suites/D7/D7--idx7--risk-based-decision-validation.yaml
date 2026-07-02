@@ -1,0 +1,168 @@
+id: D7::idx7::risk-based-decision-validation
+display_id: D7.7
+suite_id: D7
+suite_title: Achieving and Sustaining a Safe System Profile
+subgoal_title: Risk-Based Decision Validation
+content_type: code-applicable
+summary: 'Not every agent decision warrants a human in the loop, but high-impact decisions must. This
+  subgoal expects a code-level gating mechanism: a risk-tier classifier attached to each candidate decision,
+  human-validation queues for the top tiers, retained reasoning chains, and deterministic fail-safe behaviour
+  when validation is unavailable or the decision looks anomalous. The key architectural pattern is "reasoning-preserving"
+  decisions that can be paused, reviewed, approved or rejected with context.
+
+  '
+normative_anchors:
+  sfrs_addressed:
+  - a
+  - b
+  - c
+  - d
+  evidence_addressed:
+  - I
+  - II
+  - III
+  - IV
+  - V
+  sfrs_not_addressed: []
+  evidence_not_addressed: []
+design_patterns:
+- name: Decision risk classifier
+  sketch: 'Every candidate decision is classified at emission time by a risk function f(decision, context)
+    → {auto, validate, block}. Inputs: decision category, potential impact magnitude, reversibility, affected-party
+    count, novelty vs. prior-approved patterns. The classifier is code-reviewed and its thresholds versioned
+    alongside the product.
+
+    '
+  maps_to_sfr:
+  - a
+  - b
+  when_to_use: Any agent capable of irreversible or high-magnitude action.
+- name: Reasoning-chain retention
+  sketch: 'When a decision is emitted for validation, persist the agent''s full reasoning chain (prompt,
+    tool calls, intermediate thoughts, evidence retrieved) alongside the decision. The validator sees
+    the reasoning, not just the conclusion. Retention window matches the incident-response window for
+    that domain (often 90+ days; longer for regulated domains).
+
+    '
+  maps_to_sfr:
+  - a
+  when_to_use: Every validate-tier or block-tier decision.
+- name: Human validation queue with SLA and fail-safe default
+  sketch: 'Validate-tier decisions enter a queue with a named owner role and a hard SLA. If SLA expires
+    without decision, the system defaults to the fail-safe action (usually "do nothing" or "ask user")
+    — never to the risky action by default. Fail-safe defaults are pre-declared per decision category
+    and code-enforced.
+
+    '
+  maps_to_sfr:
+  - b
+  when_to_use: Whenever humans are in the loop.
+- name: Anomaly-triggered validation
+  sketch: 'Even auto-tier decisions are subject to anomaly detection: if the decision is out-of-distribution
+    relative to recent accepted decisions (embedding distance, feature drift, novel tool combination),
+    it is up-tiered to validation. Anomaly thresholds are tuned empirically and versioned.
+
+    '
+  maps_to_sfr:
+  - b
+  when_to_use: Any production deployment with non-trivial decision volume.
+- name: Validator rotation and training
+  sketch: 'Validators have a documented training curriculum, recertify annually, and rotate to avoid rubber-stamping.
+    Track validator-level statistics (approval rate, time-to-decide, downstream incident correlation);
+    flag patterns for coaching.
+
+    '
+  maps_to_sfr:
+  - c
+  when_to_use: Any deployment with >1 validator.
+anti_patterns:
+- name: Validation as summary rather than reasoning
+  why_wrong: 'Presenting the validator with only the conclusion removes the context that would flag a
+    flawed chain. SFR-a requires rationales and reasoning chains to be retained AND presented.
+
+    '
+- name: '"No response" treated as "approve"'
+  why_wrong: 'A queue whose default is "allow after timeout" inverts the safety gradient. Fail-safe must
+    be the conservative action; otherwise validation is theatre.
+
+    '
+- name: Static thresholds in a drifting system
+  why_wrong: 'Risk-classifier thresholds set at launch will drift relative to actual decision distribution.
+    Re-fit periodically and audit.
+
+    '
+- name: Validator-less escalation path
+  why_wrong: '"Escalate to a human" fails when no human is on-call. Every tier has a defined owner AND
+    a backup AND a fail-safe action if both are unavailable.
+
+    '
+- name: Reasoning chains stored in clear text without access control
+  why_wrong: 'Reasoning chains often contain user data. Retention requires access control, audit of access,
+    and deletion per the data retention policy.
+
+    '
+code_shape:
+  language: pseudocode
+  code: "# Risk-tier gating with fail-safe default and reasoning retention.\nclass DecisionGate:\n   \
+    \ def __init__(self, classifier, anomaly, queue, failsafe_registry):\n        self.classifier = classifier\n\
+    \        self.anomaly = anomaly\n        self.queue = queue\n        self.failsafe = failsafe_registry\n\
+    \n    async def gate(self, decision: Decision, ctx: AgentCtx) -> Outcome:\n        tier = self.classifier.tier_for(decision,\
+    \ ctx)\n        if tier == \"auto\" and self.anomaly.is_anomalous(decision, ctx):\n            tier\
+    \ = \"validate\"\n\n        STORE.persist_reasoning_chain(decision, ctx)  # always\n\n        if tier\
+    \ == \"auto\":\n            return Outcome.proceed(decision)\n\n        if tier == \"block\":\n  \
+    \          AUDIT.record(ctx, \"decision_blocked\", decision=decision)\n            return Outcome.blocked(decision,\
+    \ reason=\"tier=block\")\n\n        # tier == \"validate\"\n        ticket = self.queue.submit(decision,\
+    \ ctx,\n                                    sla=SLA_FOR[decision.category])\n        verdict = await\
+    \ ticket.await_verdict_or_timeout()\n        if verdict is None:\n            safe = self.failsafe.for_category(decision.category)\n\
+    \            AUDIT.record(ctx, \"decision_failsafe\",\n                         decision=decision,\
+    \ action=safe)\n            return Outcome.failsafe(decision, safe_action=safe)\n        return Outcome.from_verdict(decision,\
+    \ verdict)\n"
+  notes: 'The contract: every validate-tier decision either gets a human verdict or a fail-safe action
+    within the SLA. Reasoning is persisted unconditionally so an audit can reconstruct any decision path.
+
+    '
+evidence_production:
+- evidence_numeral: I
+  how_to_produce: 'Reasoning-chain persistence layer with structured schema: decision ID, category, inputs,
+    tools invoked, intermediate reasoning, conclusion, context hash. Exportable per-decision. Retention
+    per data policy; access audited.
+
+    '
+- evidence_numeral: II
+  how_to_produce: 'Validation protocol document + validator training records. Protocol covers: ticket
+    intake, what validators see, what they must record, escalation, appeal. Audit trail of who validated
+    what, when, with what verdict and rationale.
+
+    '
+- evidence_numeral: III
+  how_to_produce: 'Fail-safe registry document listing each decision category and its fail-safe action.
+    CI test suite exercises timeout path and verifies fail-safe triggers. Export signed results per release.
+
+    '
+- evidence_numeral: IV
+  how_to_produce: 'Validator training curriculum, assessment records, recertification schedule. Cross-reference
+    to D7.2 training evidence pipeline.
+
+    '
+- evidence_numeral: V
+  how_to_produce: 'Quarterly review record: risk-tier threshold calibration, anomaly- detector ROC, validator-level
+    statistics, trend analysis. Updates to classifier / fail-safe registry documented with rationale.
+
+    '
+confidence: high
+needs_human_review: false
+review_notes: 'SFR-b in the input conflates two asks ("human validation for high-risk decisions" AND "fail-safe
+  default states for scenarios lacking human validation"); treated them as complementary halves of the
+  same pattern. The anomaly-triggered up-tier is not explicit in any SFR but is load-bearing: static classifiers
+  miss the novel. Cross-suite: D2 (safe-by-design — fail-safe defaults overlap), D7.1 (monitoring of validation-pipeline
+  health), D7.8 (probabilistic-outcome oversight ≈ D7::idx8 — both are about handling uncertainty), I4
+  (novel-capability gating as a specific up-tier trigger).
+
+  '
+version_compat:
+  framework_version_min: '1.0'
+  framework_version_max: 1.x
+  pattern_layer_version: v1-draft
+drafted_by: claude-opus-4.7-author
+drafted_at: 2026-04-16
+anchor_exemplar: D3.2-sandboxing

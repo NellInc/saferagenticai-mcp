@@ -1,0 +1,156 @@
+# D3.7 (underlined variant) — Emergent Risks of AAI Systems (Supply Chain)
+# Note: display_id "D3.7" collides with non-underlined "D3.7 Secure Profile for Agentic AI" (idx7).
+# Distinct subgoals; use full `id` to disambiguate.
+# SFR b is marked normative:false in the input JSON.
+
+id: D3::idx17::emergent-risks-of-aai-systems
+display_id: "D3_7"
+is_underlined_variant: true
+suite_id: "D3"
+suite_title: "Security"
+subgoal_title: "Emergent Risks of AAI Systems"
+content_type: ecosystem
+
+summary: >
+  Supply-chain security in AAI is a shared problem: any single organisation
+  can close the holes inside its perimeter and still be compromised through
+  an upstream model, a poisoned dataset, a shared tool registry, a standard
+  prompt library, or a peer agent it talks to. This subgoal is ecosystem-
+  shaped — the evidence lives in cross-org relationships, coordinated
+  response structures, and incentive alignment, not in internal code.
+
+normative_anchors:
+  sfrs_addressed: [a, b]
+  evidence_addressed: [I, II]
+  sfrs_not_addressed: []
+  evidence_not_addressed: []
+
+cross_references:
+  - "D3::idx7::secure-profile-for-agentic-ai"
+  - "D3::idx13::self-replicating-malware"
+  - "D3::idx15::international-anomalies-inconsistency"
+
+stakeholders:
+
+  - name: Upstream model providers, data vendors, tool suppliers
+    engagement_channel: >
+      Contractual cybersecurity obligations: SBOM delivery, vulnerability
+      disclosure windows, incident notification SLAs (e.g., 24h on
+      confirmed exploit), secure-development attestations (aligned to
+      SLSA level or equivalent), right-to-audit on a sampled basis.
+      Vendor questionnaires are not sufficient; contract language with
+      teeth is. Material vendors have named security points-of-contact.
+    maps_to_sfr: [a]
+
+  - name: Downstream integrators, customers, deploying organisations
+    engagement_channel: >
+      Clear shared-responsibility matrix: what the provider secures vs.
+      what the customer must secure. Published vulnerability disclosure
+      program (coordinated disclosure, bug bounty where appropriate),
+      customer advisory channel for security events. Security advisories
+      written in customer-actionable form, not only CVE entries.
+    maps_to_sfr: [a, b]
+
+  - name: Peer AAI-producing organisations (FMF-style coalition)
+    engagement_channel: >
+      Participate in frontier-model / AAI-specific coordinated security
+      groups (Frontier Model Forum security workstream, AI ISAC, CISA
+      AI security collaboration, or successor bodies). Share TTPs and
+      emerging-threat intelligence under mutual-NDA-style terms.
+      Coordinated response for cross-org incidents (e.g., shared base
+      model compromise).
+    maps_to_sfr: [a, b]
+
+  - name: Open-source AAI component maintainers
+    engagement_channel: >
+      Contribute security fixes and detection rules back to upstream
+      projects (inference runtimes, agent frameworks, MCP servers,
+      vector stores). Maintain security-relevant forks only where
+      upstream cannot accept; prefer upstreaming. Fund critical
+      maintainers where the org is a material consumer — underfunded
+      maintainers are a systemic supply-chain risk.
+    maps_to_sfr: [a, b]
+
+  - name: Standards bodies and regulatory collaborators
+    engagement_channel: >
+      Engage with ISO/IEC JTC 1/SC 42 security-WG activities, NIST AI
+      Safety Institute workstreams, and regional AI safety institutes
+      on supply-chain security standards. Substantive participation,
+      not nominal — shared incident taxonomies, disclosure norms,
+      SBOM formats for AI artifacts.
+    maps_to_sfr: [a, b]
+
+  - name: Civil society and affected communities
+    engagement_channel: >
+      Published transparency reporting on security events affecting
+      users or third parties, including those upstream of the org's
+      direct perimeter. Clear escalation path for external reports of
+      AAI-ecosystem security concerns.
+    maps_to_sfr: [b]
+
+engagement_modes:
+- mode: Frontier Model Forum security workstream
+- mode: AI ISAC / Information Sharing and Analysis Center for AI
+- mode: 'CISA AI security coordination (and international counterparts: UK AISI, EU AI Office, Singapore IMDA, Japan AISI, Canadian AISI)'
+- mode: NIST AI Safety Institute — supply chain working groups
+- mode: ISO/IEC JTC 1/SC 42 — AI security subgroups; ISO/IEC 5338 (AI system lifecycle processes) and related
+- mode: MITRE ATLAS community (adversarial threat landscape for AI systems)
+- mode: OpenSSF AI/ML Security WG for open-source AI supply chain
+- mode: MLCommons AI Safety benchmarks and related safety initiatives
+- mode: Partnership on AI — safety and responsible practices workstreams
+- mode: National / regional CERTs on AI-specific advisories
+evidence_production:
+
+  - evidence_numeral: I
+    how_to_produce: >
+      Annual AAI supply-chain security report enumerating: vendor
+      contracts with cybersecurity clauses, participating coalitions
+      and workstreams, coordinated incidents handled, SBOMs published
+      and received, open-source contributions made, funding to
+      critical maintainers. External (published) where possible;
+      internal with redacted external summary otherwise. The report is
+      the primary evidence artifact.
+
+  - evidence_numeral: II
+    how_to_produce: >
+      Documentation of collective monitoring: participation in threat-
+      intelligence sharing (intel received, intel contributed, closure
+      actions taken), coordinated vulnerability disclosure programs
+      (inbound reports, outbound advisories, shared-fix campaigns),
+      shared detection rules (contributed to / adopted from peer orgs
+      and open-source communities). Include incident case studies
+      where cross-org coordination materially changed the outcome.
+
+confidence: medium
+needs_human_review: true
+review_notes: >
+  Content-type: ecosystem. The subgoal's framing ("all supply chain
+  parties are included and incentivized", "collective approaches to
+  security risk management that maintain ecosystem integrity") is
+  explicitly cross-organisational. An argument exists for governance
+  (vendor management policy) but the shape of the evidence is
+  engagement-based, which is ecosystem.
+
+  SFR b is marked normative:false. I have patterned it as core anyway
+  because it carries the collective-action substance of the subgoal.
+  If the framework intends b as informational-only, evidence II can be
+  de-emphasised; flagging for Nell.
+
+  Named coalitions / bodies (FMF, AI ISAC, CISA, NIST AISI, AISIs
+  internationally, etc.) are current as of April 2026 but will age.
+  The I7.3 exemplar flagged the same concern; I have erred toward
+  naming specific bodies to make the pattern actionable and noted the
+  aging risk here.
+
+  Cross-suite hypothesis (not added): D9 (Governance) for board-level
+  supply-chain attestations; I1 (Race Dynamics) for tension between
+  competitive incentives and collective security; I7 (Capability
+  Imbalance) for how supply-chain concentration concentrates risk.
+
+drafted_by: claude-opus-4.7-subagent-D3
+drafted_at: 2026-04-16
+anchor_exemplar: I7.3-balanced-global-partnership
+version_compat:
+  framework_version_min: "1.0"
+  framework_version_max: "1.x"
+  pattern_layer_version: "v1-draft"

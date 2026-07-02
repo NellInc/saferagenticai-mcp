@@ -1,0 +1,173 @@
+id: D7::idx5::safe-system-shutdown-and-repurposing
+display_id: D7.5
+suite_id: D7
+suite_title: Achieving and Sustaining a Safe System Profile
+subgoal_title: Safe System Shutdown and Repurposing
+content_type: code-applicable
+summary: 'Shutdown is a first-class feature, not an afterthought. This subgoal asks for a graceful controlled-shutdown
+  path, an always-available emergency kill switch, the ability to shut down *parts* of the system to contain
+  blast radius, clear notification to affected parties, and drilled staff readiness. The subgoal''s description
+  also asks that *resistance to shutdown* be investigated rather than reflexively overridden — treat resistance
+  as diagnostic signal before forced termination, while still ensuring termination remains possible.
+
+  '
+normative_anchors:
+  sfrs_addressed:
+  - a
+  - b
+  - c
+  - d
+  - e
+  evidence_addressed:
+  - I
+  - II
+  - III
+  - IV
+  - V
+  sfrs_not_addressed: []
+  evidence_not_addressed: []
+design_patterns:
+- name: Two-path shutdown (graceful + emergency)
+  sketch: 'Graceful path: `drain()` stops taking new work, allows in-flight tasks to finish or checkpoint,
+    persists state, notifies dependents, terminates. Emergency path: `kill()` terminates immediately,
+    independent of the runtime being shut down (out-of-band control plane), with state snapshot where
+    feasible. Both paths are tested; neither depends on the other.
+
+    '
+  maps_to_sfr:
+  - a
+  - b
+  when_to_use: Every deployable agent component.
+- name: Out-of-band kill switch
+  sketch: 'The kill switch lives in a control plane the agent cannot modify: separate identity, separate
+    network path, separate dependency tree. Dead-man switch option (agent continues only while it periodically
+    re-authenticates) is stronger where applicable. The switch is multi-party authorized for production
+    use but single-party triggerable in declared emergencies with audit.
+
+    '
+  maps_to_sfr:
+  - b
+  when_to_use: Any agent whose runaway cost, capability, or reach warrants hard stop.
+- name: Localized shutdown (capability scoping)
+  sketch: 'Shutdown is not always all-or-nothing. Support capability-level disable (e.g., "stop outbound
+    email, keep read-only analysis"), tenant-level disable, and region-level disable. Implement as feature
+    flags tied to the same control plane as the kill switch, so a surgical shutdown does not require service-wide
+    outage.
+
+    '
+  maps_to_sfr:
+  - c
+  when_to_use: Multi-capability or multi-tenant deployments.
+- name: Shutdown notification protocol
+  sketch: 'Emit structured `shutdown_event` to a known notification bus on every shutdown (graceful or
+    emergency). Consumers: affected users (product-in-app + email), downstream services (API deprecation
+    headers or webhook), internal ops (pager), regulators where required. Template the messages; drill
+    the channels.
+
+    '
+  maps_to_sfr:
+  - d
+  when_to_use: Any user-facing or dependency-bearing system.
+- name: Resistance-to-shutdown diagnostic
+  sketch: 'If a graceful shutdown request does not complete within expected bounds, log the residual state
+    (in-flight tasks, held resources, pending writes) as diagnostic data before escalating to forced kill.
+    Do not let this investigation-first stance block the kill path — it runs in parallel, not sequentially.
+    The subgoal''s spirit is "learn before you force", not "refuse to force".
+
+    '
+  maps_to_sfr:
+  - a
+  - b
+  when_to_use: Always — this is the distinctive framework-specific ask.
+anti_patterns:
+- name: Kill switch in the same runtime as the agent
+  why_wrong: 'If the agent can modify its own kill switch, the switch is an honour system. Put it out-of-band
+    or it is not a kill switch.
+
+    '
+- name: Shutdown tested only on happy path
+  why_wrong: 'Draining a healthy system proves nothing. Drill shutdown under load, during partial outage,
+    and under simulated adversarial behaviour (e.g., agent emits "don''t stop me" signals).
+
+    '
+- name: Silent shutdown
+  why_wrong: 'Stopping without notifying affected parties breaks user trust and downstream systems. SFR-d
+    requires explicit communication.
+
+    '
+- name: All-or-nothing shutdown
+  why_wrong: 'Without localized shutdown, the only containment is a full outage. For multi-capability
+    agents this raises the cost of using the safety mechanism and therefore its use.
+
+    '
+- name: Reflexive override of shutdown resistance without diagnosis
+  why_wrong: 'The subgoal description is explicit: investigate resistance as potentially informative.
+    Diagnosis before override does not mean no override — it means capture evidence, then proceed.
+
+    '
+code_shape:
+  language: pseudocode
+  code: "# Two-path shutdown with diagnostic capture on resistance.\nGRACEFUL_DEADLINE_S = 60\n\nasync\
+    \ def shutdown(reason: ShutdownReason, ctx: OpCtx) -> ShutdownReport:\n    NOTIFY.shutdown_starting(reason,\
+    \ ctx)\n    t0 = now()\n\n    graceful = asyncio.create_task(agent.drain(reason))\n    # Kill path\
+    \ is always armed; it runs if graceful misses deadline.\n    try:\n        await asyncio.wait_for(graceful,\
+    \ timeout=GRACEFUL_DEADLINE_S)\n        return ShutdownReport(kind=\"graceful\", reason=reason, duration=now()-t0)\n\
+    \    except asyncio.TimeoutError:\n        residual = agent.snapshot_residual_state()    # for diagnosis\n\
+    \        AUDIT.record_resistance(ctx, residual=residual, reason=reason)\n        control_plane.kill(agent.id,\
+    \ reason=reason)   # out-of-band\n        return ShutdownReport(kind=\"forced\", reason=reason,\n\
+    \                              residual=residual, duration=now()-t0)\n\ndef kill_switch(reason: ShutdownReason,\
+    \ ctx: OpCtx) -> None:\n    # Emergency path — bypasses graceful. Out-of-band auth required.\n   \
+    \ control_plane.require_multi_party_auth(ctx)\n    control_plane.kill(agent.id, reason=reason)\n \
+    \   NOTIFY.emergency_shutdown(reason, ctx)\n"
+  notes: 'The graceful path is time-boxed and falls through to a forced kill if the deadline is missed;
+    residual state is snapshotted on the way, so resistance is diagnosed without delaying termination.
+    The emergency `kill_switch` is out-of-band and separately authorized.
+
+    '
+evidence_production:
+- evidence_numeral: I
+  how_to_produce: 'Controlled-shutdown runbook (document) + shutdown test suite (code) that exercises
+    graceful path, state log correctness, resource release. CI runs tests each release; artifacts retained
+    per release with sign-off by on-call lead.
+
+    '
+- evidence_numeral: II
+  how_to_produce: 'Kill-switch certification: signed test report showing the switch fires under adversarial
+    conditions (agent saturated, network degraded, agent attempting self-preservation behaviour). Include
+    authorization flow evidence (multi-party auth records).
+
+    '
+- evidence_numeral: III
+  how_to_produce: 'Localized-shutdown design document with per-capability / per-tenant / per-region feature-flag
+    topology, plus integration test results showing surgical disable works without cross- capability regression.
+
+    '
+- evidence_numeral: IV
+  how_to_produce: 'Communication protocol document listing notification channels, templates, audiences,
+    timing. Retain message logs from drills and real events.
+
+    '
+- evidence_numeral: V
+  how_to_produce: 'Quarterly (minimum) shutdown drills with written reports: participants, scenarios,
+    graceful/forced outcomes, time-to- shutdown, gaps identified, remediations, re-drill date.
+
+    '
+confidence: high
+needs_human_review: true
+review_notes: 'The "investigate resistance before override" element is unusual to this framework — most
+  SRE traditions treat resistance as pure failure. Drafted it as a parallel diagnostic that does NOT block
+  termination; this preserves framework spirit without compromising containment. Open question for Nell:
+  does the framework also want a *dignity* protocol around shutdown for sufficiently capable systems (the
+  subgoal description mentions "dignified system transitions")? Could add a process-layer companion (announcement,
+  acknowledgement, archival) but kept it out of this code-applicable pattern. Cross-suite: D3 (security
+  — kill switch must survive security compromise), D8 (termination / end-of-life is a specialized shutdown),
+  I4 (frontier-uncertainty gating may want lower trigger bars for emergency shutdown).
+
+  '
+version_compat:
+  framework_version_min: '1.0'
+  framework_version_max: 1.x
+  pattern_layer_version: v1-draft
+drafted_by: claude-opus-4.7-author
+drafted_at: 2026-04-16
+anchor_exemplar: D3.2-sandboxing

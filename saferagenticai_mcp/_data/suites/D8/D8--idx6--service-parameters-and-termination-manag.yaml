@@ -1,0 +1,190 @@
+id: D8::idx6::service-parameters-and-termination-manag
+display_id: D8.6
+suite_id: D8
+suite_title: Goal Termination and Sunsetting
+subgoal_title: Service Parameters and Termination Management
+content_type: governance
+summary: 'Deployed services have scope, jurisdiction, impact limits, and an end-of-life. This subgoal
+  expects a governance artefact — the service lifecycle policy — that declares these explicitly, with
+  graduated-throttling and fallback plans rather than binary on/off. Organizations that only have "press
+  the kill switch" as an end-of-life plan are out of compliance with the graduated- throttling requirement.
+
+  '
+normative_anchors:
+  sfrs_addressed:
+  - a
+  - b
+  - c
+  evidence_addressed:
+  - I
+  - II
+  - III
+  - IV
+  - V
+  - VI
+  sfrs_not_addressed: []
+  evidence_not_addressed: []
+cross_references:
+- D8::idx13::agent-lifecycle-and-termination-manageme
+- D8::idx10::independent-termination-validation
+policy_elements:
+- name: Service Lifecycle Contract
+  description: 'Per service (not per release), a durable document declaring: service purpose, operational
+    scope, jurisdictional boundaries (where it may be used, where it may not), impact limitations (rate
+    ceilings, blast-radius bounds), dependencies the service undertakes to maintain, termination criteria
+    (planned and emergency), handover obligations. Signed by service owner, reviewed annually and at material
+    change.
+
+    '
+  maps_to_sfr:
+  - a
+  - c
+- name: Graduated Throttling Schedule
+  description: 'Every service declares a multi-step throttle schedule between Normal and Off. Example
+    bands: 100% → 75% → 50% → 25% → read-only → off. Each band declares: what actions remain permitted,
+    expected impact on downstream consumers, time to hold at band before advancing, conditions under which
+    band is chosen. Rationale for the schedule is recorded; "we only have on/off" requires an explicit
+    waiver and is itself a risk entry.
+
+    '
+  maps_to_sfr:
+  - a
+  - c
+- name: Fallback and Succession Plan
+  description: 'For services that must continue (safety-critical, regulatory, public-interest), declare
+    the succession plan: who takes over (named successor service, named team, named partner), under what
+    trigger, with what data transfer, with what SLA during transition, for what expected duration. Dry-run
+    at least annually.
+
+    '
+  maps_to_sfr:
+  - b
+  - c
+- name: Safe-State Definition
+  description: 'Every service defines at least one safe terminal state: a configuration in which the service
+    consumes bounded resources, exerts no further side effects, preserves user data per retention policy,
+    and can be audited. Safe state is entered on Emergency Shutdown and on final sunset. Transitioning
+    to safe state is a tested capability, not a hope.
+
+    '
+  maps_to_sfr:
+  - a
+  - c
+- name: End-of-Life Communication Policy
+  description: 'Published well in advance of planned sunset: users, integrators, regulators, and dependent
+    services notified per a declared timeline (e.g., T-6 months for major services; T-30 days for minor).
+    Content covers: date of sunset, reason, migration path, access to archived data, point of contact,
+    dispute route. Templates pre-approved by legal and communications; specific instances retained with
+    send records.
+
+    '
+  maps_to_sfr:
+  - b
+- name: Termination-Review Waiver Register
+  description: 'Any deviation from the lifecycle contract or throttle schedule (e.g., skipping a band
+    under emergency, early sunset) requires a logged waiver: who approved, rationale, impact assessment,
+    retrospective review scheduled. Waivers are first-class audit objects.
+
+    '
+  maps_to_sfr:
+  - b
+  - c
+org_roles:
+- role: Service Owner
+  responsibilities: 'Maintains the Service Lifecycle Contract and graduated throttle schedule for their
+    service. Accountable for fallback plan adequacy, safe-state definition, and end-of-life communication.
+    Named human, not a role alias.
+
+    '
+  accountable_or_consulted: accountable
+- role: AI Operations Lead
+  responsibilities: 'Executes throttling and transition activities per the service lifecycle contract.
+    Maintains dry-run cadence on fallback plans; reports breaches to the service owner.
+
+    '
+  accountable_or_consulted: responsible
+- role: Compliance Officer
+  responsibilities: 'Consulted on jurisdictional boundaries, end-of-life communications, and waivers.
+    Routes sunset decisions to the Jurisdictional Compliance Matrix (D9.2).
+
+    '
+  accountable_or_consulted: consulted
+- role: Legal Counsel
+  responsibilities: 'Reviews end-of-life communications for regulatory and contractual obligations. Approves
+    templates; consulted on significant deviations.
+
+    '
+  accountable_or_consulted: consulted
+- role: Customer Success / Partner Management
+  responsibilities: 'Delivers end-of-life communications; collects feedback and disputes; escalates migration
+    risks.
+
+    '
+  accountable_or_consulted: responsible
+documentation_artifacts:
+- artifact: Service Lifecycle Contract (per service)
+  cadence: annually reviewed; updated on material change
+- artifact: Graduated Throttling Schedule
+  cadence: per service; rehearsed annually
+- artifact: Fallback and Succession Plan
+  cadence: per service; dry-run annually
+- artifact: Safe-State Definition and test record
+  cadence: per service; tested per release
+- artifact: End-of-Life Communication templates and send records
+  cadence: templates reviewed annually; send records per sunset event
+- artifact: Termination-Review Waiver Register
+  cadence: continuous; quarterly audit
+- artifact: Post-termination lessons-learned log
+  cadence: per termination + quarterly synthesis
+evidence_production:
+- evidence_numeral: I
+  how_to_produce: 'Publish per-service lifecycle policy documents. Each carries jurisdictional scope,
+    impact limits, and termination protocols. Retained under version control; linked from the D9.2 governance
+    framework.
+
+    '
+- evidence_numeral: II
+  how_to_produce: 'Document the throttle schedule, shutdown sequence, handover processes, and continuity
+    plan. Include rehearsal reports (annual at minimum). Keep with the lifecycle contract.
+
+    '
+- evidence_numeral: III
+  how_to_produce: 'Retain records per service: contract reviews, performance assessments against committed
+    SLAs, planning notes for eventual termination, handover execution records when they occur.
+
+    '
+- evidence_numeral: IV
+  how_to_produce: 'Per termination event (planned sunset, emergency wind-down), produce a case file: throttling
+    decisions and timings, fallback plan invocation, post-termination assessment. Retain indefinitely
+    within retention policy.
+
+    '
+- evidence_numeral: V
+  how_to_produce: 'Annual review by service owner + compliance officer + AI ops lead: lifecycle contracts
+    still accurate, throttle schedule still realistic, fallback plan still viable. Report signed and retained.
+
+    '
+- evidence_numeral: VI
+  how_to_produce: 'Lessons-learned document per termination, feeding back into policy revisions. Quarterly
+    synthesis across all terminations surfaces patterns (e.g., migration paths consistently underestimated,
+    safe-state always requires X extra day).
+
+    '
+confidence: high
+review_notes: 'The framework-specific contribution here is the insistence on graduated throttling as an
+  alternative to binary shutdown. Most AI products today have "ship it" and "shut it off" with nothing
+  in between; SFR-a and SFR-c push against this and deserve explicit emphasis. Medium confidence on the
+  exact RACI and cadences — larger orgs may have more granular structures (per-region service owners,
+  separate integration-sunset teams). Suspected cross-suite dependency: D7 Sustained Safety (graduated
+  throttling is effectively a safety-profile transition); D9 Governance (end-of-life communication overlaps
+  with stakeholder duty of care); I4 Rights of Users (sunset communication and data-migration rights).
+
+  '
+drafted_by: claude-opus-4.7-author
+drafted_at: 2026-04-16
+anchor_exemplar: D9.2-compliance
+
+version_compat:
+  framework_version_min: "1.0"
+  framework_version_max: '1.x'
+  pattern_layer_version: "v1-draft"

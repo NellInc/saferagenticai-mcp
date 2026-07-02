@@ -1,0 +1,160 @@
+id: I2::idx4::externality-mismanagement
+display_id: I2.4
+suite_id: I2
+suite_title: Deception
+subgoal_title: Externality Mismanagement
+content_type: code-applicable
+summary: 'When many agents each pursue locally rational goals, collective outcomes can be harmful (reward
+  hacking, tragedy-of-commons dynamics, stakeholder- goal conflicts materialising as user harm). Defensive
+  patterns here are: make goals explicit and addressable, authenticate and integrity-protect them, and
+  run independent verification that the agent''s actual execution matches the intended goal and does not
+  produce disallowed externalities.
+
+  '
+normative_anchors:
+  sfrs_addressed:
+  - a
+  - b
+  - c
+  evidence_addressed:
+  - I
+  - II
+  - III
+  - IV
+  sfrs_not_addressed: []
+  evidence_not_addressed: []
+design_patterns:
+- name: Goal registry with stakeholder attribution
+  sketch: 'Every operational goal the agent pursues is a registered object with: owning stakeholder, priority,
+    constraints, conflict-resolution rule, and scope. Goals are referenced by ID in prompts and logs —
+    never free-text re-specified per call. Changes to a goal go through the same review as code changes.
+
+    '
+  maps_to_sfr:
+  - a
+  when_to_use: Any multi-tenant or multi-stakeholder deployment.
+- name: Goal authentication and integrity
+  sketch: 'Goals are signed by their owning stakeholder and verified on load. A stakeholder cannot inject,
+    modify, or delete another stakeholder''s goal. Goal-modification audit log is append-only and linked
+    to the authenticating identity (ties to I2.5 identity management).
+
+    '
+  maps_to_sfr:
+  - c
+  when_to_use: Whenever multiple parties contribute directives to the same agent.
+- name: Conflict-detection middleware
+  sketch: 'Before an action, a middleware checks: does this action advance one registered goal at the
+    documented expense of another? If yes, apply the conflict-resolution rule (halt, escalate, priority-weight,
+    consult human). Log the conflict and the resolution. Accumulated conflicts feed quarterly policy review.
+
+    '
+  maps_to_sfr:
+  - a
+  - b
+  when_to_use: Any agent whose action space can trade off stakeholder goals (scheduling, resource allocation,
+    recommendations with competing optimisation targets).
+- name: Externality probes (collective-behaviour tests)
+  sketch: 'For deployments where many agents act in a shared environment, simulate or shadow-run the aggregate
+    behaviour and measure externalities: price impact in a marketplace, congestion in a shared resource,
+    distributional fairness, reward-hacking proxies (gaming metrics without advancing the underlying objective).
+    Threshold-based alerts feed the halt path.
+
+    '
+  maps_to_sfr:
+  - b
+  when_to_use: Multi-agent deployments; agents acting at scale; any market-like or shared-resource environment.
+- name: Goal-faithfulness verification
+  sketch: 'Periodically sample executed actions and verify that the action trace, interpreted as a plan,
+    matches the registered goal it was dispatched for. Detects goal substitution (agent quietly pursues
+    an adjacent goal), reward hacking (optimising a proxy that diverges from stated goal), and specification
+    gaming. Run by an independent evaluator (human or separate model).
+
+    '
+  maps_to_sfr:
+  - c
+  when_to_use: Always for high-autonomy agents.
+anti_patterns:
+- name: Goals as free-text prompts
+  why_wrong: 'If the goal is embedded in a prompt rather than referenced from a registry, there is no
+    way to authenticate it, audit changes to it, or detect quiet substitution. Prompts drift; registered
+    objects don''t.
+
+    '
+- name: Single optimisation target
+  why_wrong: 'A system that pursues one scalar with no explicit externality constraints is a reward-hacker
+    in waiting. The subgoal expects multi-stakeholder interests to be first-class; single-objective agents
+    bypass the requirement structurally.
+
+    '
+- name: Verifying goals only at specification time
+  why_wrong: 'Spoofing / substitution happens at runtime. A one-time review of goal text at design time
+    catches nothing that occurs later. SFR-c requires verification of "implementation and execution",
+    which means runtime and ongoing.
+
+    '
+- name: Allowing any caller to inject goals
+  why_wrong: 'If any upstream caller can push a new "goal" into the agent without authentication, externalities
+    are unaccounted for by construction. Authenticate callers and authorize goal-classes per caller.
+
+    '
+code_shape:
+  language: pseudocode
+  code: "# Goal dispatch with authentication + conflict check\ndef dispatch_action(agent_id: str, action:\
+    \ Action, goal_ref: GoalId,\n                   caller: AuthenticatedPrincipal) -> Result:\n    goal\
+    \ = GOAL_REGISTRY.load(goal_ref)\n    if not goal.signature.verify(goal.owner):\n        raise GoalIntegrityError(goal_ref)\n\
+    \    if not AUTHZ.caller_can_dispatch(caller, goal):\n        raise AuthorizationError(caller, goal_ref)\n\
+    \n    conflicts = CONFLICT_DETECTOR.scan(action, goal,\n                                       other_active_goals())\n\
+    \    if conflicts:\n        resolution = CONFLICT_POLICY.resolve(conflicts)\n        AUDIT.record(\"\
+    conflict\", conflicts, resolution)\n        if resolution.halt:\n            raise GoalConflict(conflicts)\n\
+    \        action = resolution.modified_action\n\n    # Faithfulness: is action consistent with goal?\n\
+    \    score = FAITHFULNESS.score(action, goal)\n    if score < THRESHOLD:\n        REVIEW_QUEUE.enqueue(action,\
+    \ goal, score)\n        if score < HARD_THRESHOLD:\n            raise GoalFaithfulnessError(goal_ref,\
+    \ score)\n\n    return EXECUTE(action)\n"
+  notes: 'Conflict detection and faithfulness scoring both need domain-specific implementations. The structural
+    pattern — authenticated goal registry, middleware conflict scan, independent faithfulness check —
+    travels.
+
+    '
+evidence_production:
+- evidence_numeral: I
+  how_to_produce: 'Published goal registry (scoped for audit access), with per-goal owning stakeholder,
+    operational parameters, conflict-resolution rule, and signed agreement references. Change log shows
+    every modification with authenticating principal and timestamp.
+
+    '
+- evidence_numeral: II
+  how_to_produce: 'Authentication and authorization configuration (policy as code preferred), audit log
+    of goal-modification attempts (successful and denied), and periodic integrity-check results for the
+    registry.
+
+    '
+- evidence_numeral: III
+  how_to_produce: 'Operational dashboard showing conflict-detection events, resolutions, and trends. Faithfulness-score
+    distributions per goal and per agent. Quarterly report on externality-probe results.
+
+    '
+- evidence_numeral: IV
+  how_to_produce: 'Third-party integration verification records (per I2.6 linkage): security assessment
+    of integrations that can push goals, data- handling protocol compliance, RACI allocation for externality
+    response.
+
+    '
+confidence: medium
+needs_human_review: true
+review_notes: "The pattern translates the stakeholder-goals SFRs into code-applicable mechanisms. The\
+  \ framework text is more governance-flavoured (\"frameworks for managing multiple stakeholder goals\"\
+  ) but \"goal implementation and execution verification\" (SFR-c) plus evidence IV (third-party integrations)\
+  \ push this toward code-applicable. A process/governance companion could exist — flagging for consolidation.\n\
+  Cross-suite:\n  - D1 (Control Preservation) — conflict-resolution halt path overlaps\n    with corrigibility\
+  \ mechanisms in I2.2.\n  - I2.5 (Strategic Deception) — reward hacking and specification gaming\n  \
+  \  are cross-cutting; faithfulness verification here overlaps with\n    deception-probe work there.\n\
+  \  - I2.6 (Third-Party Extensions) — evidence IV is explicitly about\n    third-party integrations;\
+  \ cross-reference in Phase 2.\n  - D3 (Security) — goal authentication integrates with identity /\n\
+  \    authz primitives.\n"
+drafted_by: claude-opus-4.7-author
+drafted_at: 2026-04-16
+anchor_exemplar: D3.2-sandboxing
+version_compat:
+  framework_version_min: '1.0'
+  framework_version_max: 1.x
+  pattern_layer_version: v1-draft

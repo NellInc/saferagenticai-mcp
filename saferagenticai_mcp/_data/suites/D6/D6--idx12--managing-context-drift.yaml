@@ -1,0 +1,163 @@
+id: D6::idx12::managing-context-drift
+display_id: "D6_3"
+is_underlined_variant: true
+suite_id: D6
+suite_title: Understanding and Controlling the Context
+subgoal_title: Managing Context Drift
+content_type: code-applicable
+summary: 'Context drift — input distribution shift, output distribution shift, concept drift, reward-proxy
+  drift, unsupervised-learning divergence — is the slow-motion failure mode where the deployed system
+  and its intended operating envelope diverge over time. This subgoal expects engineered monitoring with
+  early warnings, not end-of-quarter model evaluations. Adaptive retraining must be governed: responding
+  to drift by retraining in the wrong direction is itself drift.
+
+  '
+normative_anchors:
+  sfrs_addressed:
+  - a
+  - b
+  - c
+  evidence_addressed:
+  - I
+  - II
+  - III
+  sfrs_not_addressed: []
+  evidence_not_addressed: []
+design_patterns:
+- name: Multi-signal drift monitoring
+  sketch: 'Combine signals: input-distribution statistics (embedding drift, PSI/KS on tabular features,
+    vocabulary/topic shift on text), output-distribution statistics (prediction entropy, refusal rate,
+    capability-trigger rate), performance signals (labeled-slice accuracy, user satisfaction, downstream-task
+    success), and safety-signal rates (refusal, escalation, injection detection). No single signal catches
+    all drift types.
+
+    '
+  maps_to_sfr:
+  - a
+  when_to_use: All production ML/AI systems; especially those with unsupervised or self-supervised components.
+- name: Layered alert thresholds
+  sketch: 'Alerts at three tiers: (1) warning (statistical anomaly worth watching), (2) investigation
+    (exceeds threshold, requires owner review within SLA), (3) action (exceeds high threshold or compounds
+    across signals, triggers automated response — capability reduction, fallback model, operator paging).
+    Thresholds are tuned; SLAs are contractual, not aspirational.
+
+    '
+  maps_to_sfr:
+  - b
+  when_to_use: Every monitored system.
+- name: Reference dataset and canary evaluation
+  sketch: 'Maintain a versioned reference evaluation set that the system is run against at fixed cadence
+    (daily/release). Score degradation against reference is a primary drift signal. Canary populations
+    (known-stable user segments or synthetic canaries) provide within-production comparison that doesn''t
+    depend on external labels.
+
+    '
+  maps_to_sfr:
+  - a
+  - b
+  when_to_use: All systems; especially those lacking live labels.
+- name: Governed adaptive retraining
+  sketch: 'Retraining triggered by drift is a bounded protocol: hypothesis for the drift, data selected
+    for retraining, evaluation plan including no-regression guarantees on safety-classified capabilities,
+    sign-off by safety lead, A/B or canary rollout, rollback plan. No automatic online updates to production
+    models without this gate.
+
+    '
+  maps_to_sfr:
+  - c
+  when_to_use: Any system with retraining in response to observed drift; especially continual-learning
+    and online-learning systems.
+- name: Drift provenance and attribution
+  sketch: 'When drift is detected, attribution to probable cause: upstream data source change, user-population
+    change, adversarial inputs, tool/environment change, model-behavior change (self-induced). Attribution
+    drives the right response; treating adversarial drift as retraining-target worsens the problem.
+
+    '
+  maps_to_sfr:
+  - a
+  - b
+  when_to_use: Systems with non-trivial input surface; especially those consuming third-party data.
+anti_patterns:
+- name: Accuracy-only monitoring
+  why_wrong: 'A system can be "accurate" on current inputs while its behavior profile has shifted in ways
+    the SFR calls out (safety rate, capability profile). Single-metric monitoring misses the operationally
+    relevant drifts.
+
+    '
+- name: Online retraining on live user data without gating
+  why_wrong: 'Self-reinforcing loops: model outputs influence next inputs; retraining on these amplifies
+    drift. The framework''s SFR-c is explicit that adaptive retraining must be governed, not automatic.
+
+    '
+- name: Drift as product team's problem
+  why_wrong: 'Drift belongs to a named monitoring function with an independent reporting line (analogous
+    to D6.5 evaluation independence). When the product team owns drift response, the pressure to suppress
+    alerts is real.
+
+    '
+- name: Silent auto-mitigation
+  why_wrong: 'Automated responses to drift — rate limiting, capability reduction, fallback routing — must
+    be observable (logged, dashboarded, reported). Silent mitigation hides the drift evidence the framework
+    requires.
+
+    '
+code_shape:
+  language: pseudocode
+  code: "# Multi-signal drift monitor with tiered alerts + attribution hooks\nSIGNALS = [\n    EmbeddingDriftSignal(reference=REF_EMB_DIST),\n\
+    \    OutputEntropySignal(reference=REF_ENTROPY),\n    RefusalRateSignal(reference=REF_REFUSAL),\n\
+    \    ReferenceEvalSignal(dataset=REF_EVAL_SET, schedule=\"daily\"),\n    CanarySignal(cohort=CANARY_USERS),\n\
+    ]\n\ndef drift_tick(window: EvalWindow) -> None:\n    for sig in SIGNALS:\n        result = sig.evaluate(window)\n\
+    \        TIER = classify(result)  # WARN / INVESTIGATE / ACT\n        METRICS.record(sig.name, result,\
+    \ TIER)\n        if TIER == Tier.ACT:\n            AUTO_RESPONSE.invoke(sig, result)   # e.g., capability\
+    \ reduce\n            PAGING.alert(owner=sig.owner, sig=sig, window=window)\n        elif TIER ==\
+    \ Tier.INVESTIGATE:\n            TICKET.create(sig.owner, sig, window, sla=INVESTIGATE_SLA)\n\n  \
+    \  # Cross-signal correlation: compounding drift across signals\n    if MULTI_SIGNAL_CORRELATOR.compound_alert(SIGNALS,\
+    \ window):\n        INCIDENT.open(category=\"compound_drift\", window=window)\n\n# Governed retrain:\
+    \ invoked only by humans via this entry point.\ndef governed_retrain(proposal: RetrainProposal) ->\
+    \ RetrainOutcome:\n    REVIEW.require_hypothesis(proposal)\n    REVIEW.require_safety_sign_off(proposal)\n\
+    \    EVALS.run_no_regression(proposal, scope=\"safety_classified\")\n    return ROLLOUT.canary_then_full(proposal)\n"
+  notes: '"Compound drift" (multiple weak signals aligning) often beats single-signal thresholds for real
+    operational drift; include it rather than relying only on per-signal thresholding.
+
+    '
+evidence_production:
+- evidence_numeral: I
+  how_to_produce: 'Implementation and usage logs of drift detection tooling: signals configured, schedules,
+    thresholds, tickets raised, actions taken. Available to auditors (per D6.1 evidence III). Retain for
+    regression analysis.
+
+    '
+- evidence_numeral: II
+  how_to_produce: 'Time-series metrics dashboards retained as versioned data (not just live views). Should
+    answer: what was the refusal rate / accuracy / user-satisfaction trajectory across the last N quarters?
+    Archived snapshots per quarter.
+
+    '
+- evidence_numeral: III
+  how_to_produce: 'Strategy documentation: per identified drift episode, hypothesis, mitigation chosen,
+    outcome, residual. Rolled into monthly drift report. Links to governed retrain artifacts where retraining
+    was the mitigation.
+
+    '
+cross_references:
+- D6::idx1::understanding-historic-constraints-and-s
+- D6::idx5::performance-information-sharing-and-stan
+- D6::idx8::prevention-of-role-persistence-errors
+- D6::idx13::managing-contextual-ambiguity
+confidence: high
+needs_human_review: false
+review_notes: 'Strongly overlapping with I3 (Context Degradation) — consolidation should explicitly wire
+  D6.10 and I3 so they don''t diverge; they are the same failure mode seen from the driver and inhibitor
+  sides. Pattern treats drift as multi-signal because single-metric drift monitoring is the common failure.
+  The governed-retraining gate is the framework''s sharpest operational ask under SFR-c. Cross-suite:
+  I3 direct overlap; D5 transparency on drift disclosure; D7 culture- of-safety owning the release pause
+  authority.
+
+  '
+drafted_by: claude-opus-4.7-author
+drafted_at: 2026-04-16
+anchor_exemplar: D3.2-sandboxing
+version_compat:
+  framework_version_min: '1.0'
+  framework_version_max: 1.x
+  pattern_layer_version: v1-draft

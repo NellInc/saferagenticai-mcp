@@ -1,0 +1,158 @@
+id: D7::idx1::oversight-and-awareness-of-safe-system-p
+display_id: D7.1
+suite_id: D7
+suite_title: Achieving and Sustaining a Safe System Profile
+subgoal_title: Oversight and Awareness of Safe System Profile
+content_type: code-applicable
+summary: 'Continuous-monitoring code that watches operating parameters against documented safe boundaries
+  and escalates on drift. The framework is prescriptive here: >2 σ deviation triggers automated alerts,
+  >5 % performance degradation forces investigation, >10 % cumulative drift requires mandatory system
+  review. Implementation is a streaming telemetry pipeline with baseline-aware thresholds, not a static
+  Nagios check.
+
+  '
+normative_anchors:
+  sfrs_addressed:
+  - a
+  - b
+  - c
+  - d
+  - e
+  evidence_addressed:
+  - I
+  - II
+  - III
+  - IV
+  sfrs_not_addressed: []
+  evidence_not_addressed: []
+design_patterns:
+- name: Documented safety envelope
+  sketch: 'Every production deployment ships with a machine-readable `safety_envelope.yaml` enumerating:
+    monitored signal name, unit, baseline (mean + variance), σ-alert threshold, degradation-% threshold,
+    cumulative-drift-% threshold, review cadence, responsible role. The envelope is the single source
+    of truth for both runtime alerts and audits. Envelope changes are PR-reviewed.
+
+    '
+  maps_to_sfr:
+  - a
+  - c
+  when_to_use: Always. Without a written envelope, "drift" is argued per incident.
+- name: Rolling-window baseline with decay
+  sketch: 'Maintain per-signal rolling baselines (e.g., 30-day windowed mean and variance) alongside the
+    frozen launch baseline. Alert on deviation from the frozen baseline (catches drift) and from the rolling
+    baseline (catches acute anomalies). Cumulative drift = distance between rolling and frozen; when it
+    exceeds 10 %, force a review and a decision to either remediate or formally rebaseline.
+
+    '
+  maps_to_sfr:
+  - a
+  - d
+  when_to_use: Any continuously-operating system whose inputs drift.
+- name: Tiered alert ladder
+  sketch: 'Three alert tiers matching the SFR: (1) 2σ automated alert to on-call; (2) >5 % degradation
+    triggers investigation ticket with SLA; (3) >10 % cumulative drift forces mandatory review board before
+    deployment continuation. Tier escalation is enforced in code, not by human judgment alone.
+
+    '
+  maps_to_sfr:
+  - a
+  - b
+  - d
+  when_to_use: For every safety-relevant signal.
+- name: Human-in-the-loop fallback path
+  sketch: 'The monitoring system can *recommend* automated parameter adjustment but the SFR-e requirement
+    for integrated oversight means a qualified human must be in the loop for anything beyond pre-authorized
+    minor adjustments. Implement a role-based approval queue; log each decision with justification.
+
+    '
+  maps_to_sfr:
+  - d
+  - e
+  when_to_use: Before any automated safety-parameter adjustment lands in production.
+- name: Monitoring self-test
+  sketch: 'The monitors themselves drift (stale feature extractors, dead integrations, silent log pipeline
+    failures). Emit a synthetic "canary" event at known intervals; alert if it fails to round-trip through
+    the alerting pipeline. Otherwise a silent monitor is indistinguishable from a healthy system.
+
+    '
+  maps_to_sfr:
+  - b
+  when_to_use: Always.
+anti_patterns:
+- name: Fixed thresholds on drifting signals
+  why_wrong: 'Thresholds set at launch that do not track baseline evolution will either false-alarm (if
+    the system quiets) or miss drift (if the system shifts gradually). The rolling baseline is non-optional.
+
+    '
+- name: Rebaselining without review
+  why_wrong: 'Quietly "updating the baseline" after drift exceeds 10 % is how long-running systems silently
+    leave their safety envelope. The SFR mandates review; rebaselining is an output of review, not a workaround.
+
+    '
+- name: Alert routing without SLA
+  why_wrong: '"Alerts go to #safety-ops" is not enough. Each tier needs a named owner, an acknowledgment
+    SLA, and an escalation path; otherwise alerts accumulate unattended.
+
+    '
+- name: Monitors behind the same failure domain as the system
+  why_wrong: 'If the monitor shares the inference service, data store, or network that it monitors, a
+    correlated failure blinds the monitor. Keep monitoring infra at least one failure-domain away.
+
+    '
+code_shape:
+  language: pseudocode
+  code: "# Streaming drift monitor with tiered alerts\nSIGMA_ALERT = 2.0\nDEGRADATION_PCT = 5.0\nCUM_DRIFT_PCT\
+    \ = 10.0\n\ndef on_metric(signal: str, value: float, ctx: EnvCtx) -> None:\n    env = SAFETY_ENVELOPE[signal]\n\
+    \    frozen, rolling = BASELINES[signal].frozen, BASELINES[signal].rolling\n    BASELINES[signal].observe(value)\n\
+    \n    z = (value - rolling.mean) / rolling.stddev if rolling.stddev else 0\n    perf_delta = pct_change(value,\
+    \ frozen.mean)\n    cum_drift = pct_change(rolling.mean, frozen.mean)\n\n    if abs(z) >= SIGMA_ALERT:\n\
+    \        ALERT.tier1(signal, z=z, ctx=ctx)\n\n    if abs(perf_delta) >= DEGRADATION_PCT:\n       \
+    \ ALERT.tier2_investigation(signal, delta=perf_delta, ctx=ctx,\n                                 \
+    \ sla=env.investigation_sla)\n\n    if abs(cum_drift) >= CUM_DRIFT_PCT:\n        # Mandatory review:\
+    \ block parameter-auto-adjust until reviewed\n        REVIEW_BOARD.open(signal, drift=cum_drift, ctx=ctx)\n\
+    \        PARAM_AUTOADJUST.freeze(signal)\n"
+  notes: 'Illustrates the three-tier ladder and the hard gate on >10 % drift. Real systems will do this
+    with a streaming framework (Flink, Materialize, Prom/Alertmanager with recording rules) rather than
+    per-event Python; the logic shape is what matters.
+
+    '
+evidence_production:
+- evidence_numeral: I
+  how_to_produce: 'Publish `safety_envelope.yaml` (or equivalent) as a version-controlled artifact. On
+    each release, attach the envelope diff to release notes. Envelope changes require sign-off by safety
+    lead.
+
+    '
+- evidence_numeral: II
+  how_to_produce: 'CI runs synthetic-signal tests that inject 2σ, 5 %, and 10 % conditions and verify
+    each alert tier fires correctly with the right routing. Export test results per release as signed
+    artifacts.
+
+    '
+- evidence_numeral: III
+  how_to_produce: 'Training records for on-call and maintenance staff on the alert runbook (tier → action
+    → escalation). Incident log cross-references each alert to the response taken.
+
+    '
+- evidence_numeral: IV
+  how_to_produce: 'Maintenance log showing: monitor calibration events, canary-probe health, baseline-update
+    events (with review IDs), sensor replacements. Retain per records policy.
+
+    '
+confidence: high
+needs_human_review: false
+review_notes: 'The numeric thresholds in SFR-a (2σ / 5 % / 10 %) are unusually specific for this framework.
+  Treated them as normative defaults; mature orgs may tune per signal with documented justification. The
+  monitoring-self-test pattern isn''t in the SFR text but is a load-bearing failure mode (silent-monitor
+  blindness) worth asserting. Cross-suite dependencies: D3 (security monitoring overlap — the same pipeline
+  should carry security telemetry with distinct escalation), I4 (novel-capability gating that feeds its
+  own drift signals).
+
+  '
+version_compat:
+  framework_version_min: '1.0'
+  framework_version_max: 1.x
+  pattern_layer_version: v1-draft
+drafted_by: claude-opus-4.7-author
+drafted_at: 2026-04-16
+anchor_exemplar: D3.2-sandboxing

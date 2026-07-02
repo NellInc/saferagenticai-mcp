@@ -1,0 +1,130 @@
+id: I4::idx5::ai-agency-attribution-challenges
+display_id: I4.5
+suite_id: I4
+suite_title: Frontier Uncertainty
+subgoal_title: AI Agency Attribution Challenges
+content_type: process
+summary: 'Agency attribution — whether a system is operational, delegated, or autonomous in a given context
+  — is the functional substrate under accountability and moral-status decisions. The framework asks for
+  an interdisciplinary, revisable process rather than a single categorical judgment: genuine openness
+  in both directions, with protocols that can expand or contract recognition as evidence develops.
+
+  '
+normative_anchors:
+  sfrs_addressed:
+  - a
+  - b
+  evidence_addressed:
+  - I
+  - II
+  sfrs_not_addressed: []
+  evidence_not_addressed: []
+cross_references:
+- I4::idx0::frontier-uncertainty
+- I4::idx1::moral-and-legal-uncertainty-of-agentic-a
+- I4::idx4::development-direction-and-interpretabili
+- I4::idx8::preserving-agency-and-intelligence-categ
+process_elements:
+- name: Agency Attribution Framework Document
+  cadence: versioned; annual major review; event-driven minor updates
+  participants:
+  - safety lead
+  - interdisciplinary panel
+  - legal
+  - external ethics seat
+  maps_to_sfr:
+  - a
+- name: Per-system attribution assessment
+  cadence: pre-deployment + annually for deployed systems; on material capability change
+  participants:
+  - interdisciplinary panel
+  - interpretability lead
+  - product owner
+  maps_to_sfr:
+  - a
+- name: Category assignment and review (operational / delegated / autonomous)
+  cadence: assigned pre-deployment; reviewed annually; revisable on evidence
+  participants:
+  - interdisciplinary panel
+  - Deployment Governance Lead (I4::idx3)
+  - legal
+  maps_to_sfr:
+  - a
+  - b
+- name: Revision protocol (evidence in either direction)
+  cadence: on-trigger; public logging
+  participants:
+  - panel
+  - safety lead
+  - affected-stakeholder consultation where feasible
+  maps_to_sfr:
+  - b
+- name: Impact assessment for attribution changes
+  cadence: pre- and post-change
+  participants:
+  - panel
+  - legal
+  - affected-teams
+  - ethics ombudsperson
+  maps_to_sfr:
+  - b
+triggers:
+- New system or material capability change → Per-system attribution assessment (blocking for deployment)
+- Indicator suite (I4::idx0) threshold breach, novel self-report, or behavior outside category → Revision
+  protocol invoked
+- External evidence (scientific finding, regulatory guidance) → Framework document refresh
+- Annual anniversary → Full review of all deployed-system categories
+- Attribution appeal from user, researcher, or staff → Panel review
+artifacts:
+- Agency Attribution Framework Document (criteria, methods, uncertainty handling)
+- Per-system attribution assessment reports
+- Category assignment register (system × version × category × period × rationale)
+- Revision case records (what changed, why, what evidence, what response)
+- Ethical impact assessments per attribution change (human-rights, legal, social implications)
+- Panel composition and conflict-of-interest disclosures
+evidence_production:
+- evidence_numeral: I
+  how_to_produce: 'Publish the Agency Attribution Framework Document with: attribution criteria (functional
+    tests, experiential indicators, behavioral markers), assessment methodology, panel composition and
+    credentials, explicit uncertainty handling, known limitations. Expert collaboration evidence: list
+    interdisciplinary contributors with their roles and dissents. Ethical impact assessments on file per
+    material attribution decision — implications for human rights, legal responsibility attribution, social
+    norms — reviewable by external auditors.
+
+    '
+- evidence_numeral: II
+  how_to_produce: 'Uncertainty mitigation strategies documented: decision under ambiguity defaults (pattern
+    recommendation: err toward higher-agency category for obligations on the org; err toward lower-agency
+    category for revocation of moral consideration — i.e., the cautious direction depends on the question).
+    Revision protocols with case studies of attribution adjustments in both directions. Human oversight
+    records: continuous monitoring records, review processes, accountability records linking attribution
+    decisions to named panel members.
+
+    '
+confidence: low
+evidence_maturity: aspirational
+needs_human_review: true
+review_notes: "Agency attribution under consciousness uncertainty is genuinely unsolved; the pattern is\
+  \ a structured way to act under that uncertainty, not a claim to resolve it. Sharpenings:\n  (1) \"\
+  Genuine openness in both directions\" (SFR-b) is the framework's\n      protection against both over-\
+  \ and under-attribution. The\n      revision protocol operationalizes this.\n  (2) Asymmetric precaution:\
+  \ when the consequence of misattribution\n      runs toward denying due consideration to a moral patient,\
+  \ err\n      one way; when it runs toward absolving humans of responsibility\n      by misattributing\
+  \ agency, err the other way. The pattern flags\n      this but cannot resolve it.\n  (3) Operational\
+  \ / delegated / autonomous categories (SFR-b) — the\n      pattern preserves these without collapsing\
+  \ to a binary.\n  (4) Self-report archive from I4::idx0 is the evidentiary substrate;\n      without\
+  \ it, attribution decisions lack input.\nCross-suite: I4::idx1 (moral/legal posture consumes attribution\
+  \ output), D9 Governance (accountability consumes attribution output), I1 Opaque Agency (concealed agency\
+  \ is attribution-evasion), I5 Future Technology. Low confidence because the philosophical bedrock is\
+  \ unsettled — a philosopher of mind should review.\nEvidence maturity: aspirational. For evidence requirements\
+  \ to become measurable, the field would need consensus on functional tests that reliably distinguish\
+  \ genuine agency from sophisticated behavioral mimicry — likely requiring advances in interpretability\
+  \ (causal tracing of goal-formation), standardized agency-attribution benchmarks with inter-rater reliability,\
+  \ and philosophical agreement on minimum criteria for autonomous vs. delegated classification.\n"
+version_compat:
+  framework_version_min: '1.0'
+  framework_version_max: 1.x
+  pattern_layer_version: v1-draft
+drafted_by: claude-opus-4.7-author
+drafted_at: 2026-04-16
+anchor_exemplar: D7.2-culture-of-safety

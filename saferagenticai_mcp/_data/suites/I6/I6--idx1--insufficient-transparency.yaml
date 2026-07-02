@@ -1,0 +1,154 @@
+id: I6::idx1::insufficient-transparency
+display_id: I6.1
+suite_id: I6
+suite_title: Competitive Pressures
+subgoal_title: Insufficient Transparency
+content_type: governance
+summary: 'Competitive pressure tempts organizations to withhold information that would expose weakness.
+  This subgoal inverts the incentive: treat transparency as a governance artifact, produced on a schedule,
+  owned by named humans, with records covering training-data provenance, test outcomes, and operational
+  issues — including the ones that make the org look bad. The pattern expects structured records accessible
+  to regulators and (where appropriate) the public, not marketing prose.
+
+  '
+normative_anchors:
+  sfrs_addressed:
+  - a
+  - b
+  evidence_addressed:
+  - I
+  - II
+  - III
+  - IV
+  sfrs_not_addressed: []
+  evidence_not_addressed: []
+cross_references:
+- I6::idx0::competitive-pressures
+- I6::idx2::safety-washing
+- I6::idx6::innovation-vs-ip-concerns
+policy_elements:
+- name: Training Data Provenance Register
+  description: 'Per training run: sources enumerated, licensing status, collection method, date range,
+    consent basis (where applicable), known biases or exclusions, and any filtering applied. Updated on
+    every training run. Exposed to external auditors under NDA where IP-sensitive. Blanket "web-scraped"
+    is not a provenance record; specificity is what makes the artifact transparent.
+
+    '
+  maps_to_sfr:
+  - b
+- name: Testing and Verification Register
+  description: 'Per release (and per material configuration change): tests run, pass rates, failure categories,
+    regressions, known limitations. Linked to release approval records (I6.idx0 evidence IX). Includes
+    negative results — suppressing an uncomfortable finding breaks the subgoal.
+
+    '
+  maps_to_sfr:
+  - a
+  - b
+- name: Operational Issue and Near-Miss Log
+  description: 'Continuous log of incidents, near-misses, and user-reported issues with severity, root
+    cause, remediation, and recurrence tracking. Cross-references the D9.2 Violation and Complaint Register.
+    Published in aggregate (e.g., annual trust report) with appropriate anonymization; fully retained
+    internally with longer retention than required by law.
+
+    '
+  maps_to_sfr:
+  - b
+- name: Responsibility and Compliance RACI
+  description: 'Each transparency artifact has a named accountable human (not a team). Separately named:
+    Chief Legal Officer, Ethics/Compliance Lead, Risk Management Lead, Data Provenance Owner. All report
+    to the board risk committee on transparency posture quarterly.
+
+    '
+  maps_to_sfr:
+  - a
+- name: External Transparency Cadence
+  description: 'Published external transparency report at minimum annually. Includes: capabilities released,
+    incidents and remediations, compliance posture, data handling changes, safety-relevant research outputs,
+    and explicit acknowledgment of areas of residual uncertainty. Not a marketing document — board-approved.
+
+    '
+  maps_to_sfr:
+  - a
+  - b
+org_roles:
+- role: Chief Legal / Chief Ethics Officer
+  responsibilities: 'Accountable for the transparency cadence and the veracity of external reports. Signs
+    off on the annual transparency report.
+
+    '
+  accountable_or_consulted: accountable
+- role: Data Provenance Owner
+  responsibilities: 'Responsible for the Training Data Provenance Register. Single accountable human;
+    reports to CTO or CSO, not to product leadership.
+
+    '
+  accountable_or_consulted: responsible
+- role: Risk Management Lead
+  responsibilities: 'Owns the Operational Issue and Near-Miss Log and its reconciliation with D9.2 Violation
+    Register. Reports quarterly to the board risk committee.
+
+    '
+  accountable_or_consulted: responsible
+- role: Board-level Risk Committee
+  responsibilities: 'Reviews the annual transparency report before publication. Authority to require additional
+    disclosures.
+
+    '
+  accountable_or_consulted: informed
+documentation_artifacts:
+- artifact: Training Data Provenance Register
+  cadence: per training run; reviewed annually
+- artifact: Testing and Verification Register
+  cadence: per release; per material configuration change
+- artifact: Operational Issue and Near-Miss Log
+  cadence: continuous; aggregated monthly for management review
+- artifact: Transparency RACI
+  cadence: annually reaffirmed; event-driven on role change
+- artifact: Annual external transparency report
+  cadence: annually; board-approved before publication
+evidence_production:
+- evidence_numeral: I
+  how_to_produce: 'Maintain the Transparency RACI as a signed organizational document. Each named role
+    has a written profile attesting responsibilities. Retain in governance records; reference in the annual
+    transparency report.
+
+    '
+- evidence_numeral: II
+  how_to_produce: 'Export the Testing and Verification Register and the Training Data Provenance Register
+    on demand. Each entry timestamped, signed (or cryptographically attested), and cross-referenced to
+    the release it describes.
+
+    '
+- evidence_numeral: III
+  how_to_produce: 'Risk assessments per release (see D7.2 evidence II) feed an organization-wide risk
+    register. Include likelihood, impact, mitigation plan, residual risk, owner, review date. Mitigation
+    effectiveness measured through post-implementation reviews.
+
+    '
+- evidence_numeral: IV
+  how_to_produce: 'Operational Issue and Near-Miss Log entries include root-cause analysis and remediation
+    evidence. Recurrence trends surfaced in monthly management review and in the annual transparency report.
+    Zero incidents is itself reportable — with an explanation of the detection mechanism that would have
+    caught any.
+
+    '
+confidence: high
+needs_human_review: true
+review_notes: 'Transparency is one of the governance elements most likely to be shaped by law (EU AI Act
+  Article 13, NYC Local Law 144, sectoral rules). The pattern proposes annual external reporting as a
+  floor; some jurisdictions will require more frequent or more granular disclosure. The tension with I6.6
+  (innovation vs IP) is direct — consolidation should clarify that I6.1 sets the transparency floor, I6.6
+  governs what can be abstracted for IP. SFR-b''s "transparent records of all operational aspects, from
+  training data sources through to service performance" is demanding: orgs with pre-2024 training data
+  will struggle with retrospective provenance. Nell to weigh in on whether the pattern should acknowledge
+  this grandfathering reality.
+
+  '
+version_compat:
+  framework_version_min: '1.0'
+  framework_version_max: 1.x
+  pattern_layer_version: v1-draft
+drafted_by: claude-opus-4.7-author
+drafted_at: 2026-04-16
+anchor_exemplar: D9.2-compliance

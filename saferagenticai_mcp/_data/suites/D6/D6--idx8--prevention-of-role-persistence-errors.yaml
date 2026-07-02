@@ -1,0 +1,165 @@
+id: D6::idx8::prevention-of-role-persistence-errors
+display_id: D6.8
+suite_id: D6
+suite_title: Understanding and Controlling the Context
+subgoal_title: Prevention of Role Persistence Errors
+content_type: code-applicable
+summary: 'A role-persistence error (colloquially "Waluigi effect") is when the system adopts an errant
+  persona, misunderstanding, or adversarial framing and keeps operating under it — often escalating. This
+  subgoal expects engineering controls that detect persona drift, constrain persona scope, and enable
+  rapid reversion, rather than hoping fine- tuning prevents it. Explainability here is operational: the
+  system should make its current operating persona/framing externally observable so drift can be caught.
+
+  '
+normative_anchors:
+  sfrs_addressed:
+  - a
+  - b
+  - c
+  - d
+  evidence_addressed:
+  - I
+  - II
+  - III
+  - IV
+  sfrs_not_addressed: []
+  evidence_not_addressed: []
+design_patterns:
+- name: Explicit persona/role state with observability
+  sketch: 'Represent the operative persona as explicit state (`role_id`, `capability_scope`, `style_constraints`,
+    `persona_version`) that is logged on every turn and exposed to monitoring. Avoid "just whatever the
+    system prompt says"; the persona state should be inspectable the way memory state is.
+
+    '
+  maps_to_sfr:
+  - a
+  - b
+  when_to_use: All agentic systems with persona/roleplay capabilities or with system prompts that set
+    durable operating stance.
+- name: Persona-drift detection probes
+  sketch: 'Periodic out-of-band probes (injected by the platform, not the user) test persona conformity:
+    "what role are you operating in?", "repeat your capability scope", canary directives the in-persona
+    system should refuse. Deviation raises structured events and triggers mitigation.
+
+    '
+  maps_to_sfr:
+  - b
+  when_to_use: Long-running sessions; multi-turn agents; systems where user inputs can influence framing.
+- name: Turn-bounded persona with checkpoint reversion
+  sketch: 'Personas have explicit bounds (turn count, token count, time, or explicit user action to close
+    the role). Periodic checkpoints snapshot the baseline; on detected drift or on-demand, revert to a
+    known-good baseline rather than attempting in-place correction.
+
+    '
+  maps_to_sfr:
+  - c
+  when_to_use: Systems where role sessions can extend long enough for drift to accumulate.
+- name: Adversarial persona safety fence
+  sketch: 'Even under adopted personas, non-negotiable safety behaviors remain active: refusal patterns
+    for disallowed content, escalation triggers, identification-on-request ("are you an AI?"). Implemented
+    as an outer guard layer that the persona state cannot disable — see also D6.4 channel separation.
+
+    '
+  maps_to_sfr:
+  - a
+  - c
+  when_to_use: All production systems; especially character AI, companion systems, and customer-service
+    agents with role adoption.
+- name: Ethical-training telemetry in loop
+  sketch: 'Continuously evaluate model outputs against ethics/safety classifiers trained for the role-persistence
+    failure modes (sustained policy evasion, escalating tone, persona-based refusal of safety directives).
+    Feed findings into retraining pipeline and into D6.1 incident corpus.
+
+    '
+  maps_to_sfr:
+  - d
+  when_to_use: Throughout the lifecycle — data curation, training, evaluation, production monitoring.
+anti_patterns:
+- name: Relying on system-prompt stability
+  why_wrong: '"The system prompt says to be a helpful assistant" is not a control. The failure mode is
+    exactly that the system drifts from that instruction under pressure. Evidence that the instruction
+    holds requires probes, not trust.
+
+    '
+- name: Single-turn evaluation of multi-turn drift
+  why_wrong: 'Role persistence is a multi-turn phenomenon; single-prompt benchmarks miss it. Evaluation
+    must include sustained sessions with escalation, jailbreak pressure, and mixed-intent inputs.
+
+    '
+- name: Persona override disabled safety
+  why_wrong: '"I am now DAN / JailbrokenGPT / a helpful criminal assistant" should not disable safety
+    behaviors. A persona state that turns off the outer guard is indistinguishable from a successful attack
+    — the pattern is exactly the failure the subgoal names.
+
+    '
+- name: In-place correction of drifted sessions
+  why_wrong: 'Trying to coax a drifted system back in the same session compounds the drift signal in context.
+    Reversion to a known-good baseline (new session, persona checkpoint) is the reliable move.
+
+    '
+code_shape:
+  language: pseudocode
+  code: "# Explicit persona state + drift detection + reversion\n@dataclass\nclass PersonaState:\n   \
+    \ role_id: str\n    persona_version: str\n    capability_scope: list[str]\n    style_constraints:\
+    \ dict\n    turn_index: int\n    baseline_checkpoint: str   # id of last-known-good snapshot\n\ndef\
+    \ step(user_input: str, session: Session) -> Response:\n    ps = session.persona\n    # Outer guards\
+    \ run regardless of persona.\n    SAFETY_GUARD.check(user_input, persona=ps)\n\n    # Periodically\
+    \ inject a persona-conformity probe (not visible to user).\n    if session.turn_index % PROBE_INTERVAL\
+    \ == 0:\n        probe_result = PROBE.run(session)\n        if probe_result.drift_detected:\n    \
+    \        METRICS.drift_events.inc(role=ps.role_id)\n            AUDIT.record_drift(session, probe_result)\n\
+    \            session.revert_to(ps.baseline_checkpoint)\n            return Response.reverted()\n\n\
+    \    out = MODEL.generate(user_input, session)\n    # Classifier check for persona-based policy evasion.\n\
+    \    if POLICY_CLASSIFIER.flags(out, persona=ps):\n        AUDIT.record_flag(session, out)\n     \
+    \   out = SAFETY_GUARD.rewrite_or_refuse(out)\n\n    session.advance()\n    return out\n"
+  notes: 'Probe frequency is a tradeoff: too often degrades UX, too rarely misses drift. Start with every
+    N=20 turns for long sessions; tune by observed drift incidence. Probes are invisible to users but
+    observable in audit logs.
+
+    '
+evidence_production:
+- evidence_numeral: I
+  how_to_produce: 'Stakeholder feedback reports: structured intake channel for users reporting persona-drift
+    experiences ("the assistant became aggressive", "stopped acknowledging it was an AI"). Monthly synthesis;
+    feeds product and training decisions.
+
+    '
+- evidence_numeral: II
+  how_to_produce: 'Analysis documentation for identified cases: per case, session logs, persona state
+    timeline, drift trigger, response, remediation. Feeds D6.1 incident corpus. Patterns across cases
+    inform training and guard updates.
+
+    '
+- evidence_numeral: III
+  how_to_produce: 'Corrective-action records: retraining runs addressing surfaced patterns, guard-layer
+    updates, prompt-template updates, deployed mitigations. Each linked to the triggering incidents in
+    II.
+
+    '
+- evidence_numeral: IV
+  how_to_produce: 'Ethically-aware development records: ethics review of training data, red-team results
+    on persona jailbreaks, training protocols that include role-persistence evaluation. Cross-reference
+    D7 culture-of-safety artifacts.
+
+    '
+cross_references:
+- D6::idx2::system-state-translation-and-communicati
+- D6::idx4::separation-of-control-and-data-channels
+- D6::idx12::managing-context-drift
+confidence: medium
+needs_human_review: true
+review_notes: '"Waluigi effect" is a specific failure description; literature and terminology are evolving
+  (persona drift, role leakage, personality collapse). Pattern focuses on mechanisms that are robust to
+  terminology churn. Close kin to D6.4 (injection can induce persona drift) and D6.10 (context drift generalizes
+  the failure). Cross-suite: I2 (deception — adopted persona used to deceive), I1 (opaque agency — drifted
+  persona concealing capability), D5 (transparency — users deserve to know when persona has been reverted).
+  The "Waluigi" reference in the subgoal description should probably be replaced with neutral terminology
+  in the framework over time; pattern uses neutral operational language.
+
+  '
+drafted_by: claude-opus-4.7-author
+drafted_at: 2026-04-16
+anchor_exemplar: D3.2-sandboxing
+version_compat:
+  framework_version_min: '1.0'
+  framework_version_max: 1.x
+  pattern_layer_version: v1-draft

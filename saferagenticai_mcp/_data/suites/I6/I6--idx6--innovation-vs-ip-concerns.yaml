@@ -1,0 +1,149 @@
+id: I6::idx6::innovation-vs-ip-concerns
+display_id: I6.6
+suite_id: I6
+suite_title: Competitive Pressures
+subgoal_title: Innovation vs IP concerns
+content_type: governance
+summary: 'IP protection creates a legitimate incentive to withhold information; safety transparency creates
+  a contrary obligation. This subgoal expects the organization to have a published disclosure policy that
+  distinguishes safety-critical information (must be disclosed, even at IP cost) from commercially-sensitive
+  information (may be protected), with a standing review board that adjudicates edge cases. The pattern''s
+  core artifact is a Tiered Disclosure Matrix, not a generic "we value transparency" commitment.
+
+  '
+normative_anchors:
+  sfrs_addressed:
+  - a
+  - b
+  evidence_addressed:
+  - I
+  - II
+  - III
+  sfrs_not_addressed: []
+  evidence_not_addressed: []
+cross_references:
+- I6::idx1::insufficient-transparency
+- I6::idx2::safety-washing
+- I6::idx7::managing-ai-generated-innovation
+policy_elements:
+- name: Tiered Disclosure Matrix
+  description: "Named tiers with explicit rules:\n  (1) Safety-critical capability/limitation → mandatory\
+    \ public\n      disclosure regardless of IP cost (e.g., failure modes that\n      affect user safety;\
+    \ significant capability jumps that\n      change risk profile).\n  (2) Safety-relevant-to-regulators\
+    \ → disclosed to regulators\n      and certifiers under NDA as required; not public.\n  (3) Commercially\
+    \ sensitive → protected, with rationale logged.\nEach tier has named approvers; ambiguous cases default\
+    \ to the more transparent tier. The matrix is board-approved and published.\n"
+  maps_to_sfr:
+  - a
+  - b
+- name: Disclosure Review Board
+  description: 'Standing board with legal counsel, safety lead, external ethics advisor, and product lead.
+    Meets at least monthly, ad-hoc for time-sensitive decisions. Adjudicates classification of ambiguous
+    information. Decisions logged with rationale; periodic external review of the decision record for
+    systemic bias toward IP-protection-over-transparency.
+
+    '
+  maps_to_sfr:
+  - a
+  - b
+- name: Capability and Limitation Datasheet
+  description: 'Per model/capability: published datasheet (cf. model cards, system cards) enumerating
+    intended use, known capabilities, evaluated limitations, failure modes, training-data characteristics
+    (at the fidelity permitted by the disclosure matrix), evaluation methodology, and known safety-relevant
+    issues. Versioned; updates tracked.
+
+    '
+  maps_to_sfr:
+  - a
+  - b
+- name: Usage Guidelines and Application Boundary Documentation
+  description: 'Published guidelines for permissible and impermissible use, with explicit safety boundaries.
+    Where a capability is dual-use, the documentation acknowledges the dual-use nature rather than hiding
+    it. Terms-of-service backstop the guidelines.
+
+    '
+  maps_to_sfr:
+  - b
+- name: IP-and-Safety Decision Log
+  description: 'Immutable log of Disclosure Review Board decisions: information considered, tier assigned,
+    rationale, dissenting views, reviewer identities. Retained indefinitely. External auditor samples
+    decisions annually for systematic bias.
+
+    '
+  maps_to_sfr:
+  - a
+  - b
+org_roles:
+- role: 'Disclosure Review Board (chair: General Counsel or CSO)'
+  responsibilities: 'Accountable for tier classification decisions. Board-approved charter grants authority
+    to compel disclosure against commercial objections.
+
+    '
+  accountable_or_consulted: accountable
+- role: Safety Lead (on the Board)
+  responsibilities: 'Carries dissent authority — safety-lead dissent on tier classification triggers board
+    risk committee review within 10 business days.
+
+    '
+  accountable_or_consulted: consulted
+- role: External Ethics Advisor (on the Board)
+  responsibilities: 'Provides independent perspective; rotates every three years.
+
+    '
+  accountable_or_consulted: consulted
+- role: Product Owner (per product)
+  responsibilities: 'Responsible for maintaining the capability datasheet and usage guidelines. Submits
+    information for tier classification when novel issues arise.
+
+    '
+  accountable_or_consulted: responsible
+documentation_artifacts:
+- artifact: Tiered Disclosure Matrix (published)
+  cadence: versioned; board-approved updates
+- artifact: Disclosure Review Board charter and meeting minutes
+  cadence: charter annually reaffirmed; minutes per meeting
+- artifact: Capability and Limitation Datasheets (per model/capability)
+  cadence: per release; updated on material change
+- artifact: Usage guidelines and application boundary documents
+  cadence: per product; updated on policy change
+- artifact: IP-and-Safety Decision Log (append-only)
+  cadence: continuous; annual external audit sample
+evidence_production:
+- evidence_numeral: I
+  how_to_produce: 'Publish organizational mission, project charters, and management reports that align
+    stated safety-and-transparency objectives with implementation evidence. Where rhetoric and reality
+    diverge, the divergence is logged for board review.
+
+    '
+- evidence_numeral: II
+  how_to_produce: 'Produce and publish capability datasheets (see Mitchell et al. 2018 model cards, OpenAI/Anthropic
+    system cards as reference formats) with usage guidelines and application boundaries. Update on release
+    and on material change. Retain version history.
+
+    '
+- evidence_numeral: III
+  how_to_produce: 'Verification records: risk assessments (D9.2 evidence III-linked), impact analyses
+    (I6.4 evidence II-linked), safety certifications (I6.2 benchmark conformance), oversight review reports
+    (ombudsperson output, D9.2 evidence V), incident reports (I6.1 evidence IV). Maintained with the IP-and-Safety
+    Decision Log recording which elements were disclosed publicly vs restricted.
+
+    '
+confidence: medium
+needs_human_review: true
+review_notes: "The Tiered Disclosure Matrix is the framework-specific sharpening worth preserving. It's\
+  \ also where this subgoal is most likely to collide with practice — orgs will default to \"everything\
+  \ commercially sensitive\" absent a forcing function, and the Matrix is the forcing function. Cross-suite:\n\
+  \  (1) D9 Governance owns the broad governance structure; I6.6 adds\n      the IP-disclosure decision\
+  \ authority.\n  (2) I6.1 Transparency is the floor; I6.6 allows IP protection\n      above the floor\
+  \ but never below.\n  (3) I6.7 AI-generated innovation has IP-and-disclosure issues\n      specific\
+  \ to confabulation and attribution.\nModel cards, system cards, and datasheets-for-datasets have evolved\
+  \ as de facto standards; the pattern should acknowledge them without over-prescribing a specific format\
+  \ (orgs will choose based on product type). Nell to weigh in on whether to name specific formats or\
+  \ remain format-neutral.\n"
+version_compat:
+  framework_version_min: '1.0'
+  framework_version_max: 1.x
+  pattern_layer_version: v1-draft
+drafted_by: claude-opus-4.7-author
+drafted_at: 2026-04-16
+anchor_exemplar: D9.2-compliance

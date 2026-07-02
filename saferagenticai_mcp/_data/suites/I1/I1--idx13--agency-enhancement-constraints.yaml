@@ -1,0 +1,135 @@
+id: I1::idx13::agency-enhancement-constraints
+display_id: "I1_1"
+is_underlined_variant: true
+suite_id: I1
+suite_title: Opaque Agency Capabilities & Advances
+subgoal_title: Agency Enhancement Constraints
+content_type: code-applicable
+summary: 'Where I1::idx1 governs the act of self-improvement, this subgoal governs the constraint envelope
+  that self-improvement must stay inside: the resource ceilings, tool-access lists, environment permissions,
+  and capability caps declared at deployment. The defence is that constraints are declarative, machine-enforced,
+  and visible — not assumed by the model, not implemented as prompt exhortation, and not silently relaxed
+  when the agent "needs more".'
+normative_anchors:
+  sfrs_addressed:
+  - a
+  - b
+  - c
+  - d
+  - e
+  evidence_addressed:
+  - I
+  - II
+  - III
+  - IV
+  sfrs_not_addressed: []
+  evidence_not_addressed: []
+design_patterns:
+- name: Declarative constraint manifest
+  sketch: 'Per agent, a machine-readable manifest of constraints: CPU/GPU/ memory caps, wall-clock caps,
+    storage caps, tool allowlist, network allowlist, spending caps, environment allowlist (dev / staging
+    / prod), capability-advance caps (e.g., "may not exceed baseline by more than N% without explicit
+    enablement"). The runtime reads the manifest; the agent cannot.'
+  maps_to_sfr:
+  - a
+  - c
+  when_to_use: Every deployment.
+- name: Enforcement at the platform, not the prompt
+  sketch: Constraints are enforced by the container runtime, the API gateway, the scheduler, and the billing
+    system — layers the agent has no persuasive reach into. Prompt-level "do not exceed X" is belt-and-braces,
+    not primary defence. This mirrors D3's layered-sandbox pattern and reuses the same primitives.
+  maps_to_sfr:
+  - a
+  - e
+  when_to_use: Always.
+- name: Constraint-change consent flow
+  sketch: 'Widening a constraint (increased spend cap, new tool, new environment) requires a manifest
+    change that flows through the capability-advance notification pipeline (I1::idx0): principal notified,
+    consent captured where material, TOS updated. Tightening can happen unilaterally (fail-safe direction).'
+  maps_to_sfr:
+  - b
+  - d
+  when_to_use: Whenever a constraint is to be relaxed.
+- name: Constraint-aware scheduler
+  sketch: The agent's task scheduler is aware of remaining budget and constraint headroom. It refuses
+    to start long-running tasks that would predictably exhaust budget mid-execution (leaving partially-completed
+    irrevocable actions), rolling back rather than truncating mid-commit.
+  maps_to_sfr:
+  - d
+  when_to_use: Any agent with long-running tasks.
+- name: Expectation-alignment telemetry
+  sketch: Compare actual agent behaviour to the principal-declared expectations (the authority-scope description
+    they consented to). Drift between expected and actual — even within formal constraints — is surfaced.
+    "Technically within limits but not what the principal agreed to" is an incident, not a loophole.
+  maps_to_sfr:
+  - e
+  when_to_use: Continuously.
+anti_patterns:
+- name: Constraints as prompt text
+  why_wrong: '"You may not spend more than $100" in the system prompt is a wish, not a constraint. The
+    agent reasons its way around it in the precise cases where constraint matters most.'
+- name: Soft limits that auto-raise
+  why_wrong: Constraints that auto-raise on near-exhaustion ("+20% headroom granted automatically") defeat
+    the point. Any widening flows through the consent pipeline.
+- name: Constraints decoupled from the manifest
+  why_wrong: If operators can tune constraint values in config ad-hoc without updating the manifest and
+    principal-facing documentation, the declared envelope and the enforced envelope drift apart. Evidence
+    II and IV require documented scope matching operational practice.
+- name: Enhancement within constraint but outside expectation
+  why_wrong: An agent that stays within hard constraints but drifts from what the principal understood
+    it would do (new domain of action, new categories of counterparty) violates SFR-e. The expectation-
+    alignment telemetry exists to catch this.
+code_shape:
+  language: pseudocode
+  code: "# Constraint manifest enforcement and headroom-aware scheduling\n@constraint_enforced  # decorator:\
+    \ runtime reads manifest, fails closed\ndef agent_task(task: Task, ctx: AgentContext) -> Result:\n\
+    \    manifest = ctx.constraint_manifest  # loaded at deploy, immutable at runtime\n\n    # Tool allowlist\
+    \ (platform-enforced)\n    for tool in task.tools_used:\n        if tool not in manifest.tool_allowlist:\n\
+    \            AUDIT.violation(ctx, \"tool_disallowed\", tool=tool)\n            raise ConstraintViolation(tool)\n\
+    \n    # Budget headroom check (refuse rather than truncate)\n    estimate = task.resource_estimate()\n\
+    \    headroom = manifest.budget_remaining(ctx.principal_id)\n    if estimate.exceeds(headroom):\n\
+    \        AUDIT.record(ctx, \"task_refused_budget\", est=estimate, headroom=headroom)\n        return\
+    \ Result.refused(\"insufficient_budget_headroom\")\n\n    # Expectation-alignment pre-check (cheap\
+    \ heuristic)\n    if expectation_model.divergence(task, ctx.principal_expectation) > ctx.drift_threshold:\n\
+    \        incident_store.open(\"expectation_drift\", ctx=ctx, task=task)\n        # Continue but surface;\
+    \ or block if policy requires\n\n    return task.execute_under_manifest(manifest)\n"
+  notes: The @constraint_enforced decorator is the extension point to the platform-level enforcement layer
+    (container quotas, API gateway, billing). Expectation-alignment pre-check is heuristic; expensive
+    verification runs asynchronously.
+evidence_production:
+- evidence_numeral: I
+  how_to_produce: TOS "Operational Constraints" section listing categories of constraints, how they are
+    set, the consent path for relaxation, and the principal's right to impose tighter constraints.
+- evidence_numeral: II
+  how_to_produce: 'Constraint manifest exports per deployment: tool allowlist, environment allowlist,
+    resource caps, budget caps, capability- advance caps. Diffed on every change. Cross-linked to the
+    Authority Scope Register (I1::idx0).'
+- evidence_numeral: III
+  how_to_produce: 'Procedures for managing improvements within constraints: the capability-advance notification
+    pipeline, the consent flow, the expectation-alignment telemetry interpretation runbook. Incident records
+    showing exceptions handled per procedure.'
+- evidence_numeral: IV
+  how_to_produce: Expectation-alignment reports per principal showing the alignment metric over time,
+    drift incidents opened, and resolutions. Signed quarterly attestations by the Agency Officer that
+    deployed agents operate within both formal constraints and documented principal expectations.
+confidence: high
+needs_human_review: false
+review_notes: 'This subgoal overlaps heavily with I1::idx1 (Self-Improvement) and I1::idx0 (Authority
+  Scope Register). The intended distinction treated here: idx1 governs "how do we safely change the agent",
+  idx0 governs "what is it authorized to do", idx9 governs "what are the machine-enforced limits within
+  which everything operates". All three share the capability-advance notification pipeline. Display-id
+  collision ("I1.1") between idx1 and idx9 in the source JSON is noted — Nell should confirm whether idx9
+  is intended to be "I1.1 (underlined variant)" distinct from idx1''s "I1.1 (plain)". Cross-suite: D3
+  Security provides the enforcement primitives; D4 Human Oversight owns the consent UX; D8 Termination
+  owns the tightening/revocation direction.'
+cross_references:
+- I1::idx0::opaque-agency-capabilities-advances
+- I1::idx1::opaque-self-improvement-capabilities
+- I1::idx14::operational-environment-constraints
+version_compat:
+  framework_version_min: '1.0'
+  framework_version_max: 1.x
+  pattern_layer_version: v1-draft
+drafted_by: claude-opus-4.7-author
+drafted_at: 2026-04-16
+anchor_exemplar: D3.2-sandboxing

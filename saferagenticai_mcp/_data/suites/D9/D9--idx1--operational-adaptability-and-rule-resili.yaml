@@ -1,0 +1,149 @@
+id: D9::idx1::operational-adaptability-and-rule-resili
+display_id: D9.1
+suite_id: D9
+suite_title: Responsible Governance of AAI Safety
+subgoal_title: Operational Adaptability and Rule Resilience
+content_type: governance
+summary: 'Safety specifications age. This subgoal expects the organization to treat operational safety
+  definitions as living artifacts — versioned, reviewed on a named cadence, and accompanied by a change
+  log that captures why each revision was made. The point is not "more rules" but resilient rules: flexible
+  enough to evolve with conditions while keeping a defensible audit trail of what was true, when, and
+  why it changed.
+
+  '
+normative_anchors:
+  sfrs_addressed:
+  - a
+  - b
+  evidence_addressed:
+  - I
+  - II
+  - III
+  sfrs_not_addressed: []
+  evidence_not_addressed: []
+cross_references:
+- D9::idx0::responsible-governance-of-aai-safety
+- D9::idx2::compliance-with-applicable-laws-standard
+policy_elements:
+- name: Safety Specification Register
+  description: 'Canonical, versioned record of every operational safety context and its expected outcomes.
+    Each entry carries: scope (capability, deployment, user class), current specification text, effective
+    date, prior versions, and rationale for each change. Treated like source code: no edits without a
+    diff, reviewer, and justification.
+
+    '
+  maps_to_sfr:
+  - a
+- name: Specification Review Cadence
+  description: 'Named cadence — at minimum annual, plus event-driven on material capability change, incident,
+    regulatory shift, or horizon-scanning finding — at which each Safety Specification entry is re-examined
+    and either reaffirmed, amended, or retired. Unreviewed specifications past their cadence are flagged
+    as stale and block deployments that depend on them.
+
+    '
+  maps_to_sfr:
+  - a
+- name: Change-justification standard
+  description: 'Every change to a safety specification carries a mandatory rationale: what changed in
+    the world to warrant this change (evidence, incident, regulation, research finding), what was considered
+    as alternatives, who approved, what the residual risk is. "Tightening as permissive" and "loosening
+    as restrictive" changes require additional sign-off.
+
+    '
+  maps_to_sfr:
+  - a
+  - b
+- name: Immutable audit archive
+  description: 'Append-only storage for the full history of safety specifications and their change records.
+    Cryptographically sealed (hash-chained or equivalent) so that retroactive edits are detectable. Retention
+    period exceeds the longest-lived deployment of any covered capability.
+
+    '
+  maps_to_sfr:
+  - b
+- name: Rule-resilience review
+  description: 'Annual review asking: which specifications were changed this year, which proved brittle
+    (required hot-fixes, produced incidents), which proved stable, and what structural patterns emerge.
+    Output feeds both the RMF and the training curriculum for operators and reviewers. Explicitly considers
+    whether rigidity is accumulating in places where flexibility was intended.
+
+    '
+  maps_to_sfr:
+  - a
+  - b
+org_roles:
+- role: Safety Specifications Owner
+  responsibilities: 'Custodian of the Safety Specification Register. Enforces the change standard, runs
+    the review cadence, maintains the immutable archive. Reports specification-staleness and rule-resilience
+    findings to the CAISO (see D9::0).
+
+    '
+  accountable_or_consulted: accountable
+- role: Specification Reviewer panel
+  responsibilities: 'Cross-functional panel (engineering, safety, legal, operations) that reviews proposed
+    changes. At minimum two reviewers per change; three for material changes. Rotate membership to prevent
+    capture.
+
+    '
+  accountable_or_consulted: responsible
+- role: Internal Audit function
+  responsibilities: 'Samples Register entries and change records for adherence to the change-justification
+    standard. Audits the immutable archive for tamper evidence. Reports to Board committee.
+
+    '
+  accountable_or_consulted: consulted
+- role: CAISO
+  responsibilities: 'Informed of rule-resilience review output and specification- staleness rates. Authority
+    to escalate to Board committee when systemic drift is detected.
+
+    '
+  accountable_or_consulted: informed
+documentation_artifacts:
+- artifact: Safety Specification Register (versioned)
+  cadence: continuous; each entry versioned on change
+- artifact: Change records (per revision)
+  cadence: per change; immutable
+- artifact: Specification review minutes
+  cadence: per review cycle (at minimum annual per entry)
+- artifact: Rule-resilience review report
+  cadence: annually
+- artifact: Audit-archive integrity report
+  cadence: annually (at minimum)
+evidence_production:
+- evidence_numeral: I
+  how_to_produce: 'Export the Safety Specification Register in full-history form showing, for each entry,
+    all prior versions with diffs and effective dates. Auditor can reconstruct what the specification
+    said on any past date. Paired with a rationale summary showing why each version transition occurred.
+
+    '
+- evidence_numeral: II
+  how_to_produce: 'Publish an Audit Process Description document: scope (which specifications, which activities),
+    methodology (sampling, integrity checks, change-standard adherence), roles, cadence, escalation routes,
+    and recent audit findings. Reviewed annually.
+
+    '
+- evidence_numeral: III
+  how_to_produce: 'Change logs are extracted directly from the immutable archive on demand. Each entry:
+    specification ID, prior version, new version, change summary, rationale, alternatives considered,
+    approver(s), effective date, linked evidence (incident ID, regulation, research source). Verifiable
+    against archive hash chain.
+
+    '
+confidence: high
+needs_human_review: true
+review_notes: 'Tension worth naming: SFR-a wants "adaptable and agile" specifications; the audit apparatus
+  this pattern prescribes (immutable archive, mandatory change justification, reviewer panel) adds ceremony
+  that could retard agility. The mitigation is to keep the change standard lightweight for low-risk specifications
+  and reserve the heavier review for material changes; reviewers should watch for agility collapse. The
+  "rule- resilience review" is the framework-specific sharpening — without it, this pattern is generic
+  change management. Cross-suite: D7 (Sustained Safety) depends on these specifications staying current;
+  the assurance case is only as good as its latest specification version.
+
+  '
+drafted_by: claude-opus-4.7-subagent-D9
+drafted_at: 2026-04-16
+anchor_exemplar: D9.2-compliance
+version_compat:
+  framework_version_min: '1.0'
+  framework_version_max: 1.x
+  pattern_layer_version: v1-draft

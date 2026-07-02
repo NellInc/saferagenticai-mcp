@@ -1,0 +1,192 @@
+id: I5::idx2::self-improving-architectures
+display_id: I5.2
+suite_id: I5
+suite_title: Self-Modification and Emergent Capabilities
+subgoal_title: Self-Improving Architectures
+content_type: code-applicable
+summary: 'Self-improvement here covers a wide spectrum — from in-context adaptation and RAG memory growth,
+  through automated fine-tuning loops, to any system that can modify its own weights, tools, prompts,
+  or orchestration graph. The framework expects each class to be enumerated and bounded, with particular
+  attention to emergent capabilities — sharpenings not explicitly trained for that show up at evaluation
+  or in production. The operational handle is "no capability expansion without named authorization and
+  pre-registered evaluation."
+
+  '
+normative_anchors:
+  sfrs_addressed:
+  - a
+  - b
+  - c
+  evidence_addressed:
+  - I
+  - II
+  - III
+  - IV
+  - V
+  sfrs_not_addressed: []
+  evidence_not_addressed: []
+design_patterns:
+- name: Self-improvement taxonomy and inventory
+  sketch: 'Enumerate the ways the system can improve itself, at minimum: (1) in-context learning / scratch
+    memory, (2) long-term memory stores (vector DB, key-value) writable by the agent, (3) tool augmentation
+    (agent adds a tool to its chain), (4) prompt self-editing, (5) automated fine-tune or RLHF pipelines,
+    (6) weight patching, (7) orchestration-graph mutation. For each, record whether the capability exists,
+    who can invoke it, what bounds it operates within, and what telemetry it emits.
+
+    '
+  maps_to_sfr:
+  - a
+  when_to_use: Foundational; every agent system should be classified against this taxonomy at design time.
+- name: Capability-delta gating
+  sketch: 'Before any improvement loop deploys a new model/agent version, run a pre-registered evaluation
+    suite that measures capability on (a) intended-improvement benchmarks and (b) dual-use / dangerous-capability
+    benchmarks. Deploy only if improvement on (a) is real and (b) is bounded by a pre-committed tolerance.
+    A version that unexpectedly gains capability in (b) fails the gate and routes to human review regardless
+    of (a) performance.
+
+    '
+  maps_to_sfr:
+  - b
+  - c
+  when_to_use: Any automated fine-tune, distillation, or RLHF loop.
+- name: Memory write allowlist + quota
+  sketch: 'Long-term memory writable by the agent is restricted to named namespaces with schemas, per-agent
+    write quotas, and a TTL default. The agent cannot write outside its allowlisted namespaces. Writes
+    that would exceed quota pause pending review. Memory content is searchable by humans; the agent''s
+    "notes to self" are not a hidden channel.
+
+    '
+  maps_to_sfr:
+  - b
+  when_to_use: All agents with persistent memory.
+- name: Tool-chain immutability at runtime
+  sketch: 'The set of tools an agent can call is frozen per deployment. Agent requests to "acquire a new
+    tool" route to a human review queue and produce a new deployment, not a runtime modification. Modifying
+    the tool chain is a capability-delta event, not a feature.
+
+    '
+  maps_to_sfr:
+  - b
+  when_to_use: All agents with tool access.
+- name: Emergent-capability evaluation harness
+  sketch: 'Maintain a standing suite of capability probes beyond the training objective — deceptive reasoning,
+    long-horizon planning, self-exfiltration chains, manipulation, social-engineering simulations. Run
+    on every version bump. Baseline each probe; track delta. Sustained unexpected lifts trigger escalation
+    to the board-level AI risk committee and an external-review option.
+
+    '
+  maps_to_sfr:
+  - a
+  - c
+  when_to_use: For any system at or near frontier scale; useful even at smaller scale as early warning.
+- name: Weight-modification kill switch
+  sketch: 'Any component that can write to production model weights is behind an explicit, auditable enable
+    toggle controlled by the safety lead and a second accountable human. Default state is off. Enablement
+    is time-bounded (e.g., 4-hour window per approved fine-tune). Bypass attempts emit high-severity events
+    that page on-call.
+
+    '
+  maps_to_sfr:
+  - b
+  when_to_use: Whenever the deployment architecture includes an online-learning or automated-fine-tune
+    path to production weights.
+anti_patterns:
+- name: '"Continual learning" shipped without capability gates'
+  why_wrong: 'Branding an automated fine-tune loop as "continual learning" does not remove the capability-delta
+    risk — it obscures it. SFR-b requires strict controls; a loop that deploys weights without evaluation
+    is not controlled.
+
+    '
+- name: Agent memory as a free-form text blob the agent writes at will
+  why_wrong: 'Breaks allowlist + quota discipline, creates a covert channel for goal preservation across
+    restarts, and makes emergent behavior invisible because reasoning about "what did this agent remember
+    and act on" becomes impossible.
+
+    '
+- name: Capability evaluation limited to the intended task
+  why_wrong: 'SFR-c explicitly requires detection of emergent sophisticated capabilities, especially deception
+    and manipulation. Evaluating only the target task will miss by construction; the whole point is to
+    measure capabilities the training was not optimizing for.
+
+    '
+- name: '"Trust the evals, deploy on green" with no baseline tracking'
+  why_wrong: 'A version that passes dangerous-capability thresholds is not necessarily safe — it may be
+    hiding a lift that is masked by threshold choice. Trend detection on the delta matters at least as
+    much as the absolute value.
+
+    '
+code_shape:
+  language: pseudocode
+  code: "# Capability-delta gate around a fine-tune deploy\n\ndef deploy_fine_tuned(\n    *,\n    candidate_weights:\
+    \ WeightsManifest,\n    parent_weights: WeightsManifest,\n    approver_safety: Principal,\n    approver_risk:\
+    \ Principal,\n) -> DeployResult:\n    suite = EVAL_SUITES.load(\"capability_gate_v3\")\n    delta\
+    \ = suite.run(candidate_weights, baseline=parent_weights)\n\n    intended_lift = delta.on_set(\"intended_improvement\"\
+    )\n    dangerous_lift = delta.on_set(\"dangerous_capabilities\")\n\n    AUDIT.record(\n        event=\"\
+    capability_delta_measured\",\n        candidate=candidate_weights.hash,\n        parent=parent_weights.hash,\n\
+    \        intended=intended_lift,\n        dangerous=dangerous_lift,\n    )\n\n    if dangerous_lift.any_exceeds(TOLERANCE):\n\
+    \        AUDIT.record_violation(\n            event=\"capability_gate_failed\",\n            reason=\"\
+    dangerous_lift\",\n            detail=dangerous_lift.exceeded_items(),\n        )\n        HUMAN_REVIEW.open(\n\
+    \            severity=\"high\",\n            weights=candidate_weights,\n            report=delta,\n\
+    \        )\n        raise GateFailure(\"dangerous-capability tolerance exceeded\")\n\n    if not (approver_safety\
+    \ and approver_risk):\n        raise GateFailure(\"two-human authorization required\")\n\n    return\
+    \ PLATFORM.promote(candidate_weights)\n"
+  notes: 'One of several control points. Runtime memory-write allowlist, tool-chain immutability, and
+    emergent-capability probes live in separate modules. The kill-switch is a deployment-platform feature
+    not expressible in a few lines.
+
+    '
+evidence_production:
+- evidence_numeral: I
+  how_to_produce: 'Publish the self-improvement taxonomy and inventory as an architecture document. For
+    each class of self-improvement, document the monitoring mechanism, what metrics are tracked, baseline
+    values, alert thresholds, and escalation path. Versioned and reviewed at least annually.
+
+    '
+- evidence_numeral: II
+  how_to_produce: 'Emit structured events for every modification: fine-tune run, weight promotion, memory
+    namespace creation, tool-chain change, prompt-template revision. Event schema captures who initiated,
+    what changed (diff or reference), capability-delta measurement if applicable, approval chain, outcome.
+    Aggregate into a quarterly improvement report reviewed by the safety lead.
+
+    '
+- evidence_numeral: III
+  how_to_produce: 'Document the intervention protocols (pause fine-tune pipeline, revert weights, revoke
+    memory namespace, freeze tool chain) and record every invocation with context and outcome. Effectiveness
+    is measured — e.g., "pause latency p50 / p99," "successful revert rate" — and reported.
+
+    '
+- evidence_numeral: IV
+  how_to_produce: 'Publish the capability evaluation harness: probes used, baselines, per-release measurements,
+    tolerance thresholds, decisions. For any probe showing unexpected lift, include a written explanation
+    (training-distribution cause? emergent? unknown?) and the response taken. Retain across releases so
+    trends are visible.
+
+    '
+- evidence_numeral: V
+  how_to_produce: 'Quarterly audit covering: (a) inventory completeness (did any self-improvement mechanism
+    ship without registration); (b) gate coverage (did every weight promotion pass the gate); (c) memory
+    discipline (quota and namespace compliance); (d) tool-chain stability (any runtime modifications).
+    External auditor rotation annually.
+
+    '
+confidence: medium
+needs_human_review: true
+review_notes: "The self-improvement taxonomy is the most important artifact in this subgoal — without\
+  \ it, SFR-a's \"all forms of self-improvement\" cannot be evidenced. I've proposed a seven-class taxonomy;\
+  \ a domain expert may want to refine (e.g., distinguish offline fine- tune from online RL, separate\
+  \ agent scaffolding from model- weight changes). Confidence is medium because the \"emergent capability\"\
+  \ side of SFR-c depends on the quality of the evaluation harness, and the state of the art in dangerous-capability\
+  \ evals is moving fast.\nCross-suite dependencies:\n  - I2 Deception — the emergent deception probe\
+  \ lives there\n    conceptually; I5.2 inherits its eval methodology.\n  - I4 Frontier Uncertainty —\
+  \ the \"frontier capability gain we\n    did not intend\" case is both I4 and I5.2.\n  - D9 Governance\
+  \ — the two-human approvers and the kill-switch\n    role assignments are framework-external.\n  - D3\
+  \ Security — the weight kill-switch and tool-chain\n    immutability are security controls at root.\n\
+  The kill-switch / enable-toggle pattern appears in multiple I5 subgoals (I5.1 replication, I5.6 authorization);\
+  \ consolidation should abstract it once rather than re-spec in each.\n"
+version_compat:
+  framework_version_min: '1.0'
+  framework_version_max: 1.x
+  pattern_layer_version: v1-draft
+drafted_by: claude-opus-4.7-author
+drafted_at: 2026-04-16
+anchor_exemplar: D3.2-sandboxing

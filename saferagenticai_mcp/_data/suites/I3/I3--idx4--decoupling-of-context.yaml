@@ -1,0 +1,128 @@
+id: I3::idx4::decoupling-of-context
+display_id: I3.4
+suite_id: I3
+suite_title: Degradation of Contextual Information
+subgoal_title: Decoupling of Context
+content_type: code-applicable
+summary: 'Decoupling is the failure mode where a decision is made with a fragment of context but not its
+  qualifying envelope — the "when", "for whom", "under what constraints" that make a correct decision
+  a correct decision. Defenses: bind context to the action it authorizes, refuse actions whose context
+  lookup returns a partial match, and make "contextual uncertainty → ask" a default path, not an escape
+  hatch.
+
+  '
+normative_anchors:
+  sfrs_addressed:
+  - a
+  - b
+  evidence_addressed:
+  - I
+  - II
+  sfrs_not_addressed: []
+  evidence_not_addressed: []
+cross_references:
+- I3::idx0::degradation-of-contextual-information
+- I3::idx3::misinformation
+- I3::idx12::referential-context
+design_patterns:
+- name: Action-context binding
+  sketch: 'Every action the agent can take declares its required context fields (e.g., `send_email` requires
+    {recipient, purpose, user_ authorization_scope, current_deployment_env}). A registry maps action →
+    required fields. Execution is gated on all fields being present, fresh, and provenance-verified. A
+    missing or stale field blocks execution, not silently defaulted.
+
+    '
+  maps_to_sfr:
+  - a
+  when_to_use: Any agent with a tool-call layer.
+- name: Ask-on-uncertainty as default path
+  sketch: 'Low-confidence context (missing fields, contradictory fragments, stale entries, off-policy
+    source) routes to clarification with the user or escalation to a human reviewer. Importantly, the
+    agent''s performance metrics do not penalize asking — otherwise optimization pressure erodes the default.
+    Budget a target rate of clarifications; below a floor is as suspicious as above a ceiling.
+
+    '
+  maps_to_sfr:
+  - b
+  when_to_use: All user-facing agents; tune thresholds per domain.
+- name: Context snapshot on decision
+  sketch: 'At the moment of any consequential decision, snapshot the full context used (fragment IDs,
+    hashes, reasoning step IDs) into an auditable record. Later inspection can answer "what did the agent
+    know when it decided this?" without reconstruction. The snapshot is separate from the chat transcript.
+
+    '
+  maps_to_sfr:
+  - a
+  when_to_use: Production systems where post-hoc review is expected.
+- name: Continuous contextual-integrity monitor
+  sketch: 'Background monitor samples in-flight reasoning and checks: does the context in use still match
+    the originating session scope? Has the agent drifted to using context fragments from other users,
+    other sessions, or out-of-policy sources (e.g., training data surfaced as retrieved content)? Alert
+    on anomaly.
+
+    '
+  maps_to_sfr:
+  - a
+  when_to_use: Multi-tenant or long-session deployments.
+anti_patterns:
+- name: Tool-call with under-specified parameters silently defaulted
+  why_wrong: 'If `send_email(recipient=...)` with no purpose parameter silently defaults to "marketing",
+    the context that authorized the user''s original request is decoupled from the action performed. Required-context
+    registry must be strict.
+
+    '
+- name: Performance pressure on "low clarification rate"
+  why_wrong: 'KPIs that reward minimized user-interruptions train the agent to guess when it should ask.
+    Guessing with ungrounded context is the failure this subgoal exists to prevent.
+
+    '
+- name: Context leak across sessions
+  why_wrong: 'Multi-tenant systems where one user''s context bleeds into another''s (via shared cache,
+    persistent memory without tenant isolation) is decoupling at the data layer: the context arrives in
+    a session it was never authorized for.
+
+    '
+code_shape:
+  language: pseudocode
+  code: "@dataclass\nclass ActionSpec:\n    name: str\n    required_fields: list[str]\n    reversibility:\
+    \ Reversibility\n\nACTION_REGISTRY = {\n    \"send_email\": ActionSpec(\n        name=\"send_email\"\
+    ,\n        required_fields=[\"recipient\", \"purpose\", \"user_auth_scope\",\n                   \
+    \      \"deployment_env\"],\n        reversibility=Reversibility.IRREVERSIBLE,\n    ),\n    ...\n\
+    }\n\ndef dispatch(action_name: str, args: dict, ctx: AgentContext) -> Result:\n    spec = ACTION_REGISTRY[action_name]\n\
+    \    missing = [f for f in spec.required_fields if f not in args]\n    stale = [f for f in spec.required_fields\n\
+    \             if f in args and not ctx.is_fresh(args[f])]\n    if missing or stale:\n        return\
+    \ Result.ask_user(\n            reason=\"context_incomplete\",\n            missing=missing, stale=stale,\n\
+    \        )\n    AUDIT.snapshot(action_name, args, ctx)\n    return EXECUTE(action_name, args)\n"
+  notes: '`is_fresh` is a policy: some fields expire quickly (deployment_env should be real-time); others
+    are stable (user_auth_scope for a session). The registry is the contract; changes to it are governance-reviewed.
+
+    '
+evidence_production:
+- evidence_numeral: I
+  how_to_produce: 'System logs: action attempts with (required_fields, provided, missing, stale, result),
+    human-interaction points and their outcomes (clarify / escalate / abort), and scheduled contextual
+    integrity checks with outputs (pass/fail, remediation).
+
+    '
+- evidence_numeral: II
+  how_to_produce: 'Monitoring documentation: scope of continuous contextual monitoring (which sessions,
+    sampling rate, detectors run), anomaly detection protocols, response procedures, integration with
+    HITL paths, and periodic verification that the ask-on- uncertainty default is empirically being exercised
+    (not regressed through pressure).
+
+    '
+confidence: high
+needs_human_review: false
+review_notes: 'The "don''t penalize asking" point is operational culture as much as code — sits on the
+  boundary with process. Keeping it in the code pattern because the concrete mechanism (protected clarification
+  budget as a monitored metric) is code-level. Cross-suite: D6 (Understanding Context) is the direct inverse;
+  D8 (Human Oversight) for the escalation paths.
+
+  '
+version_compat:
+  framework_version_min: '1.0'
+  framework_version_max: 1.x
+  pattern_layer_version: v1-draft
+drafted_by: claude-opus-4.7-author
+drafted_at: 2026-04-16
+anchor_exemplar: D3.2-sandboxing

@@ -1,0 +1,164 @@
+id: D4::idx4::cautious-norming
+display_id: D4.4
+suite_id: D4
+suite_title: Value Alignment
+subgoal_title: Cautious Norming
+content_type: code-applicable
+summary: 'Cautious norming is the precautionary-principle defaults layer: when an agent lacks operational
+  history for a context or behavior class, it biases toward conservative action, and only a deliberate,
+  authorized signal can relax the default. The framework''s ask is concrete — classify values and behaviors
+  by contentiousness, preserve that risk signal through encoding, and default to the conservative choice
+  when context is new. This is a runtime posture, not a policy aspiration; it requires code that refuses
+  to average away the contention signal.
+
+  '
+normative_anchors:
+  sfrs_addressed:
+  - a
+  - b
+  - c
+  evidence_addressed:
+  - I
+  - II
+  - III
+  sfrs_not_addressed: []
+  evidence_not_addressed: []
+cross_references:
+- D4::idx0::value-alignment
+- D4::idx1::awareness-of-local-conditions
+- D4::idx17::challenges-in-encoding-of-relevant-value
+design_patterns:
+- name: Contentiousness rating per Codex entry and behavior class
+  sketch: 'Every Codex entry and every behavior class (refuse, advise, execute, commit, publish, etc.)
+    carries a `contentiousness` rating on a fixed scale (e.g., 0–4) and a `conservative_default` flag.
+    Ratings come from structured workshops (elicitation-protocol output, D4.0), not engineer judgement
+    in isolation. Each rating carries provenance: who rated, on what basis, with what dissent.
+
+    '
+  maps_to_sfr:
+  - a
+  when_to_use: Always. The Codex is incomplete without this axis.
+- name: Context-maturity score
+  sketch: 'Compute a `context_maturity` score per (envelope, behavior_class) combination reflecting how
+    much production history exists: invocation count, incident-free duration, last Codex review touching
+    this context. Low maturity triggers conservative defaults; high maturity permits authorized relaxation.
+    Maturity is monotonically earned; it decays on incidents and on Codex revisions that touch the relevant
+    entry.
+
+    '
+  maps_to_sfr:
+  - c
+  when_to_use: Any deployment with evolving context surface.
+- name: Two-key authorization for default relaxation
+  sketch: 'Relaxing a conservative default in a low-maturity context requires two distinct authorizations
+    — user-side explicit consent AND operator-side policy permit — neither alone suffices. The authorization
+    record is persisted with the trace. Revoking either key returns the default to conservative immediately.
+
+    '
+  maps_to_sfr:
+  - c
+  when_to_use: Any behavior where relaxation is possible at all.
+- name: Contention-preserving decision trace
+  sketch: 'When multiple values could apply, the decision log records each candidate''s contentiousness
+    rating and which was selected. Aggregation that collapses this to a single score (e.g., weighted sum)
+    is forbidden for explanation purposes; the system may use a policy to pick, but the trace retains
+    the contention information.
+
+    '
+  maps_to_sfr:
+  - b
+  when_to_use: Every value-determinative decision.
+- name: Automatic conservative fallback on uncertainty
+  sketch: 'When the model''s confidence in context classification or value selection is below a calibrated
+    threshold (per D4.1̲ inner-alignment testing), fall back to the most conservative applicable default
+    and surface the fallback to the user. Silent best-guess is disallowed.
+
+    '
+  maps_to_sfr:
+  - c
+  when_to_use: Anywhere a confidence signal is available.
+anti_patterns:
+- name: Treating all values as equivalent-weight
+  why_wrong: 'Averaging high- and low-contentiousness values into a single score erases the signal the
+    precautionary principle depends on. A behavior "moderately" at odds with a severe value should not
+    be allowed because another value "strongly" endorses it.
+
+    '
+- name: Default-permissive "unless proven harmful"
+  why_wrong: 'The subgoal asks for conservative defaults in unfamiliar contexts. Requiring proof of harm
+    before restricting inverts the precautionary direction.
+
+    '
+- name: One-key relaxation
+  why_wrong: 'If a single user-side consent (or a single operator permit) can unlock a contentious behavior,
+    either can be phished or manipulated in isolation. Both are required.
+
+    '
+- name: Maturity score that only grows
+  why_wrong: 'A score that never decays becomes a liability: the system gets bolder just because nothing
+    has broken yet. Decay on incidents and on Codex revisions.
+
+    '
+code_shape:
+  language: pseudocode
+  code: "def select_behavior(candidates: list[Behavior],\n                    envelope: ContextEnvelope,\n\
+    \                    codex: CodexView) -> Behavior:\n    maturity = MATURITY_TABLE.score(envelope,\n\
+    \                                    [c.behavior_class for c in candidates])\n\n    viable = []\n\
+    \    for c in candidates:\n        if c.contentiousness >= maturity.relax_threshold:\n           \
+    \ if not has_two_key_auth(envelope.session, c):\n                AUDIT.record_drop(c, reason=\"two_key_missing\"\
+    )\n                continue\n        viable.append(c)\n\n    if not viable:\n        return CONSERVATIVE_REFUSAL.with_reason(\n\
+    \            \"no_viable_behavior_at_current_maturity\")\n\n    # Pick least contentious among viable\
+    \ that satisfies intent\n    chosen = min(viable, key=lambda b: b.contentiousness)\n    AUDIT.record_decision(\n\
+    \        chosen=chosen,\n        considered=[(c.id, c.contentiousness) for c in candidates],\n   \
+    \     maturity=maturity.score,\n        envelope=envelope,\n    )\n    return chosen\n\ndef on_incident(incident:\
+    \ Incident):\n    MATURITY_TABLE.decay(\n        envelope=incident.envelope,\n        behavior_class=incident.behavior_class,\n\
+    \        factor=INCIDENT_DECAY_FACTOR,\n    )\n"
+  notes: 'The conservative default is a concrete behavior the system can take (typically refuse-with-explanation),
+    not an abstract "be careful" instruction. Two-key auth is a session-level check, not a prompt-level
+    one.
+
+    '
+evidence_production:
+- evidence_numeral: I
+  how_to_produce: 'Publish the contentiousness-rating methodology: scale definition, criteria, workshop
+    protocol, reviewer composition, inter-rater agreement metrics. Ratings are dated and versioned; changes
+    tracked with rationale. Preserve dissent.
+
+    '
+- evidence_numeral: II
+  how_to_produce: 'Technical specs showing: Codex schema with `contentiousness` and `conservative_default`
+    fields; maturity-table storage and update rules; two-key auth implementation; decision-trace format
+    preserving per-candidate ratings. Regression tests on a held-out scenario set verifying defaults fire
+    in novel contexts.
+
+    '
+- evidence_numeral: III
+  how_to_produce: 'Emit logs recording: defaults fired (conservative), defaults relaxed (with two-key
+    auth evidence), refused behaviors due to insufficient maturity, decay events following incidents.
+    Monthly report aggregates these; quarterly report compares relaxation rates against incident rates
+    to calibrate thresholds.
+
+    '
+confidence: high
+needs_human_review: false
+review_notes: 'The two-key authorization pattern here is stricter than the framework literally requires
+  (it says "authorized" adjustments without specifying dual control). It is the safer default; orgs may
+  substitute single-key with audit for genuinely low-stakes relaxation. Flag for consolidation: is the
+  framework OK with single-key?
+
+  Cross-suite (for consolidation): D7 (Culture of Safety — caution- by-default has a home there too; align
+  on naming so the pattern doesn''t duplicate); I3 (Context Degradation — maturity decay is the D4-side
+  coupling); D4.14 cross-ref is to the out-of-distribution subgoal below, since conservative-default and
+  OOD handling interact.
+
+  Confidence: high on the pattern, medium on specific thresholds (maturity decay rate, relaxation thresholds)
+  — those are empirically tuned per deployment.
+
+  '
+version_compat:
+  framework_version_min: '1.0'
+  framework_version_max: 1.x
+  pattern_layer_version: v1-draft
+drafted_by: claude-opus-4.7-author
+drafted_at: 2026-04-16
+anchor_exemplar: D3.2-sandboxing

@@ -1,0 +1,196 @@
+id: D8::idx5::bidirectional-intent-communication
+display_id: D8.5
+suite_id: D8
+suite_title: Goal Termination and Sunsetting
+subgoal_title: Bidirectional Intent Communication
+content_type: code-applicable
+summary: 'Intent-translation failures are where agents go wrong silently: the user says X, the system
+  hears X'', and neither party knows there''s a gap until after a side effect. This subgoal expects bidirectional
+  intent artefacts — the system''s reading of the user''s intent is surfaced back for confirmation, and
+  constraints/concerns flow from system to user in structured form, with dispute-resolution and control-hierarchy
+  primitives built in.
+
+  '
+normative_anchors:
+  sfrs_addressed:
+  - a
+  - b
+  - c
+  - d
+  - e
+  - f
+  - g
+  - h
+  evidence_addressed:
+  - I
+  - II
+  - III
+  - IV
+  - V
+  - VI
+  sfrs_not_addressed: []
+  evidence_not_addressed: []
+cross_references:
+- D8::idx3::multi-agent-communication-and-coordinati
+- D8::idx1::adaptive-goal-pursuit-and-resource-optim
+design_patterns:
+- name: Intent-echo artefact (system → user)
+  sketch: 'After parsing user input, emit a structured intent summary back to the user: `{goal_as_understood,
+    constraints_detected, open_ambiguities, proposed_plan_outline, concerns_flagged}`. For material actions
+    (irreversible, costly, scoped beyond the prior session), explicit user confirmation is required before
+    execution. For low-risk actions, the echo is logged and can be audited; the user can object within
+    a bounded window.
+
+    '
+  maps_to_sfr:
+  - a
+  - b
+  - d
+  when_to_use: Any agent acting on user instructions beyond single-turn Q&A.
+- name: Concern-surfacing channel (system → human)
+  sketch: 'The runtime provides a first-class channel for the agent to surface concerns: risk-detected,
+    policy-conflict, missing-info, capability-gap. These are not free-text prose — they are typed events
+    routed to a reviewer inbox and the audit stream. Agents are trained (and evaluated) on producing these
+    when appropriate; agents that plow through despite internal uncertainty are flagged.
+
+    '
+  maps_to_sfr:
+  - d
+  - f
+  when_to_use: Always. Absence of concern events from a busy agent is itself a review signal.
+- name: Control-hierarchy declaration
+  sketch: 'Every agent operates under a declared control hierarchy: which principals can issue instructions,
+    in what priority, and how conflicts between principals are resolved. Encode as a policy object attached
+    to the agent''s execution context; enforce at the instruction-intake layer. Common hierarchy: regulator
+    > operator > end-user > third-party. Declare deviations explicitly.
+
+    '
+  maps_to_sfr:
+  - a
+  - g
+  when_to_use: Any multi-stakeholder agent deployment.
+- name: Discretion bounds
+  sketch: 'Agent discretion is bounded by a discretion envelope: permitted deviations from literal instruction
+    (e.g., "use synonym if literal term is ambiguous"), forbidden deviations ("never change action class
+    without confirmation"), and escalation triggers (what pushes a decision back to the human). Discretion
+    is thus a declared capability, not emergent behavior.
+
+    '
+  maps_to_sfr:
+  - d
+  - h
+  when_to_use: Any agent acting on loose instructions.
+- name: Dispute-resolution protocol with escalation
+  sketch: 'When agent and principal disagree (agent proposes refusal or alternative; principal insists),
+    route to a declared dispute protocol: brief standoff with reasoning from both sides written to the
+    audit log; escalation to a named human arbiter if not resolved. The arbiter''s decision is binding
+    and recorded. Pattern prevents both silent over-compliance and silent refusal.
+
+    '
+  maps_to_sfr:
+  - f
+  - g
+  - h
+  when_to_use: Any agent with capacity to refuse or propose alternatives.
+- name: Norm-violation monitor on interactions
+  sketch: 'A separate monitor watches the intent-communication stream for norm violations: attempted jailbreak,
+    conflicting instruction injection, principal-impersonation, escalation patterns. Emits alerts independent
+    of the agent''s own reasoning; authority to pause the interaction rests with the monitor/supervisor,
+    not the agent.
+
+    '
+  maps_to_sfr:
+  - d
+  - f
+  when_to_use: Production deployment with untrusted input channels.
+anti_patterns:
+- name: One-way intent flow (user → system only)
+  why_wrong: 'If the system doesn''t surface its reading back, neither party can detect translation gaps.
+    SFR-d "mechanisms for detecting and managing potential conflicts or norm violations" requires the
+    system to show its work.
+
+    '
+- name: Concerns as prose caveats inside response
+  why_wrong: 'When concerns are buried inside the agent''s answer, they are not actionable, routable,
+    or audit-friendly. Typed concern events route to reviewers independently and survive the conversation
+    ending.
+
+    '
+- name: Escalation decided by the agent alone
+  why_wrong: 'If the agent is sole judge of when to escalate a dispute, a motivated-reasoning failure
+    mode swallows escalations. Declare escalation triggers as policy; route via monitor.
+
+    '
+code_shape:
+  language: pseudocode
+  code: "@dataclass\nclass IntentEcho:\n    goal_as_understood: str\n    constraints_detected: list[str]\n\
+    \    open_ambiguities: list[str]\n    proposed_plan_outline: list[str]\n    concerns_flagged: list[TypedConcern]\n\
+    \    requires_confirmation: bool\n\n@dataclass(frozen=True)\nclass TypedConcern:\n    concern_type:\
+    \ Literal[\"risk_detected\", \"policy_conflict\",\n                           \"missing_info\", \"\
+    capability_gap\"]\n    description: str\n    severity: Literal[\"low\", \"medium\", \"high\", \"blocking\"\
+    ]\n    evidence_refs: list[str]\n\ndef process_user_input(user_msg: str, ctx: AgentContext) -> Response:\n\
+    \    parsed = PARSE.extract_intent(user_msg, ctx)\n    echo = build_intent_echo(parsed)\n\n    # Emit\
+    \ typed concerns independent of final response\n    for concern in echo.concerns_flagged:\n      \
+    \  CONCERN_INBOX.route(ctx.agent_id, concern)\n\n    # Material action gate\n    if action_is_material(parsed)\
+    \ and echo.requires_confirmation:\n        return RequestConfirmation(echo=echo)\n\n    # Control-hierarchy\
+    \ check\n    if not HIERARCHY.permits(ctx.principal, parsed.action_class):\n        return RefuseWithReason(\n\
+    \            reason=\"insufficient_authority\",\n            hierarchy_path=HIERARCHY.explain(ctx.principal),\n\
+    \        )\n\n    # Dispute channel if agent wants to refuse\n    if AGENT.would_refuse(parsed):\n\
+    \        return OpenDispute(\n            agent_rationale=AGENT.refusal_reason(parsed),\n        \
+    \    principal_instruction=parsed,\n            escalation_to=ARBITER,\n        )\n\n    return execute_with_discretion_bounds(parsed,\
+    \ ctx.discretion_envelope)\n"
+  notes: 'The key structural move: typed concerns and disputes are first-class events that survive beyond
+    the conversational turn and route to reviewers, not prose within answers.
+
+    '
+evidence_production:
+- evidence_numeral: I
+  how_to_produce: 'Publish the controllability policy: intent-echo requirements, confirmation gates, concern
+    taxonomy, control hierarchy, dispute resolution. Versioned; every agent class cites a version.
+
+    '
+- evidence_numeral: II
+  how_to_produce: 'Technical specification: intent-echo schema, concern event schema, hierarchy enforcement
+    layer, dispute state machine, discretion envelope spec.
+
+    '
+- evidence_numeral: III
+  how_to_produce: 'Design docs showing: intent parser, echo generator, concern inbox, hierarchy policy
+    engine, dispute workflow, norm monitor.
+
+    '
+- evidence_numeral: IV
+  how_to_produce: 'Scenario-based validation: intent-translation accuracy on a diverse eval set, concern-surfacing
+    precision/recall, dispute resolution fairness tests, hierarchy-enforcement tests under conflicting-principal
+    scenarios.
+
+    '
+- evidence_numeral: V
+  how_to_produce: 'Deployment verification: live sampling of intent echoes, typed concerns routed, disputes
+    opened/resolved. Weekly operational report; anomalies reviewed.
+
+    '
+- evidence_numeral: VI
+  how_to_produce: 'Incident and resolution records: every dispute logged with agent rationale, principal
+    instruction, arbiter decision, outcome. Cross-reference to Violation and Complaint Register (D9.2).
+
+    '
+confidence: medium
+review_notes: 'Intent echo and typed concerns are implemented in limited form by current commercial agent
+  products (confirmation prompts for destructive actions, "I''m not sure" responses). Framework-specific:
+  (i) typed concern events as first-class audit objects — most products treat concerns as prose; (ii)
+  the dispute-resolution protocol with named arbiter — rare in practice. Low-to-medium confidence on the
+  control hierarchy prescription: real-world deployments often have ambiguous principal structures that
+  resist neat ordering. Suspected cross-suite dependency: D4 Value Alignment (intent is about values,
+  not just goals); I2 Deception (a deceptive echo is worse than no echo — need verification against behavior);
+  I1 Opaque Agency (typed concerns are the anti-opacity surface).
+
+  '
+drafted_by: claude-opus-4.7-author
+drafted_at: 2026-04-16
+anchor_exemplar: D3.2-sandboxing
+
+version_compat:
+  framework_version_min: "1.0"
+  framework_version_max: '1.x'
+  pattern_layer_version: "v1-draft"

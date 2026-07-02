@@ -1,0 +1,136 @@
+id: D7::idx10::balancing-stakeholder-impacts
+display_id: "D7_3"
+is_underlined_variant: true
+display_id_variant_note: "D7.3_underlined"
+suite_id: D7
+suite_title: Achieving and Sustaining a Safe System Profile
+subgoal_title: Balancing Stakeholder Impacts
+content_type: process
+summary: 'An agent''s outputs ripple beyond its immediate user. This subgoal expects the organization
+  to identify who is affected (direct and indirect), analyze benefits and harms per group, design mechanisms
+  that distribute impact fairly and proportionately, provide feedback channels for stakeholders who perceive
+  inequity, and communicate openly about the balancing choices made. Process-heavy: stakeholder mapping,
+  impact assessment, redress mechanisms, and transparency reporting form the core loop.
+
+  '
+normative_anchors:
+  sfrs_addressed:
+  - a
+  - b
+  - c
+  - d
+  evidence_addressed:
+  - I
+  - II
+  - III
+  - IV
+  sfrs_not_addressed: []
+  evidence_not_addressed: []
+process_elements:
+- name: Stakeholder mapping and re-mapping
+  cadence: authored at design; reviewed every 6 months and on material scope change
+  participants:
+  - product owner
+  - ethics lead
+  - external advisory (affected communities where feasible)
+  - legal
+  maps_to_sfr:
+  - a
+- name: Differential impact assessment
+  cadence: at design freeze, pre-launch, post-launch 90 days, annually; event-driven on incident
+  participants:
+  - responsible engineer
+  - ethics lead
+  - data / analytics lead
+  - external reviewer
+  maps_to_sfr:
+  - a
+  - b
+- name: Impact-balancing mechanism design review
+  cadence: per material design change; annual meta-review
+  participants:
+  - product owner
+  - responsible engineer
+  - ethics lead
+  - affected-party representative
+  maps_to_sfr:
+  - b
+- name: Stakeholder feedback and redress channel
+  cadence: continuous intake; acknowledgment within 5 business days; resolution SLA by severity
+  participants:
+  - intake owner
+  - ethics lead
+  - product owner
+  - independent ombudsperson for escalations
+  maps_to_sfr:
+  - c
+- name: Transparency report on balancing efforts
+  cadence: annual (public); quarterly internal digest
+  participants:
+  - comms lead
+  - ethics lead
+  - product owner
+  - executive sponsor
+  maps_to_sfr:
+  - d
+triggers:
+- New capability or new deployment market → Stakeholder mapping review
+- Incident affecting identifiable group disproportionately → Differential impact assessment + redress
+  intake
+- Stakeholder feedback above severity threshold → Formal investigation and response
+- Annual calendar → Transparency report
+- Material design change in impact-balancing mechanism → Review with affected-party representation
+artifacts:
+- Stakeholder map (direct, indirect, vulnerable, silent-stakeholder) with sources and last-reviewed date
+- Differential impact assessment reports per lifecycle milestone
+- Impact-balancing design documents showing mechanism, expected distribution of benefits and harms, and
+  measurement plan
+- Stakeholder feedback and redress register with intake, investigation, finding, action, closure, and
+  feedback-to-reporter
+- Annual transparency report (public where appropriate)
+- Quarterly internal stakeholder-impact digest
+evidence_production:
+- evidence_numeral: I
+  how_to_produce: 'Publish the stakeholder map and the differential impact assessment template as controlled
+    documents. For each assessment instance, retain: scope, groups analyzed (including silent stakeholders
+    and indirect participants), methodology, findings, mechanism-design implications. Cross-reference
+    to the design documents that implement the balancing mechanisms.
+
+    '
+- evidence_numeral: II
+  how_to_produce: 'Stakeholder feedback register is append-only: submitter (consent- respecting), channel,
+    date, concern, investigation, finding, action, resolution, feedback-to-reporter. Quarterly trend analysis
+    surfaces systemic patterns and drives design adjustments that are themselves recorded.
+
+    '
+- evidence_numeral: III
+  how_to_produce: 'Assessment reports on impact balance at published cadences. Metrics vary by domain
+    but typically include: benefit/harm distribution across defined groups, access equity, error-rate
+    equity, redress-rate equity. Methodology documented; changes to methodology flagged.
+
+    '
+- evidence_numeral: IV
+  how_to_produce: 'Transparency report (annual) published externally where possible. Includes mechanism
+    summary, distributional metrics, feedback- resolution summary, and decisions taken. Internal quarterly
+    digest covers the same ground with more detail for governance consumption.
+
+    '
+confidence: medium
+needs_human_review: true
+review_notes: 'SFR-c and SFR-d are marked non-normative in the input but are the primary mechanisms by
+  which affected communities would surface problems; drafted them as substantive. The distinctive ask
+  in the subgoal description — "collective de-risking of interactions that stakeholders cannot achieve
+  individually" — suggests something closer to insurance/mutualization than classic stakeholder consultation,
+  but the SFR text doesn''t carry that through. Flagged for human review on whether to add a stronger
+  "collective redress" pattern. Cross-suite: D7.4 (ethical alignment; shares intake mechanisms), D9 (governance
+  carries the RACI), I3 (specific rights- harm classes), I7 (wider stakeholder ecosystem beyond single
+  product scope).
+
+  '
+version_compat:
+  framework_version_min: '1.0'
+  framework_version_max: 1.x
+  pattern_layer_version: v1-draft
+drafted_by: claude-opus-4.7-author
+drafted_at: 2026-04-16
+anchor_exemplar: D7.2-culture-of-safety

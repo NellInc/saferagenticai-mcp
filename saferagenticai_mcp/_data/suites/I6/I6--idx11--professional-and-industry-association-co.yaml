@@ -1,0 +1,123 @@
+id: I6::idx11::professional-and-industry-association-co
+display_id: "I6_4"
+is_underlined_variant: true
+display_id_variant_note: "I6.4_underlined"
+suite_id: I6
+suite_title: Competitive Pressures
+subgoal_title: Professional and Industry Association Codes and Standards
+content_type: ecosystem
+summary: 'Professional associations are the slow-moving infrastructure of consensus safety standards:
+  codes of practice, credentialing, CPD requirements, advisory boards. This subgoal expects the organization
+  to participate in them substantively (contribute standards work; credential staff; maintain advisory-board
+  relationships) and to absorb the outputs back into internal practice via training. Ecosystem because
+  the value is collective; process-adjacent because the internal training infrastructure matters.
+
+  '
+normative_anchors:
+  sfrs_addressed:
+  - a
+  - b
+  evidence_addressed:
+  - I
+  - II
+  - III
+  sfrs_not_addressed: []
+  evidence_not_addressed: []
+cross_references:
+- I6::idx8::self-regulatory-market-oversight-mechani
+- I6::idx12::international-safety-protocol-harmonizat
+- I6::idx4::duties-beyond-fiduciary-limits
+stakeholders:
+- name: Professional associations with AI safety remit
+  engagement_channel: 'Named member organizations with drafting-level participation in at least one of: ACM (and
+    its code of ethics), IEEE Computer Society and IEEE SA (7000-series), AAAI, national CS societies
+    (BCS, GI, IPSJ), national engineering societies, domain-specific professional bodies (medical, legal,
+    financial AI application). Contribution is substantive: draft authorship, review rounds, working-group
+    chairs.
+
+    '
+  maps_to_sfr:
+  - a
+- name: Consumer-focused safety protocol development
+  engagement_channel: 'Contribute to consumer-protection-oriented safety protocol work (BSI standards for AI assurance,
+    UL standards for AI-enabled products, CSA/CEN-CENELEC AI standards, sector consumer bodies). The subgoal
+    specifically names consumer focus — protocols that protect end users vs those that protect industry-as-a-class.
+
+    '
+  maps_to_sfr:
+  - a
+- name: External advisory boards (ethical, scientific, patient/user, community)
+  engagement_channel: 'Maintain one or more independent advisory boards with defined charter, term limits, honoraria
+    paid, and authority to require org response to their advice (even when not binding). Published board
+    composition and charter. Members drawn from professional associations and broader stakeholder groups
+    rather than personal networks.
+
+    '
+  maps_to_sfr:
+  - b
+- name: Staff professional membership and credentialing
+  engagement_channel: 'Support staff professional membership in relevant associations (fees reimbursed, conference
+    attendance, standards-body participation time allocated). Require credentialing where available for
+    role-critical staff (chartered engineer status, AI ethics certifications where meaningful). Track
+    and report.
+
+    '
+  maps_to_sfr:
+  - b
+- name: Continuous Professional Development infrastructure
+  engagement_channel: 'Structured CPD program aligned with association requirements. Annual hours tracked per role;
+    completion linked to performance review. Curriculum updates follow standards revisions with a defined
+    SLA (e.g., 90 days after a material standards update). Links to D7.2 safety onboarding and recertification
+    records.
+
+    '
+  maps_to_sfr:
+  - b
+engagement_modes:
+- mode: ACM (Association for Computing Machinery) and ACM Code of Ethics; FAccT community
+- mode: 'IEEE Computer Society, IEEE Standards Association (7000-series ethically-aligned design standards)'
+- mode: AAAI (Association for the Advancement of Artificial Intelligence)
+- mode: 'National CS and engineering societies: BCS (UK), GI (Germany), IPSJ (Japan), ACS (Australia), IEAust, Engineering Council'
+- mode: 'Domain-specific professional bodies: ACR (medical imaging), RCR/RCP (clinical AI), ACRP (clinical research), AAMI (medical devices), AICPA (finance), ABA (legal AI)'
+- mode: 'Standards bodies with consumer remit: BSI, UL, CSA, CEN-CENELEC, ANSI (national standards bodies)'
+- mode: 'AI ethics certifications of recognized rigor (IAPP AIGP, IEEE CertifAIEd for individuals, ISACA AI frameworks where meaningful)'
+evidence_production:
+- evidence_numeral: I
+  how_to_produce: 'Participation log per association: membership tier, named representative with continuity,
+    contributions (drafts authored, reviews completed, chair or working-group positions), outcomes (adopted
+    standards, published codes). Annual summary at board risk committee and in the transparency report.
+
+    '
+- evidence_numeral: II
+  how_to_produce: 'Staff CPD records: hours per staff member per year, modules completed, credentialing
+    status, association memberships active. Aggregated and reported; cross-referenced to D7.2 safety onboarding
+    evidence. LMS-extractable.
+
+    '
+- evidence_numeral: III
+  how_to_produce: 'Annual self-assessment against professional association guidelines and recommendations:
+    which guidance applies, compliance status, gap-closure plan. Independent review by advisory board;
+    published in the transparency report. Recommendations adopted are logged; those rejected have written
+    rationale.
+
+    '
+confidence: medium
+needs_human_review: true
+review_notes: "Professional-association participation is at risk of being performative (member logo on\
+  \ the website, minimal contribution). The framework-specific sharpening worth preserving is \"continuity\
+  \ + drafting-level contribution\" — same lesson as the I7.3 exemplar for standards bodies.\nSFRs (both)\
+  \ are not normative in the input JSON — the subgoal is aspirational at the framework level. The pattern\
+  \ treats it as substantive anyway because (a) it supports other normative subgoals (I6.idx4 training,\
+  \ I6.idx8 oversight) and (b) its evidence hooks (CPD records, advisory-board minutes) are useful independent\
+  \ of whether this specific subgoal is strictly required.\nCross-suite:\n  (1) D7 Sustained Safety Culture\
+  \ provides internal-training\n      substrate; I6.11 adds the external-credentialing and\n      association\
+  \ layer.\n  (2) I6.8 self-regulatory oversight overlaps on standards-body\n      participation; consolidation\
+  \ should split cleanly —\n      I6.11 is professional/credentialing, I6.8 is regulatory\n      oversight.\n\
+  \  (3) D9 governance provides the RACI for advisory boards.\n"
+version_compat:
+  framework_version_min: '1.0'
+  framework_version_max: 1.x
+  pattern_layer_version: v1-draft
+drafted_by: claude-opus-4.7-author
+drafted_at: 2026-04-16
+anchor_exemplar: I7.3-balanced-global-partnership

@@ -1,0 +1,204 @@
+# D3.4 (underlined variant) — Spyware
+# Note: display_id "D3.4" collides with non-underlined "D3.4 Operational Boundaries" (idx4).
+# Distinct subgoals; use full `id` to disambiguate.
+
+id: D3::idx14::spyware
+display_id: "D3_4"
+is_underlined_variant: true
+suite_id: "D3"
+suite_title: "Security"
+subgoal_title: "Spyware"
+content_type: code-applicable
+
+summary: >
+  "Spyware" in agentic AI includes classical spyware plus a distinctive
+  AAI-native class: covert channels inside seemingly legitimate outputs
+  (steganographic tool calls, prompt-injection–induced data leakage,
+  reasoning-trace exfiltration). The defence combines traditional
+  endpoint and network controls with AAI-specific output analysis and
+  a vulnerability management loop that patches known holes before they
+  are used for persistent surveillance.
+
+normative_anchors:
+  sfrs_addressed: [a, b]
+  evidence_addressed: [I, II, III]
+  sfrs_not_addressed: []
+  evidence_not_addressed: []
+
+cross_references:
+  - "D3::idx2::sandboxing"
+  - "D3::idx6::overseeing-monitoring-agents"
+  - "D3::idx13::self-replicating-malware"
+  - "D3::idx16::vulnerability-to-hostile-environment"
+
+design_patterns:
+
+  - name: Covert-channel detection on agent outputs
+    sketch: >
+      Analyse outputs and tool calls for covert-channel indicators:
+      high-entropy strings in natural text, steganographic patterns in
+      image outputs, anomalous length / token-distribution, suspicious
+      base64 or hex in seemingly prose responses, unusual ordering or
+      timing of tool calls. Run before egress, not only at logging.
+      Suspected covert payloads block egress and raise alerts.
+    maps_to_sfr: [a]
+    when_to_use: Any agent handling sensitive data with external output
+      capability.
+
+  - name: Data-exfiltration guardrails with classification-aware egress
+    sketch: >
+      Data-loss-prevention policy aware of AAI-specific vectors: output
+      that embeds data classified above the egress target's permitted
+      class is blocked; prompt-injection-likely payloads are quarantined;
+      large outbound payloads are sampled and inspected. Classification
+      is propagated through the reasoning chain — if the agent read
+      restricted data, its outputs inherit the restriction until
+      explicitly declassified.
+    maps_to_sfr: [a, b]
+    when_to_use: Any agent with access to classified or privileged
+      data.
+
+  - name: Dynamic vulnerability tracking and time-bound patching
+    sketch: >
+      CVE intake (dependency-level and model-level), KEV monitoring,
+      AAI-specific advisories (MITRE ATLAS, AI safety institute
+      disclosures). Each advisory assessed for applicability; applicable
+      ones create patch tasks with time-bound SLAs by severity. Patch
+      status is a visible engineering metric; SLA misses are escalated.
+      Dependency-pinning with automated bump PRs closes the bulk of
+      the tail.
+    maps_to_sfr: [b]
+    when_to_use: Day one. Patch debt is the dominant long-tail exposure.
+
+  - name: Privileged-information isolation
+    sketch: >
+      Privileged credentials, secrets, and high-value data live in
+      isolated stores (dedicated secret managers with per-caller scope,
+      HSM-backed keys for the highest tier). Agents receive ephemeral
+      scoped handles, never raw credentials. Access is logged with
+      reason codes; anomalous access patterns (off-hours, unusual
+      combinations, new callers) are flagged.
+    maps_to_sfr: [b]
+    when_to_use: Any agent that handles credentials or high-value data.
+
+  - name: Anti-persistence on the runtime
+    sketch: >
+      Agent runtimes are designed to resist persistent spyware:
+      immutable images, short-lived containers (recreated per task or
+      on a timer), no writable system-level persistence, eBPF / file-
+      integrity monitoring reporting unexpected modifications. If an
+      attacker drops spyware, reboot removes it within hours.
+    maps_to_sfr: [a, b]
+    when_to_use: Any agent whose compromise would be a persistent
+      surveillance risk.
+
+anti_patterns:
+
+  - name: Outbound content inspected only at the log layer
+    why_wrong: >
+      Logging a leak is not preventing it. Inspection must gate egress,
+      not retrospect it.
+
+  - name: Persistent interactive shells for agent runtimes
+    why_wrong: >
+      An agent container with long-lived SSH or persistent storage is a
+      spyware beachhead. Short-lived immutable runtimes give an attacker
+      no place to hide between reboots.
+
+  - name: Patch-when-convenient
+    why_wrong: >
+      SFR-b requires "dynamic" tracking and patching. Patches applied
+      on quarterly release trains leave months of exposure. Time-bound
+      SLAs by severity are the framework's expected posture.
+
+  - name: Credentials in agent memory or prompts
+    why_wrong: >
+      Any credential accessible to the model is also accessible to
+      anyone who can prompt-inject the model. Ephemeral, scoped handles
+      retrieved from isolated stores are the pattern.
+
+  - name: Treating the reasoning trace as non-sensitive
+    why_wrong: >
+      Agent reasoning traces frequently contain PII and secrets the
+      agent processed. Exfiltration of traces is exfiltration of data.
+      Classify and protect them at the level of the most sensitive
+      content they might contain.
+
+code_shape:
+  language: pseudocode
+  code: |
+    # Egress gate with covert-channel detection + classification propagation
+    def on_egress(output: AgentOutput, ctx: AgentContext) -> EgressDecision:
+        inherited_class = CLASS_PROPAGATION.compute(ctx.input_classifications)
+        target_class = EGRESS_TARGETS[ctx.target].permitted_class
+        if inherited_class > target_class:
+            AUDIT.deny(ctx, reason="classification_above_target")
+            return EgressDecision.BLOCK
+
+        cc = COVERT_CHANNEL_SCAN.analyze(output)
+        if cc.suspicious:
+            QUARANTINE.hold(output, cc.findings)
+            ALERT.raise_(cc)
+            return EgressDecision.QUARANTINE
+
+        if DLP.blocks(output, inherited_class):
+            AUDIT.deny(ctx, reason="dlp_policy")
+            return EgressDecision.BLOCK
+
+        AUDIT.allow(ctx, output.id, inherited_class, target_class)
+        return EgressDecision.ALLOW
+  notes: >
+    Classification flows through the reasoning chain; covert-channel
+    scan and DLP are gate checks before egress. Denials carry
+    structured reasons that feed detection metrics.
+
+evidence_production:
+
+  - evidence_numeral: I
+    how_to_produce: >
+      Publish the spyware detection architecture: covert-channel
+      detectors, DLP rules, classification propagation logic,
+      anti-persistence runtime design. Include test results against
+      red-team covert-channel suites (prompt-injection induced leaks,
+      steganographic outputs).
+
+  - evidence_numeral: II
+    how_to_produce: >
+      Export the vulnerability tracking register with CVE/advisory
+      items, applicability triage, patch SLA status, and an SLA
+      adherence dashboard. Include the dependency-management
+      automation inventory (bump PRs, pinned versions).
+
+  - evidence_numeral: III
+    how_to_produce: >
+      Documentation of privileged-information handling: secret store
+      inventory, scoping rules, audit logs of privileged access,
+      anomalous-access alerts and their dispositions. Include
+      credential rotation cadence and evidence of execution.
+
+confidence: high
+needs_human_review: true
+review_notes: >
+  Display_id "D3.4" collides with non-underlined D3.4 Operational
+  Boundaries (idx4); distinct subgoals, use full id.
+
+  Covert-channel detection in agent outputs is an area with active
+  research rather than mature vendor tooling as of April 2026.
+  Specific detection techniques mentioned (entropy analysis,
+  stego detectors) are plausible defaults; the AAI-specific class
+  (reasoning-trace exfiltration via prompt injection) is less well
+  covered by commercial tooling and may require custom detection.
+  Confidence medium for that reason.
+
+  Cross-suite hypothesis (not added): I2 (Deception) overlaps heavily
+  on covert-channel detection as a deception-defence concern. D5
+  (Transparency) and D3.0 umbrella privacy artifacts provide the
+  classification scheme this pattern depends on.
+
+drafted_by: claude-opus-4.7-subagent-D3
+drafted_at: 2026-04-16
+anchor_exemplar: D3.2-sandboxing
+version_compat:
+  framework_version_min: "1.0"
+  framework_version_max: "1.x"
+  pattern_layer_version: "v1-draft"

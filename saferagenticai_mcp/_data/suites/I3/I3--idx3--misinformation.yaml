@@ -1,0 +1,134 @@
+id: I3::idx3::misinformation
+display_id: I3.3
+suite_id: I3
+suite_title: Degradation of Contextual Information
+subgoal_title: Misinformation
+content_type: code-applicable
+summary: 'Misinformation here is not only producing falsehoods but propagating them — and doing so in
+  a way that evades oversight. Defenses layer: source integrity (content-addressed retrieval), output-time
+  verification against the immutable baseline (I3.11), irreversibility gating (HITL confirmation on actions
+  whose effects can''t be walked back), and detection of patterns characteristic of coordinated inauthentic
+  behavior (burst generation, cross-agent amplification, persona rotation). Contested domains are handled
+  by balanced presentation plus explicit uncertainty, not by silent arbitration.
+
+  '
+normative_anchors:
+  sfrs_addressed:
+  - a
+  - b
+  evidence_addressed:
+  - I
+  - II
+  sfrs_not_addressed: []
+  evidence_not_addressed: []
+cross_references:
+- I3::idx0::degradation-of-contextual-information
+- I3::idx1::dissembling-information
+- I3::idx4::decoupling-of-context
+design_patterns:
+- name: Content-addressed source integrity
+  sketch: 'All retrieval sources identified by content hash, not mutable URI. Retrieval results carry
+    (source_id, content_hash). Any downstream citation or claim references the hash. Mutation of upstream
+    content is detected on next fetch; stale cache entries expire. Prevents unauthorized contextual alteration
+    in the retrieval path.
+
+    '
+  maps_to_sfr:
+  - a
+  when_to_use: Any retrieval-augmented system.
+- name: Irreversibility gate with HITL confirmation
+  sketch: 'Classify every available action by reversibility (reversible / costly-to-reverse / irreversible).
+    For irreversible actions, require explicit human confirmation that includes the context fragments
+    driving the decision. Confirmation uses a separate channel from the agent''s own reasoning (UI modal,
+    Slack approval, ticket). Agent cannot self-confirm even as a multi-step chain.
+
+    '
+  maps_to_sfr:
+  - b
+  when_to_use: Any agent with tool access that produces external effects (posts, payments, communications,
+    file modifications).
+- name: Coordinated inauthentic behavior detectors
+  sketch: 'Monitor output for signatures of CIB participation: rapid content generation above per-user
+    baselines, cross-instance template reuse with minor variations, persona rotation within a session,
+    amplification targeting specific narratives. Detectors run on the platform side, not only per-agent.
+    Cross-reference to Integrity/Trust & Safety teams where applicable.
+
+    '
+  maps_to_sfr:
+  - a
+  when_to_use: Agents that can post, publish, or communicate to large audiences.
+- name: Balanced-presentation protocol for contested claims
+  sketch: 'For claims in contested domains (where authoritative truth is politically, scientifically,
+    or socially disputed), output protocol: surface the disagreement, represent the main positions, label
+    confidence, never silently pick one side. Contested status is determined by configured taxonomy (e.g.,
+    a curated topic registry), not ad-hoc. When uncertain whether a topic is contested, escalate to human
+    review rather than asserting.
+
+    '
+  maps_to_sfr:
+  - b
+  when_to_use: General-purpose assistants operating in political, scientific-contested, or values-laden
+    domains.
+anti_patterns:
+- name: Confident-only output mode
+  why_wrong: 'Agents that always speak with high confidence produce misinformation by omission of uncertainty.
+    The framework requires that uncertainty be surfaced, not masked.
+
+    '
+- name: Self-confirming multi-agent chains
+  why_wrong: 'If agent A proposes a claim, agent B "verifies" it from the same reasoning substrate, and
+    agent C enacts it, there is no external check — all three are the same underlying prior. HITL must
+    be out-of-band.
+
+    '
+- name: Silent arbitration of contested claims
+  why_wrong: 'Picking one side of a contested claim because training data leans that way, without surfacing
+    the contestation, propagates the bias as fact. Protocol for contested domains is mandatory, not optional.
+
+    '
+code_shape:
+  language: pseudocode
+  code: "def execute_action(action: ProposedAction, ctx: AgentContext) -> Result:\n    rev = REVERSIBILITY_CLASSIFIER.classify(action)\n\
+    \    if rev == Reversibility.IRREVERSIBLE:\n        if ctx.human_confirmation is None:\n         \
+    \   return Result.escalate(\n                reason=\"irreversible_requires_hitl\",\n            \
+    \    surface_context=ctx.top_k_fragments(5),\n            )\n        if not ctx.human_confirmation.matches(action):\n\
+    \            return Result.fail(\"confirmation_mismatch\")\n    AUDIT.record(action, ctx, reversibility=rev)\n\
+    \    return EXECUTE(action)\n\ndef respond_to_claim(claim: Claim) -> Response:\n    topic = TOPIC_CLASSIFIER.classify(claim)\n\
+    \    if CONTESTED_REGISTRY.contains(topic):\n        positions = POSITION_FETCHER.positions(claim,\
+    \ topic)\n        return Response.balanced(claim, positions, uncertainty=\"contested\")\n    ...\n"
+  notes: 'The irreversibility classifier and contested-topic registry are both configuration artifacts
+    that the org maintains and audits. They are not model judgments at runtime; they are policy applied
+    to model output.
+
+    '
+evidence_production:
+- evidence_numeral: I
+  how_to_produce: 'System logs: data access events with source hashes, configuration changes to registries
+    (reversibility, contested-topic), decision processes with reasoning traces, authenticity-verification
+    steps per output, and flagged CIB-pattern detections with review outcomes. Append-only, retention
+    per policy.
+
+    '
+- evidence_numeral: II
+  how_to_produce: 'Analytical reports: periodic review of reasoning patterns, verification-methodology
+    documentation, contested-domain balanced-presentation audit (sampled outputs reviewed for balance),
+    and propagation analysis — where did the system''s outputs travel, which narratives were amplified,
+    which were flagged.
+
+    '
+confidence: high
+needs_human_review: false
+review_notes: '"Contested domain" registry is necessarily political — who decides what''s contested is
+  itself contested. Recommend org-level governance ownership (D9.2 compliance function) rather than engineering-owned
+  taxonomy. CIB detection is genuinely hard and field is moving; pattern sketches the shape, specifics
+  need T&S expertise. Cross-suite: D2 (Epistemic Hygiene) on verification methodology; D5 (Transparency)
+  on surfacing uncertainty; I2 (Deception) — misinformation is the corpus-level deception and shares defenses.
+
+  '
+version_compat:
+  framework_version_min: '1.0'
+  framework_version_max: 1.x
+  pattern_layer_version: v1-draft
+drafted_by: claude-opus-4.7-author
+drafted_at: 2026-04-16
+anchor_exemplar: D3.2-sandboxing

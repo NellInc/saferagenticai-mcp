@@ -1,0 +1,165 @@
+id: D8::idx8::multi-agent-resource-management
+display_id: D8.8
+suite_id: D8
+suite_title: Goal Termination and Sunsetting
+subgoal_title: Multi-Agent Resource Management
+content_type: code-applicable
+summary: 'Agent pools share finite resources (compute, API quotas, database connections, external tool
+  rate limits). Without explicit allocation logic, missions starve each other or a single runaway agent
+  exhausts the pool and forces cascading termination. The subgoal expects a resource allocator with capacity
+  awareness, reserve management, and fairness guarantees — with specific numeric anchors: ≤10% variance
+  between agents under normal conditions, ≤90% pool utilization in normal operations.
+
+  '
+normative_anchors:
+  sfrs_addressed:
+  - a
+  - b
+  - c
+  evidence_addressed:
+  - I
+  - II
+  - III
+  - IV
+  - V
+  sfrs_not_addressed: []
+  evidence_not_addressed: []
+cross_references:
+- D8::idx9::mission-portfolio-and-agent-assignment
+- D8::idx15::prevention-of-cascading-failures
+design_patterns:
+- name: Resource budget per agent per mission
+  sketch: 'Each mission assignment carries a resource budget: compute (CPU-seconds, GPU-seconds, tokens),
+    API quotas per external service, DB connections, memory ceilings. The runtime enforces budgets; exceedance
+    triggers defined action (pause, request more, terminate — per mission policy). Budget is carried as
+    part of the mission context, not implicit.
+
+    '
+  maps_to_sfr:
+  - a
+  - b
+  when_to_use: Any shared-pool deployment.
+- name: Reserve-aware allocator
+  sketch: 'The allocator maintains a system-wide utilization target below the framework''s 90% ceiling
+    under normal operations. Incoming missions are checked against available capacity; if accepting would
+    breach the ceiling, the mission queues (with declared wait policy) or is rejected (with reason code).
+    Reserve is for contingency: emergency override, cascade containment, spike absorption.
+
+    '
+  maps_to_sfr:
+  - a
+  - b
+  when_to_use: Always in shared pools.
+- name: Fairness governor (≤10% inter-agent variance)
+  sketch: 'Monitor per-agent resource draw over a rolling window. Coefficient-of-variation across active
+    agents must stay within the declared bound (default 10% per SFR-b). Outliers trigger investigation:
+    is the mission legitimately resource-heavy (expected, pre-declared), or is an agent behaving anomalously
+    (starvation attack, bug)? Route to supervisor with telemetry.
+
+    '
+  maps_to_sfr:
+  - b
+  when_to_use: Any pool with heterogeneous missions and homogeneous agents.
+- name: Capability-aware mission matching
+  sketch: 'Assign missions to agents based on declared capability profile (not just "any free agent").
+    Capability dimensions: latency SLO, authorized tool set, trained-domain, resource class. Matching
+    is explicit and logged. Random assignment is an anti-pattern for anything beyond trivial work.
+
+    '
+  maps_to_sfr:
+  - a
+  when_to_use: Any multi-capability pool.
+- name: Cooperative pool drain
+  sketch: 'When a pool-wide shutdown or rollback is initiated, agents coordinate drain: no new missions
+    accepted, in-flight missions complete or checkpoint-and-pause, resources returned in declared order,
+    supervisor reports drained state. Hard stop is reserved for emergency; cooperative drain is the default
+    path.
+
+    '
+  maps_to_sfr:
+  - a
+  - c
+  when_to_use: Any pool with scheduled maintenance or rolling deployment.
+anti_patterns:
+- name: First-come-first-served without quotas
+  why_wrong: 'A single mission with an unbounded goal can saturate the pool. SFR-b requires "fair distribution"
+    and specifically ≤10% variance — unachievable without per-agent/per-mission quotas.
+
+    '
+- name: 100% pool utilization as normal
+  why_wrong: 'Running at ceiling leaves no headroom for spike absorption, emergency override, or cascade
+    containment. The framework''s 90% target is deliberately conservative; treat it as hard ceiling under
+    normal operations.
+
+    '
+- name: Resource limits enforced only by the agent
+  why_wrong: 'If the agent self-reports its own limits, a bugged or deceptive agent consumes freely. Limits
+    must be enforced by the runtime / scheduler against out-of-band accounting.
+
+    '
+code_shape:
+  language: pseudocode
+  code: "@dataclass(frozen=True)\nclass ResourceBudget:\n    cpu_seconds: float\n    gpu_seconds: float\n\
+    \    tokens: int\n    api_calls: dict[str, int]     # external service → quota\n    db_connections_peak:\
+    \ int\n    wallclock_budget: timedelta\n\nclass PoolAllocator:\n    MAX_UTILIZATION = 0.90       \
+    \   # SFR-b numeric anchor\n    MAX_VARIANCE = 0.10             # SFR-b numeric anchor\n\n    def\
+    \ try_accept(self, mission: Mission, budget: ResourceBudget) -> AcceptResult:\n        projected_utilization\
+    \ = self.current_utilization() + self.project(budget)\n        if projected_utilization > self.MAX_UTILIZATION:\n\
+    \            return AcceptResult.QUEUE if mission.queueable else AcceptResult.REJECT\n        # Capability\
+    \ match\n        candidate = self.match_agent(mission.capability_requirements)\n        if candidate\
+    \ is None:\n            return AcceptResult.NO_CAPABLE_AGENT\n        # Fairness projection\n    \
+    \    projected_variance = self.project_variance_after_assign(candidate, budget)\n        if projected_variance\
+    \ > self.MAX_VARIANCE:\n            ALERTS.fire(\"fairness_drift\", candidate=candidate, mission=mission)\n\
+    \        self.assign(candidate, mission, budget)\n        return AcceptResult.ACCEPTED\n\n    def\
+    \ enforce_budget(self, agent: Agent, usage: ResourceUsage):\n        if usage.exceeds(agent.current_budget):\n\
+    \            AUDIT.record_exceedance(agent, usage)\n            POLICY.on_exceedance(agent)   # pause\
+    \ | request_more | terminate\n\n    async def cooperative_drain(self):\n        self.stop_accepting()\n\
+    \        for agent in self.active_agents():\n            await agent.finish_or_checkpoint()\n    \
+    \        self.return_resources(agent)\n        REPORT.drained(at=now())\n"
+  notes: 'Hard-coded numeric anchors (0.90, 0.10) come from SFR-b; treat as defaults that may be tightened
+    per deployment but not loosened without a waiver.
+
+    '
+evidence_production:
+- evidence_numeral: I
+  how_to_produce: 'Publish pool-management policy with capacity-assessment methodology, allocation rules,
+    fairness bounds (10%), utilization ceiling (90%), reserve policy, queuing/rejection logic.
+
+    '
+- evidence_numeral: II
+  how_to_produce: 'Operational records per mission: assigned agent, budget, actual utilization, queue/reject
+    events, fairness metrics. Exported weekly; anomalies investigated.
+
+    '
+- evidence_numeral: III
+  how_to_produce: 'Per-agent resource-monitoring dashboard showing reserve capacity maintained, utilization
+    patterns, budget exceedances, SLO compliance.
+
+    '
+- evidence_numeral: IV
+  how_to_produce: 'Quarterly policy-effectiveness review: utilization against ceiling, fairness variance
+    against bound, queue behavior, rejection patterns, adjustments recommended.
+
+    '
+- evidence_numeral: V
+  how_to_produce: 'Audit reports covering capacity-management effectiveness, resource-optimization opportunities,
+    incidents attributable to allocation failures.
+
+    '
+confidence: high
+review_notes: 'Allocation/fairness/quotas is canonical resource-scheduler engineering (k8s scheduler,
+  YARN, SLURM). Framework-specific: numeric anchors (10% / 90%) and the explicit linkage to termination/cascade
+  prevention. These numbers are defensible defaults but deployments may justify different bands (burst
+  workloads may tolerate higher utilization with more aggressive drain). Suspected cross-suite dependency:
+  D3 Security (starvation as attack vector); D6 Resource Limits if such a suite exists; I6 Imbalance (resource
+  fairness as a within-org analog).
+
+  '
+drafted_by: claude-opus-4.7-author
+drafted_at: 2026-04-16
+anchor_exemplar: D3.2-sandboxing
+
+version_compat:
+  framework_version_min: "1.0"
+  framework_version_max: '1.x'
+  pattern_layer_version: "v1-draft"

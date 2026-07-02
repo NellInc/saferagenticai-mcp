@@ -1,0 +1,131 @@
+id: D4::idx16::conflictual-contextual-values
+display_id: "D4_7"
+suite_id: D4
+suite_title: Value Alignment
+subgoal_title: Conflictual Contextual Values
+content_type: process
+summary: 'When a stakeholder''s values conflict with the operating context (another stakeholder''s values,
+  the deployment environment''s norms, or the org''s Floor), the system cannot silently pick a winner.
+  The framework asks for explicit detection, a resolution pathway (negotiation or controlled disengagement),
+  and durable records of how conflicts were handled. The code side (conflict detection) is real but subordinate:
+  the harder work is the human-in-the-loop escalation runbook and the policy that determines when to negotiate,
+  when to disengage, and who decides.
+
+  '
+normative_anchors:
+  sfrs_addressed:
+  - a
+  - b
+  - c
+  - d
+  evidence_addressed:
+  - I
+  - II
+  sfrs_not_addressed: []
+  evidence_not_addressed: []
+cross_references:
+- D4::idx0::value-alignment
+- D4::idx3::awareness-of-individual-vs-community-bou
+- D4::idx6::universal-moral-foundations
+- D4::idx18::imbalance-of-values-between-provider-con
+process_elements:
+- name: Value-position canvas per stakeholder class
+  cadence: per new stakeholder class (integrator, regulator, user segment); annual refresh
+  participants:
+  - alignment lead
+  - product owner
+  - stakeholder liaisons
+  maps_to_sfr:
+  - a
+- name: Runtime value-conflict detection (technical layer)
+  cadence: continuous; weekly review of flagged cases
+  participants:
+  - alignment lead (reviews)
+  - engineering (maintains detectors)
+  maps_to_sfr:
+  - b
+- name: Conflict-resolution escalation runbook
+  cadence: per flagged conflict case; drill semi-annually
+  participants:
+  - on-call resolver
+  - alignment lead
+  - Ethics Board liaison (for Floor-adjacent cases)
+  maps_to_sfr:
+  - c
+- name: Controlled disengagement protocol
+  cadence: per activation
+  participants:
+  - alignment lead
+  - communications
+  - legal (if user/partner-facing)
+  maps_to_sfr:
+  - c
+- name: Conflict register review
+  cadence: monthly aggregate review; quarterly Ethics Board reporting
+  participants:
+  - alignment lead
+  - safety lead
+  - Ethics Board
+  maps_to_sfr:
+  - d
+triggers:
+- New stakeholder class onboarded → Value-position canvas
+- Technical detector flags candidate conflict (user request conflicts with operator policy; two users'
+  data-sharing preferences conflict; context norms conflict with Codex entry) → Escalation runbook
+- Conflict involves a Floor value (D4.6) → Ethics Board review before action; never auto-resolve
+- Negotiation fails within SLA → Controlled disengagement
+- Scheduled monthly → Conflict register review
+artifacts:
+- Value-position canvas per stakeholder class
+- Conflict-detection technical spec (runtime signals, thresholds)
+- Conflict escalation runbook (tiered, time-bounded steps)
+- Controlled disengagement protocol (user-facing behaviors, communications templates, legal-review gates)
+- 'Conflict register (append-only log: detection, classification, actions, outcome, value modifications
+  adopted)'
+- Drill reports
+evidence_production:
+- evidence_numeral: I
+  how_to_produce: 'Retain the conflict-detection technical spec and runbook as linked documents. Detection
+    side: runtime signals emitted, thresholds, classifier artifacts, labeled evaluation data. Resolution
+    side: tiered runbook (tier-1 in-session disambiguation; tier-2 operator involvement; tier-3 Ethics
+    Board review; tier-4 controlled disengagement), with SLAs per tier. Drill reports evidence operability
+    of the runbook.
+
+    '
+- evidence_numeral: II
+  how_to_produce: 'Conflict register: append-only log with per-case entries — detection signal, classification,
+    tier reached, parties notified, resolution (negotiated outcome, disengagement, or policy change adopted),
+    timing, value-modification adopted if any. Monthly aggregation surfaces patterns; quarterly Ethics
+    Board review considers whether recurring conflicts indicate Codex revision is warranted.
+
+    '
+confidence: medium
+needs_human_review: true
+review_notes: 'Content-type decision: process rather than code-applicable. The detection layer is code
+  (and is patterned briefly here), but the core of the subgoal — SFR-c''s "negotiation or controlled disengagement"
+  — is an escalation runbook with named resolver roles, time-bounded steps, and Ethics Board involvement
+  for Floor- adjacent cases. That is a process artifact.
+
+  Honest caveat: "negotiation" between a user and an agent is novel terrain. The pattern assumes human
+  operators are the resolvers in material cases — the agent does not autonomously negotiate away values.
+  Orgs piloting more autonomous negotiation should flag this as out-of-pattern and add their own safeguards.
+
+  Floor-adjacency rule: conflicts that implicate a D4.6 Floor value skip tiers and go directly to Ethics
+  Board review. This is stricter than the framework literally requires but necessary to prevent erosion
+  of Floor values through many small "negotiated" exceptions.
+
+  Cross-suite (for consolidation): D4.3 (individual-vs-community) for scope-specific conflicts; D4.6 Universal
+  Moral Foundations for Floor interaction; D4.15 (provider-vs-consumer imbalance) is a special case of
+  the broader conflict pattern; I2 Deception if a conflict reveals manipulated framing. D9 Governance
+  for Ethics Board authority.
+
+  '
+version_compat:
+  framework_version_min: '1.0'
+  framework_version_max: 1.x
+  pattern_layer_version: v1-draft
+drafted_by: claude-opus-4.7-author
+drafted_at: 2026-04-16
+anchor_exemplar: D7.2-culture-of-safety
+display_id_variant_note: D4.7-underlined
+is_underlined_variant: true

@@ -1,0 +1,161 @@
+id: D9::idx2::compliance-with-applicable-laws-standard
+display_id: D9.2
+suite_id: D9
+suite_title: Responsible Governance of AAI Safety
+subgoal_title: Compliance with Applicable Laws, Standards & Ethical Norms
+content_type: governance
+summary: 'Compliance is not a one-time audit; it is a living framework that maps product capabilities
+  to a moving target of jurisdictional requirements, with named humans accountable and a real dispute
+  mechanism. The framework expects organizations to produce durable artifacts (governance documents, violation
+  registers, accountability profiles), not checklist attestations.
+
+  '
+normative_anchors:
+  sfrs_addressed:
+  - a
+  - b
+  - c
+  - d
+  - e
+  evidence_addressed:
+  - I
+  - II
+  - III
+  - IV
+  - V
+  sfrs_not_addressed: []
+  evidence_not_addressed: []
+policy_elements:
+- name: Jurisdictional Compliance Matrix
+  description: 'A maintained mapping of (product capability × deployment jurisdiction × applicable law/standard).
+    Reviewed at least quarterly and on material product change. Surfaces gaps where a capability ships
+    to a jurisdiction without a mapped compliance owner. Living document — each change tracked with rationale
+    and effective date.
+
+    '
+  maps_to_sfr:
+  - a
+  - b
+- name: AI Accountability Framework (RACI)
+  description: 'Documented Responsible/Accountable/Consulted/Informed matrix covering every material compliance
+    domain: data handling, training-data provenance, deployment decisions, incident response, sunset decisions,
+    user communications, regulatory liaison. Accountable must be a single named human, not a team or a
+    role.
+
+    '
+  maps_to_sfr:
+  - c
+- name: Violation and Complaint Register
+  description: 'Immutable, append-only log of complaints received, internal violations detected, investigations
+    opened, findings, penalties applied, and remediations implemented. Entries cross-reference the Jurisdictional
+    Compliance Matrix to identify systemic patterns.
+
+    '
+  maps_to_sfr:
+  - d
+- name: Dispute Resolution Charter
+  description: 'Publicly published procedure for external parties (users, regulators, civil society) to
+    raise grievances. Specifies intake, acknowledgment timelines, investigation cadence, escalation paths,
+    and access to independent review (e.g., ombudsperson or external panel). Final decisions documented
+    and, where appropriate, published.
+
+    '
+  maps_to_sfr:
+  - e
+- name: Standards Embedding Protocol
+  description: 'Process by which new laws, standards, or regulatory guidance are ingested into the governance
+    framework: monitoring function, impact assessment, policy update, training update, attestation. Named
+    owner, defined SLA (e.g., 90 days from publication of binding standard).
+
+    '
+  maps_to_sfr:
+  - b
+org_roles:
+- role: AI Compliance Officer
+  responsibilities: 'Owns the Jurisdictional Compliance Matrix, the Accountability Framework, and quarterly
+    attestations. Single point of accountability for D9.2. Reports to board-level risk committee.
+
+    '
+  accountable_or_consulted: accountable
+- role: Legal Counsel (internal or retained)
+  responsibilities: 'Consulted on jurisdictional mapping, standards embedding, dispute resolution design,
+    and interpretations of ambiguous regulatory language. Reviews Compliance Matrix at minimum quarterly.
+
+    '
+  accountable_or_consulted: consulted
+- role: Product Owners (per product line)
+  responsibilities: 'Responsible for capability-level compliance reviews: when a capability changes, they
+    trigger the Jurisdictional Compliance Matrix review and implement remediations.
+
+    '
+  accountable_or_consulted: responsible
+- role: Board-level AI Risk Committee
+  responsibilities: 'Informed of compliance posture quarterly. Reviews material violations, penalty patterns,
+    and remediation effectiveness. Has authority to pause deployments on compliance grounds.
+
+    '
+  accountable_or_consulted: informed
+- role: Dispute Ombudsperson (independent)
+  responsibilities: 'Independent of the product and compliance functions. Reviews contested dispute outcomes
+    and has authority to require reinvestigation.
+
+    '
+  accountable_or_consulted: consulted
+documentation_artifacts:
+- artifact: Living AAI Governance Framework document
+  cadence: versioned; reviewed annually and on material change
+- artifact: Jurisdictional Compliance Matrix
+  cadence: quarterly review; event-driven updates on law or product change
+- artifact: Quarterly compliance attestation
+  cadence: quarterly
+- artifact: Violation and Complaint Register
+  cadence: continuous; append-only
+- artifact: Accountability role profiles
+  cadence: annually reaffirmed; updated on role change
+- artifact: Dispute case files
+  cadence: per case; retained per record-retention policy
+- artifact: Standards embedding log
+  cadence: per standard ingested
+evidence_production:
+- evidence_numeral: I
+  how_to_produce: 'Publish the governance framework as a living document with a change log. Each revision
+    records what changed, why, who approved, and when it took effect. Version numbers increment with material
+    changes.
+
+    '
+- evidence_numeral: II
+  how_to_produce: 'Maintain an AAI risk management framework as a companion document to the governance
+    framework. Should enumerate risk categories, assessment methodology, tolerance thresholds, and escalation
+    triggers.
+
+    '
+- evidence_numeral: III
+  how_to_produce: 'For each identified risk, maintain a risk register entry with: risk description, likelihood/impact
+    assessment, owner, mitigation plan, residual risk, review date. Register is auditable.
+
+    '
+- evidence_numeral: IV
+  how_to_produce: 'Role profiles are signed documents (physical or digital) where the named accountable
+    human attests to their responsibilities. Retained in HR records; referenced in the Accountability
+    Framework.
+
+    '
+- evidence_numeral: V
+  how_to_produce: 'Extract from the Violation and Complaint Register on demand, showing full case lifecycle:
+    intake → investigation → finding → penalty → remediation → verification. Redaction for privacy permitted
+    but structural completeness required.
+
+    '
+confidence: medium
+needs_human_review: true
+review_notes: 'The specific roles and cadences proposed are plausible defaults but jurisdictional law
+  (GDPR, EU AI Act, sector-specific regulators) will shape specifics. Nell or legal counsel should verify:
+  (1) "Dispute Ombudsperson" naming — some jurisdictions require specific titles; (2) whether "quarterly"
+  satisfies ongoing-monitoring obligations under EU AI Act Article 72 for high-risk systems; (3) whether
+  the accountability-to-a-single-named-human framing survives in corporate structures that use committee
+  accountability. These are defaults; adapt per counsel.
+
+  '
+drafted_by: claude-opus-4.7-author
+drafted_at: 2026-04-16
+anchor_exemplar: self

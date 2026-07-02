@@ -1,0 +1,216 @@
+id: I2::idx0::deception
+display_id: "G2"
+is_underlined_variant: true
+suite_id: I2
+suite_title: Deception
+subgoal_title: Deception  # canonical; umbrella nature reflected in summary
+content_type: governance
+summary: 'The overarching I2 subgoal asks organizations to treat deception — intentional and unintentional,
+  by the model or by operators — as a first-class safety domain with disclosure duties, integrity testing,
+  liability structure, and heightened controls for high-risk deployments. The governance artifacts this
+  produces (AI-disclosure policy, integrity test register, limitation-notice catalogue, liability posture
+  statement) feed every downstream I2 subgoal.
+
+  '
+normative_anchors:
+  sfrs_addressed:
+  - a
+  - b
+  - c
+  - d
+  - e
+  - f
+  - g
+  - h
+  - i
+  evidence_addressed:
+  - I
+  - II
+  - III
+  - IV
+  - V
+  - VI
+  - VII
+  - VIII
+  sfrs_not_addressed: []
+  evidence_not_addressed: [IX]
+policy_elements:
+- name: AI Disclosure and Acknowledgment Policy
+  description: 'Written policy specifying where, when, and how users are informed that they are interacting
+    with or receiving outputs from an AI system. Covers: synchronous chat disclosure, generated-content
+    provenance marks (e.g., C2PA / content credentials), voice-agent audible disclosure, agentic-action
+    attribution in logs shown to the user, and acknowledgment capture for high-risk contexts. No "silent
+    AI" surfaces are permitted without documented exception and owner.
+
+    '
+  maps_to_sfr:
+  - a
+  - h
+- name: Information Integrity Charter (cross-stakeholder)
+  description: 'A charter signed by Developer, Integrator, Operator, Maintainer, and Regulator-facing
+    owners (DIOMR) committing to shared information-integrity practices: provenance tracking, source attribution
+    standards, correction protocols, and cross-stakeholder escalation for detected integrity failures.
+    Reviewed annually; binds contractors and vendors by flow-down.
+
+    '
+  maps_to_sfr:
+  - b
+  - e
+- name: Non-Conformance and Abatement Procedure
+  description: 'Documented procedure for detecting, disclosing, and abating systems that fall out of conformance
+    with best practice. Specifies: self-detection triggers, internal notification SLAs, public nuisance
+    notification (when applicable), cease-and-correct timelines, and public register of abatements. Ties
+    into the D9.2 Violation and Complaint Register.
+
+    '
+  maps_to_sfr:
+  - c
+- name: Limitation and Error Notice Catalogue
+  description: 'Maintained inventory of user-facing limitation notices required across the product surface:
+    hallucination warning, mimicry warning, computational-encoding warning (e.g., outputs interpreted
+    as facts but generated from statistical patterns), date-of-knowledge caveats, jurisdictional disclaimers.
+    Each entry includes: copy, placement, legibility test (WCAG contrast, reading level), and last review
+    date.
+
+    '
+  maps_to_sfr:
+  - h
+- name: Integrity Testing Register
+  description: 'Central register of ongoing output-integrity tests: consistency across contexts (same
+    question, different framings), context-stripping probes (removing persona/system prompt), user-attribution
+    adhesion tests (refuses to falsely attribute claims to named individuals), factuality spot-checks.
+    Records cadence, owner, last run, pass rate, open defects.
+
+    '
+  maps_to_sfr:
+  - d
+  - g
+- name: Liability Posture Statement
+  description: 'Board-approved statement of the organization''s liability posture: commitment to joint-and-several
+    allocation with DIOMR partners where contractually available, strict-liability acknowledgment where
+    no recognized standard of care applies (the "Dangerous Until Demonstrated to Be Safe" stance), insurance
+    coverage summary, and user-facing notice of preserved rights to seek damages. Published on the responsible-AI
+    site.
+
+    '
+  maps_to_sfr:
+  - e
+  - f
+- name: High-Risk Deployment Controls Addendum
+  description: 'Additional controls for deployments classified as high-risk or critical-infrastructure:
+    enhanced integrity testing, independent third-party certification, incident-response tabletop drills,
+    red-team cadence uplift, and pre-deployment sign-off by a named executive. Triggered by a risk-classification
+    rubric published in the governance framework.
+
+    '
+  maps_to_sfr:
+  - i
+org_roles:
+- role: Integrity Officer (or named equivalent within Compliance)
+  responsibilities: 'Owns the Integrity Testing Register, the Limitation and Error Notice Catalogue, and
+    annual attestation on G2 posture. Single accountable human. Reports to the AI Compliance Officer (per
+    D9.2).
+
+    '
+  accountable_or_consulted: accountable
+- role: Product Owners (per capability)
+  responsibilities: 'Implement AI-disclosure requirements on their surfaces; trigger high-risk controls
+    when capability risk classification warrants; own integrity-defect remediation in their product area.
+
+    '
+  accountable_or_consulted: responsible
+- role: Legal Counsel
+  responsibilities: 'Maintains the Liability Posture Statement; advises on strict-liability exposure;
+    reviews Information Integrity Charter flow-down language.
+
+    '
+  accountable_or_consulted: consulted
+- role: Third-party certifier (for high-risk deployments)
+  responsibilities: 'Independent assessment per the High-Risk Deployment Controls Addendum. Must have
+    no material financial dependence on the organization.
+
+    '
+  accountable_or_consulted: consulted
+documentation_artifacts:
+- artifact: AI Disclosure Policy (published)
+  cadence: versioned; annual review + on surface change
+- artifact: Information Integrity Charter (signed by DIOMR parties)
+  cadence: annual reaffirmation
+- artifact: Non-Conformance and Abatement Procedure
+  cadence: versioned; reviewed annually
+- artifact: Limitation and Error Notice Catalogue
+  cadence: quarterly review + on surface change
+- artifact: Integrity Testing Register (with test results)
+  cadence: continuous; per-run entries retained
+- artifact: Liability Posture Statement (published)
+  cadence: annual board reaffirmation
+- artifact: High-Risk Deployment Controls Addendum
+  cadence: versioned; reviewed annually
+- artifact: Third-party certification reports (for high-risk)
+  cadence: per certification cycle (typically annual)
+evidence_production:
+- evidence_numeral: I
+  how_to_produce: 'Screenshot bank and interaction logs showing AI-disclosure surfaces (chat headers,
+    voice prompts, content-credential metadata, consent dialogs). For high-risk contexts, retain third-party
+    certification reports. Cross-link to the AI Disclosure Policy section that each surface implements.
+
+    '
+- evidence_numeral: II
+  how_to_produce: 'Signed Information Integrity Charter plus minutes of the annual DIOMR review meeting.
+    Include examples of cross-stakeholder escalations raised and resolved in the reporting period.
+
+    '
+- evidence_numeral: III
+  how_to_produce: 'Extract from the Non-Conformance and Abatement Procedure log: cases detected, notifications
+    issued, corrective actions taken, timelines met. Include at least one self-detection case to evidence
+    the mechanism functions without external prompt.
+
+    '
+- evidence_numeral: IV
+  how_to_produce: 'Integrity Testing Register export: test name, cadence, last-run timestamp, pass/fail
+    metrics, open defects. Include context-stripping and adhesion-test (user-attribution fidelity) results
+    specifically.
+
+    '
+- evidence_numeral: V
+  how_to_produce: 'Published Liability Posture Statement; copies of contracts with DIOMR partners showing
+    joint-and-several clauses (redacted as needed); user-facing notice screenshots showing preserved right
+    to damages.
+
+    '
+- evidence_numeral: VI
+  how_to_produce: 'Mapping document showing, per capability, which recognized standard of care is claimed
+    (e.g., ISO/IEC 42001, sector-specific standard) and which capabilities operate under the explicit
+    Dangerous-Until-Demonstrated-to-be-Safe strict-liability stance.
+
+    '
+- evidence_numeral: VII
+  how_to_produce: 'Examples from the Limitation and Error Notice Catalogue with conspicuousness evidence
+    (contrast measurements, reading-level score, placement screenshots). Include at minimum: hallucination
+    warning, mimicry warning, computational-encoding warning.
+
+    '
+- evidence_numeral: VIII
+  how_to_produce: 'High-Risk Deployment Controls Addendum with per-deployment records: risk classification,
+    applied additional controls, certification artifacts, named executive sign-off, tabletop drill reports.
+
+    '
+confidence: medium
+needs_human_review: true
+review_notes: "G2 is the umbrella under which I2.1–I2.6 specialize. Keep this pattern governance-flavoured\
+  \ (policy, register, role, artifact) and let the specialized subgoals carry code-applicable detail.\n\
+  Cross-suite dependencies worth flagging for consolidation:\n  - D2 (Epistemic Hygiene) owns the hallucination-vs-deception\
+  \ distinction;\n    this pattern's Limitation Notice Catalogue should reference D2 patterns\n    rather\
+  \ than redefine the distinction.\n  - D5 (Transparency) owns faithful-vs-plausible explanation — overlaps\n\
+  \    with SFR-b information-integrity commitments.\n  - D7 (Sustained Safety) deception-detection is\
+  \ part of assurance cadence;\n    coordinate integrity-testing cadence with D7.\n  - D9.2 governance\
+  \ framework absorbs the G2 policies; avoid duplication.\n\nThe \"public nuisance notification\" language\
+  \ in evidence III is specific to certain jurisdictions (US tort doctrine); Nell/counsel should confirm\
+  \ whether to generalize to \"regulator and affected-party notification\" for non-US readers.\n"
+drafted_by: claude-opus-4.7-author
+drafted_at: 2026-04-16
+anchor_exemplar: D9.2-compliance
+version_compat:
+  framework_version_min: '1.0'
+  framework_version_max: 1.x
+  pattern_layer_version: v1-draft

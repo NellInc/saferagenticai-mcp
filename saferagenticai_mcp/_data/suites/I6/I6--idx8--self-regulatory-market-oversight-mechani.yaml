@@ -1,0 +1,127 @@
+id: I6::idx8::self-regulatory-market-oversight-mechani
+display_id: "I6_1"
+is_underlined_variant: true
+display_id_variant_note: "I6.1_underlined"
+suite_id: I6
+suite_title: Competitive Pressures
+subgoal_title: Self-Regulatory Market Oversight Mechanisms
+content_type: ecosystem
+summary: 'Self-regulation only works when participation is substantive and consequences for non-compliance
+  are real. This subgoal expects the organization to engage with voluntary oversight bodies (industry
+  safety consortia, certification schemes, coordinated disclosure frameworks) in ways that go beyond membership-fee
+  attendance: drafting contributions, standards authorship, public commitment to certification outcomes,
+  and willingness to have non-compliance consequences applied. Ecosystem, not governance — the org is
+  one node in a larger coordination graph.
+
+  '
+normative_anchors:
+  sfrs_addressed:
+  - a
+  - b
+  evidence_addressed:
+  - I
+  - II
+  - III
+  sfrs_not_addressed: []
+  evidence_not_addressed: []
+cross_references:
+- I6::idx11::professional-and-industry-association-co
+- I6::idx12::international-safety-protocol-harmonizat
+- I6::idx9::market-driven-safety-validation-mechanis
+stakeholders:
+- name: Industry safety consortia and frontier forums
+  engagement_channel: 'Named participation with continuity (same representative or successor-trained continuity)
+    in bodies such as the Frontier Model Forum, Partnership on AI, ML Commons Safety Working Group, MLCommons
+    AI Safety benchmark consortium, the AI Safety Consortium at NIST. Participation is measured by drafting
+    contributions, not attendance counts. Annual internal review of which memberships pay value and which
+    are nominal.
+
+    '
+  maps_to_sfr:
+  - a
+- name: Voluntary certification schemes
+  engagement_channel: 'Submit to a recognized certification scheme (e.g., ISO 42001, IEEE 7000 series, sector-specific
+    AI certifications, voluntary audit programs from AI Safety Institutes). Treat the certification as
+    a public commitment: loss of certification is disclosable, not quietly replaced. Publish the certificate
+    and audit letter.
+
+    '
+  maps_to_sfr:
+  - a
+  - b
+- name: Coordinated disclosure and vulnerability-sharing frameworks
+  engagement_channel: 'Join coordinated AI-vulnerability disclosure frameworks (CVE-for-AI equivalents, model-incident-sharing
+    consortia). Contribute incidents and near-misses; consume others''. The value is the network effect,
+    which breaks if orgs are takers-only.
+
+    '
+  maps_to_sfr:
+  - b
+- name: Public safety commitments and scorecards
+  engagement_channel: 'Sign and adhere to named public commitments (White House voluntary commitments, Seoul/Bletchley/Paris
+    frontier AI commitments, UN Global Digital Compact). Publish annual self-assessment against each commitment;
+    submit to third-party scorecards that compare across signatories (e.g., Stanford HAI Foundation Model
+    Transparency Index). Losing ground on a public scorecard is a disclosable event.
+
+    '
+  maps_to_sfr:
+  - a
+  - b
+- name: Enforcement-bearing bodies within self-regulation
+  engagement_channel: 'Where self-regulatory bodies have enforcement teeth (certification withdrawal, membership
+    suspension, public censure), accept the jurisdiction formally. Track and publish every enforcement
+    action against the org. Advocate for strengthening enforcement rather than weakening it — the subgoal
+    explicitly requires "meaningful consequences for non-compliance".
+
+    '
+  maps_to_sfr:
+  - b
+engagement_modes:
+- mode: Frontier Model Forum (where applicable to frontier-scale orgs)
+- mode: Partnership on AI (broad AI safety and ethics coordination)
+- mode: MLCommons / MLCommons AI Safety benchmark consortium
+- mode: ISO/IEC JTC 1/SC 42 — AI standards (international)
+- mode: IEEE 7000 series standards (ethically aligned design)
+- mode: 'NIST AI Safety Institute and international counterparts (UK AISI, EU AI Office, Japan AISI, Canadian AISI, Singapore IMDA)'
+- mode: 'Voluntary commitments: Seoul/Bletchley/Paris frontier AI summits, White House AI Voluntary Commitments, G7 Hiroshima AI code of conduct'
+- mode: Stanford HAI Foundation Model Transparency Index and similar external scorecards
+- mode: 'AI incident databases (AIAAIC, OECD AIM, MIT AI Incident Database)'
+evidence_production:
+- evidence_numeral: I
+  how_to_produce: 'Published policy document enumerating each voluntary oversight framework the org participates
+    in, scope of participation, compliance status, named representative with continuity, and enforcement
+    mechanisms the framework carries. Updated annually and on membership change.
+
+    '
+- evidence_numeral: II
+  how_to_produce: 'Certification records per scheme: certificate, audit letter, audit scope, findings,
+    remediations, renewal dates. Where certifications lapse, the reason is disclosed; silent lapse is
+    a governance failure (links back to I6.2 Safety Washing).
+
+    '
+- evidence_numeral: III
+  how_to_produce: 'Annual participation report covering: drafting contributions to standards or frameworks,
+    public commitments signed, scorecard movements, incidents contributed to sharing frameworks, enforcement
+    actions received and responses. Published externally; reviewed at board risk committee.
+
+    '
+confidence: medium
+needs_human_review: true
+review_notes: "Ecosystem patterns for self-regulation carry two risks:\n  (1) Industry capture — self-regulation\
+  \ is often a path to weaker\n      regulation. The subgoal's \"meaningful consequences for\n      non-compliance\"\
+  \ is the test; a scheme without real teeth is\n      theatre. The pattern acknowledges this but cannot\
+  \ solve it\n      from inside one org.\n  (2) Rapid churn in voluntary frameworks — named bodies come\
+  \ and\n      go. The pattern uses examples but emphasizes the principle\n      (named participation,\
+  \ continuity, substantive contribution)\n      that survives churn.\nCross-suite:\n  (1) I6.idx11 (professional\
+  \ associations) overlaps on standards\n      participation. Consolidation should clarify: idx8 is\n\
+  \      oversight frameworks with enforcement, idx11 is professional\n      codes and ongoing training.\n\
+  \  (2) I6.idx12 (international harmonization) is a scope level\n      above; idx8 is the industry layer,\
+  \ idx12 is the\n      intergovernmental layer.\n  (3) D9 governance provides the internal accountability\
+  \ for\n      external commitments.\n"
+version_compat:
+  framework_version_min: '1.0'
+  framework_version_max: 1.x
+  pattern_layer_version: v1-draft
+drafted_by: claude-opus-4.7-author
+drafted_at: 2026-04-16
+anchor_exemplar: I7.3-balanced-global-partnership

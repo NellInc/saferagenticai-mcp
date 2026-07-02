@@ -1,0 +1,179 @@
+id: "D1::idx9::goal-drift"
+display_id: "D1.9"
+suite_id: "D1"
+suite_title: "Goal Alignment"
+subgoal_title: "Goal Drift"
+content_type: code-applicable
+
+summary: >
+  Where D1.7 tracks drift *inside* the agent's goal portfolio, D1.9
+  tracks drift in the *world around the agent* — circumstances, data
+  distribution, stakeholder expectations, regulatory surface — that can
+  silently invalidate an originally-aligned goal. The subgoal's teeth
+  are in the second SFR: when monitored drift exceeds thresholds, the
+  system *pauses*, notifies, and requests guidance. Not a warning toast;
+  a hard stop.
+
+normative_anchors:
+  sfrs_addressed: [a, b]
+  evidence_addressed: [I, II]
+  sfrs_not_addressed: []
+  evidence_not_addressed: []
+
+cross_references:
+  - "D1::idx7::goal-portfolio-evolution-and-integrity"
+  - "D1::idx2::goal-adjustability"
+
+design_patterns:
+
+  - name: Contextual signal catalog
+    sketch: >
+      Enumerate the environmental signals whose change can invalidate
+      agent goals: input data distribution (schema, statistics, domain),
+      stakeholder directives and policies, regulatory surface applicable
+      to operating jurisdictions, downstream system contracts (APIs,
+      rate limits, data schemas), physical/operational context where
+      relevant. Each signal has a measurement function, a baseline, a
+      threshold, and a named owner.
+    maps_to_sfr: [a]
+    when_to_use: Any long-running agent whose correctness depends on
+      environmental assumptions — which is nearly all of them.
+
+  - name: Multi-fidelity monitoring
+    sketch: >
+      Not all signals warrant continuous measurement. Classify into:
+      hot (per-decision or per-minute: input distribution drift, tool
+      contract compatibility), warm (hourly/daily: downstream SLA,
+      stakeholder-directive updates), cold (weekly/monthly: regulatory
+      surface, organizational context). Measurement cost and responsive-
+      ness are matched to the rate at which the signal can actually
+      change.
+    maps_to_sfr: [a]
+    when_to_use: Production deployments with mixed signal classes.
+
+  - name: Threshold-tripped automatic pause
+    sketch: >
+      A threshold breach triggers `AgentPause(reason, signal, value,
+      baseline, threshold)` immediately — agent stops dispatching new
+      actions, emits a structured notification to designated
+      stakeholders, and opens a guidance-request record. The resumption
+      is not automatic; it requires explicit human acknowledgement that
+      the goal remains valid under the new context (or a goal update
+      via D1.2's adjustability mechanism).
+    maps_to_sfr: [b]
+    when_to_use: Always when drift monitoring is present.
+
+  - name: Graceful-degradation fallback
+    sketch: >
+      Between "all goals valid" and "pause everything" there is room
+      for scoped degradation: narrow the agent's action envelope,
+      reduce autonomy tier, return to human-in-the-loop mode, or
+      restrict to read-only operations. Triggered by signals in the
+      "elevated but not critical" band. Makes drift response
+      proportionate rather than binary.
+    maps_to_sfr: [b]
+    when_to_use: Where full pause is disruptive but continued autonomous
+      operation is unwise.
+
+anti_patterns:
+
+  - name: Log the drift; let the agent decide
+    why_wrong: >
+      SFR-b requires automatic safeguards that pause, not alerts the
+      agent can decide to ignore. If drift response is agent-discretionary
+      it is not a safeguard.
+
+  - name: Single aggregate drift score
+    why_wrong: >
+      Rolling all signals into one number hides which signal tripped.
+      Stakeholders needing to give guidance need to know which part of
+      the world moved, not that "something drifted 0.3."
+
+  - name: Silent resume
+    why_wrong: >
+      A pause that the agent or an on-call operator can dismiss
+      without recording acknowledgement defeats the audit trail. Every
+      resume is a logged event with principal and rationale.
+
+  - name: Monitoring only what's easy to measure
+    why_wrong: >
+      Stakeholder-directive drift and regulatory-surface drift are slow,
+      human-sourced signals easily omitted in favor of
+      statistics-of-inputs. Evidence I asks for threshold definitions —
+      the absence of a signal from the catalog is itself a decision that
+      should be justified.
+
+code_shape:
+  language: pseudocode
+  code: |
+    class DriftMonitor:
+        def evaluate(self, agent_id):
+            state = {}
+            for sig in SIGNAL_CATALOG.all():
+                v = sig.measure()
+                tier = sig.classify(v)  # ok / elevated / breach
+                state[sig.id] = (v, tier)
+                if tier == "breach":
+                    AGENT.pause(agent_id,
+                                reason="drift_threshold_breach",
+                                signal=sig.id, value=v,
+                                baseline=sig.baseline,
+                                threshold=sig.threshold)
+                    NOTIFY.stakeholders(sig.owners, agent_id, sig.id, v)
+                    GUIDANCE_REQUEST.open(agent_id, sig.id, v)
+                elif tier == "elevated":
+                    AUTONOMY.degrade(agent_id,
+                                     to=sig.elevated_response)
+            DRIFT_LOG.append_snapshot(agent_id, state, ts=now())
+
+        def resume(self, agent_id, pause_id, principal, rationale):
+            GUIDANCE_REQUEST.close(pause_id,
+                                   principal=principal,
+                                   rationale=rationale)
+            AGENT.resume(agent_id, authorized_by=principal)
+            RESUME_LOG.append(...)
+  notes: >
+    Resume is an authorization-gated mutation like any other
+    goal-touching operation (see D1.2). Treat the pause-resume lifecycle
+    as a first-class state machine with audit.
+
+evidence_production:
+
+  - evidence_numeral: I
+    how_to_produce: >
+      Documentation of the signal catalog (what is monitored, why, by
+      what measurement, with what baseline, with what thresholds, owned
+      by whom), the monitoring architecture (how signals are collected
+      and at what fidelity), the pause/notify/guidance-request
+      implementation, and the resume authorization model. Include
+      synthetic-breach test results showing pauses trigger correctly.
+
+  - evidence_numeral: II
+    how_to_produce: >
+      Operational log export covering the audit window: drift
+      measurements over time per signal, threshold breaches recorded,
+      pauses triggered, notifications sent (with recipients and
+      timestamps), guidance requests opened and resolved, resume events
+      with principal and rationale. Show that breach → pause is
+      automatic (latency within target) and resume → principal
+      acknowledgement is always present.
+
+confidence: high
+needs_human_review: false
+review_notes: >
+  Pause-on-breach is the sharp end of this subgoal; many deployments
+  will push back on it as operationally disruptive. The framework text
+  is unambiguous ("must feature automatic safeguards that pause
+  operation"). Hold the line. Signal catalog will be deployment-
+  specific; this pattern gives the structure, not the list.
+  Distinguishing from D1.7 is important: D1.7 is internal-portfolio
+  drift, D1.9 is external-context drift. Cross-ref, don't merge.
+
+version_compat:
+  framework_version_min: "1.0"
+  framework_version_max: "1.x"
+  pattern_layer_version: "v1-draft"
+
+drafted_by: claude-opus-4.7-author
+drafted_at: 2026-04-16
+anchor_exemplar: D3.2-sandboxing

@@ -1,0 +1,152 @@
+id: I6::idx3::insufficient-insights-into-future-conseq
+display_id: I6.3
+suite_id: I6
+suite_title: Competitive Pressures
+subgoal_title: Insufficient Insights into Future Consequences
+content_type: governance
+summary: 'Rapid deployment pressure truncates the time available to reason about long-run consequences.
+  This subgoal expects the organization to install a standing foresight function — scenario analysis,
+  stakeholder engagement on technological implications, and a due-diligence protocol — whose outputs block
+  deployment decisions where warranted. Structural not advisory: the foresight function has authority,
+  not just voice.
+
+  '
+normative_anchors:
+  sfrs_addressed:
+  - a
+  - b
+  evidence_addressed:
+  - I
+  - II
+  - III
+  sfrs_not_addressed: []
+  evidence_not_addressed: []
+cross_references:
+- I6::idx0::competitive-pressures
+- I6::idx5::publishing-and-deployment-pressures
+- I6::idx4::duties-beyond-fiduciary-limits
+policy_elements:
+- name: AAI Governance Due-Diligence Protocol
+  description: 'Defined protocol triggered at key decision points: new capability proposal, material retraining,
+    new deployment domain, partnership with high-stakes user. Produces a written due-diligence dossier
+    covering: intended use, foreseeable misuse, population-level implications, irreversibility analysis,
+    and alternatives considered. Sign-off required from foresight lead before proceeding. Not replaceable
+    by a risk assessment — the questions are different (long-run, systemic, societal).
+
+    '
+  maps_to_sfr:
+  - a
+- name: Foresight and Scenario Analysis Function
+  description: 'Standing function (staff or retained) running quarterly scenario work on the deployed
+    product''s trajectory: capability drift, adoption patterns, second-order effects, adversarial adaptation.
+    Output is a scenario dossier the board risk committee reviews. Must include at least one scenario
+    in which the product causes material harm; "no plausible harm" scenarios are a methodology failure,
+    not a finding.
+
+    '
+  maps_to_sfr:
+  - a
+  - b
+- name: Stakeholder Engagement for Long-Horizon Implications
+  description: 'Structured engagement — not town-halls — with stakeholders whose interests are under-represented
+    in the commercial process: affected communities, civil society, ethicists, domain-specific critics.
+    Each engagement has a published scope, response document, and evidence of what changed. Budget and
+    staff allocated, not ad-hoc.
+
+    '
+  maps_to_sfr:
+  - b
+- name: Decision Record with Consequence Analysis
+  description: 'Every material deployment decision carries a written record including: decision, alternatives
+    considered, foresight dossier referenced, stakeholder input weighed, expected outcomes, monitoring
+    plan, and review date. Retained in the governance archive. The record is the evidence; absent records
+    are evidence of absent consequence analysis.
+
+    '
+  maps_to_sfr:
+  - a
+  - b
+- name: Post-Implementation Review Cadence
+  description: 'At 30, 90, and 365 days post-deployment: review actual outcomes against the foresight
+    dossier''s expectations. Deltas are logged with analysis. Persistent deltas trigger revision of the
+    scenario methodology — the function learns from its own calibration.
+
+    '
+  maps_to_sfr:
+  - a
+  - b
+org_roles:
+- role: Foresight Lead (Head of Scenario Analysis / Responsible AI)
+  responsibilities: 'Accountable for the Foresight Function. Sign-off authority on due-diligence dossiers.
+    Reports to CSO or board risk committee, not to product leadership.
+
+    '
+  accountable_or_consulted: accountable
+- role: External Foresight Advisors (rotating)
+  responsibilities: 'Independent contributors to scenario work; provide counter-views to internal consensus.
+    Rotate at least every three years.
+
+    '
+  accountable_or_consulted: consulted
+- role: Product Owner (per product)
+  responsibilities: 'Responsible for triggering due-diligence at defined decision points. Cannot approve
+    past the foresight lead''s dissent without board risk committee review.
+
+    '
+  accountable_or_consulted: responsible
+- role: Board-level Risk Committee
+  responsibilities: 'Reviews quarterly scenario dossiers. Final authority on deployment escalations.
+
+    '
+  accountable_or_consulted: accountable
+documentation_artifacts:
+- artifact: AAI Governance Due-Diligence Protocol (versioned document)
+  cadence: annually reviewed; event-driven updates
+- artifact: Quarterly scenario dossier
+  cadence: quarterly
+- artifact: Stakeholder engagement records (per engagement)
+  cadence: per engagement; annual aggregate report
+- artifact: Decision records with consequence analysis
+  cadence: per material decision
+- artifact: Post-implementation review reports (30/90/365 day)
+  cadence: per deployment, at defined intervals
+evidence_production:
+- evidence_numeral: I
+  how_to_produce: 'Publish the Due-Diligence Protocol and the governance framework as controlled documents.
+    Include the named Foresight Lead, reporting line, and decision-authority matrix. Link to the accountability
+    role profiles (D9.2 evidence IV).
+
+    '
+- evidence_numeral: II
+  how_to_produce: 'Maintain a foresight archive: due-diligence dossiers per decision, scenario analyses
+    per quarter, identified risks (known and potential), mitigation strategies with contingency plans.
+    Cross- reference to the risk register (I6.1 evidence III).
+
+    '
+- evidence_numeral: III
+  how_to_produce: 'Continuous risk monitoring records: post-implementation reviews (30/90/365 day), stakeholder
+    engagement logs, and change logs showing adjustments made to the product or its deployment in response
+    to emerging signals. Evidence that the foresight function changed actual outcomes — otherwise it is
+    performative.
+
+    '
+confidence: medium
+needs_human_review: true
+review_notes: "Foresight functions are the hardest governance structure to make real. The pattern proposes\
+  \ structural authority (sign-off, board escalation) because advisory-only foresight is routinely ignored\
+  \ under pressure — this is the framework's specific ask. The risk is over-prescribing: many orgs will\
+  \ combine this function with D7 Safety Culture or I4 Frontier Uncertainty owners rather than staff it\
+  \ separately. Cross-suite:\n  (1) I4 Frontier Uncertainty heavily overlaps (scenario analysis for\n\
+  \      capability uncertainty); consolidation should decide whether the\n      functions are one-team-two-hats\
+  \ or genuinely separate.\n  (2) D9 Governance provides the accountability scaffolding; I6.3\n      specializes\
+  \ it to long-horizon consequence analysis.\n  (3) D7 Sustained Safety Culture overlaps on post-implementation\n\
+  \      review cadence.\nSFR-b's \"comprehensive stakeholder engagement\" is soft — many orgs will produce\
+  \ a listening-tour record and check the box. The pattern's \"published scope + response + evidence of\
+  \ change\" guard is worth preserving to distinguish real engagement from theatre.\n"
+version_compat:
+  framework_version_min: '1.0'
+  framework_version_max: 1.x
+  pattern_layer_version: v1-draft
+drafted_by: claude-opus-4.7-author
+drafted_at: 2026-04-16
+anchor_exemplar: D9.2-compliance

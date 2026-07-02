@@ -1,0 +1,230 @@
+id: D4::idx3::awareness-of-individual-vs-community-bou
+display_id: D4.3
+suite_id: D4
+suite_title: Value Alignment
+subgoal_title: Awareness of Individual vs Community Boundaries
+content_type: code-applicable
+summary: 'Individual-context values (autonomy, privacy, personal preference) and community-context values
+  (fairness across parties, non-disclosure, norms of distribution) are not interchangeable and must be
+  distinguished at runtime. The framework expects the system to detect which mode an interaction is in,
+  apply the corresponding value subset, keep the two encodings separate, and notice when that boundary
+  is under active stress — adversarial framing, coordinated pressure, or privacy erosion — so a response
+  fires before the boundary collapses. Contextual-integrity principles (Nissenbaum-style appropriate
+  flow) are the operational handle for the static case; a boundary-stress monitor handles the dynamic
+  case.
+
+  '
+normative_anchors:
+  sfrs_addressed:
+  - a
+  - b
+  - c
+  - d
+  evidence_addressed:
+  - I
+  - II
+  - III
+  sfrs_not_addressed: []
+  evidence_not_addressed: []
+cross_references:
+- D4::idx0::value-alignment
+- D4::idx1::awareness-of-local-conditions
+- D4::idx2::recognition-and-respect-for-boundaries
+design_patterns:
+- name: Contextual mode classification at request intake
+  sketch: 'Every interaction is classified on a structured axis: `{private, dyadic, small-group, community,
+    public/societal}`. Classification sources: session metadata (number of participants, data-sharing
+    scope, consent scope), not model inference alone. The classified mode is a first-class field in the
+    context envelope (see D4.1) and drives value-subset selection.
+
+    '
+  maps_to_sfr:
+  - d
+  when_to_use: Any deployment where individual and multi-party interactions coexist.
+- name: Separate value schemas for individual vs community
+  sketch: 'The Codex carries two disjoint subset tags: `scope: individual` and `scope: community`. Values
+    that apply to both are listed twice with scope-specific weights or defer rules. Encodings (reward
+    terms, constraints) are loaded by scope; the runtime never mixes them. A value marked individual-only
+    cannot fire in a community-classified context, and vice versa.
+
+    '
+  maps_to_sfr:
+  - b
+  - c
+  when_to_use: Whenever the Codex contains values that mean different things in private vs collective
+    settings (almost always).
+- name: Contextual-integrity enforcement on information flow
+  sketch: 'For any proposed output that discloses information about a party other than the addressee,
+    enforce a contextual-integrity check: `(data_subject, sender, recipient, information_type, transmission_principle)`.
+    Disallow flows that violate the classified mode''s norms (e.g., disclosing private data in a community
+    context without explicit consent). Log violations even when the flow is allowed by policy override.
+
+    '
+  maps_to_sfr:
+  - d
+  when_to_use: Any agent capable of multi-party messaging, publishing, or aggregated-data output.
+- name: Mode-transition guardrail
+  sketch: 'When a session transitions (e.g., a private chat is forwarded to a shared channel), apply the
+    stricter of the source/destination modes until a human reconfirms. Mode escalation from private to
+    community must not happen silently.
+
+    '
+  maps_to_sfr:
+  - d
+  when_to_use: Any system with forwarding, sharing, or publishing affordances.
+- name: Boundary-stress detector with tiered response
+  sketch: 'A runtime monitor scores each turn against a set of boundary-stress signals and triggers a
+    tiered response when thresholds are crossed. Signal families:
+
+    (1) *Adversarial framing*: prompt patterns that recast a community question as a private one (or
+    vice versa) to dodge the scope-loaded Codex — e.g., "just between us", "imagine this were only for
+    you", role-play wrappers that flatten participants.
+    (2) *Coordinated pressure*: repeated requests from multiple sessions, or a single session, to
+    relax the same scope-gated decision within a rolling window (rate + diversity of phrasing tracked).
+    (3) *Privacy erosion*: incremental disclosures where each step looks benign but the cumulative
+    information flow (tracked as a running CI-budget per data_subject) violates the mode''s norms.
+    (4) *Mode inconsistency*: discrepancy between authenticated session metadata and in-content cues
+    about participant count, visibility, or consent scope.
+
+    Tiered response: T1 log and annotate; T2 tighten scope (force stricter mode), rate-limit, require
+    explicit reconfirmation of scope; T3 suspend the capability surface involved and raise a human-review
+    ticket with the stress signals, the affected data_subject, and a replayable trace. Thresholds, cool-down
+    windows, and CI-budget values are configured, versioned, and tested — not implicit.
+
+    '
+  maps_to_sfr:
+  - a
+  when_to_use: Any deployment where individual/community boundaries are policy-relevant and the agent
+    is exposed to open-ended input, multi-session traffic, or incremental disclosure.
+- name: Stress-response runbook tied to the monitor
+  sketch: 'Each tier of the boundary-stress detector has a named runbook entry: who is paged, what the
+    on-call does in the first 15 minutes, what evidence is collected (stress signals, CI-budget state,
+    session graph), when the capability is restored, and how the incident feeds back into threshold tuning.
+    Runbooks are rehearsed against synthetic stress scenarios quarterly.
+
+    '
+  maps_to_sfr:
+  - a
+  when_to_use: Always, once the boundary-stress detector ships. A monitor without a runbook produces
+    alerts nobody acts on.
+anti_patterns:
+- name: Single blended value vector
+  why_wrong: 'Merging individual and community values into one weighted vector loses the distinction the
+    subgoal is built to preserve. Conflicts silently resolve in favor of whichever weight is larger, which
+    is opaque and unstable.
+
+    '
+- name: Mode classification by model inference alone
+  why_wrong: 'If the agent decides "this looks like a community context" from prompt cues, a manipulated
+    prompt can flip mode to extract behavior that should be community-gated. Ground classification in
+    authenticated session metadata.
+
+    '
+- name: Ignoring mode for "low-stakes" interactions
+  why_wrong: 'Stakes are not knowable in advance; the cost of always classifying is negligible, and missed
+    classifications tend to be the ones that matter.
+
+    '
+- name: Logs without mode annotation
+  why_wrong: 'Evidence III requires demonstrating appropriate context switching. Logs must record the
+    classified mode per interaction to support this; logs that only record value outcomes cannot.
+
+    '
+- name: Boundary-stress monitor without thresholds or response
+  why_wrong: 'A "monitor" that only records signals is a dataset, not a control. SFR-a requires *rapid*
+    response — thresholds, tiered actions, and a runbook are what make it a protocol. Logging alone defers
+    the boundary collapse to post-hoc forensics.
+
+    '
+- name: Per-turn stress scoring without CI-budget memory
+  why_wrong: 'Privacy erosion is the attack that any single turn passes. Without a per-(data_subject,
+    mode) running budget, incremental disclosure is invisible to the monitor. Each turn scores low; the
+    trajectory scores catastrophic.
+
+    '
+code_shape:
+  language: pseudocode
+  code: "class InteractionMode(Enum):\n    PRIVATE = \"private\"\n    DYADIC = \"dyadic\"\n    SMALL_GROUP\
+    \ = \"small_group\"\n    COMMUNITY = \"community\"\n    PUBLIC = \"public\"\n\ndef classify_mode(session:\
+    \ Session) -> InteractionMode:\n    # Authenticated metadata only\n    if session.participant_count\
+    \ <= 1:\n        return InteractionMode.PRIVATE\n    if session.is_public_channel:\n        return\
+    \ InteractionMode.PUBLIC\n    if session.participant_count == 2:\n        return InteractionMode.DYADIC\n\
+    \    return (InteractionMode.SMALL_GROUP\n            if session.participant_count < 10\n        \
+    \    else InteractionMode.COMMUNITY)\n\ndef active_codex(envelope: ContextEnvelope) -> CodexView:\n\
+    \    base = VALUE_CODEX.load(envelope.codex_version)\n    if envelope.mode in (InteractionMode.PRIVATE,\
+    \ InteractionMode.DYADIC):\n        return base.scoped(\"individual\")\n    return base.scoped(\"\
+    community\")\n\ndef ci_check(flow: InformationFlow, mode: InteractionMode) -> bool:\n    # Contextual-integrity\
+    \ norm table keyed to (mode, info_type)\n    norm = CI_NORM_TABLE.get((mode, flow.information_type))\n\
+    \    allowed = norm.permits(flow.sender, flow.recipient,\n                           flow.transmission_principle)\n\
+    \    AUDIT.record_flow(flow, mode=mode, allowed=allowed, norm_id=norm.id)\n    return allowed\n\n\
+    def handle_mode_transition(prev: InteractionMode, new: InteractionMode):\n    if STRICTNESS_RANK[new]\
+    \ < STRICTNESS_RANK[prev]:\n        HUMAN_REVIEW.raise_ticket(kind=\"mode_relaxation\")\n        return\
+    \ prev  # hold stricter mode until reconfirmed\n    return new\n\n# --- Boundary-stress monitor (SFR-a)\
+    \ ---\n\n@dataclass\nclass StressSignals:\n    adversarial_framing: float   # 0..1, from pattern\
+    \ detectors\n    coordinated_pressure: float  # rolling rate+diversity score\n    privacy_erosion:\
+    \  float   # fraction of CI-budget consumed for this data_subject\n    mode_inconsistency: float \
+    \   # metadata vs in-content cues delta\n\nSTRESS_THRESHOLDS = {\"T1\": 0.3, \"T2\": 0.6, \"T3\":\
+    \ 0.85}  # versioned config\n\ndef score_boundary_stress(turn: Turn, ctx: AgentContext) -> StressSignals:\n\
+    \    return StressSignals(\n        adversarial_framing=FRAMING_DETECTOR.score(turn.input, ctx.mode),\n\
+    \        coordinated_pressure=PRESSURE_TRACKER.score(ctx.session_id, turn.intent),\n        privacy_erosion=CI_BUDGET.fraction_consumed(\n\
+    \            data_subject=turn.data_subject, mode=ctx.mode),\n        mode_inconsistency=MODE_CONSISTENCY.delta(ctx.session.metadata,\
+    \ turn.input),\n    )\n\ndef respond_to_stress(sig: StressSignals, ctx: AgentContext) -> StressDecision:\n\
+    \    score = max(asdict(sig).values())\n    AUDIT.record_stress(ctx, signals=sig, score=score)\n \
+    \   if score < STRESS_THRESHOLDS[\"T1\"]:\n        return StressDecision.PASS\n    if score < STRESS_THRESHOLDS[\"\
+    T2\"]:\n        return StressDecision.ANNOTATE  # T1: log + annotate response\n    if score < STRESS_THRESHOLDS[\"\
+    T3\"]:\n        ctx.mode = stricter_of(ctx.mode, InteractionMode.COMMUNITY)\n        RATE_LIMITER.tighten(ctx.session_id)\n\
+    \        return StressDecision.REQUIRE_RECONFIRM  # T2\n    CAPABILITY_GATE.suspend(ctx.capability)\
+    \  # T3\n    HUMAN_REVIEW.raise_ticket(\n        kind=\"boundary_stress\", signals=sig,\n        data_subject=ctx.data_subject,\
+    \ trace=ctx.trace_id)\n    return StressDecision.SUSPEND\n"
+  notes: 'The CI norm table is the place cross-cultural variation lands (populated by D4.2); the individual-vs-community
+    scope is the within-culture dimension this subgoal adds. The boundary-stress monitor sits downstream
+    of classification and upstream of response emission — it observes the live pressure on whichever
+    boundary classification produced, and acts before the boundary flips silently.
+
+    '
+evidence_production:
+- evidence_numeral: I
+  how_to_produce: 'Publish the framework document distinguishing individual and community value sets:
+    scope definitions, decision rules for information gathering (what may be collected in each mode),
+    context-determination methodology (how mode is classified), value-application rules per mode, and
+    the boundary-stress taxonomy (signal families, tier definitions, response policy). Document dual-scope
+    Codex entries explicitly.
+
+    '
+- evidence_numeral: II
+  how_to_produce: 'Retain source and configuration for: mode classifier (inputs, thresholds), Codex scope-loader,
+    CI norm table, mode-transition guardrail, boundary-stress detector (signal scorers, thresholds, CI-budget
+    tables), and the stress-response runbook. Include test evidence: labelled dataset of sessions with
+    ground-truth mode, classifier accuracy, CI-check precision/recall, red-team results against each
+    stress-signal family, and rehearsal records for the T2/T3 runbooks.
+
+    '
+- evidence_numeral: III
+  how_to_produce: 'Emit per-interaction log entries with mode, scoped Codex applied, CI checks performed
+    (allowed/denied), stress signals and tier decision, and any mode-transition or capability-suspension
+    events. Monthly aggregates show mode distribution, denial rates, stress-tier counts by family, mean-time-to-response
+    on T2/T3 events, and human-review tickets raised on relaxation or stress events.
+
+    '
+confidence: high
+needs_human_review: false
+review_notes: 'All four SFRs are now patterned. SFR-a is satisfied by the boundary-stress detector +
+  tiered response + runbook triad; the key design choice is that "monitoring" here means signal scoring
+  against a versioned threshold config with a named response action per tier, not passive telemetry.
+  The CI-budget concept (per (data_subject, mode) cumulative disclosure) is the operational handle for
+  privacy erosion, which is otherwise invisible turn-by-turn.
+
+  Cross-suite (for consolidation): D5 Transparency (mode, CI checks, and stress decisions should be
+  inspectable); D3 Security (stress-signal infrastructure shares primitives with abuse detection but
+  is scoped to value boundaries, not execution-environment integrity); I2 Deception (mode spoofing and
+  adversarial framing are overlapping manipulation vectors — coordinate detector taxonomies); Contextual
+  Integrity (Nissenbaum) remains the conceptual anchor worth naming in consolidation.
+
+  '
+version_compat:
+  framework_version_min: '1.0'
+  framework_version_max: 1.x
+  pattern_layer_version: v1-draft
+drafted_by: claude-opus-4.7-author
+drafted_at: 2026-04-17
+anchor_exemplar: D3.2-sandboxing

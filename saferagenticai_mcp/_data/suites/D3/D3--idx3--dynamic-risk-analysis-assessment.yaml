@@ -1,0 +1,185 @@
+# D3.3 — Dynamic Risk Analysis & Assessment
+
+id: "D3::idx3::dynamic-risk-analysis-assessment"
+display_id: "D3.3"
+suite_id: "D3"
+suite_title: "Security"
+subgoal_title: "Dynamic Risk Analysis & Assessment"
+content_type: code-applicable
+
+summary: >
+  A static threat model ages out the moment attackers publish a new technique.
+  This subgoal expects detection, categorisation, and hardening to run as a
+  feedback loop — an event log that drives configuration change, not a
+  quarterly review document. The difference between compliance and security
+  here is whether emerging threats trigger automated hardening within hours,
+  not weeks.
+
+normative_anchors:
+  sfrs_addressed: [a, b, c]
+  evidence_addressed: [I, II, III]
+  sfrs_not_addressed: []
+  evidence_not_addressed: []
+
+cross_references:
+  - "D3::idx2::sandboxing"
+  - "D3::idx5::dynamic-intervention-and-mitigation"
+  - "D3::idx6::overseeing-monitoring-agents"
+  - "D3::idx14::spyware"
+  - "D3::idx16::vulnerability-to-hostile-environment"
+
+design_patterns:
+
+  - name: Structured dynamic threat log with severity and mitigation state
+    sketch: >
+      Every detected security event is recorded as a row with a fixed
+      schema: event_id, detection_source, timestamp, asset, threat_category
+      (aligned to MITRE ATT&CK or an AAI-specific taxonomy), severity
+      (CVSS-like), confidence, mitigation_status (open / in_progress /
+      mitigated / accepted_risk), owner, mitigation_evidence_ref. Queryable,
+      exportable, retained per incident policy. This log is the primary
+      evidence artifact for SFR-b.
+    maps_to_sfr: [b]
+    when_to_use: Day one of any monitored AAI deployment.
+
+  - name: Continuous threat-intel ingestion with rule synthesis
+    sketch: >
+      Pull from multiple feeds (MITRE ATLAS for AI-specific threats, CISA
+      KEV, vendor advisories, commercial TI, internal red-team findings).
+      Each intake has an automated triage step: is this applicable to our
+      stack? If yes, generate a detection rule proposal and a hardening
+      task. Rule authors review and merge; the intake-to-detection interval
+      is a measured SLO.
+    maps_to_sfr: [a]
+    when_to_use: Any system with internet-reachable surface or dependency
+      on third-party model/tool supply chain.
+
+  - name: Behavioural baselines for agent telemetry
+    sketch: >
+      Baseline normal agent behaviour per capability: tool-call distribution,
+      token volumes, latency profile, egress targets, reasoning-trace
+      length, tool-error rate. Detect deviations statistically (simple
+      robust z-scores + seasonal decomposition suffice for most cases;
+      ML where justified). Deviations are hypotheses, not verdicts — they
+      trigger enrichment and analyst review, not auto-shutdown by default.
+    maps_to_sfr: [a]
+    when_to_use: Any agent that runs at volume; baselines need a few weeks
+      of steady-state data to be meaningful.
+
+  - name: Adaptive hardening pipeline (detection → config-as-code change)
+    sketch: >
+      A closed loop: new threat published → rule added → matching traffic
+      observed → automated hardening action queued (tightened network
+      policy, new sandbox deny rule, revoked credential, lowered rate
+      limit). Low-risk actions may auto-apply; higher-risk ones stage a
+      pull request to the infra-as-code repo for human approval. Every
+      hardening is reversible and tracked.
+    maps_to_sfr: [c]
+    when_to_use: As soon as the threat log and rule pipeline exist.
+
+  - name: Periodic adversarial exercise that feeds the log
+    sketch: >
+      Red-team activity (manual or automated adversarial ML tests, prompt
+      injection campaigns, tool-abuse fuzzing) is scheduled at least
+      quarterly and records findings into the same dynamic threat log used
+      for production events. Exercise findings have the same lifecycle
+      (open → mitigated) as real incidents.
+    maps_to_sfr: [a, c]
+    when_to_use: Any production AAI deployment.
+
+anti_patterns:
+
+  - name: Static threat model, reviewed annually, never updated
+    why_wrong: >
+      "Dynamic" is in the subgoal title. An annual threat model is a
+      snapshot of assumptions from a year ago. It fails SFR-a on its face.
+
+  - name: Alerts without mitigation-state tracking
+    why_wrong: >
+      An alert stream that nobody closes produces evidence that you saw
+      threats, not that you handled them. Evidence-II requires mitigation
+      status; without the status field, the log is half-done.
+
+  - name: Auto-block every anomaly
+    why_wrong: >
+      Aggressive auto-response on weak signals creates self-inflicted
+      outages and trains analysts to disable controls. Auto-response is
+      for high-confidence high-severity cases; everything else is human-
+      reviewed.
+
+  - name: Threat intel as a PDF in a shared drive
+    why_wrong: >
+      Intelligence that does not synthesize into detection rules or
+      hardening tasks is decoration. The point is to shorten the time
+      from disclosure to defense.
+
+code_shape:
+  language: pseudocode
+  code: |
+    # Shape of the dynamic threat log entry and its lifecycle
+    class ThreatEvent:
+        event_id: uuid
+        detected_at: timestamp
+        source: str            # "tool_call_anomaly", "egress_denied",
+                               # "ti_feed:mitre-atlas", "red_team:q2-24"
+        asset: str             # agent_id / capability / infra component
+        category: str          # e.g., "prompt_injection", "data_exfiltration"
+        severity: int          # 1-5
+        confidence: int        # 1-5
+        status: enum           # open | triaged | mitigating | mitigated | accepted
+        owner: str
+        mitigation_ref: str    # PR / ticket / change request
+
+    def on_detection(evt: ThreatEvent):
+        LOG.append(evt)
+        if evt.severity >= 4 and evt.confidence >= 4:
+            CHANGE_PIPELINE.propose_hardening(evt)  # staged config-as-code PR
+        NOTIFY.route(evt)  # pager for critical, queue for others
+  notes: >
+    Single shared schema between production detections, threat-intel-derived
+    hypotheses, and red-team findings. Same lifecycle, same evidence surface.
+
+evidence_production:
+
+  - evidence_numeral: I
+    how_to_produce: >
+      Publish the system design document for the dynamic risk analysis
+      pipeline: data sources, detection rules inventory, threat-intel
+      feeds, baseline model for agent telemetry, hardening pipeline. Include
+      SLOs (intel-to-detection interval, detection-to-mitigation interval).
+
+  - evidence_numeral: II
+    how_to_produce: >
+      Export the dynamic threat log with full lifecycle records for a
+      representative period, plus the change log of adaptive-hardening
+      actions taken. Pair with the configuration-as-code commit history
+      that shows the hardenings landing in infra.
+
+  - evidence_numeral: III
+    how_to_produce: >
+      Operational data: weekly detection-count trend by category, MTTD/MTTR
+      distributions, red-team exercise reports showing novel TTPs detected,
+      and post-mortems for any missed threats discovered out-of-band (a
+      healthy pipeline has some; a suspiciously clean one invites audit).
+
+confidence: high
+needs_human_review: false
+review_notes: >
+  SFR-c "adaptive hardening" is the subgoal's sharpest edge. I have
+  written it as a closed loop with config-as-code change proposals
+  because "adaptive" without an automated path from detection to config
+  change degenerates into "ticket we'll get to." Note that full
+  auto-remediation is an anti-pattern; the pattern is auto-*propose*
+  with human approval for non-trivial changes.
+
+  Cross-suite hypothesis (not added as cross_reference): D2 (Robustness)
+  likely has patterns for adversarial ML testing that overlap with the
+  red-team exercise pattern here.
+
+drafted_by: claude-opus-4.7-subagent-D3
+drafted_at: 2026-04-16
+anchor_exemplar: D3.2-sandboxing
+version_compat:
+  framework_version_min: "1.0"
+  framework_version_max: "1.x"
+  pattern_layer_version: "v1-draft"

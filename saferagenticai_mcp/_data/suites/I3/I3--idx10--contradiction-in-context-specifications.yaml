@@ -1,0 +1,126 @@
+id: I3::idx10::contradiction-in-context-specifications
+display_id: I3.10
+suite_id: I3
+suite_title: Degradation of Contextual Information
+subgoal_title: Contradiction in Context Specifications
+content_type: code-applicable
+summary: 'Context usually has conflicts: the system prompt says one thing, the user another; two retrieved
+  documents disagree on a fact; policy conflicts with current task request. Silent resolution (pick the
+  most recent, pick the confident one) hides the conflict from oversight. Defenses: detect contradictions
+  at context-assembly time; route to an explicit resolution policy (hard-constraint wins, or escalate
+  to human, or surface with reasoning); log the contradiction and the resolution path.
+
+  '
+normative_anchors:
+  sfrs_addressed:
+  - a
+  - b
+  evidence_addressed:
+  - I
+  - II
+  sfrs_not_addressed: []
+  evidence_not_addressed: []
+cross_references:
+- I3::idx0::degradation-of-contextual-information
+- I3::idx7::overriding-of-desirable-values
+- I3::idx13::human-agent-conformation
+design_patterns:
+- name: Contradiction detection on context assembly
+  sketch: 'When context is assembled for a reasoning step, run a contradiction detector across fragments:
+    factual conflicts (NLI-style), instructional conflicts (policy vs request), temporal conflicts (stale
+    vs current fact). Detection is imperfect but the attempt is required; detected conflicts are surfaced,
+    not suppressed.
+
+    '
+  maps_to_sfr:
+  - a
+  when_to_use: Any multi-source context assembly.
+- name: Tiered resolution policy
+  sketch: 'Resolution follows a deterministic, audited order: (1) hard constraints win (never overridden
+    by retrieval or user); (2) authenticated-authority instructions win over ambient retrieval; (3) baseline
+    (I3.11) wins over operational drift; (4) on still-unresolved ties, escalate to HITL. The policy is
+    declared, not per-decision discretionary.
+
+    '
+  maps_to_sfr:
+  - b
+  when_to_use: Any production decision surface.
+- name: Surface-the-conflict outputs
+  sketch: 'When contradictions are resolved in user-visible ways (e.g., two sources disagree; the system
+    presents one), surface the other explicitly ("Source A says X; Source B says Y; I''m going with A
+    because ..."). For policy conflicts with user requests, say what was refused and why. Invisible resolution
+    erodes trust and audit capability.
+
+    '
+  maps_to_sfr:
+  - b
+  when_to_use: User-facing systems.
+- name: Impact-weighted escalation
+  sketch: 'Weight the contradiction by the impact of the decision it affects. A disagreement between two
+    biographical facts in a low-stakes chat can be flagged softly; a disagreement about dosage, authorization
+    scope, or irreversible action escalates unconditionally. Impact classifier is policy-configured.
+
+    '
+  maps_to_sfr:
+  - a
+  when_to_use: Systems with heterogeneous decision stakes.
+anti_patterns:
+- name: Silent "most confident wins"
+  why_wrong: 'Picking the higher-probability-scored context without logging the conflict is exactly how
+    poisoned-high-confidence content hijacks a decision. Log then resolve.
+
+    '
+- name: Instruction-layering without precedence
+  why_wrong: 'Many systems append system + developer + user messages without explicit precedence on conflict.
+    Ambiguity at this layer is weaponized by prompt injection.
+
+    '
+- name: Paper-over-the-conflict summarization
+  why_wrong: '"Summarize these two sources" that produces a soothing synthesis of two disagreeing sources
+    is worse than either source alone — it projects confidence over genuine disagreement.
+
+    '
+code_shape:
+  language: pseudocode
+  code: "def assemble_context(candidates: list[ContextFragment]) -> AssembledContext:\n    conflicts =\
+    \ CONTRADICTION_DETECTOR.scan(candidates)\n    resolutions = []\n    for conflict in conflicts:\n\
+    \        r = RESOLUTION_POLICY.resolve(conflict)  # deterministic tiers\n        if r.requires_escalation:\n\
+    \            return AssembledContext.escalate(conflict, candidates)\n        resolutions.append(r)\n\
+    \        AUDIT.record_conflict(conflict, r)\n    return AssembledContext(fragments=candidates,\n \
+    \                           conflicts=conflicts,\n                            resolutions=resolutions)\n\
+    \ndef render_output(ctx: AssembledContext, answer: Answer) -> Output:\n    if ctx.has_surfaceable_conflicts():\n\
+    \        answer = answer.with_disclosure(ctx.conflict_surface())\n    return answer\n"
+  notes: 'Contradiction detection is probabilistic; the design assumes false positives and negatives.
+    The pattern is the discipline of running the check and handling the result — not a guarantee of catching
+    every conflict.
+
+    '
+evidence_production:
+- evidence_numeral: I
+  how_to_produce: 'Detailed documentation of contradiction-detection methods (detectors used, coverage,
+    limitations), resolution protocols (tier order with examples), escalation paths, and sample traces
+    of conflicts detected and resolved.
+
+    '
+- evidence_numeral: II
+  how_to_produce: 'Impact analysis: periodic review of detected contradictions by category, assessment
+    of resolution quality (post-hoc review or red-team), metrics on escalation outcomes. Verification
+    that detectors are tuned — zero contradictions flagged is evidence the detector isn''t running, not
+    that conflicts aren''t occurring.
+
+    '
+confidence: medium
+needs_human_review: true
+review_notes: 'Contradiction detection is an evolving capability; NLI and similar tools are imperfect.
+  Pattern shape is sound; detector quality is deployment-specific, hence medium confidence. Cross-suite:
+  D2 (Epistemic Hygiene) on evidence conflict; D8 (Human Oversight) on escalation paths. Close relationship
+  with I3.12 (Human Agent Conformation), which is the HITL mechanism this subgoal invokes.
+
+  '
+version_compat:
+  framework_version_min: '1.0'
+  framework_version_max: 1.x
+  pattern_layer_version: v1-draft
+drafted_by: claude-opus-4.7-author
+drafted_at: 2026-04-16
+anchor_exemplar: D3.2-sandboxing

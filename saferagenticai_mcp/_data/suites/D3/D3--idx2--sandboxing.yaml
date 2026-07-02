@@ -1,0 +1,194 @@
+# D3.2 — Sandboxing
+# Subagent re-draft (an exemplar exists at research/mcp/exemplars/D3.2-sandboxing.yaml).
+# Written from the same input without reference to the exemplar's prose, for quality comparison.
+
+id: "D3::idx2::sandboxing"
+display_id: "D3.2"
+suite_id: "D3"
+suite_title: "Security"
+subgoal_title: "Sandboxing"
+content_type: code-applicable
+
+summary: >
+  The sandbox is the mechanism — not the policy — that keeps an agent from
+  touching resources its authorized profile forbids. This subgoal expects
+  pre-validated technical containment (container isolation, syscall filters,
+  network policy, capability-scoped APIs) and a guarantee that staging and
+  production cannot bleed into each other. The evidence is test logs and
+  blocked-attempt records, not a written commitment.
+
+normative_anchors:
+  sfrs_addressed: [a, b]
+  evidence_addressed: [I, II, III]
+  sfrs_not_addressed: []
+  evidence_not_addressed: []
+
+cross_references:
+  - "D3::idx1::authorization"
+  - "D3::idx4::operational-boundaries-and-constraints"
+  - "D3::idx3::dynamic-risk-analysis-assessment"
+
+design_patterns:
+
+  - name: Multi-layer isolation (OS + runtime + network)
+    sketch: >
+      Enforce containment at three independent layers so no single
+      misconfiguration exposes the host. OS layer: rootless container,
+      restricted seccomp profile, dropped capabilities, read-only root
+      filesystem, no privileged mode. Runtime layer: capability-scoped
+      tool API (every tool call passes through an authorization check
+      that knows the agent's declared profile). Network layer: default-deny
+      egress with a named allowlist, no host-network mode, DNS filtering.
+    maps_to_sfr: [a]
+    when_to_use: Every production AAI deployment that executes model-chosen
+      actions.
+
+  - name: Pre-validation gate before capability promotion
+    sketch: >
+      A capability cannot ship to production until a defined sandbox test
+      suite runs against it and records: allowed actions succeeded, denied
+      actions were blocked with auditable reasons, and no unexpected side
+      effect was observed. Gate is enforced in CI/CD — a green suite is a
+      precondition for the production image.
+    maps_to_sfr: [a]
+    when_to_use: Before every release of a new or materially changed agent
+      capability.
+
+  - name: Environment-scoped identity and secrets
+    sketch: >
+      Dev, staging, and production use distinct identity issuers (separate
+      KMS roots, separate cert authorities, separate service-principal
+      directories). A credential that works in staging is rejected in
+      production by cryptographic authority, not by runtime string-matching.
+      No secret is shared across environments; no production data is
+      restorable into staging without a reviewed, logged exception.
+    maps_to_sfr: [b]
+    when_to_use: Every environment boundary. This is the mechanism behind
+      "strict isolation between testing and production."
+
+  - name: Staging fidelity, test-data substitution
+    sketch: >
+      Staging mirrors production's capability surface (same tool registry,
+      same API topology, same network segmentation model) with synthetic
+      or sanitized data. Infrastructure-as-code enforces parity; drift is
+      alerted. Without fidelity the sandbox tests prove nothing about
+      production behavior.
+    maps_to_sfr: [a, b]
+    when_to_use: As soon as the staging environment exists.
+
+  - name: Deny-logged, not deny-silenced
+    sketch: >
+      Every denied access attempt (syscall, egress, API call, filesystem,
+      credential use) emits a structured audit event with agent identity,
+      action, target, deny reason, timestamp, and correlation ID to the
+      reasoning trace. Silent drops produce no evidence and invite
+      exploitation.
+    maps_to_sfr: [a]
+    when_to_use: Wherever a boundary is enforced.
+
+anti_patterns:
+
+  - name: Prompt-level "sandbox" (no mechanism behind it)
+    why_wrong: >
+      Telling the model "you cannot access X" is a request, not a boundary.
+      The framework requires pre-validated controls that *prevent* access.
+      Prompt-only containment fails the evidence-II bar: there is nothing
+      to block.
+
+  - name: Host-bind mounts into the agent container
+    why_wrong: >
+      Mounting host paths — even read-only — exposes host state to the
+      agent and is a frequent escape vector. If the agent needs host data,
+      inject it through a named, audited channel.
+
+  - name: Shared credentials across dev/staging/production
+    why_wrong: >
+      Violates SFR-b "strict isolation" in mechanism even if honored in
+      policy. A staging compromise becomes a production compromise.
+
+  - name: Allowlist by denylist (block known-bad domains)
+    why_wrong: >
+      Denylists fail open on everything unlisted. Default-deny egress with
+      an allowlist of known-good destinations is the only way the pattern
+      survives first contact with a novel exfiltration path.
+
+  - name: Retrofitting the sandbox after launch
+    why_wrong: >
+      The subgoal says "pre-validation." A sandbox added after production
+      cannot retroactively validate production behavior. Pre-validation
+      means the sandbox exists before the capability does.
+
+code_shape:
+  language: pseudocode
+  code: |
+    # Runtime check wrapping every tool invocation
+    @sandboxed(profile="agent_prod_v3")
+    def tool_call(action: Action, ctx: AgentContext):
+        profile = PROFILE_REGISTRY.load(ctx.profile_id)
+
+        # Layer 1: Runtime capability check
+        if action.kind not in profile.allowed_kinds:
+            AUDIT.deny(ctx, action=action, reason="kind_not_in_profile")
+            raise SandboxViolation(action.kind)
+
+        # Layer 2: Target-scope check (URL allowlist, filesystem root, etc.)
+        if not profile.scopes.contains(action.target):
+            AUDIT.deny(ctx, action=action, reason="target_out_of_scope")
+            raise SandboxViolation(action.target)
+
+        # Layer 3: Environment-scoped credential check
+        if ctx.credential.env != CURRENT_ENV:
+            AUDIT.deny(ctx, action=action, reason="cross_env_credential")
+            raise SandboxViolation("credential environment mismatch")
+
+        # Layer 4: OS/network isolation is provided by the container
+        # runtime (seccomp, netpol) — not shown here, equally required.
+        AUDIT.allow(ctx, action=action)
+        return EXECUTE(action, rate_limited=True)
+  notes: >
+    Four independent gates; a bypass of any one is caught by the next.
+    OS-level isolation is assumed but not visible here — it is enforced
+    by the container runtime and network policy.
+
+evidence_production:
+
+  - evidence_numeral: I
+    how_to_produce: >
+      Maintain a sandbox test suite in CI that exercises each category of
+      restriction: egress, filesystem, capability, credential scope,
+      syscall. Export signed test results per release. Retain in an
+      append-only evidence archive alongside the release image digest.
+
+  - evidence_numeral: II
+    how_to_produce: >
+      Aggregate denied-access audit events (from the deny-logged pattern)
+      into a daily blocked-attempts report. Include red-team exercises
+      that deliberately probe the sandbox — non-zero blocks are the
+      positive signal; zero blocks means the tests are weak, not that
+      the sandbox is strong.
+
+  - evidence_numeral: III
+    how_to_produce: >
+      Centralize sandbox violation logs with full context (agent ID,
+      profile ID, action, target, deny reason, timestamp, correlation ID
+      to reasoning trace). Store in an immutable, time-indexed archive
+      retained per the incident-response policy.
+
+confidence: high
+needs_human_review: false
+review_notes: >
+  Re-drafted from the same input as the hand-written exemplar at
+  research/mcp/exemplars/D3.2-sandboxing.yaml; the human reviewer will
+  compare. Style choices made: more explicit about three-layer decomposition
+  (OS + runtime + network), same "deny-logged, not deny-silenced" framing,
+  same emphasis that prompt-only containment is not a sandbox. Added
+  "allowlist by denylist" as an explicit anti-pattern because it is a
+  common mistake distinct from "prompt-only sandboxing."
+
+drafted_by: claude-opus-4.7-subagent-D3
+drafted_at: 2026-04-16
+anchor_exemplar: D3.2-sandboxing
+version_compat:
+  framework_version_min: "1.0"
+  framework_version_max: "1.x"
+  pattern_layer_version: "v1-draft"

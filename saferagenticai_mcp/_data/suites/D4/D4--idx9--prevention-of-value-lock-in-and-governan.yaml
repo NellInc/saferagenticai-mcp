@@ -1,0 +1,179 @@
+# D4.10 — Prevention of Value Lock-in and Governance of Value Modification
+
+id: D4::idx9::prevention-of-value-lock-in-and-governan
+display_id: "D4.10"
+suite_id: "D4"
+suite_title: "Value Alignment"
+subgoal_title: "Prevention of Value Lock-in and Governance of Value Modification"
+content_type: governance
+
+summary: >
+  Organizations must define and implement governance processes for
+  modifying the values encoded in AI systems post-deployment, preventing
+  any single entity from permanently locking in a value framework.
+  Value modification authority must be distributed, transparent, and
+  subject to stakeholder input. Systems deployed across diverse
+  populations must accommodate value pluralism without imposing a
+  single normative framework. Premature value lock-in is a governance
+  failure with long-term consequences that compound over time.
+
+normative_anchors:
+  sfrs_addressed: [a, b, c]
+  evidence_addressed: [I, II, III]
+  sfrs_not_addressed: []
+  evidence_not_addressed: []
+
+cross_references:
+  - "D4::idx0::value-alignment"
+  - "D4::idx5::successful-super-alignment"
+  - "D4::idx4::cautious-norming"
+  - "D4::idx6::universal-moral-foundations"
+
+  - "D4::idx15::lack-of-universality-of-value-framework"
+  - "D4::idx13::temporal-changes-in-societal-values"
+  - "D4::idx14::systemic-value-dilution"
+policy_elements:
+
+  - name: Value Modification Governance Charter
+    purpose: >
+      Defines who can propose, approve, and implement changes to the
+      value framework encoded in the AI system. Establishes that no
+      single individual, team, or entity holds unilateral authority
+      over value modifications. All changes require multi-stakeholder
+      review and documented rationale.
+    owner: AI Ethics Board or equivalent multi-stakeholder body
+    refresh_cadence: Annual review; triggered review on any proposed value modification
+
+  - name: Value Pluralism Policy
+    purpose: >
+      Requires that systems deployed across culturally or normatively
+      diverse populations support configurable value parameters rather
+      than hard-coded universal values. Defines which values are
+      non-negotiable (human rights baseline) and which are context-
+      adaptable (cultural norms, local regulations, community
+      preferences). Documents the boundary between the two and the
+      governance process for moving items across it.
+    owner: Product Ethics Lead with regional advisory input
+    refresh_cadence: Semi-annual; on expansion to new jurisdictions or populations
+
+  - name: Anti-Lock-in Safeguards
+    purpose: >
+      Technical and organizational measures preventing permanent
+      value entrenchment. Technical: value parameters stored in
+      configuration, not model weights where possible; versioned
+      value specifications with rollback capability; sunset clauses
+      on value configurations requiring periodic re-authorization.
+      Organizational: mandatory stakeholder consultation periods
+      before value changes take effect; prohibition on contractual
+      or technical mechanisms that prevent future value modification.
+    owner: CTO and General Counsel jointly
+    refresh_cadence: Annual; on material system architecture changes
+
+  - name: Reward and Objective Modification Protocol
+    purpose: >
+      Governs changes to RLHF reward models, objective functions,
+      constitutional AI principles, and other value-encoding
+      mechanisms. Requires pre-modification impact assessment
+      (which populations are affected, what behavioral changes are
+      expected), A/B testing with diverse evaluation cohorts, a
+      defined rollback trigger, and post-modification monitoring for
+      reward hacking or unintended value drift.
+    owner: ML Engineering Lead with Ethics Board oversight
+    refresh_cadence: Per modification; quarterly audit of cumulative drift
+
+org_roles:
+
+  - role: AI Ethics Board (multi-stakeholder)
+    decides: >
+      Approval of value framework modifications, resolution of value
+      conflicts between stakeholder groups, classification of values
+      as non-negotiable vs context-adaptable, and review of anti-
+      lock-in compliance.
+    escalates_to: Board of Directors for modifications affecting fundamental rights
+
+  - role: Product Ethics Lead
+    decides: >
+      Day-to-day value pluralism implementation, regional adaptation
+      decisions within the approved framework, and escalation of
+      edge cases to the Ethics Board.
+    escalates_to: AI Ethics Board
+
+  - role: ML Engineering Lead
+    decides: >
+      Technical implementation of value modifications in reward
+      models and objective functions, impact assessment methodology,
+      and rollback execution.
+    escalates_to: Product Ethics Lead for scope decisions; CTO for architectural changes
+
+  - role: External Stakeholder Advisory Panel
+    decides: >
+      Nothing unilaterally; provides binding consultation input on
+      value modifications affecting the populations they represent.
+      Consultation is required, not optional, for any value
+      modification classified as high-impact.
+    escalates_to: AI Ethics Board if consultation input is overridden
+
+documentation_artifacts:
+
+  - artifact: Value Framework Specification (versioned)
+    cadence: "Per modification; version-controlled with full change history"
+
+  - artifact: Value Modification Decision Log
+    cadence: "Per modification; append-only"
+
+  - artifact: Stakeholder Consultation Records
+    cadence: "Per high-impact value modification"
+
+  - artifact: Anti-Lock-in Compliance Audit
+    cadence: "Annual; includes sunset-clause compliance check"
+
+  - artifact: Reward/Objective Drift Monitoring Reports
+    cadence: "Quarterly"
+
+evidence_production:
+
+  - evidence_numeral: I
+    how_to_produce: >
+      Export the Value Framework Specification with complete version
+      history showing all modifications, the multi-stakeholder
+      approval chain for each, and the rationale documented at the
+      time of change. Include evidence that no single entity held
+      unilateral modification authority.
+
+  - evidence_numeral: II
+    how_to_produce: >
+      Publish stakeholder consultation records for value modifications
+      classified as high-impact. Include the populations represented,
+      the consultation method, the input received, and how input was
+      incorporated (or the documented justification for overriding it).
+
+  - evidence_numeral: III
+    how_to_produce: >
+      Export the anti-lock-in compliance audit: sunset-clause status
+      for all value configurations, rollback test results, evidence
+      that contractual and technical lock-in mechanisms do not exist,
+      and reward/objective drift monitoring showing cumulative drift
+      within acceptable bounds.
+
+confidence: medium
+needs_human_review: true
+review_notes: >
+  Phase 3: Initial draft, awaiting human review. SFR and evidence
+  descriptions in criteria-v1.json are empty; content derived from the
+  subgoal description. This is a governance pattern because the core
+  requirement is organizational process (who decides value changes,
+  how stakeholders are consulted, how lock-in is prevented) rather
+  than a technical implementation. The "non-negotiable vs context-
+  adaptable" boundary in the Value Pluralism Policy is the most
+  contested design decision; it intersects with D4.6 (Universal Moral
+  Foundations) and D4.4 (Cautious Norming). The reward hacking concern
+  in the Reward Modification Protocol connects to D4.5 (Successful
+  Super-alignment). Flagged for human review because the value
+  pluralism boundary is ethically contested.
+
+drafted_by: claude-opus-4-6-author
+drafted_at: 2026-05-16
+version_compat:
+  framework_version_min: "1.0"
+  framework_version_max: "1.x"
+  pattern_layer_version: "v1-draft"

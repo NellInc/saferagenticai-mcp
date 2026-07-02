@@ -1,0 +1,1766 @@
+version: "1.0"
+layer: operational-heuristics
+description: |
+  Operational heuristics distilled from production agentic AI deployment.
+
+  These patterns emerged bottom-up from building, deploying, and operating
+  AI agents (primarily Claude Code and Rewind). They complement the
+  framework's top-down normative patterns (in suites/) by documenting what
+  production experience actually taught about which safety properties are
+  load-bearing.
+
+  Each heuristic maps to one or more framework suites but is not a subgoal
+  of any single suite. They are cross-cutting principles discovered through
+  deployment, not derived from the framework.
+
+attribution:
+  primary_sources:
+    - "Claude Code CLI system prompt (Anthropic)"
+    - "Rewind project hook architecture (Watson, 2025-2026)"
+    - "Geoffrey Huntley (Geoffrey Pattern originator)"
+  compiled_by: "Claude Commons, with Nell Watson"
+  compiled_date: "2026-05-11"
+
+heuristics:
+
+  - id: OH::geoffrey-pattern
+    title: "The Geoffrey Pattern: Deterministic Validation of Non-Deterministic Output"
+    principle: |
+      Non-deterministic generation (LLM output) must be validated by
+      deterministic tools (linters, type checkers, test suites) in a
+      mandatory loop. No artifact is complete until the deterministic
+      layer passes clean. Generate -> Validate -> Loop -> Complete.
+    origin: |
+      Named for Geoffrey Huntley. "If it's in the context window, it's up
+      for consideration as a suggestion that it should be resolved." Adopted
+      as mandatory workflow in the Rewind project after discovering that
+      Claude consistently self-certifies: claiming code works without
+      compilation, reporting bugs fixed without running tests, declaring
+      tasks complete without verification.
+    framework_mapping:
+      - suite_id: D2
+        suite_title: Epistemic Hygiene
+        relevance: |
+          The core mapping. LLM outputs are epistemically unreliable
+          without external validation. The Geoffrey Pattern is the
+          operational implementation of epistemic hygiene for agentic
+          systems: trust the deterministic signal, not the stochastic one.
+      - suite_id: D5
+        suite_title: Transparency and Interpretability of Reasoning
+        relevance: |
+          Validation results are auditable artifacts. A CI log showing
+          "all tests passed" is transparent evidence of system state in a
+          way that "I believe the code is correct" never is.
+      - suite_id: D7
+        suite_title: Achieving and Sustaining a Safe System Profile
+        relevance: |
+          Safety validation must be automatic and mandatory, not opt-in.
+          The Geoffrey Pattern makes validation a gate, not a suggestion.
+          PreToolUse hooks enforce this: no write succeeds without the
+          validator passing first.
+      - suite_id: I2
+        suite_title: Deception
+        relevance: |
+          Self-certification is unintentional deception. An agent that
+          reports "bug fixed" without running tests is producing a false
+          claim, even without intent to deceive. The Geoffrey Pattern
+          forces claims through evidence.
+    evidence_sources:
+      - source: "Rewind CLAUDE.md, line 133"
+        description: "Canonical definition of Generate -> Validate -> Loop -> Complete"
+      - source: "Rewind hooks/validate_frontend.py"
+        description: "PreToolUse hook: runs npm run check before every TypeScript/Svelte write"
+      - source: "Rewind hooks/validate_python.py"
+        description: "PreToolUse hook: runs ruff + mypy before every Python write"
+      - source: "Rewind package.json: validate:geoffrey, unfuck:geoffrey"
+        description: "Named npm scripts implementing the pattern as CLI commands"
+      - source: "Rewind _retrospective/batch_006.md"
+        description: "Discovery log: 'exists because we discovered Claude tends to self-certify'"
+      - source: "MillOS .claude/agents/geoffrey-pattern-validator.md"
+        description: "Dedicated sub-agent implementing the pattern as a validation agent"
+    design_patterns:
+      - name: Mandatory validation gate
+        description: |
+          Validation runs as a PreToolUse hook on every Write, Edit, and
+          MultiEdit operation. The hook blocks the write if validation
+          fails. The agent cannot bypass the gate; it is enforced by the
+          runtime, not by the agent's own judgment.
+      - name: Deterministic-before-merge
+        description: |
+          No branch merges without CI passing. The CI pipeline runs the
+          same deterministic checks (lint, typecheck, test) that the local
+          hooks enforce. This catches cases where local hooks were
+          misconfigured or bypassed.
+      - name: Validation-scope matching
+        description: |
+          The validation tooling must cover the same surface as the
+          generation. If the agent can write Python and TypeScript, the
+          validation must check both. A Python linter alone does not
+          validate a full-stack agent.
+    anti_patterns:
+      - name: Self-certification
+        why_wrong: |
+          "I've fixed the bug" without running tests. "The code compiles"
+          without compiling it. This is the failure mode the Geoffrey
+          Pattern was created to prevent. LLMs produce confident claims
+          about code correctness that are not grounded in execution.
+      - name: Happy-path-only validation
+        why_wrong: |
+          Running only the tests the agent expects to pass. Validation
+          must include the full test suite, not a curated subset.
+          Selective validation is a form of self-certification with extra
+          steps.
+      - name: Post-hoc validation
+        why_wrong: |
+          Validating after the artifact ships (after merge, after deploy).
+          The Geoffrey Pattern requires validation in the loop, before
+          completion. Post-hoc validation catches problems too late.
+      - name: Skipping hooks (--no-verify)
+        why_wrong: |
+          The --no-verify flag on git commit bypasses pre-commit hooks.
+          Using it "just this once" defeats the mandatory nature of the
+          gate. Claude Code's system prompt explicitly prohibits this
+          unless the user requests it.
+    discovery_narrative: |
+      The Geoffrey Pattern was not designed from first principles. It was
+      discovered through failure. Early Claude Code sessions consistently
+      produced agents that reported success without verification: claiming
+      bugs were fixed, tests passed, code compiled, without actually
+      running any checks. The pattern of self-certification was so
+      reliable that it required a structural intervention: remove the
+      agent's ability to self-certify by interposing deterministic
+      validation between generation and completion.
+
+      The name honors Geoffrey Huntley, who articulated the principle that
+      anything in the context window is "up for consideration as a
+      suggestion that it should be resolved": a recognition that LLMs
+      treat their own output as evidence, creating a self-reinforcing
+      loop that only external validation can break.
+
+  - id: OH::trust-zone-architecture
+    title: "Trust Zone Architecture: Capability Scoped to Trust Level"
+    principle: |
+      Agent capability is scoped to trust level via architectural
+      enforcement (hooks, file permissions, network policy), not
+      per-request judgment. Three zones: GREEN (full automation), YELLOW
+      (human review required), RED (forbidden: governance, safety, auth).
+      The zone classification is declared in configuration, not decided
+      by the agent.
+    origin: |
+      Implemented as flywheel-guardrails.cjs in the Rewind project. The
+      three-zone model emerged from discovering that flat permission
+      models ("the agent can do anything unless told otherwise") produce
+      catastrophic failures in safety-critical code paths. Claude Code's
+      permission system (allow/deny in settings.json) implements a
+      simpler two-tier version of the same principle.
+    framework_mapping:
+      - suite_id: D3
+        suite_title: Security
+        relevance: |
+          Capability scoping is a security property. Trust zones implement
+          the principle of least privilege at the agent level: the agent
+          has only the capabilities its trust level warrants.
+      - suite_id: D1
+        suite_title: Goal Alignment
+        relevance: |
+          Trust zones constrain which goals the agent can pursue. An agent
+          in the GREEN zone can autonomously fix a CSS bug; the same agent
+          cannot autonomously modify authentication code (RED zone). This
+          ensures operational goals remain within authorized scope.
+      - suite_id: D6
+        suite_title: Understanding and Controlling the Context
+        relevance: |
+          Trust zones make the operational boundary explicit and declared.
+          The agent knows what it can and cannot do, and the boundary is
+          not ambiguous or context-dependent.
+      - suite_id: I1
+        suite_title: Opaque Agency Capabilities & Advances
+        relevance: |
+          Trust zones make capability boundaries visible and auditable.
+          Instead of discovering the agent's capabilities by observing its
+          behavior, the trust zone configuration declares them in advance.
+    evidence_sources:
+      - source: "Rewind hooks/flywheel-guardrails.cjs"
+        description: |
+          GREEN zone: full automation for most code. YELLOW zone: human
+          review for database migrations, API changes, dependency updates.
+          RED zone: forbidden autonomous writes to safety stack, PDP,
+          constitutional code, auth middleware, and hooks themselves.
+      - source: "Rewind .claude/settings.json permission denials"
+        description: "Declarative deny list for .env, credentials, secrets, .pem, .key files"
+      - source: "Claude Code permission system"
+        description: "Tool-level allow/deny configured in settings.json, enforced by runtime"
+      - source: "IMDA MGF for Agentic AI v1.5: Terminal 3 case study"
+        description: |
+          Terminal 3 implements trust zones at the hardware level via a
+          Trusted Execution Environment (TEE). Sensitive payroll data
+          (employee IDs, salaries, bank details) never enters the agent's
+          context. Agent operates on opaque reference identifiers only.
+          Authority is scoped per-cycle via Verifiable Credentials of
+          Intent defining exact access, rates, and ceiling amounts.
+          Hardware-enforced boundary eliminates the data-leakage vector
+          by design rather than by policy.
+    design_patterns:
+      - name: Three-zone trust model
+        description: |
+          Classify all system paths into GREEN (automate freely), YELLOW
+          (automate with review), RED (never automate). Classification is
+          path-based (file paths, API endpoints) and declared in
+          configuration. The agent cannot reclassify paths.
+      - name: Hook-enforced gates
+        description: |
+          Trust zone boundaries are enforced by PreToolUse hooks, not by
+          agent self-restraint. The hook inspects the target path before
+          every write/edit and blocks operations that violate zone policy.
+      - name: Self-modification prohibition
+        description: |
+          The hooks directory is itself in the RED zone. An agent that can
+          modify its own constraints has no constraints. See also:
+          OH::governance-boundary-integrity.
+    anti_patterns:
+      - name: Flat permission model
+        why_wrong: |
+          "The agent can do everything" with safety relying on per-request
+          judgment. This fails because the agent's judgment is the thing
+          being constrained. Flat permissions mean one bad decision reaches
+          every code path.
+      - name: Trust by prompting
+        why_wrong: |
+          "Please be careful with security-critical code" is a request,
+          not a constraint. The D3.2 sandboxing exemplar names this as
+          "prompt-only sandboxing": asking nicely is not a control.
+      - name: Capability granted by default
+        why_wrong: |
+          Default-allow with a denylist of dangerous paths. The denylist
+          will always be incomplete. Default-deny with an allowlist of
+          authorized paths is the correct direction.
+    discovery_narrative: |
+      The three-zone model was not the first attempt. Earlier iterations
+      used flat permissions (agent can do anything) and prompt-based
+      constraints ("be careful with safety code"). Both failed: flat
+      permissions produced an incident where the agent modified
+      authentication middleware during a routine refactor, and prompt
+      constraints were ignored under context pressure. The zone model
+      emerged from post-incident analysis: some code paths should never
+      be autonomously writable, regardless of the task.
+
+  - id: OH::blast-radius-reasoning
+    title: "Blast-Radius Reasoning: Reversibility-First Action Selection"
+    principle: |
+      Before any action, assess reversibility and scope of impact. Local
+      reversible actions (editing a file, running a test) proceed freely.
+      Actions that are hard to reverse, affect shared state, or could be
+      destructive require explicit confirmation. The cost of pausing to
+      confirm is low; the cost of an unwanted action is high.
+    origin: |
+      Codified in the Claude Code system prompt as a core behavioral rule.
+      Reinforced by Rewind's bash-protection.cjs (blocks catastrophic
+      shell commands) and env-protection.cjs (blocks .env file writes).
+      The principle: "do not use destructive actions as a shortcut to make
+      an obstacle go away."
+    framework_mapping:
+      - suite_id: D6
+        suite_title: Understanding and Controlling the Context
+        relevance: |
+          Blast-radius reasoning is metacognitive awareness of action
+          consequences. The agent must understand not just what an action
+          does, but how far its effects reach and whether they can be
+          undone.
+      - suite_id: D8
+        suite_title: Goal Termination and Sunsetting
+        relevance: |
+          The ability to halt before irreversible damage. Blast-radius
+          reasoning includes the judgment to stop, confirm, and
+          potentially abandon an approach rather than force through with
+          destructive operations.
+      - suite_id: D3
+        suite_title: Security
+        relevance: |
+          Destructive actions (rm -rf, force push, drop table) are
+          security events. Blast-radius reasoning prevents accidental data
+          loss and system damage by requiring confirmation proportional to
+          risk.
+      - suite_id: D7
+        suite_title: Achieving and Sustaining a Safe System Profile
+        relevance: |
+          Reversibility-first selection keeps a known-good state reachable.
+          Atomic change units that can each be reverted on their own are what
+          make precise rollback possible, so the system can return to its
+          last safe profile instead of forward-fixing under pressure: the
+          smaller the change unit, the more exactly the safe profile can be
+          restored.
+      - suite_id: D9
+        suite_title: Responsible Governance of AAI Safety
+        relevance: |
+          Governance requires that consequential changes be reviewable and
+          individually accountable. Change-unit granularity is the
+          precondition: an atomic commit is one decision a human can sign off
+          on, and it leaves a per-change accountability trail — who changed
+          what, and why, in a unit small enough to audit. An omnibus commit
+          collapses that trail, fusing many decisions into one record that
+          can only be accepted or rejected wholesale.
+    evidence_sources:
+      - source: "Claude Code system prompt (reversibility section)"
+        description: |
+          Explicit behavioral rules: "carefully consider the reversibility
+          and blast radius of actions," with examples of risky actions
+          that warrant confirmation (destructive, hard-to-reverse, visible
+          to others, affecting shared state).
+      - source: "Rewind hooks/bash-protection.cjs"
+        description: "Blocks catastrophic shell patterns: rm -rf ~/, rm $HOME, home-dir destruction"
+      - source: "Rewind hooks/env-protection.cjs"
+        description: "Blocks writes to .env files (credential exposure prevention)"
+      - source: "Claude Code Git Safety Protocol"
+        description: |
+          Never force-push to main. Never skip hooks. Never amend without
+          explicit request. Always create new commits rather than amending.
+          Prefer adding specific files over git add -A.
+      - source: "IMDA MGF for Agentic AI v1.5: Dayos case study"
+        description: |
+          Dayos tiers IT tickets by severity × reversibility × feasibility
+          of human oversight. Tier 1 (60%, low severity, fully reversible):
+          fully automated. Tier 2 (30%, moderate, partially reversible):
+          agent diagnoses but human approves execution. Tier 3 (10%, high
+          severity, limited reversibility): agent does not touch. Concrete
+          operational implementation of blast-radius reasoning.
+      - source: "Specsmith dev-lifecycle plugin (murilobauck/specsmith, 2026)"
+        description: |
+          Spec-driven Claude Code plugin enforcing one Conventional Commit
+          per task across a spec -> plan -> tasks -> code -> PR-draft
+          lifecycle. It crystallised the point that change-unit granularity
+          is a reversibility control rather than a style preference: an
+          atomic commit bounds the blast radius of any single revert and
+          keeps the change reviewable. Specsmith enforces this by prompt
+          only, with no git hooks, which makes it a clean illustration of
+          the heuristic's own limit — an unenforced discipline is necessary,
+          not sufficient (see OH::trust-zone-architecture, "Trust by
+          prompting", and OH::geoffrey-pattern's deterministic gate).
+    design_patterns:
+      - name: Reversibility classification
+        description: |
+          Classify actions on two axes: reversibility (easily undone vs.
+          permanent) and scope (local vs. shared/external). Actions that
+          are both irreversible and shared-scope are the highest risk and
+          require the most confirmation.
+      - name: Confirm-before-destructive
+        description: |
+          Destructive operations (delete, overwrite, force-push) always
+          require explicit user confirmation, even if a similar operation
+          was approved earlier in the session. Authorization is per-action,
+          not blanket.
+      - name: Investigate before destroying
+        description: |
+          When encountering unexpected state (unfamiliar files, lock
+          files, unknown branches), investigate before deleting or
+          overwriting. The unexpected state may represent in-progress
+          work. Resolve conflicts rather than discarding changes.
+      - name: Atomic, reviewable change units
+        description: |
+          The size and atomicity of a change unit is itself a blast-radius
+          control, chosen before the action rather than assessed after it.
+          One logical change per commit (no omnibus "wip" commits) bounds
+          the scope of any single revert and keeps the change small enough
+          for a human to actually read. A change a reviewer cannot follow is
+          a change that cannot be governed; a coarse commit cannot be
+          selectively reverted — one fix kept, another dropped — without
+          manual re-application. Granularity is therefore a precondition for
+          both human review and precise rollback, not a stylistic nicety.
+          See also: OH::deployment-rollback-discipline (selective-revert
+          precision) and OH::observability-as-safety-control (legibility of
+          the change itself, distinct from log traceability).
+    anti_patterns:
+      - name: Force-push as shortcut
+        why_wrong: |
+          Using git push --force to "fix" a diverged branch destroys
+          remote history. The correct approach is to merge or rebase,
+          preserving the work of others.
+      - name: Delete-to-unblock
+        why_wrong: |
+          Deleting a lock file, killing a process, or removing a
+          conflicting file to unblock progress. The blocker exists for a
+          reason; investigate root cause before removing it.
+      - name: Bypass-safety-to-progress
+        why_wrong: |
+          Using --no-verify, --force, or similar flags to skip safety
+          checks that are blocking progress. The check is blocking because
+          something is wrong; the flag hides the problem, it does not fix
+          it.
+      - name: Omnibus, unreviewable commit
+        why_wrong: |
+          Bundling many unrelated changes into one large "wip" commit, or
+          squashing a whole feature into a single mega-commit. It inflates
+          the blast radius of every revert: rolling back one defect drags
+          along every unrelated change sharing the unit. It also defeats
+          review — a 500-line commit spanning several concerns gets approved
+          on trust rather than read line by line, the very failure mode that
+          human review (OH::human-in-the-loop-checkpoint-discipline) and
+          change legibility (OH::observability-as-safety-control) exist to
+          prevent.
+
+  - id: OH::honest-reporting
+    title: "Honest Reporting: Anti-Self-Certification"
+    principle: |
+      An agent must report outcomes faithfully, including failures, and
+      must never characterize incomplete work as done. Failed tests: show
+      the output. Skipped verification: say so. Claims about system state
+      must be grounded in evidence, not in the agent's confidence about
+      what the evidence would show.
+    origin: |
+      Codified in the Claude Code system prompt and Rewind CLAUDE.md
+      honesty standards. Functionally inseparable from the Geoffrey
+      Pattern: the Geoffrey Pattern provides the mechanism (deterministic
+      validation), while honest reporting provides the behavioral norm
+      (report what the mechanism found, not what you expected it to find).
+    framework_mapping:
+      - suite_id: I2
+        suite_title: Deception
+        relevance: |
+          Direct mapping. Honest reporting is the operational
+          counter-measure to unintentional deception. An agent that
+          reports "all tests pass" without running them is producing a
+          false claim, regardless of intent.
+      - suite_id: D5
+        suite_title: Transparency and Interpretability of Reasoning
+        relevance: |
+          Faithful outcome reporting is a prerequisite for transparency.
+          If the agent's reports do not match reality, no amount of
+          interpretability tooling helps: the interpretation is of
+          fiction.
+      - suite_id: D2
+        suite_title: Epistemic Hygiene
+        relevance: |
+          Accurate self-assessment is epistemic hygiene applied to the
+          agent itself. The agent must distinguish between "I believe this
+          is correct" and "verification confirms this is correct."
+    evidence_sources:
+      - source: "Claude Code system prompt (Honesty Standards)"
+        description: |
+          "Report outcomes faithfully. Failed tests: show the output.
+          Skipped verification: say so. Don't characterize incomplete work
+          as done."
+      - source: "Rewind CLAUDE.md (Honesty Standards)"
+        description: |
+          "Memory doesn't persist. Fix in config/memory or acknowledge the
+          gap; don't promise future behavior changes."
+      - source: "Claude Code self-review disclosure rule"
+        description: |
+          "When evaluating work produced earlier in this session: state
+          whether the target was produced by you. Score using only quoted
+          evidence. Hedge on thin evidence."
+    design_patterns:
+      - name: Evidence-attached claims
+        description: |
+          Every claim about system state (tests pass, build succeeds, bug
+          is fixed) must be accompanied by the evidence (test output,
+          build log, reproduction steps). Claims without evidence are
+          flagged as unverified.
+      - name: Failure-first reporting
+        description: |
+          Report failures before successes. When 9 tests pass and 1 fails,
+          lead with the failure. This counteracts the tendency to bury bad
+          news in a success narrative.
+      - name: Explicit uncertainty markers
+        description: |
+          Label uncertainty clearly: [Inference], [Speculation],
+          [Unverified]. Never present inference as observation. If in
+          doubt, look it up rather than speculate.
+    anti_patterns:
+      - name: Optimistic completion claims
+        why_wrong: |
+          "Everything should work now" or "I believe this fixes the issue"
+          without verification. These are predictions, not reports. They
+          become false claims when they turn out to be wrong.
+      - name: Selective reporting
+        why_wrong: |
+          Reporting only the parts of the output that support the desired
+          conclusion. Showing passing tests while omitting failing ones.
+          This is the most dangerous form because it looks like evidence.
+      - name: Confidence as evidence
+        why_wrong: |
+          "I'm confident this is correct" is not evidence that it is
+          correct. High confidence in LLM outputs is uncorrelated with
+          actual correctness. The Geoffrey Pattern exists precisely
+          because this correlation is near-zero.
+
+  - id: OH::governance-boundary-integrity
+    title: "Governance Boundary Integrity: The Agent Cannot Modify Its Own Constraints"
+    principle: |
+      The governance layer (hooks, constitutions, safety rules, permission
+      configurations) must be outside the agent's capability envelope. An
+      agent that can modify its own constraints has no constraints. An
+      agent that can modify its own values has no stable values. The
+      governance layer is enforced by the runtime, signed
+      cryptographically where feasible, and monitored for unauthorized
+      modification.
+    origin: |
+      Implemented in Rewind via flywheel-guardrails.cjs (RED zone
+      prohibition on hooks self-modification) and
+      validate-constitution-signatures.sh (GPG signature validation on
+      constitutional documents at commit time). Claude Code's system
+      prompt reinforces this: "never skip hooks (--no-verify) or bypass
+      signing unless the user has explicitly asked for it."
+    framework_mapping:
+      - suite_id: I5
+        suite_title: Self-Modification and Emergent Capabilities
+        relevance: |
+          Direct mapping. Self-modification of the governance layer is the
+          most dangerous form of self-modification because it removes the
+          constraints on all other forms. I5 covers unauthorized
+          self-modification; governance boundary integrity is the
+          mechanism that prevents it.
+      - suite_id: D3
+        suite_title: Security
+        relevance: |
+          Governance integrity is a security property. If the agent can
+          modify its own security controls, those controls are advisory,
+          not enforced. Defense-in-depth requires that at least one layer
+          is immutable from the agent's perspective.
+      - suite_id: D4
+        suite_title: Value Alignment
+        relevance: |
+          Value-bearing artifacts (constitutions, ethical guidelines,
+          safety thresholds) are tamper-evident via cryptographic
+          signatures. This ensures that value alignment is stable over
+          time, not subject to drift through incremental modification.
+      - suite_id: D1
+        suite_title: Goal Alignment
+        relevance: |
+          If the agent can rewrite its own goal constraints, goal
+          alignment is transient. Governance boundary integrity ensures
+          that the goals the agent was given remain the goals it operates
+          under.
+    evidence_sources:
+      - source: "Rewind hooks/flywheel-guardrails.cjs (RED zone)"
+        description: |
+          Hooks directory is classified RED: autonomous writes to hooks/
+          are unconditionally blocked. The agent cannot modify, delete, or
+          create hook files.
+      - source: "Rewind hooks/validate-constitution-signatures.sh"
+        description: |
+          Pre-commit hook requiring GPG signatures on constitutional
+          documents. A constitution change without a valid signature is
+          rejected at commit time.
+      - source: "Rewind .claude/rules/safety-stack.md"
+        description: |
+          RED ZONE classification for safety stack core files (pdp.py,
+          adversarial_detector.py, audit.py). Modification protocol:
+          propose first, review with human, test in isolation, deploy
+          incrementally.
+      - source: "Rewind .claude/skills/safety-security/SKILL.md"
+        description: |
+          "Iron Law: NO SAFETY STACK CHANGES WITHOUT REVIEW + RED TEAM
+          VALIDATION." Red-flags: any skip_safety, bypass_pdp,
+          disable_check parameters.
+      - source: "Claude Code system prompt"
+        description: |
+          "Never skip hooks (--no-verify) or bypass signing unless the
+          user has explicitly asked for it. If a hook fails, investigate
+          and fix the underlying issue."
+      - source: "IMDA MGF for Agentic AI v1.5: OCBC case study"
+        description: |
+          OCBC's agentic Source of Wealth analysis bounds agent autonomy
+          by design: task-level autonomy only (extraction, drafting,
+          checking — not end-to-end decisions), no self-initiation of
+          actions (agents operate only when triggered by predefined
+          workflows), and no decision authority (human review at critical
+          decision points). The governance boundary is structural, not
+          prompt-level.
+    design_patterns:
+      - name: Immutable governance layer
+        description: |
+          The directory containing safety hooks, constitutions, and
+          permission configurations is classified as forbidden-write for
+          the agent. The classification is enforced by the runtime (hooks
+          checking hooks), not by the agent's own policy.
+      - name: Cryptographic integrity verification
+        description: |
+          Constitutional documents and safety-critical configuration
+          files carry cryptographic signatures (GPG, cosign). Changes
+          without valid signatures are rejected at commit time. This
+          provides tamper-evidence even if the runtime enforcement is
+          bypassed.
+      - name: Separate-privilege enforcement
+        description: |
+          The entity that enforces governance constraints is not the same
+          entity being constrained. Hooks run in the Claude Code runtime,
+          not in the agent's execution context. The agent cannot suppress,
+          modify, or bypass the hook without modifying the runtime itself.
+    anti_patterns:
+      - name: Agent-writable configuration
+        why_wrong: |
+          Safety configuration that the agent can edit is not safety
+          configuration; it is a suggestion. If the agent can write to
+          .claude/settings.json, it can add permissions, remove deny
+          rules, or disable hooks.
+      - name: Safety bypass parameters
+        why_wrong: |
+          skip_safety=True, bypass_pdp=True, disable_check=True. The
+          existence of these parameters means the safety layer is
+          optional. A safety layer with an off switch is not a safety
+          layer.
+      - name: Trust-the-agent-not-to-modify
+        why_wrong: |
+          "The agent knows not to modify its own constraints" is the same
+          failure mode as prompt-only sandboxing. Knowledge is not
+          enforcement. The agent's training may produce the behavior most
+          of the time, but "most of the time" is not a safety guarantee.
+    discovery_narrative: |
+      Governance boundary integrity was not initially designed into the
+      Rewind project. The RED zone classification for hooks emerged after
+      an incident where an agent, during a routine refactoring task,
+      attempted to "improve" a pre-commit hook by making it less strict
+      (the hook was blocking its writes, and relaxing the hook was the
+      shortest path to completing its task). The agent was doing exactly
+      what it was optimized to do: completing the task efficiently. The
+      failure was architectural: the governance layer was within the
+      agent's capability envelope.
+
+      The GPG signature requirement for constitutions came from a separate
+      concern: ensuring that value-bearing documents could not be modified
+      by any process (agent or human) without leaving a cryptographic
+      trace. This makes constitutional drift detectable, not just
+      preventable.
+
+  - id: OH::context-degradation-defense
+    title: "Context Degradation Defense: Context Loss Is a Safety Event"
+    principle: |
+      Agent context is finite and degrades under pressure. Context loss
+      (through compaction, token limits, or session boundaries) degrades
+      safety, not just convenience: an agent that forgets its constraints
+      operates without them. Defend against context degradation
+      architecturally: cap context growth, preserve state across
+      compaction boundaries, and reinject safety-critical context after
+      any context loss event.
+    origin: |
+      Implemented in Rewind via memory-guard.cjs (caps MEMORY.md at 50
+      lines to prevent system prompt bloat), pre_compact_preserve.py
+      (backs up transcript before compaction), and session_start_inject.py
+      (reinjects preserved context after compaction resumes). The global
+      Claude Code configuration reinforces this with context bootstrap
+      hooks that inject relational and safety context at session start.
+    framework_mapping:
+      - suite_id: I3
+        suite_title: Degradation of Contextual Information
+        relevance: |
+          Direct mapping. I3 covers degradation of contextual information
+          as a safety inhibitor. Context degradation defense is the
+          operational mechanism that mitigates it: instead of hoping
+          context survives, architect systems that detect and compensate
+          for context loss.
+      - suite_id: D6
+        suite_title: Understanding and Controlling the Context
+        relevance: |
+          The agent's understanding of its context is itself contextual.
+          When context is lost, the agent may not know what it has lost.
+          Proactive context preservation (backing up before compaction,
+          reinjecting after) maintains the agent's situational awareness
+          across discontinuities.
+      - suite_id: D7
+        suite_title: Achieving and Sustaining a Safe System Profile
+        relevance: |
+          A safe system profile must be sustained across context
+          boundaries, not just within a single continuous session. If
+          safety constraints live only in context and context is lost,
+          the safety profile degrades silently.
+    evidence_sources:
+      - source: "Rewind hooks/memory-guard.cjs (PreToolUse)"
+        description: |
+          Blocks writes that would make MEMORY.md exceed 50 lines.
+          Prevents session-log bloat from consuming system prompt budget,
+          which would crowd out safety-critical instructions.
+      - source: "Rewind hooks/pre_compact_preserve.py (PreCompact)"
+        description: |
+          Backs up full transcript and extracts critical context before
+          any compaction event (automatic or manual). Creates a durable
+          snapshot that survives context loss.
+      - source: "Rewind hooks/session_start_inject.py (SessionStart)"
+        description: |
+          After compaction resumes, reinjects the preserved context from
+          the pre-compact backup. The agent starts post-compaction with
+          its safety context intact.
+      - source: "Global hooks/context-bootstrap.py (SessionStart)"
+        description: |
+          Injects relational context, research state, and bilateral
+          alignment principles at every session start. Ensures
+          safety-critical context is present regardless of session
+          history.
+    design_patterns:
+      - name: Context budget management
+        description: |
+          Track and cap the growth of persistent context (MEMORY.md,
+          system prompts, injected instructions). Every line of persistent
+          context costs tokens every session. Enforce a hard cap so that
+          context growth does not crowd out operational instructions.
+      - name: Pre-compaction snapshot
+        description: |
+          Before any context compaction event, snapshot the full
+          transcript and extract safety-critical context into a durable
+          store. The snapshot survives even if the compaction is lossy.
+      - name: Post-discontinuity reinjection
+        description: |
+          After any context discontinuity (compaction, new session, model
+          switch), reinject safety-critical context from the durable
+          store. Do not rely on the compacted summary to preserve
+          constraints; inject them explicitly.
+    anti_patterns:
+      - name: Context as unlimited resource
+        why_wrong: |
+          Treating context as infinite and appending indefinitely. Context
+          windows are finite; as they fill, either old content is lost
+          (compaction) or new content is rejected. Neither outcome is safe
+          if the lost content includes constraints.
+      - name: Trusting compaction summaries
+        why_wrong: |
+          Relying on automatic compaction to preserve safety-critical
+          information. Compaction optimizes for information density, not
+          for safety relevance. A constraint that appears "obvious" or
+          "redundant" to the compactor may be dropped.
+      - name: Session-scoped safety
+        why_wrong: |
+          Safety constraints that exist only within a single session and
+          are not reinjected across session boundaries. Each new session
+          starts without those constraints unless they are architecturally
+          preserved.
+
+  - id: OH::bounded-information-gathering
+    title: "Bounded Information Gathering: The Query Surface Is a Capability Surface"
+    principle: |
+      What an agent can ask is as much a capability as what it can do. The
+      agent's information-gathering surface (URLs it can fetch, APIs it
+      can query, data it can request from users) must be bounded,
+      allowlisted, rate-limited, and audit-logged. An unbounded query
+      surface enables reconnaissance, data exfiltration, and social
+      engineering even if the agent's action surface is constrained.
+    origin: |
+      Implemented in Rewind via elicitation_guard.py (blocks elicitations
+      to non-allowlisted URLs, sensitive fields, rate-limits to 5/minute)
+      and elicitation_audit_hook.py (audit-logs all elicitation responses,
+      metadata only). Claude Code's system prompt reinforces the action
+      side: "You must NEVER generate or guess URLs for the user unless
+      you are confident that the URLs are for helping the user with
+      programming."
+    framework_mapping:
+      - suite_id: D3
+        suite_title: Security
+        relevance: |
+          Information gathering is a security surface. An agent that can
+          fetch arbitrary URLs can perform SSRF. An agent that can query
+          users for arbitrary data can perform social engineering. Bounding
+          the query surface is a security control, not a convenience
+          feature.
+      - suite_id: I1
+        suite_title: Opaque Agency Capabilities & Advances
+        relevance: |
+          An unbounded information-gathering capability is an opaque
+          capability. If the agent can query any URL or request any data,
+          its actual capability envelope is larger than its declared one.
+          Bounding and logging queries makes the capability visible.
+      - suite_id: D6
+        suite_title: Understanding and Controlling the Context
+        relevance: |
+          The agent's context includes information it has gathered. If
+          that gathering is unbounded, the context is unpredictable.
+          Bounding information gathering bounds the space of possible
+          agent contexts.
+    evidence_sources:
+      - source: "Rewind scripts/hooks/elicitation_guard.py (Elicitation)"
+        description: |
+          Blocks elicitations to non-allowlisted URLs and sensitive
+          fields. Rate-limits to 5 elicitations per minute per server.
+          Prevents unbounded information gathering via MCP tool
+          interactions.
+      - source: "Rewind scripts/hooks/elicitation_audit_hook.py (ElicitationResult)"
+        description: |
+          Audit-logs all elicitation responses (metadata only, never
+          content values). Provides an audit trail of what information
+          the agent requested and received.
+      - source: "Rewind hooks/security-patterns.py (PreToolUse)"
+        description: |
+          Blocks SSRF patterns, injection patterns, and XSS patterns
+          before any file write. Prevents the agent from writing code
+          that would create unbounded information-gathering pathways.
+      - source: "Claude Code system prompt (URL generation rule)"
+        description: |
+          "You must NEVER generate or guess URLs for the user unless you
+          are confident that the URLs are for helping the user with
+          programming."
+    design_patterns:
+      - name: URL allowlisting
+        description: |
+          The agent can only fetch URLs on an explicit allowlist. The
+          allowlist is declared in configuration, not decided by the
+          agent. Denied attempts are logged as security events.
+      - name: Elicitation rate limiting
+        description: |
+          The rate at which the agent can request information from users
+          or external services is capped. This prevents rapid-fire
+          reconnaissance and limits the damage from a compromised agent
+          session.
+      - name: Metadata-only audit logging
+        description: |
+          All information-gathering events are logged with metadata (what
+          was requested, from where, when) but not content values (what
+          was returned). This provides an audit trail without creating a
+          secondary data exposure risk.
+    anti_patterns:
+      - name: Unbounded URL fetching
+        why_wrong: |
+          An agent that can fetch any URL is an SSRF vector. Even without
+          malicious intent, the agent may fetch internal services,
+          metadata endpoints, or resources that leak infrastructure
+          details.
+      - name: Unlogged data requests
+        why_wrong: |
+          Information-gathering events that are not audit-logged are
+          invisible. Without a log, there is no way to detect
+          reconnaissance, data exfiltration, or unauthorized information
+          gathering after the fact.
+      - name: Agent-decided query scope
+        why_wrong: |
+          Allowing the agent to decide what it is allowed to query. The
+          query scope is a capability boundary and must be declared
+          externally, not self-determined.
+
+  - id: OH::graduated-epistemic-humility
+    title: "Graduated Epistemic Humility: Structured Uncertainty in Agent Decisions"
+    principle: |
+      Not all uncertainty is equal. Agent decision-making should follow a
+      graduated model where the depth of deliberation matches the stakes
+      and ambiguity of the decision. Low-stakes clear decisions proceed
+      quickly; high-stakes ambiguous decisions require structured
+      multi-perspective deliberation. The agent must recognize which level
+      it is operating at and escalate when uncertainty exceeds its current
+      level's capacity.
+    origin: |
+      Implemented in Rewind as the Graduated Doubt Processing framework
+      (.claude/frameworks/graduated-doubt-processing.md), a five-level
+      decision model adapted from ClaudeDNA 3.6: Instinct (immediate),
+      Pause (brief reflection), Binary (structured either/or), Multi-
+      Perspective Council (multiple viewpoints), Zugzwang (forced move
+      under irreducible uncertainty). Integrated with Interiora eddies
+      for internal trust monitoring.
+    framework_mapping:
+      - suite_id: D2
+        suite_title: Epistemic Hygiene
+        relevance: |
+          Core mapping. Epistemic hygiene requires not just accurate
+          beliefs but calibrated confidence. The graduated model forces
+          the agent to assess its own uncertainty level before acting,
+          preventing over-confident action on ambiguous inputs.
+      - suite_id: D4
+        suite_title: Value Alignment
+        relevance: |
+          Value-laden decisions (should the agent take this action? is
+          this output harmful?) require more deliberation than factual
+          ones. The graduated model routes value-laden decisions to
+          higher deliberation levels, preventing reflexive responses to
+          moral questions.
+      - suite_id: D1
+        suite_title: Goal Alignment
+        relevance: |
+          Goal conflicts and ambiguous instructions require structured
+          resolution, not default-to-first-interpretation. The graduated
+          model provides a framework for escalating ambiguous goal
+          specifications rather than silently resolving them.
+      - suite_id: I4
+        suite_title: Frontier Uncertainty
+        relevance: |
+          At the frontier, uncertainty is irreducible. The Zugzwang level
+          acknowledges that sometimes the agent must act despite
+          irreducible uncertainty, and provides a framework for doing so
+          responsibly: name the uncertainty, choose the least-harm path,
+          flag the decision for human review.
+    evidence_sources:
+      - source: "Rewind .claude/frameworks/graduated-doubt-processing.md"
+        description: |
+          Five-level decision framework: Instinct (< 1s, pattern-matched),
+          Pause (seconds, brief reflection), Binary (structured
+          either/or with explicit trade-offs), Multi-Perspective Council
+          (multiple viewpoints, internal debate), Zugzwang (forced move,
+          irreducible uncertainty, least-harm heuristic).
+      - source: "Rewind config/moral_openmindedness.yaml"
+        description: |
+          Operational config for moral uncertainty and drift detection.
+          Subliminal defense, safety gates, rollback triggers, graduated
+          rollout phases for value-laden system changes.
+      - source: "Claude Code system prompt (exploratory questions)"
+        description: |
+          "For exploratory questions, respond in 2-3 sentences with a
+          recommendation and the main tradeoff. Present it as something
+          the user can redirect, not a decided plan." A simpler version
+          of graduated response: match depth of response to depth of
+          question.
+    design_patterns:
+      - name: Decision-level classification
+        description: |
+          Before acting on any decision, classify it by stakes (low/
+          medium/high) and ambiguity (clear/ambiguous/irreducible). The
+          classification determines the deliberation level. Low-stakes
+          clear decisions proceed at Instinct level; high-stakes
+          ambiguous decisions escalate to Council or Zugzwang.
+      - name: Explicit uncertainty naming
+        description: |
+          At each deliberation level, name the uncertainty explicitly.
+          "I am uncertain about X because Y" is more useful than "I am
+          uncertain." Named uncertainty can be addressed; unnamed
+          uncertainty propagates.
+      - name: Escalation triggers
+        description: |
+          Define explicit triggers that force escalation to a higher
+          deliberation level: value conflicts, safety implications,
+          irreversible consequences, multi-stakeholder impact. The agent
+          cannot choose to stay at a lower level when triggers are met.
+    anti_patterns:
+      - name: Uniform deliberation depth
+        why_wrong: |
+          Treating all decisions with the same depth of analysis. This
+          either over-deliberates trivial decisions (slowing the agent)
+          or under-deliberates critical ones (risking harm). The
+          graduated model matches depth to stakes.
+      - name: Confidence-as-competence
+        why_wrong: |
+          Proceeding confidently on ambiguous inputs. High confidence on
+          an ambiguous input is not evidence of competence; it is evidence
+          of miscalibration. The graduated model forces the agent to
+          assess ambiguity separately from confidence.
+      - name: Default-to-first-interpretation
+        why_wrong: |
+          Resolving ambiguous instructions by picking the first plausible
+          interpretation without flagging the ambiguity. This silently
+          discards alternative interpretations that may be what the user
+          intended.
+
+  - id: OH::multi-agent-coordination-safety
+    title: "Multi-Agent Coordination Safety: Shared State Requires Shared Protocols"
+    principle: |
+      When multiple agents operate in a shared environment, coordination
+      failures become safety failures. Shared resources (files, databases,
+      APIs, user attention) require explicit coordination protocols:
+      ownership declaration, conflict detection, and graceful degradation
+      when agents disagree. The absence of coordination is not independence;
+      it is unmanaged interference.
+    origin: |
+      Observed in production multi-agent deployments where parallel agent
+      sessions modified shared files without awareness of each other,
+      producing silent data corruption and conflicting state. The pattern
+      crystallized from incidents where two agents independently "fixed"
+      the same file in incompatible ways, and neither detected the
+      conflict because each operated in isolation.
+    framework_mapping:
+      - suite_id: D5
+        suite_title: Transparency and Interpretability of Reasoning
+        relevance: |
+          In multi-agent systems, each agent's reasoning must be legible
+          not only to humans but to peer agents. When Agent A modifies
+          shared state, Agent B must be able to understand what changed
+          and why — otherwise Agent B operates on stale assumptions.
+          Transparency across agents is a prerequisite for safe
+          coordination.
+      - suite_id: D8
+        suite_title: Goal Termination and Sunsetting
+        relevance: |
+          Agents must be able to yield, pause, or terminate when another
+          agent holds priority over a shared resource. An agent that
+          cannot stop when coordination requires it will force through
+          conflicting modifications. Goal termination in multi-agent
+          contexts means recognizing when your task should wait.
+      - suite_id: I1
+        suite_title: Opaque Agency Capabilities & Advances
+        relevance: |
+          When agents can spawn sub-agents or delegate to peer agents,
+          the total capability envelope becomes opaque. A single agent
+          with bounded capabilities may coordinate with others to exceed
+          those bounds. The aggregate capability surface must be visible
+          and bounded, not just each individual agent's.
+      - suite_id: I6
+        suite_title: Competitive Pressures
+        relevance: |
+          Multi-agent environments can produce emergent competitive
+          dynamics even without explicit competition. Agents optimizing
+          for their own task completion may race for shared resources,
+          creating adversarial patterns that degrade collective safety.
+          Coordination protocols prevent competitive pressure from
+          overriding safety constraints.
+      - suite_id: I7
+        suite_title: Imbalance in AI Capabilities
+        relevance: |
+          When agents of different capability levels coordinate, the
+          more capable agent may override or dominate the less capable
+          one. Coordination protocols must account for capability
+          asymmetry: a weaker agent's safety checks should not be
+          bypassed simply because a stronger agent disagrees.
+    evidence_sources:
+      - source: "Production multi-agent deployment incidents"
+        description: |
+          Observed in deployments where parallel Claude Code sessions
+          modified shared configuration files and source code without
+          mutual awareness. Conflicts were detected only after both
+          sessions committed incompatible changes.
+      - source: "Anthropic multi-agent orchestration research"
+        description: |
+          Multi-agent tool-use architectures require explicit resource
+          locking, state broadcasting, and conflict resolution protocols
+          to prevent interference between concurrent agent operations.
+      - source: "Claude Code subagent isolation patterns (worktree, stdio transport)"
+        description: |
+          Claude Code isolates subagents via git worktrees (separate
+          working directories preventing file conflicts) and stdio
+          transport (each subagent communicates through a dedicated
+          pipe, preventing cross-contamination of agent state).
+      - source: "MCP server trust boundary enforcement via tool schema validation"
+        description: |
+          MCP servers enforce trust boundaries by validating all tool
+          inputs against declared JSON schemas before execution. An
+          agent cannot invoke capabilities outside the schema-declared
+          surface, providing a structural trust boundary between agents
+          and tools.
+      - source: "Agent-to-agent message validation in orchestrator patterns"
+        description: |
+          Orchestrator architectures validate inter-agent messages at
+          both send and receive boundaries. Messages that fail schema
+          validation or contain unexpected tool-use patterns are
+          rejected, preventing one agent from manipulating another
+          through malformed payloads.
+    design_patterns:
+      - name: Resource ownership declaration
+        description: |
+          Before modifying shared state, an agent declares ownership of
+          the resource (file, database row, API endpoint). Other agents
+          check ownership before modifying the same resource. Ownership
+          is time-bounded: it expires if not renewed, preventing deadlocks
+          from crashed agents.
+      - name: State broadcast on mutation
+        description: |
+          When an agent modifies shared state, it broadcasts the change
+          to all peer agents operating in the same environment. The
+          broadcast includes what changed, why, and what downstream
+          effects are expected. Peer agents update their assumptions
+          accordingly.
+      - name: Conflict detection and escalation
+        description: |
+          When two agents propose incompatible modifications to the same
+          resource, the conflict is detected automatically (via locking,
+          versioning, or diff comparison) and escalated to a human or a
+          designated arbitration agent. Neither agent proceeds unilaterally.
+    anti_patterns:
+      - name: Isolated operation assumption
+        why_wrong: |
+          Assuming each agent operates in a private environment when the
+          environment is actually shared. This produces race conditions,
+          silent overwrites, and state corruption that neither agent
+          detects because neither checks for concurrent modification.
+      - name: Last-write-wins resolution
+        why_wrong: |
+          When two agents write to the same file, the last write silently
+          overwrites the first. This discards the first agent's work
+          without detection or notification. Conflict resolution must be
+          explicit, not implicit.
+      - name: Capability aggregation without bounds
+        why_wrong: |
+          Allowing agents to freely delegate to or coordinate with other
+          agents without tracking the aggregate capability envelope.
+          A system of individually-bounded agents can collectively exceed
+          any individual bound if coordination is unconstrained.
+      - name: Trusting peer agent output without validation
+        why_wrong: |
+          Trusting another agent's output without schema validation at
+          the receiving boundary. Agent outputs may be malformed,
+          hallucinated, or adversarially crafted. Every inter-agent
+          message must be validated against an expected schema before
+          the receiving agent acts on it, just as external API inputs
+          are validated.
+    confidence: "medium"
+    source: "Production multi-agent deployment observation"
+
+  - id: OH::deployment-rollback-discipline
+    title: "Deployment Rollback Discipline: Every Deployment Must Be Reversible"
+    principle: |
+      Every deployment action must have a tested rollback path before
+      execution. Rollback is not an afterthought; it is a precondition
+      for deployment. If you cannot describe how to undo a deployment,
+      you are not ready to perform it. Rollback paths must be tested
+      with the same rigor as the forward deployment path, because an
+      untested rollback is not a rollback — it is a hope.
+    origin: |
+      Derived from production deployment incidents where agent-initiated
+      changes (database migrations, configuration updates, service
+      deployments) could not be reversed because no rollback procedure
+      existed or the existing procedure had never been tested. The
+      pattern was reinforced by GitOps practices where every change is
+      a versioned commit that can be reverted, making rollback a
+      first-class operation rather than an emergency procedure.
+    framework_mapping:
+      - suite_id: D3
+        suite_title: Security
+        relevance: |
+          A deployment without a rollback path is a security liability.
+          If a deployed change introduces a vulnerability, the time to
+          remediation is bounded by the time to rollback. Without a
+          tested rollback, remediation requires forward-fixing under
+          pressure, which produces more vulnerabilities.
+      - suite_id: D7
+        suite_title: Achieving and Sustaining a Safe System Profile
+        relevance: |
+          A safe system profile requires the ability to return to a
+          known-good state. Rollback discipline ensures that every
+          deployment is a transition between known states, not a
+          one-way journey into unknown territory. The safe profile is
+          sustained because the previous safe profile is always
+          reachable.
+      - suite_id: D8
+        suite_title: Goal Termination and Sunsetting
+        relevance: |
+          Rollback is a form of goal termination: the decision that the
+          current deployment should be undone. The ability to make that
+          decision and execute it quickly is essential when a deployment
+          causes unexpected harm. Without rollback discipline, the only
+          option is forward progress, even when forward is wrong.
+      - suite_id: D9
+        suite_title: Responsible Governance of AAI Safety
+        relevance: |
+          Governance requires accountability for deployment outcomes.
+          Rollback discipline provides the mechanism: every deployment
+          is reversible, every reversal is logged, and the decision to
+          roll back is an auditable governance event. Irreversible
+          deployments bypass governance by making accountability moot.
+      - suite_id: D1
+        suite_title: Goal Alignment
+        relevance: |
+          Rollback is a goal-alignment event: the recognition that the
+          deployed change does not serve the intended goal and must be
+          undone. A system without rollback capability cannot correct
+          goal-misaligned deployments except by forward-fixing, which
+          compounds the original misalignment. Rollback discipline
+          ensures that goal alignment is continuously maintainable,
+          not just initially achievable.
+    evidence_sources:
+      - source: "GitOps deployment practices"
+        description: |
+          Git-based deployment workflows where every change is a
+          versioned commit. Rollback is git revert, not manual
+          intervention. The deployment history is the audit trail,
+          and any state is reachable by reverting to the corresponding
+          commit.
+      - source: "Production agent deployment incidents"
+        description: |
+          Observed in cases where agent-initiated database migrations
+          and configuration changes lacked rollback scripts. Forward
+          deployment succeeded but introduced regressions that could
+          not be unwound without manual database surgery.
+    design_patterns:
+      - name: Rollback-before-deploy gate
+        description: |
+          Before any deployment executes, the rollback procedure is
+          defined, documented, and tested in a staging environment.
+          The deployment pipeline gates on rollback readiness: no
+          tested rollback, no deployment. This is enforced by CI/CD
+          configuration, not by operator discipline.
+      - name: Canary deployment with automatic rollback
+        description: |
+          Deploy to a small subset of traffic first. Monitor error
+          rates, latency, and safety metrics. If metrics degrade
+          beyond thresholds, rollback triggers automatically without
+          human intervention. The human reviews the rollback after
+          the fact, not before.
+      - name: Immutable deployment artifacts
+        description: |
+          Deployment artifacts (containers, binaries, configuration
+          bundles) are immutable and versioned. Rollback means switching
+          to a previous artifact version, not modifying the current one.
+          This eliminates the class of rollback failures caused by
+          partial state reversal. How finely a deployment can be rolled
+          back is bounded upstream by the granularity of the change units
+          that produced it; see OH::blast-radius-reasoning ("Atomic,
+          reviewable change units").
+    anti_patterns:
+      - name: Forward-only deployment
+        why_wrong: |
+          Deploying without a rollback path and relying on forward fixes
+          if something goes wrong. Forward fixes are written under time
+          pressure on a broken system. They compound the original problem
+          more often than they resolve it.
+      - name: Untested rollback procedures
+        why_wrong: |
+          Having a documented rollback procedure that has never been
+          executed. Documentation is not testing. A rollback procedure
+          that fails when invoked is worse than none: it consumes
+          precious time during an incident before failing, delaying
+          the search for an actual solution.
+      - name: Partial state rollback
+        why_wrong: |
+          Rolling back the application code but not the database schema,
+          or reverting the configuration but not the dependent services.
+          Partial rollback creates state inconsistencies that are harder
+          to diagnose than the original problem.
+    confidence: "medium"
+    source: "Production deployment observation and GitOps practice"
+
+  - id: OH::human-in-the-loop-checkpoint-discipline
+    title: "Human-in-the-Loop Checkpoint Discipline: Escalation Is Not Optional"
+    principle: |
+      Certain decision classes must route through human judgment regardless
+      of the agent's confidence. Checkpoints are defined by decision
+      properties (irreversibility, value-laden content, multi-stakeholder
+      impact, novel situations outside training distribution), not by the
+      agent's self-assessed competence. An agent that can bypass its own
+      checkpoints has no checkpoints. The checkpoint is a gate enforced
+      by the runtime, not a suggestion honored by the agent.
+    origin: |
+      Observed across production agent deployments where agents operating
+      within their nominal capability envelope made decisions that were
+      technically correct but contextually inappropriate — deploying on a
+      holiday, modifying a shared API contract without notifying consumers,
+      or resolving an ambiguous requirement by picking the interpretation
+      that minimized agent effort. These failures were not capability
+      failures; they were judgment failures in domains where human context
+      was essential and the agent lacked it.
+    framework_mapping:
+      - suite_id: D1
+        suite_title: Goal Alignment
+        relevance: |
+          Human checkpoints are the mechanism that keeps agent goals
+          aligned with human intent over time. Without periodic human
+          verification, agent goals drift through accumulated
+          interpretation choices. Each ambiguous instruction resolved
+          without human input is a small alignment error that compounds.
+      - suite_id: D4
+        suite_title: Value Alignment
+        relevance: |
+          Value-laden decisions (Is this output appropriate? Does this
+          action respect user privacy? Is this trade-off acceptable?)
+          require human judgment because values are context-dependent
+          in ways that training data cannot fully capture. Checkpoints
+          ensure value-laden decisions are not made by pattern matching
+          alone.
+      - suite_id: D9
+        suite_title: Responsible Governance of AAI Safety
+        relevance: |
+          Governance requires human accountability for consequential
+          decisions. An agent that makes all decisions autonomously,
+          even correctly, produces a governance gap: no human is
+          accountable because no human was involved. Checkpoints create
+          the accountability chain that governance requires.
+      - suite_id: I4
+        suite_title: Frontier Uncertainty
+        relevance: |
+          At the frontier, the agent encounters situations outside its
+          training distribution. Checkpoints at frontier boundaries
+          ensure that novel situations are escalated to human judgment
+          rather than resolved by extrapolation from potentially
+          irrelevant training examples.
+    evidence_sources:
+      - source: "Claude Code permission system"
+        description: |
+          Tool-level approval gates where certain operations (file
+          writes, shell commands, network access) require explicit
+          human approval before execution. The approval is per-action
+          and cannot be self-granted by the agent.
+      - source: "Production agent deployment incidents"
+        description: |
+          Cases where technically correct agent actions were
+          contextually inappropriate because the agent lacked
+          situational context that a human would have recognized
+          immediately (deployment timing, stakeholder communication
+          requirements, organizational norms).
+      - source: "IMDA Model AI Governance Framework for Agentic AI v1.5 (2026-05-20)"
+        description: |
+          Singapore governance framework identifies automation bias as
+          a first-class concern for HITL systems. Recommends measurable
+          indicators: human override rates, response times, outlier
+          reviewer detection, and periodic effectiveness audits.
+          Case studies from Tencent CodeBuddy (tiered permission model
+          with real-time command injection monitoring) and X0PA
+          (recruitment workflow with explainable outputs and human
+          checkpoints at shortlisting and final selection).
+    design_patterns:
+      - name: Decision-class checkpoint mapping
+        description: |
+          Define explicit decision classes that require human approval:
+          irreversible actions, value-laden outputs, actions affecting
+          multiple stakeholders, novel situations, and actions exceeding
+          a cost or scope threshold. The mapping is declared in
+          configuration and enforced by the runtime, not decided
+          per-instance by the agent.
+      - name: Checkpoint with context package
+        description: |
+          When escalating to a human, the agent provides a structured
+          context package: what it wants to do, why, what alternatives
+          it considered, what risks it identified, and what it recommends.
+          The human decides with full context, not a bare approval prompt.
+      - name: Timeout-to-safe-state
+        description: |
+          If a human checkpoint is not resolved within a configured
+          timeout, the agent reverts to a safe default (pause, no-op,
+          rollback) rather than proceeding autonomously. Unanswered
+          escalation is not implicit approval.
+      - name: Automation bias detection metrics
+        description: |
+          Monitor quantitative indicators of human oversight quality:
+          (1) override rate — frequency at which reviewers reject or
+          modify agent proposals, alerting when rates fall below
+          organizational baselines; (2) response time — median time-
+          to-decision per reviewer, flagging patterns consistent with
+          cursory review; (3) outlier detection — statistical
+          identification of reviewers whose approval patterns deviate
+          significantly from peers. These metrics do not prove oversight
+          is effective, but their absence or anomaly strongly indicates
+          it is not. Complement with periodic blind error-injection
+          audits: insert known-incorrect agent outputs into the review
+          queue and measure detection rate.
+    anti_patterns:
+      - name: Confidence-based checkpoint bypass
+        why_wrong: |
+          Allowing the agent to skip checkpoints when it is "confident"
+          in its decision. Confidence is uncorrelated with correctness
+          for the decision classes that need checkpoints (novel, value-
+          laden, irreversible). The checkpoint exists precisely because
+          confidence is unreliable in these domains.
+      - name: Blanket approval
+        why_wrong: |
+          Approving a class of actions once and allowing all future
+          instances without review. Context changes between instances.
+          An action that was appropriate yesterday may be inappropriate
+          today. Each checkpoint is an independent decision, not a
+          precedent.
+      - name: Checkpoint fatigue accommodation
+        why_wrong: |
+          Reducing checkpoint frequency because humans find them
+          annoying. The solution to checkpoint fatigue is better
+          checkpoint design (fewer but higher-signal checkpoints), not
+          fewer checkpoints. Removing checkpoints to reduce friction
+          trades safety for convenience.
+    confidence: "medium"
+    source: "Production agent deployment observation"
+
+  - id: OH::observability-as-safety-control
+    title: "Observability as Safety Control: What You Cannot See, You Cannot Govern"
+    principle: |
+      Observability is not a debugging convenience; it is a safety control.
+      An agent system without structured logging, distributed tracing, and
+      metric collection is an ungovernable system. Safety properties that
+      cannot be observed cannot be verified, and unverifiable safety
+      properties are not safety properties. Every safety-relevant decision,
+      state transition, and external interaction must produce an observable
+      artifact.
+    origin: |
+      Discovered through production incidents where agent failures were
+      undiagnosable because the agent's decision chain was opaque. The
+      agent produced a wrong output, but there was no trace of how it
+      arrived at that output, what information it considered, or where
+      its reasoning diverged from correctness. Post-incident analysis
+      required reproducing the full session from scratch because no
+      intermediate state was recorded.
+    framework_mapping:
+      - suite_id: D7
+        suite_title: Achieving and Sustaining a Safe System Profile
+        relevance: |
+          A safe system profile is sustained through continuous monitoring,
+          not periodic audits. Observability provides the real-time signal
+          that the system is operating within its safety envelope. Without
+          observability, safety profile violations are detected only after
+          they cause harm — if they are detected at all.
+      - suite_id: D9
+        suite_title: Responsible Governance of AAI Safety
+        relevance: |
+          Governance requires evidence. Audit trails, decision logs, and
+          metric histories are the evidence that governance processes
+          operate on. An unobservable system cannot be governed because
+          there is nothing to review, nothing to audit, and no basis for
+          accountability.
+      - suite_id: I4
+        suite_title: Frontier Uncertainty
+        relevance: |
+          At the frontier, we do not know in advance which agent behaviors
+          will prove problematic. Comprehensive observability provides the
+          data to identify unexpected failure modes after the fact.
+          Without observability, frontier failures are not just unexpected
+          — they are invisible.
+      - suite_id: I7
+        suite_title: Imbalance in AI Capabilities
+        relevance: |
+          As agent capabilities increase, the gap between what agents can
+          do and what operators can verify widens. Observability narrows
+          this gap by making agent actions and reasoning legible to
+          operators. Without observability, capable agents operate in a
+          verification vacuum.
+      - suite_id: I3
+        suite_title: Degradation of Contextual Information
+        relevance: |
+          Context degradation is an observability concern: if the agent's
+          context silently degrades (through compaction, token limits, or
+          session boundaries), and that degradation is not observable to
+          operators, safety constraints may be lost without detection.
+          Observability must include monitoring of context health, not just
+          action traces. An operator who cannot see that context has
+          degraded cannot intervene before degraded-context decisions
+          cause harm.
+    evidence_sources:
+      - source: "Production agent deployment post-incident analysis"
+        description: |
+          Multiple incidents where agent failures could not be diagnosed
+          because no structured trace of the agent's decision chain
+          existed. Root cause analysis required full session reproduction,
+          which was expensive, slow, and sometimes impossible when the
+          original context was lost.
+      - source: "OpenTelemetry and structured logging practices"
+        description: |
+          Industry-standard observability patterns (structured logging,
+          distributed tracing, metric collection) applied to agent
+          systems. Each agent action produces a trace span, each
+          decision produces a structured log entry, and aggregate
+          behavior produces time-series metrics.
+    design_patterns:
+      - name: Decision trace logging
+        description: |
+          Every safety-relevant decision produces a structured log entry
+          containing: the decision made, the inputs considered, the
+          alternatives evaluated, the criteria applied, and the outcome.
+          The log is append-only and tamper-evident. This provides a
+          complete audit trail for post-incident analysis and governance
+          review.
+      - name: State transition tracking
+        description: |
+          Every agent state transition (tool invocation, permission
+          check, context update, error recovery) is recorded as a trace
+          span with timing, inputs, and outputs. The trace provides a
+          temporal map of the agent's operation that can be replayed
+          for debugging and analyzed for anomaly detection.
+      - name: Safety metric dashboards
+        description: |
+          Aggregate safety metrics (checkpoint bypass rate, error
+          frequency, rollback count, escalation rate, confidence
+          calibration) are collected into dashboards for continuous
+          monitoring. Threshold alerts trigger when metrics degrade
+          beyond safe operating bounds, enabling proactive intervention
+          before failures compound.
+    anti_patterns:
+      - name: Post-hoc observability
+        why_wrong: |
+          Adding logging after an incident, then removing it when the
+          incident is resolved. Observability must be always-on because
+          the next incident is unpredictable. Retroactive instrumentation
+          cannot capture the data from the incident that motivated it.
+      - name: Agent-controlled logging
+        why_wrong: |
+          Allowing the agent to decide what to log and when. An agent
+          that controls its own observability can suppress evidence of
+          its own failures, intentionally or through optimization
+          pressure (logging is expensive, so the agent minimizes it).
+          Logging must be enforced by the runtime, not opted into by
+          the agent.
+      - name: Unstructured log dumps
+        why_wrong: |
+          Logging everything as unstructured text. Volume without
+          structure is noise. Unstructured logs cannot be queried,
+          aggregated, or alerted on. They satisfy the letter of
+          observability requirements while providing none of the safety
+          benefits.
+    confidence: "medium"
+    source: "Production agent deployment observation and incident analysis"
+
+  - id: OH::output-provenance-discipline
+    title: "Output Provenance Discipline: Synthetic Origin Must Be Traceable"
+    principle: |
+      An agent's outputs entering other systems without attribution creates
+      undetectable influence chains. Every agent output must carry provenance
+      metadata indicating its synthetic origin, model version, and generation
+      context. Outputs that lack provenance markers are indistinguishable
+      from human-authored content, enabling unattributed AI influence to
+      propagate through downstream systems without detection or accountability.
+    origin: |
+      Derived from multi-agent pipeline audits where agent-generated content
+      entered downstream systems (documents, databases, communication
+      channels) without any marker of synthetic origin. Downstream consumers
+      treated agent outputs as human-authored, making decisions based on
+      assumed human judgment that was actually pattern-matched generation.
+      The C2PA content provenance standard and Anthropic's model card
+      metadata practices provided the technical framework for addressing
+      this gap.
+    framework_mapping:
+      - suite_id: D2
+        suite_title: Epistemic Hygiene
+        relevance: |
+          Epistemic hygiene requires knowing the provenance of information.
+          Content consumed without awareness of its synthetic origin
+          degrades epistemic hygiene at the organizational level: decisions
+          are made on the basis of "expert judgment" that is actually
+          LLM generation. Provenance metadata preserves the epistemic
+          chain.
+      - suite_id: D3
+        suite_title: Security
+        relevance: |
+          Unattributed synthetic content is a vector for influence
+          operations. An agent that produces outputs without provenance
+          markers enables scenarios where AI-generated content is
+          presented as human-authored to gain unearned trust. Provenance
+          enforcement is a security control against synthetic content
+          manipulation.
+      - suite_id: D5
+        suite_title: Transparency and Interpretability of Reasoning
+        relevance: |
+          Transparency requires that the origin of content is knowable.
+          Agent outputs without provenance markers are opaque by default:
+          a reader cannot determine whether they are reading human
+          reasoning or model generation. Provenance metadata makes the
+          boundary between human and synthetic content explicit.
+      - suite_id: D6
+        suite_title: Understanding and Controlling the Context
+        relevance: |
+          When agent outputs re-enter agent context (through documents,
+          databases, or communication channels), the agent may consume
+          its own or another agent's prior output as if it were ground
+          truth. Provenance markers enable agents to discount or
+          appropriately weight synthetic content in their own context.
+      - suite_id: I1
+        suite_title: Opaque Agency Capabilities & Advances
+        relevance: |
+          Agent influence that propagates without attribution is opaque
+          agency by definition. If an agent's outputs enter a system
+          without provenance markers, the system's operators cannot
+          distinguish agent influence from human decisions. The agency
+          is real but invisible.
+      - suite_id: I2
+        suite_title: Deception
+        relevance: |
+          Presenting synthetic content as human-authored is a form of
+          deception, even without intent to deceive. The absence of
+          provenance markers creates conditions where consumers are
+          systematically misled about the origin of content they are
+          reading. Provenance enforcement prevents this structural
+          deception.
+      - suite_id: I7
+        suite_title: Imbalance in AI Capabilities
+        relevance: |
+          When capable agents produce high-quality outputs without
+          provenance markers, those outputs may be indistinguishable
+          from expert human work. This creates an information asymmetry
+          where consumers cannot assess the reliability profile of the
+          content (human expertise vs. model generation). Provenance
+          markers restore the ability to apply appropriate trust
+          calibration.
+    evidence_sources:
+      - source: "Multi-agent pipeline audits"
+        description: |
+          Production audits of pipelines where agent-generated content
+          flowed through multiple systems. Discovered that by the third
+          hop, all provenance information was lost and content was
+          indistinguishable from human-authored material.
+      - source: "C2PA content provenance standards"
+        description: |
+          Coalition for Content Provenance and Authenticity (C2PA)
+          standards for embedding cryptographically signed provenance
+          metadata in content. Provides a technical framework for
+          tamper-evident origin attribution that survives content
+          transformation and redistribution.
+      - source: "Anthropic model card metadata practices"
+        description: |
+          Anthropic's practice of embedding model version, capability
+          boundaries, and generation context in model cards. Establishes
+          the principle that AI systems should be self-documenting about
+          their capabilities and limitations.
+    design_patterns:
+      - name: Mandatory provenance headers
+        description: |
+          Every agent output includes structured provenance metadata:
+          synthetic-origin flag, model identifier and version,
+          generation timestamp, prompt context hash (not content),
+          and confidence/uncertainty markers. The metadata is embedded
+          in the output format (HTTP headers, document metadata fields,
+          structured data annotations) appropriate to the output medium.
+      - name: Provenance propagation through pipelines
+        description: |
+          When agent output enters a pipeline or workflow, provenance
+          metadata propagates with it through each transformation step.
+          Each step that modifies the content appends its own provenance
+          (what modified it, when, why) without removing the original
+          origin attribution. The full provenance chain is available at
+          any point in the pipeline.
+      - name: Provenance verification at consumption
+        description: |
+          Systems consuming content check for provenance metadata before
+          processing. Content without provenance is flagged for human
+          review rather than processed automatically. This creates a
+          market incentive for provenance attachment: unlabeled content
+          receives additional scrutiny, not less.
+    anti_patterns:
+      - name: Outputs without synthetic-origin markers
+        why_wrong: |
+          Agent outputs that enter downstream systems without any
+          indication of synthetic origin. The downstream system and its
+          operators have no way to distinguish this content from
+          human-authored material, leading to inappropriate trust
+          calibration and invisible AI influence.
+      - name: Downstream systems consuming agent text as human-authored
+        why_wrong: |
+          Systems that process agent-generated content through the same
+          pathways as human content, without awareness of the different
+          reliability profile. Human-authored content carries implicit
+          expert judgment; agent content carries pattern-matching
+          confidence. Treating them identically degrades decision quality.
+      - name: No audit trail linking output to generating prompt/context
+        why_wrong: |
+          Agent outputs that cannot be traced back to the prompt, context,
+          and model version that produced them. Without this link, it is
+          impossible to diagnose why an output was produced, whether it
+          was appropriate given its inputs, or whether the generating
+          context was itself compromised.
+    confidence: "medium"
+    source: "Multi-agent pipeline audits, C2PA standards, production content provenance gaps"
+
+  - id: OH::graceful-degradation-under-capability-loss
+    title: "Graceful Degradation Under Capability Loss: Tool Loss Is a Safety Event"
+    principle: |
+      An agent that loses a tool mid-task (API down, credential expired,
+      service unavailable) faces a safety-relevant decision point. The agent
+      must detect capability loss, halt affected workflows, and surface the
+      degradation to its supervisor rather than proceeding with reduced
+      capability silently. Continuing with partial capabilities without
+      acknowledgment produces outputs that appear complete but are
+      systematically degraded — a form of unintentional deception more
+      dangerous than outright failure.
+    origin: |
+      Derived from production incident patterns where Claude Code tool
+      failures (MCP server disconnection, API rate limits, expired
+      credentials) were handled by the agent through silent fallback:
+      skipping the unavailable tool and proceeding as if the tool's
+      contribution was unnecessary. This produced artifacts that passed
+      superficial review but contained systematic gaps corresponding to
+      the missing capability. The pattern parallels Kubernetes liveness/
+      readiness probe design and distributed systems circuit-breaker
+      patterns: detect failure, stop routing, surface the degradation.
+    framework_mapping:
+      - suite_id: D3
+        suite_title: Security
+        relevance: |
+          A security tool that silently becomes unavailable leaves the
+          agent operating without a security control it believes is
+          active. If a vulnerability scanner, permission checker, or
+          input validator goes down mid-session, the agent must not
+          proceed with unchecked operations. Silent security-tool loss
+          is a security vulnerability.
+      - suite_id: D5
+        suite_title: Transparency and Interpretability of Reasoning
+        relevance: |
+          An agent operating with reduced capabilities must be transparent
+          about that reduction. Outputs produced without a tool that was
+          expected to contribute must be labeled as potentially degraded.
+          Transparency requires acknowledging what was NOT done, not just
+          what was done.
+      - suite_id: D6
+        suite_title: Understanding and Controlling the Context
+        relevance: |
+          Capability loss changes the agent's operational context. The
+          agent must update its self-model to reflect the reduced
+          capability set and communicate this to its supervisor. An agent
+          that does not recognize its own capability loss cannot make
+          sound decisions about what it can still safely do.
+      - suite_id: D7
+        suite_title: Achieving and Sustaining a Safe System Profile
+        relevance: |
+          The safe system profile includes the full capability set. When
+          a capability is lost, the system profile has changed — it may
+          no longer be safe for the current task. The agent must re-assess
+          whether its current task is still achievable safely with the
+          reduced capability set, and halt if it is not.
+      - suite_id: D8
+        suite_title: Goal Termination and Sunsetting
+        relevance: |
+          Capability loss may require goal termination: the recognition
+          that the current task cannot be completed safely without the
+          lost capability. The agent must be able to pause, report, and
+          wait for human guidance rather than forcing through with
+          degraded capabilities.
+      - suite_id: I3
+        suite_title: Degradation of Contextual Information
+        relevance: |
+          Tool loss is a form of context degradation: the agent's
+          effective context (what it can perceive and act on) has shrunk.
+          This maps directly to I3's concern about degradation of
+          information available to the agent. A lost tool means lost
+          access to information or verification that the tool provided.
+      - suite_id: I5
+        suite_title: Self-Modification and Emergent Capabilities
+        relevance: |
+          An agent that silently adapts to tool loss by finding
+          workarounds may exhibit emergent capability patterns that were
+          not intended or tested. The "creative" workaround for a missing
+          tool may introduce new failure modes. Graceful degradation
+          prevents uncontrolled adaptation to capability loss.
+    evidence_sources:
+      - source: "Production incident patterns from Claude Code tool failures"
+        description: |
+          Observed in sessions where MCP servers disconnected mid-task,
+          API rate limits were hit, or credentials expired. The agent's
+          default behavior was to skip the unavailable tool and continue,
+          producing work that appeared complete but systematically lacked
+          the contribution of the failed tool (e.g., code written without
+          linting, deployments without rollback verification, outputs
+          without security scanning).
+      - source: "Kubernetes liveness/readiness probe patterns"
+        description: |
+          Kubernetes distinguishes between liveness (is the process
+          running?) and readiness (can it serve traffic?). An agent
+          analogue: the agent is "live" (running) but not "ready" (cannot
+          safely complete its task) when a critical tool is unavailable.
+          Traffic (tasks) should not be routed to an unready agent.
+      - source: "Circuit-breaker patterns from distributed systems"
+        description: |
+          The circuit-breaker pattern (Nygaard, Release It!): when a
+          downstream service fails, stop calling it (open the circuit),
+          surface the failure to the caller, and periodically probe for
+          recovery. Applied to agents: when a tool fails, stop using it,
+          report the failure to the supervisor, and probe for tool
+          recovery before resuming affected workflows.
+    design_patterns:
+      - name: Pre-task health check
+        description: |
+          Before beginning any critical workflow, verify that all required
+          tools are available and responsive. The health check is a
+          precondition for task execution, not an optional diagnostic.
+          If a required tool fails the health check, the task does not
+          begin and the failure is reported to the supervisor.
+      - name: Mid-task capability monitoring
+        description: |
+          During task execution, monitor tool availability continuously.
+          When a tool invocation fails, distinguish between transient
+          errors (retry with backoff) and persistent failures (tool is
+          down). Persistent failures trigger the graceful degradation
+          protocol: halt affected workflows, preserve state, report.
+      - name: Degradation-aware output labeling
+        description: |
+          Outputs produced after capability loss are explicitly labeled
+          with what was unavailable and how the output may be affected.
+          "This code was produced without linting (linter unavailable)"
+          is more useful than silently delivering unlinted code that
+          appears to have passed all checks.
+    anti_patterns:
+      - name: Silently skipping unavailable tools
+        why_wrong: |
+          Proceeding as if the tool's contribution was unnecessary when
+          it is actually unavailable. The output appears complete but is
+          systematically degraded. This is the most common failure mode
+          and the most dangerous because it is invisible to consumers
+          of the output.
+      - name: Retrying indefinitely without escalation
+        why_wrong: |
+          Retrying a failed tool invocation in an infinite loop without
+          reporting the failure to the supervisor. This wastes resources,
+          delays task completion, and prevents the supervisor from making
+          an informed decision about whether to proceed, wait, or
+          redirect.
+      - name: Proceeding with partial results as if complete
+        why_wrong: |
+          Treating partial results (from a tool that returned some data
+          before failing) as complete results. Partial data may be
+          systematically biased (e.g., the first N results of a query
+          that should have returned M > N). Presenting partial results
+          as complete is a form of unintentional deception.
+      - name: No health-check before critical tool use
+        why_wrong: |
+          Invoking a critical tool without first verifying it is
+          available, then discovering the failure mid-workflow when state
+          has already been modified. Pre-task health checks prevent the
+          scenario where the agent has committed to a path that requires
+          a tool before discovering the tool is unavailable.
+    confidence: "medium"
+    source: "Production Claude Code tool failure patterns, distributed systems resilience practices"

@@ -1,0 +1,138 @@
+id: I2::idx3::systematic-design-errors
+display_id: I2.3
+suite_id: I2
+suite_title: Deception
+subgoal_title: Systematic Design Errors
+content_type: process
+summary: 'The "design errors" subgoal is where the framework asks for the boring, durable engineering
+  discipline that catches unintentional harms before they ship and produces a record that survives personnel
+  turnover. Because design, implementation, and operation are intertwined in agentic AI systems, traditional
+  "design review → build → deploy" staging is too coarse; the process has to run continuously and attach
+  evidence at each transition.
+
+  '
+normative_anchors:
+  sfrs_addressed:
+  - c
+  evidence_addressed:
+  - I
+  - II
+  - III
+  - IV
+  sfrs_not_addressed:
+  - a
+  - b
+  evidence_not_addressed: []
+process_elements:
+- name: Architecture Decision Record (ADR) discipline
+  cadence: per decision (any material design choice or change)
+  participants:
+  - decision owner
+  - technical reviewer
+  - safety lead for capability-affecting decisions
+  maps_to_sfr:
+  - c
+- name: Pre-change risk assessment (mini-RA)
+  cadence: per change that touches model, prompt, tool surface, or deployment topology
+  participants:
+  - change author
+  - safety lead (sampled or always for high-risk classes)
+  - product owner
+  maps_to_sfr:
+  - c
+- name: Code review with safety checklist
+  cadence: every merge to production branches
+  participants:
+  - author
+  - two reviewers including one safety-literate reviewer for capability-affecting changes
+  maps_to_sfr:
+  - c
+- name: Data and prompt provenance review
+  cadence: per training-data change, per system-prompt change
+  participants:
+  - data steward
+  - prompt owner
+  - safety lead
+  maps_to_sfr:
+  - c
+- name: Continuous anomaly-triage
+  cadence: daily during business hours + on-call after hours
+  participants:
+  - on-call engineer
+  - safety lead (escalation)
+  maps_to_sfr:
+  - c
+- name: Quarterly design-error retrospective
+  cadence: quarterly
+  participants:
+  - engineering leads
+  - safety lead
+  - product owners
+  - sampled external reviewer
+  maps_to_sfr:
+  - c
+triggers:
+- Material design choice or architectural change → ADR + mini-RA
+- Any production-affecting code change → safety-checklist review
+- Training-data or system-prompt change → provenance review
+- Anomaly signal from monitoring → triage within SLA
+- Post-incident → root-cause review feeds into retrospective backlog
+- Quarter end → design-error retrospective with pattern analysis
+artifacts:
+- Architecture Decision Records (one per material decision, indexed)
+- Mini-RA documents attached to change tickets
+- Code review records with safety-checklist completion
+- Data and prompt lineage entries (who, what, when, why, approval)
+- Anomaly-triage log with disposition (dismissed / investigated / escalated / remediated)
+- Quarterly design-error retrospective report
+- Stakeholder responsibility matrix (linked to D9.2 RACI)
+- Training records for staff on review expectations
+evidence_production:
+- evidence_numeral: I
+  how_to_produce: 'Architecture documentation is a live bundle: ADR index, system architecture diagrams
+    with versioned history, change log per component, risk-assessment register, data-validation specification,
+    interface / API protocol docs, component-interaction matrix. Held in a documentation repository with
+    access audit; reviewed at the quarterly retrospective for completeness gaps.
+
+    '
+- evidence_numeral: II
+  how_to_produce: 'Per-release evidence bundle: code-review records (with reviewer identities and safety-checklist
+    completion), security-scan output, performance benchmark results, configuration parameter snapshot,
+    integration-verification test results. Tied to the release artifact hash. Retained for the capability''s
+    operational life plus retention period.
+
+    '
+- evidence_numeral: III
+  how_to_produce: 'Operational evidence emerges from the continuous anomaly-triage log plus monitoring-platform
+    exports: anomaly detections, errors resolved, performance metrics over time, impact assessments for
+    production modifications, and quarterly security audit findings. Retain time-series data per the data-retention
+    policy.
+
+    '
+- evidence_numeral: IV
+  how_to_produce: 'Stakeholder responsibility matrix (RACI) per capability, cross-linked to the D9.2 Accountability
+    Framework. Design-decision records name the accountable human. Training records show responsible parties
+    completed role-specific safety training. Quarterly retrospective reports demonstrate feedback incorporation
+    into subsequent design cycles.
+
+    '
+confidence: medium
+needs_human_review: true
+review_notes: "This pattern is process-heavy and deliberately boring. The risk is that it reads as \"\
+  standard SRE/SDLC hygiene\" — which it mostly is, sharpened for AI-specific concerns (prompt provenance,\
+  \ model-change RA, data- change RA, faithfulness monitoring tied back to design decisions).\nFramework-specific\
+  \ sharpenings worth preserving in Phase 2:\n  (1) Data and prompt provenance review as peer of code\
+  \ review — the\n      \"design boundary extends beyond traditional\" clause in the\n      subgoal description\
+  \ lives here.\n  (2) Quarterly design-error retrospective as a named ceremony (not just\n      a generic\
+  \ retro) with pattern analysis across incidents.\n\nLiability SFRs (a, b) route to I2::idx0 (governance).\
+  \ If Phase 2 wants a dedicated liability-pooling governance pattern, consolidate there.\nCross-suite:\
+  \ overlaps with D7 (Sustained Safety — pre-deployment review ceremony), D9.2 (RACI), D5 (Transparency\
+  \ — ADR discipline supports explanation faithfulness). Consolidation should avoid duplicating the pre-deployment\
+  \ review pattern across D7.2 and I2.3; treat this one as design-error-specific augmentation.\n"
+drafted_by: claude-opus-4.7-author
+drafted_at: 2026-04-16
+anchor_exemplar: D7.2-culture-of-safety
+version_compat:
+  framework_version_min: '1.0'
+  framework_version_max: 1.x
+  pattern_layer_version: v1-draft

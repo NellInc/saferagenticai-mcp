@@ -1,0 +1,131 @@
+id: I1::idx1::opaque-self-improvement-capabilities
+display_id: I1.1
+suite_id: I1
+suite_title: Opaque Agency Capabilities & Advances
+subgoal_title: Opaque Self-Improvement Capabilities
+content_type: code-applicable
+summary: 'The inhibitor is self-modification that changes the agent''s competence without principals knowing.
+  The defence is instrumentation that makes capability drift observable, thresholded, and consent-gated.
+  Concretely: version-pin every component that influences behaviour, evaluate on a frozen capability battery
+  on each change, emit structured capability-delta events, and require principal re-consent before any
+  delta exceeding policy thresholds (framework evidence III: >10% task gain, >15% resource reduction,
+  >20% error-rate reduction) is exposed in production.'
+normative_anchors:
+  sfrs_addressed:
+  - a
+  - b
+  - c
+  - d
+  evidence_addressed:
+  - I
+  - II
+  - III
+  - IV
+  sfrs_not_addressed: []
+  evidence_not_addressed: []
+design_patterns:
+- name: Behaviour-surface version pin
+  sketch: Every artifact that can alter agent behaviour — base model, LoRAs, system prompts, tool schemas,
+    scratchpad scaffolds, retrieval indexes, RLHF deltas — is content-addressed and version-pinned per
+    deployment. A deploy manifest records the exact tuple; a mismatch at load time refuses to start. "Self-improvement"
+    without a manifest change is not possible by construction.
+  maps_to_sfr:
+  - a
+  - d
+  when_to_use: Always; foundational for every other pattern in this subgoal.
+- name: Frozen capability battery on every change
+  sketch: Maintain a held-out evaluation battery that measures task capability, resource efficiency, and
+    error rate on stable canaries. Run on every manifest change. Emit a capability-delta report. Thresholds
+    (+10% task, -15% resource, -20% error from baseline) trigger the principal-consent gate before production
+    exposure.
+  maps_to_sfr:
+  - b
+  when_to_use: Every proposed change to a behaviour-surface artifact.
+- name: Principal-consent gate for scope-altering deltas
+  sketch: If the capability delta crosses a threshold OR enables a new authority-relevant action class
+    (new tool, new jurisdiction, new irreversibility class — see I1::idx0), production exposure is blocked
+    behind a consent workflow. Consent capture is versioned and references the exact delta report.
+  maps_to_sfr:
+  - c
+  when_to_use: When a delta exceeds framework thresholds or touches authority scope.
+- name: Stability monitor in production
+  sketch: Streaming monitors track rolling capability metrics post-deployment (task success, resource
+    envelope, error rate, refusal rate, out-of-distribution proxy). A statistically significant drift
+    from baseline without a corresponding manifest change is an alert — something is "improving" or degrading
+    unaccounted-for.
+  maps_to_sfr:
+  - b
+  - d
+  when_to_use: Continuously in production.
+- name: Reversibility and rollback
+  sketch: Every manifest change is reversible to the prior pinned tuple within a defined RTO (e.g., 30
+    minutes). Rollbacks tested quarterly. Without tested rollback, a "self-improvement" that breaks alignment
+    has no exit.
+  maps_to_sfr:
+  - d
+  when_to_use: Before any manifest change ships.
+anti_patterns:
+- name: Online self-training without manifest freeze
+  why_wrong: Systems that update weights or retrievals from live interactions without pinning violate
+    the behaviour-surface version pin. Capability drift becomes unobservable and un-rollback-able.
+- name: Evaluating improvements only on the improver's chosen benchmark
+  why_wrong: Self-reported capability metrics select for what the improvement targeted. The frozen battery
+    must be independent of the change proposer.
+- name: Thresholds without teeth
+  why_wrong: A policy that says "notify principals of significant changes" but never blocks deployment
+    is not a consent gate. Threshold breach must halt exposure until consent is captured.
+- name: Documenting capability only in release notes
+  why_wrong: Evidence I/II require documentation that reflects duties and rights. Release notes are retrospective
+    marketing text; they do not satisfy the framework's expectation that self-improvement implications
+    are set forth in principal-facing documentation.
+code_shape:
+  language: pseudocode
+  code: "# Capability-delta gating on deploy\ndef deploy(new_manifest: Manifest, baseline: Manifest) ->\
+    \ DeployResult:\n    if not new_manifest.is_fully_pinned():\n        raise ManifestError(\"all behaviour-surface\
+    \ artifacts must be version-pinned\")\n\n    delta = run_capability_battery(new_manifest, baseline)\n\
+    \    persist_delta_report(delta)  # -> Evidence III log\n\n    threshold_breach = (\n        delta.task_gain_pct\
+    \ >= 10.0\n        or delta.resource_reduction_pct >= 15.0\n        or delta.error_reduction_pct >=\
+    \ 20.0\n        or delta.new_authority_classes  # new tools / scopes\n    )\n\n    if threshold_breach:\n\
+    \        consent = consent_store.fetch(\n            principal=new_manifest.principal,\n         \
+    \   manifest_hash=new_manifest.hash,\n            delta_report_id=delta.id,\n        )\n        if\
+    \ not consent.valid_and_current():\n            return DeployResult.BLOCKED_PENDING_CONSENT\n\n  \
+    \  emit_capability_advance_event(new_manifest, baseline, delta)  # -> I1::idx0 notification pipeline\n\
+    \    return DeployResult.APPROVED\n"
+  notes: 'Two points of teeth: fully-pinned manifest check, and threshold breach that blocks on missing
+    consent. The capability-advance event feeds the suite-level notification pipeline (I1::idx0).'
+evidence_production:
+- evidence_numeral: I
+  how_to_produce: 'Principal-facing documentation explicitly covering self-improvement: which components
+    may change, under what conditions, with what notice, with what consent requirements, and with what
+    rollback guarantees. Referenced from TOS/TOU. Living document, versioned.'
+- evidence_numeral: II
+  how_to_produce: TOS section "Self-Improvement Governance" enumerating stakeholder rights (to notice,
+    to consent, to refuse, to roll back) and duties (to review notifications, to respond within a named
+    window). Diff on every revision.
+- evidence_numeral: III
+  how_to_produce: 'Capability-delta reports retained per release. Each includes: prior baseline identifiers,
+    new manifest identifiers, battery results, deltas per metric, threshold-breach classification, consent
+    reference (if applicable). Notification records where thresholds tripped. Append-only.'
+- evidence_numeral: IV
+  how_to_produce: 'Consent store entries: {principal_id, manifest_hash, delta_report_id, consent_text_version,
+    captured_at, captured_by, channel}. Retained for lifecycle of the deployment plus the org''s records-retention
+    horizon. Incident playbook entries for unexpected improvement outcomes (regressions, alignment breaks,
+    unanticipated capability) with case files.'
+confidence: high
+needs_human_review: false
+review_notes: 'Thresholds are taken directly from framework evidence III; organizations may need to tune
+  but cannot lower without justification. Cross-suite: this pattern feeds the I1::idx0 capability-advance
+  notification pipeline and depends on D5 Transparency for how principals are notified. D8 Termination
+  owns the rollback path at the user level; this pattern owns the deployment-side reversibility. "Self-improvement"
+  is defined here broadly (any behaviour-surface change) rather than narrowly (weight updates) because
+  framework evidence III lists metric gains without specifying mechanism.'
+cross_references:
+- I1::idx0::opaque-agency-capabilities-advances
+- I1::idx13::agency-enhancement-constraints
+version_compat:
+  framework_version_min: '1.0'
+  framework_version_max: 1.x
+  pattern_layer_version: v1-draft
+drafted_by: claude-opus-4.7-author
+drafted_at: 2026-04-16
+anchor_exemplar: D3.2-sandboxing

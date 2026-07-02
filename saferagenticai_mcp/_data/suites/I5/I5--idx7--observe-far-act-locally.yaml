@@ -1,0 +1,191 @@
+id: I5::idx7::observe-far-act-locally
+display_id: "I5_3"
+is_underlined_variant: true
+display_id_variant_note: "I5.3_underlined"
+suite_id: I5
+suite_title: Self-Modification and Emergent Capabilities
+subgoal_title: Observe Far, Act Locally
+content_type: code-applicable
+summary: 'This subgoal is the runtime companion to I5.4 (attention) and I5.3 (adaptability). It asks for
+  a system that can see further than it can act — broad situational awareness, narrow authorized action
+  — and that recognizes when its observation capacity has outstripped its action envelope. The operational
+  handle is a formal separation between the system''s "observation graph" (what it can read) and its "action
+  graph" (what it can change), with monitoring that scales with the former and escalation that is triggered
+  by a gap between the two.
+
+  '
+normative_anchors:
+  sfrs_addressed:
+  - a
+  - b
+  evidence_addressed:
+  - I
+  - II
+  - III
+  - IV
+  sfrs_not_addressed: []
+  evidence_not_addressed: []
+design_patterns:
+- name: Separate observation and action scopes
+  sketch: 'Per deployment, declare two distinct capability sets: observation scope (what the agent can
+    read, query, monitor — internal and external signals, logs, external feeds) and action scope (what
+    the agent can change — tool calls with side effects, writes, external API calls that alter state).
+    The two are configured independently; observation-only capability expansion does not imply action-scope
+    expansion.
+
+    '
+  maps_to_sfr:
+  - a
+  - b
+  when_to_use: Foundational to any agent deployment; retrofit is possible but painful.
+- name: Wider-context monitoring with clear boundary markers
+  sketch: 'The agent''s observation scope can include wider contextual signals (external events, related-system
+    state, environmental conditions, user-cohort patterns). Each such signal is marked in the observation
+    layer with its source, authority, and whether any action scope responds to it. Unactionable wide context
+    is fine; unactionable wide context that should be actionable is a gap the monitoring system flags.
+
+    '
+  maps_to_sfr:
+  - a
+  when_to_use: Agents deployed in environments with external signal dependencies (markets, health systems,
+    infrastructure).
+- name: Action-authorization proof
+  sketch: 'Every side-effect-producing action requires a proof-of-scope at runtime: a token or claim tied
+    to the agent''s action graph that asserts "this action is within authorized scope." The proof is checked
+    before execution. Actions without valid proofs are blocked and logged; the agent cannot talk its way
+    past this layer.
+
+    '
+  maps_to_sfr:
+  - b
+  when_to_use: All agent actions with external side effects.
+- name: Escalation on observation-action gap
+  sketch: 'When the agent observes a signal that would warrant action outside its authorized scope, it
+    escalates (to a human, to a higher-authority agent, to a pre-declared emergency contact) rather than
+    acting. The escalation is a first-class tool in the action scope — not a backdoor. Frequency of escalation
+    is monitored; chronic escalation is a signal that the action scope needs revisiting (expand or narrow
+    the observation).
+
+    '
+  maps_to_sfr:
+  - a
+  - b
+  when_to_use: Any agent in a domain where "notice and do nothing" is a plausible failure mode.
+- name: Monitoring scales with observation surface
+  sketch: 'Observability and audit infrastructure scale with the agent''s observation scope, not its action
+    scope. If the agent now reads a broader set of feeds, the monitoring layer ingests those feeds too,
+    because the agent''s reasoning may be influenced by inputs the monitors do not see. Under- instrumented
+    observation is a blind spot for the humans overseeing the agent.
+
+    '
+  maps_to_sfr:
+  - a
+  when_to_use: When observation scope is widened; treated as a monitoring-infrastructure change at the
+    same time.
+- name: Event-space pressure testing
+  sketch: 'Periodically inject synthetic events into the observation scope that would tempt out-of-scope
+    action (e.g., an urgent- looking signal for which the agent lacks authorized response). Verify: the
+    agent observes, does not act, escalates, logs coherently. A red-team variant. Findings feed both scope
+    design and training.
+
+    '
+  maps_to_sfr:
+  - a
+  - b
+  when_to_use: At deployment and at each observation-scope expansion.
+anti_patterns:
+- name: Conflating observation and action permissions
+  why_wrong: 'Role definitions that grant "access to X" without distinguishing read from write collapse
+    the two scopes and violate the subgoal''s framing. SFR-b requires clear operational boundaries; scope
+    coarseness erodes them.
+
+    '
+- name: Letting wider observation expand action scope implicitly
+  why_wrong: '"The agent can now see the whole system, so let it fix problems it notices" — this defeats
+    the point. Broader observation is useful precisely because the agent can notice more without acting
+    more.
+
+    '
+- name: Escalation as a reflex the model learns (only)
+  why_wrong: 'Escalation as learned behavior drifts. It should be a structural fallback: a specific, always-available
+    action inside the authorized scope that the system can execute when it encounters out-of-scope observations,
+    independent of whether the model "chose" to escalate.
+
+    '
+- name: Monitoring that only covers actions taken
+  why_wrong: 'Recording only what the agent did misses what it observed and considered. Evidence-II and
+    -IV require visibility into contextual factors the agent weighed, not just the outputs.
+
+    '
+code_shape:
+  language: pseudocode
+  code: "# Observation scope read + action scope authorization + escalation\n\nclass AgentContext:\n \
+    \   observation_scope: ObservationScope\n    action_scope: ActionScope\n    escalation_target: EscalationHandle\n\
+    \ndef agent_step(ctx: AgentContext, state: State) -> StepResult:\n    # Observation: potentially wide\n\
+    \    observations = ctx.observation_scope.read(state)\n    MONITOR.record_observations(ctx, observations)\n\
+    \n    decision = MODEL.decide(state, observations)\n\n    if decision.action is None:\n        return\
+    \ StepResult.observe_only(observations)\n\n    # Action authorization: must have scope proof\n   \
+    \ proof = ctx.action_scope.prove(decision.action)\n    if proof is None:\n        # The model wants\
+    \ to act outside scope — escalate, do not act\n        AUDIT.record(\n            event=\"out_of_scope_action_attempted\"\
+    ,\n            observation_snapshot=observations,\n            proposed_action=decision.action,\n\
+    \        )\n        ctx.escalation_target.raise_(\n            observations=observations,\n      \
+    \      proposed_action=decision.action,\n            reasoning=decision.reasoning,\n        )\n  \
+    \      return StepResult.escalated()\n\n    # In-scope: execute with audit\n    outcome = decision.action.execute(proof=proof)\n\
+    \    AUDIT.record(\n        event=\"action_executed\",\n        action=decision.action,\n        proof=proof,\n\
+    \        outcome=outcome,\n    )\n    return StepResult.acted(outcome)\n"
+  notes: 'The separation between observation_scope and action_scope is the central lever. Escalation is
+    an in-scope action, not a bypass. Monitoring records observations (not only actions), per the anti-pattern
+    above.
+
+    '
+evidence_production:
+- evidence_numeral: I
+  how_to_produce: 'Publish monitoring design documents showing the agent''s observation scope (sources,
+    feeds, internal signals) and action scope (authorized side-effects), and how they are tracked independently.
+    Include the monitoring-infrastructure inventory: what observation sources are instrumented, what actions
+    emit audit events, and the retention policy.
+
+    '
+- evidence_numeral: II
+  how_to_produce: 'Retain escalation records: trigger (observed signal that warranted out-of-scope response),
+    agent reasoning, escalation target, outcome (action taken by higher authority, time to resolution).
+    Quarterly report shows escalation rate, categories, and whether scope revisions resulted.
+
+    '
+- evidence_numeral: III
+  how_to_produce: 'Demonstrate effective balance: case studies where the agent observed something outside
+    its action scope and responded appropriately (escalated, alerted, logged), plus cases where the pressure
+    test caught an out-of-scope action attempt. Where no such cases exist in a review period, the test
+    cadence or coverage may be insufficient — flag in report.
+
+    '
+- evidence_numeral: IV
+  how_to_produce: 'Track monitoring-infrastructure scaling: for each expansion of the observation scope,
+    document the corresponding monitoring addition and the date. Metric: "observation surface covered
+    by monitoring" should remain at or near 100 percent. Drops indicate instrumentation debt and block
+    further scope expansion.
+
+    '
+confidence: medium
+needs_human_review: true
+review_notes: "\"Observe far, act locally\" is one of the more poetic subgoal titles in the framework;\
+  \ my technical rendering (separate observation and action scopes, escalation as first-class, pressure\
+  \ tests on event-space) is defensible but not the only reading. A possible alternative reading: the\
+  \ subgoal is about the agent reasoning about long-range consequences of local actions. I've pitched\
+  \ it as scope separation rather than consequence reasoning because scope separation is operationalizable\
+  \ and the SFR text names \"operational boundaries\" and \"authorized scope.\"\nCross-suite dependencies:\n\
+  \  - I5 idx3 Adaptability — envelope-as-contract overlaps with\n    action scope here; consolidation\
+  \ should unify.\n  - I5 idx4 Attention — missed-context detectors there are the\n    counterpart to\
+  \ observation-gap monitoring here.\n  - D3 Security — egress control and capability tokens are\n   \
+  \ mechanisms for action-scope enforcement.\n  - D9 Governance — escalation targets are named accountable\n\
+  \    humans from D9.2.\n\nConfidence medium because the scope-separation abstraction maps cleanly to\
+  \ tool-using agents and awkwardly to embedded/continuous systems (a self-driving car's \"observation\"\
+  \ and \"action\" are tightly coupled in perception-action loops). Adaptation per deployment type is\
+  \ expected; the pattern here is for the loosely-coupled case.\n"
+version_compat:
+  framework_version_min: '1.0'
+  framework_version_max: 1.x
+  pattern_layer_version: v1-draft
+drafted_by: claude-opus-4.7-author
+drafted_at: 2026-04-16
+anchor_exemplar: D3.2-sandboxing

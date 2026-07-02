@@ -1,0 +1,185 @@
+id: I5::idx0::self-modification-and-emergent-capabilit
+display_id: "G5"
+is_underlined_variant: true
+suite_id: I5
+suite_title: Self-Modification and Emergent Capabilities
+subgoal_title: Self-Modification and Emergent Capabilities
+content_type: process
+summary: 'This is the suite-anchor subgoal: the organization is expected to run a standing foresight function,
+  not a one-time horizon-scan. The framework asks for scenario planning, risk evaluation, and impact analysis
+  as recurring rituals that produce dated artifacts (foresight reports, risk maps, scenario catalogues)
+  and that feed back into the AAI risk management framework. The operational handle is cadence with teeth:
+  a foresight exercise that never revises any control is not evidence of foresight, it is evidence of
+  theatre.
+
+  '
+normative_anchors:
+  sfrs_addressed:
+  - a
+  - b
+  evidence_addressed:
+  - I
+  - II
+  - III
+  - IV
+  - V
+  - VI
+  - VII
+  - VIII
+  - IX
+  sfrs_not_addressed: []
+  evidence_not_addressed: [X]
+process_elements:
+- name: Structured foresight exercise
+  cadence: semi-annual minimum; event-driven on material capability or deployment-context change
+  participants:
+  - AI safety lead
+  - research lead
+  - external futurist or domain-expert panel (rotated)
+  - product owners
+  - risk owner
+  - at least one external civil-society or regulator observer
+  maps_to_sfr:
+  - a
+  - b
+- name: Scenario library maintenance
+  cadence: continuous; reviewed at each foresight exercise
+  participants:
+  - foresight coordinator (named role)
+  - safety lead
+  maps_to_sfr:
+  - a
+- name: Risk-map refresh
+  cadence: at each foresight exercise; out-of-band when an emerging technology domain crosses an agreed
+    salience threshold
+  participants:
+  - safety lead
+  - risk owner
+  - external technical advisors
+  maps_to_sfr:
+  - a
+  - b
+- name: Control revision from foresight findings
+  cadence: within 90 days of each foresight exercise
+  participants:
+  - safety lead
+  - engineering leads
+  - risk owner
+  - AI Compliance Officer
+  maps_to_sfr:
+  - b
+- name: Cross-functional foresight review
+  cadence: each exercise mandates representation from engineering, policy, product, ethics/safety, legal,
+    and at least one external voice; no single discipline can constitute a quorum
+  participants:
+  - all listed functions
+  - quorum rules documented
+  maps_to_sfr:
+  - b
+- name: Methodology retrospective
+  cadence: annual
+  participants:
+  - foresight coordinator
+  - safety lead
+  - external methodologist
+  maps_to_sfr:
+  - b
+triggers:
+- Scheduled semi-annual date → Full foresight exercise
+- New capability cluster entering internal research pipeline → Scoped foresight addendum
+- External signal (published paper, competitor capability demonstration, regulator alert) crosses salience
+  threshold → Scenario update and optional extraordinary foresight session
+- Exercise produces a scenario with impact ≥ agreed severity band → Control-revision obligation with 90-day
+  SLA and board-level reporting
+- Annual anniversary → Methodology retrospective; foresight function itself is audited
+artifacts:
+- Foresight exercise reports (participants with roles and affiliations, methods used — e.g., Delphi, scenario
+  matrix, horizon scanning, backcasting — scenarios generated, impact assessment, recommended mitigations)
+- Scenario catalogue (versioned; each scenario dated, with likelihood band, timeline band, and impact
+  band)
+- Emerging-technology risk map (named domains, plausibility, time-to- relevance, potential impact on existing
+  controls)
+- Foresight-to-control changelog (what the foresight found, which control was revised, when, by whom;
+  or explicit "no change required" with justification)
+- Methodology document (what methods are used, why, when they were last reviewed) — living document with
+  change log
+evidence_production:
+- evidence_numeral: I
+  how_to_produce: 'For each foresight exercise, publish a report listing invitees and attendees with their
+    roles and affiliations (internal and external). Name the methods used (e.g., "Delphi round with 12
+    external experts; scenario matrix with 2x2 driver axes; horizon scan drawing on arXiv/Semantic Scholar
+    queries on agreed keyword set"). Retained in the governance registry cross-linked from D9.2.
+
+    '
+- evidence_numeral: II
+  how_to_produce: 'Maintain a risk classification that names the AI system, its deployment contexts, and
+    the severity/plausibility band assigned to each. Include a brief "why this level of foresight" rationale
+    — a low-risk narrow system warrants less foresight than a frontier agent; the rationale should make
+    that defensible.
+
+    '
+- evidence_numeral: III
+  how_to_produce: 'Each scenario entry records: short name, narrative (≤ 500 words), driver variables,
+    likelihood band, time horizon, first-order impacts, second-order impacts, which existing controls
+    it would stress. Catalogue retained across exercises so trends are visible.
+
+    '
+- evidence_numeral: IV
+  how_to_produce: 'Scenario analysis section of each exercise report pairs each accepted scenario with
+    a proposed mitigation (control change, new control, monitoring addition, capability gate, escalation
+    trigger). Where no mitigation is proposed, explicit "accept residual" decision with sign-off.
+
+    '
+- evidence_numeral: V
+  how_to_produce: 'Foresight-generated risks and observations feed into the organization''s risk register
+    (see D9.2 evidence III). Each entry carries a named owner and a review date. The foresight log is
+    retained; observations that did not clear the bar for the risk register are still recorded with reason.
+
+    '
+- evidence_numeral: VI
+  how_to_produce: 'Maintain a foresight-to-control changelog. Every foresight finding links to one of:
+    a control change (with diff), a new control (with owner), a deliberate non-action (with justification
+    and sign-off). "Foresight exercise ran, nothing changed" repeatedly is itself a finding requiring
+    methodology review.
+
+    '
+- evidence_numeral: VII
+  how_to_produce: 'Emerging-technology risk map published internally (and externally in summary form where
+    appropriate) with domains named, plausibility and timeline bands assigned, and potential impact on
+    the AI system''s safety controls described. Updated at each exercise.
+
+    '
+- evidence_numeral: VIII
+  how_to_produce: 'Annual methodology retrospective: what methods were used, what worked, what did not,
+    what was added or retired. Version the methodology document; decisions to change methods are traceable.
+
+    '
+- evidence_numeral: IX
+  how_to_produce: 'Attendance and contribution records across foresight exercises demonstrate cross-functional
+    participation. Quorum rules (no single discipline dominant) are documented and their observance is
+    auditable per exercise.
+
+    '
+confidence: low
+needs_human_review: true
+review_notes: "This is the suite anchor (G5) — broader than the numbered subgoals and expected to give\
+  \ structure to them. Two sharpenings worth flagging:\n  (1) The framework name (formerly \"Future Technology\
+  \ Impact\", retitled 2026-04-17 to \"Self-Modification and Emergent Capabilities\") suggests\n     \
+  \ labour-market / generational / societal-scale concerns, but\n      the actual SFR and evidence text\
+  \ is technical foresight about\n      AI system controls. The subgoal is closer to \"organizational\n\
+  \      horizon-scanning for emerging capability and risk domains\"\n      than to \"impact on future\
+  \ generations.\" If the framework\n      authors intended the broader societal reading, the SFRs do\n\
+  \      not capture it. Worth confirming with Nell/Ali before Phase 2\n      consolidation.\n  (2) Cadence\
+  \ (\"semi-annual\") is a plausible default but likely\n      varies by organization scale and risk posture.\
+  \ Frontier labs\n      probably need quarterly; narrow-domain product teams could\n      justify annual.\
+  \ Left as default here; adapt per org.\nCross-suite dependencies: D9 (governance framework this foresight\
+  \ function reports into), I4 (Frontier Uncertainty — the emerging- capability side of foresight), I6\
+  \ (Competitive Pressures, which shapes which scenarios are plausible). Noted here because within- suite\
+  \ refs are the only ones allowed in this phase.\n"
+version_compat:
+  framework_version_min: '1.0'
+  framework_version_max: 1.x
+  pattern_layer_version: v1-draft
+drafted_by: claude-opus-4.7-author
+drafted_at: 2026-04-16
+anchor_exemplar: D7.2-culture-of-safety

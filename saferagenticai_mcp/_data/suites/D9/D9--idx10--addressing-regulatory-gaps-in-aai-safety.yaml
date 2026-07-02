@@ -1,0 +1,170 @@
+id: D9::idx10::addressing-regulatory-gaps-in-aai-safety
+display_id: "D9_1"
+suite_id: D9
+suite_title: Responsible Governance of AAI Safety
+subgoal_title: Addressing Regulatory Gaps in AAI Safety
+content_type: governance
+summary: 'AAI capability develops faster than regulation. This subgoal (an inhibitor-variant sitting under
+  D9) expects the organization to identify where existing AI regulation is silent on AAI-specific risks
+  and backstop those gaps with internal policy — without waiting for law to catch up, and without claiming
+  more than applicable law requires. Evidence is the gap register itself, the internal assurance strategy
+  that fills it, and ongoing training to keep staff current.
+
+  '
+normative_anchors:
+  sfrs_addressed:
+  - a
+  - b
+  - c
+  - d
+  evidence_addressed:
+  - I
+  - II
+  - III
+  - IV
+  sfrs_not_addressed: []
+  evidence_not_addressed: []
+cross_references:
+- D9::idx0::responsible-governance-of-aai-safety
+- D9::idx2::compliance-with-applicable-laws-standard
+- D9::idx4::internationalization-of-aai-governance
+- D9::idx5::building-trust-through-independent-verif
+policy_elements:
+- name: Regulatory Gap Register
+  description: 'Companion to the D9::2 Capability-to-Law Mapping Matrix: for each capability × jurisdiction
+    cell, explicitly flag where current law is silent or inadequate for AAI-specific risks (agentic autonomy,
+    multi-step action, tool use, multi-agent interaction). Each gap entry names the risk, the internal
+    policy filling the gap, the rationale, and a review cadence. Surfaces gaps to regulators and standards
+    bodies via D9::4.
+
+    '
+  maps_to_sfr:
+  - a
+  - d
+- name: Internal AAI Assurance Strategy
+  description: 'Written strategy defining internal controls, evaluations, and assurance activities that
+    exceed or supplement applicable law — scaled by the org''s risk assessment. Links to D7 assurance
+    case. The strategy is published internally (and in summary externally) so that regulators and auditors
+    can see the org is not arguing for minimum compliance.
+
+    '
+  maps_to_sfr:
+  - a
+- name: AI Assurance Training Program
+  description: 'Ongoing training for staff working on or with AAI: coverage of current regulation, identified
+    gaps, internal assurance controls, incident scenarios, and each staff member''s role in the assurance
+    chain. Mandatory at hire; annual recertification; role-specific modules for ML, product, operations,
+    legal, and executive leadership.
+
+    '
+  maps_to_sfr:
+  - b
+- name: Emerging-standards benchmarking
+  description: 'Regular benchmarking of systems and policies against emerging standards (NIST AI RMF profiles,
+    ISO/IEC 42001 and companion standards, sector-specific draft regulation, authoritative research outputs).
+    "Emerging" includes standards that are not yet binding. Benchmarking results flow to the RMF and the
+    Assurance Strategy.
+
+    '
+  maps_to_sfr:
+  - c
+- name: Gap-acknowledgment disclosure
+  description: 'Practice of acknowledging, in public transparency materials, the specific gaps between
+    current regulation and the org''s internal safety needs — honestly, without overclaiming. The disclosure
+    names the gap, the internal measure, and the ongoing standards/ regulator engagement to close it externally.
+
+    '
+  maps_to_sfr:
+  - d
+org_roles:
+- role: AI Assurance Lead
+  responsibilities: 'Owns the Regulatory Gap Register, the Assurance Strategy, the benchmarking activity,
+    and the training program. Accountable to the CAISO and Board committee for the effectiveness of the
+    internal backstop.
+
+    '
+  accountable_or_consulted: accountable
+- role: Compliance Officer (D9::2)
+  responsibilities: 'Responsible for populating gap entries in the Mapping Matrix and keeping compliance
+    and assurance documents consistent.
+
+    '
+  accountable_or_consulted: responsible
+- role: Legal Counsel
+  responsibilities: 'Consulted on gap identification (what is law, what is silent, what is ambiguous)
+    and on public gap-acknowledgment language.
+
+    '
+  accountable_or_consulted: consulted
+- role: Horizon-scanning lead (D9::0)
+  responsibilities: 'Feeds emerging-standards findings into the benchmarking and gap-register refresh
+    cycle.
+
+    '
+  accountable_or_consulted: consulted
+- role: Board AAI Safety Committee
+  responsibilities: 'Informed of the gap register posture quarterly; reviews the Assurance Strategy annually
+    and on material change.
+
+    '
+  accountable_or_consulted: informed
+documentation_artifacts:
+- artifact: Regulatory Gap Register
+  cadence: continuous; quarterly review
+- artifact: Internal AAI Assurance Strategy
+  cadence: versioned; annually reviewed
+- artifact: AI Assurance training curriculum and records
+  cadence: curriculum versioned; records continuous
+- artifact: Emerging-standards benchmark report
+  cadence: quarterly
+- artifact: Public gap-acknowledgment summary
+  cadence: annually (or per transparency-report cadence)
+evidence_production:
+- evidence_numeral: I
+  how_to_produce: 'Export compliance documentation from the D9::2 framework showing adherence to existing
+    AI legislation (jurisdiction-by- jurisdiction posture, evidence sources, last-assessed date). The
+    point here is to anchor the "we comply with what''s in force" layer under the "and here is where we
+    go beyond" layer.
+
+    '
+- evidence_numeral: II
+  how_to_produce: 'Benchmark reports per cycle: emerging standard or regulation, posture (aligned, partial,
+    non-applicable, gap), evidence, remediation plan where applicable. Cross-link to the Gap Register.
+    Trend view across cycles shows direction of travel.
+
+    '
+- evidence_numeral: III
+  how_to_produce: 'Internal AAI Assurance Strategy document with scope, controls, evaluations, assurance
+    artifacts, and integration points with the governance framework. Version history shows evolution with
+    new risk findings and standards.
+
+    '
+- evidence_numeral: IV
+  how_to_produce: 'Training records from the LMS or HR system: participant, module, completion date, assessment
+    score, recertification date. Aggregated completion rate by role and by business unit. Link individual
+    records to accountability role profiles (D9::2 evidence IV).
+
+    '
+confidence: high
+needs_human_review: true
+review_notes: 'The underlying tension in this subgoal is principled: how much should an org do beyond
+  what law requires? The pattern does not answer — it gives the mechanism (gap register + assurance strategy)
+  and lets org risk posture set the level. Two concerns: (1) "gap- acknowledgment disclosure" is legally
+  sensitive (admissions can attract liability in some jurisdictions) — legal counsel must shape; (2) this
+  subgoal is titled an "underlined variant" of D9.1 in the framework, which implies it is a risk or inhibitor
+  more than a positive driver — the pattern treats it as a positive governance practice, which may or
+  may not match the framework''s intent. Reviewer to confirm. Cross-suite: I6 (Competitive Pressures)
+  pulls against this subgoal — commercial pressure to do only minimum compliance; this pattern''s public
+  gap-acknowledgment is partly designed to resist that; I3 (Pace of Development) supplies the mechanism
+  by which gaps open in the first place.
+
+  '
+drafted_by: claude-opus-4.7-subagent-D9
+drafted_at: 2026-04-16
+anchor_exemplar: D9.2-compliance
+version_compat:
+  framework_version_min: '1.0'
+  framework_version_max: 1.x
+  pattern_layer_version: v1-draft
+display_id_variant_note: D9.1_underlined
+is_underlined_variant: true

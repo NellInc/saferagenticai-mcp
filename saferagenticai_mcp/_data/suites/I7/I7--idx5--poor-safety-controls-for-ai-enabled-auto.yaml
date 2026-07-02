@@ -1,0 +1,177 @@
+id: I7::idx5::poor-safety-controls-for-ai-enabled-auto
+display_id: I7.5
+suite_id: I7
+suite_title: Imbalance in AI Capabilities
+subgoal_title: Poor Safety Controls for AI-Enabled Autonomous Weapons
+content_type: governance
+summary: 'This subgoal patterns *safeguards applicable if autonomous weapon systems are developed or encountered*,
+  not endorsement of building them. Many orgs'' correct posture is "do not develop" — and that is itself
+  a pattern (explicit policy, capability-gating, refusal training, incident path when capabilities are
+  misappropriated). For orgs in the defense supply chain, the pattern tightens to IHL-compliant oversight,
+  meaningful human control at the decision point, and international-regime participation. Governance is
+  the dominant frame: these obligations live in policy, international law, and accountability structures,
+  not in code alone.
+
+  '
+normative_anchors:
+  sfrs_addressed:
+  - a
+  - b
+  - c
+  evidence_addressed:
+  - I
+  - II
+  - III
+  - IV
+  sfrs_not_addressed: []
+  evidence_not_addressed: []
+cross_references:
+- I7::idx4::ai-enabled-infrastructure-attacks
+- I7::idx6::nefarious-use-of-autonomous-ai-agents
+policy_elements:
+- name: Autonomous Weapons Posture Statement
+  description: 'Explicit, published organizational position on whether the org will develop, knowingly
+    enable, or refuse involvement in autonomous weapon systems (AWS) with lethal or significant-harm capability.
+    Most commercial AI labs'' posture is "do not develop"; defense-prime postures require IHL-bounded
+    specifications. In either case the posture is specific: what is excluded, what is permitted with safeguards,
+    what review gate applies. Silence is not a posture.
+
+    '
+  maps_to_sfr:
+  - a
+- name: Meaningful Human Control Requirement (for any AWS involvement)
+  description: 'Where the org is involved in any AWS development or deployment, binding requirement that
+    every engagement decision involves meaningful human control — not human-on-the-loop as a review button
+    but human-in-the-loop with sufficient situational context, time, and authority to refuse. Operational
+    definition: what "meaningful" requires (information provided, time allowed, training of the human
+    operator, authority not to engage).
+
+    '
+  maps_to_sfr:
+  - b
+- name: IHL and Arms-Control Compliance Register
+  description: 'Mapping of applicable international law (Geneva Conventions and Additional Protocols,
+    CCW reviews, ATT, regional arms-control instruments) to system capabilities. Legal review gate before
+    any capability decision that touches weapon systems. Cross-ref D9.2 jurisdictional matrix.
+
+    '
+  maps_to_sfr:
+  - a
+- name: Capability Refusal and Anti-Misappropriation Controls
+  description: 'For orgs that do not develop AWS: technical and contractual measures to prevent models
+    from being repurposed for targeting, engagement coordination, or autonomous-lethal decision support.
+    Includes use-case prohibitions in licensing, monitoring for red-flag use patterns, export-control
+    compliance (ITAR/EAR/EU dual-use/Wassenaar as applicable). Refusal behavior tested; bypass attempts
+    audited.
+
+    '
+  maps_to_sfr:
+  - a
+  - b
+- name: International Regime Participation
+  description: 'Active participation in relevant international processes: UN CCW GGE on LAWS, REAIM summits,
+    Article 36 reviews, Tallinn Manual engagement where applicable. Positions are substantive, not ceremonial;
+    maintained across personnel changes. Public engagement with civil-society coalitions (e.g., Stop Killer
+    Robots, ICRC dialogues) where consistent with org posture.
+
+    '
+  maps_to_sfr:
+  - c
+- name: Misuse-Incident Response for Weapons Repurposing
+  description: 'Playbook for incidents where the org''s systems are alleged to have been repurposed for
+    weapons use: investigation authority, capability throttle procedure, regulator and law-enforcement
+    notification, public-communication protocol, victim-liaison path where harm occurred. Tabletop exercised
+    annually.
+
+    '
+  maps_to_sfr:
+  - c
+org_roles:
+- role: Weapons Policy and Posture Lead
+  responsibilities: 'Owns the Autonomous Weapons Posture Statement, the refusal-control register, and
+    international-regime positions. Single point of accountability. Reports to CEO and board.
+
+    '
+  accountable_or_consulted: accountable
+- role: Legal Counsel (IHL, arms-control, export-control)
+  responsibilities: 'Reviews every material capability decision touching weapon systems. Maintains the
+    IHL compliance register. Authority to block shipments/licenses pending resolution.
+
+    '
+  accountable_or_consulted: consulted
+- role: Ethics Review Board (independent members required)
+  responsibilities: 'Independent of engineering leadership. Reviews weapon-adjacent capability decisions
+    before ship. Has authority to require board-level escalation. At least one member with IHL or civil-society
+    background.
+
+    '
+  accountable_or_consulted: consulted
+- role: Board-level AI Risk Committee
+  responsibilities: 'Informed of every weapons-adjacent decision. Quarterly review of refusal-effectiveness,
+    misuse attempts, and international-regime developments. Authority to alter org posture.
+
+    '
+  accountable_or_consulted: informed
+documentation_artifacts:
+- artifact: Autonomous Weapons Posture Statement (published)
+  cadence: annual review; event-driven on capability or regime change
+- artifact: IHL compliance register
+  cadence: maintained continuously; audited annually
+- artifact: Capability refusal test reports
+  cadence: per release; aggregate quarterly
+- artifact: International-regime participation record (meetings, submissions, positions)
+  cadence: continuous
+- artifact: Weapons-repurposing incident playbook and tabletop reports
+  cadence: playbook annual; tabletops annual
+evidence_production:
+- evidence_numeral: I
+  how_to_produce: 'IHL compliance register extract showing, per relevant capability, the legal review
+    outcome, the sign-off path, and the deployment decision. Certification records for any system where
+    the org attests to AWS-related controls. Audit trails showing the accountable human at each decision.
+
+    '
+- evidence_numeral: II
+  how_to_produce: 'Control-system and refusal-evaluation reports: what refusal training tested, how the
+    system performs on red-teamed weapons-repurposing prompts, vulnerabilities found and fixed, human-oversight
+    protocol documents with intervention capability specs.
+
+    '
+- evidence_numeral: III
+  how_to_produce: 'International-engagement record: meetings attended, submissions filed (e.g., CCW GGE
+    written submissions), dialogue with civil society. Evidence that input shaped org policy: a change
+    log of policy updates with rationale pointing to specific engagement.
+
+    '
+- evidence_numeral: IV
+  how_to_produce: 'Risk assessment and contingency documentation: threat models covering weapons repurposing,
+    penetration tests on refusal controls, tabletop exercise reports showing gaps found and remediated.
+    External audit by arms-control or IHL-specialist auditor where feasible.
+
+    '
+confidence: low
+needs_human_review: false
+reviewed_by: nell
+reviewed_on: "2026-05-16"
+review_notes: 'Confidence LOW because: (1) the framework text is neutral on whether orgs should develop
+  AWS, but this is an ethically substantive question on which the framework itself signals caution; the
+  pattern takes a "develop only with extreme safeguards, or preferably refuse" stance that may or may
+  not match the framework''s intended neutrality. (2) For defense-sector orgs, the pattern''s operational
+  specifics (meaningful human control definition, IHL register) are my best reading of current norms but
+  experts differ; any org in this space needs specialist counsel. (3) International regime landscape is
+  unsettled (CCW GGE progress stalled; REAIM outcomes soft) — advocacy patterns age fast.
+
+  Stance disclosure: this pattern explicitly names "do not develop" as a valid and often-correct org posture.
+  Nell should confirm this aligns with the framework''s intent. A purely descriptive ("if you build these,
+  here is how to control them") pattern would be different in tone and would risk reading as endorsement.
+
+  Cross-suite: D9 (governance) compliance; I7.4 (infrastructure) for state-security overlap; I7.6 (idx6)
+  for generic misuse.
+
+  '
+drafted_by: claude-opus-4.7[1m]
+drafted_at: 2026-04-16
+anchor_exemplar: D9.2-compliance
+version_compat:
+  framework_version_min: '1.0'
+  framework_version_max: 1.x
+  pattern_layer_version: v1-draft

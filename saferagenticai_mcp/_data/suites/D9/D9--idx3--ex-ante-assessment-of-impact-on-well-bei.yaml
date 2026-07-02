@@ -1,0 +1,144 @@
+id: D9::idx3::ex-ante-assessment-of-impact-on-well-bei
+display_id: D9.3
+suite_id: D9
+suite_title: Responsible Governance of AAI Safety
+subgoal_title: Ex-ante Assessment of Impact on Well-being
+content_type: process
+summary: 'Ex-ante means before. This subgoal asks for a structured pre-deployment assessment workflow
+  that forces the org to identify, document, and mitigate well-being impacts (positive and negative) before
+  a capability reaches users — plus continuous monitoring once it does. The operative discipline is consequence
+  scanning turned into a blocking gate, not a post-hoc reflection.
+
+  '
+normative_anchors:
+  sfrs_addressed:
+  - a
+  - b
+  - c
+  - d
+  - e
+  evidence_addressed:
+  - I
+  - II
+  - III
+  sfrs_not_addressed: []
+  evidence_not_addressed: []
+cross_references:
+- D9::idx0::responsible-governance-of-aai-safety
+- D9::idx2::compliance-with-applicable-laws-standard
+- D9::idx9::responsible-culture-of-safety
+process_elements:
+- name: Due-diligence assessment
+  cadence: pre-deployment (blocking gate for any new or materially changed capability)
+  participants:
+  - responsible engineer
+  - product owner
+  - safety lead
+  - ethics reviewer
+  - affected-stakeholder representative where feasible
+  maps_to_sfr:
+  - a
+- name: Consequence-scanning workshop
+  cadence: pre-deployment; repeat on material change; refresh annually for in-production capabilities
+  participants:
+  - diverse cross-functional panel
+  - external stakeholder representatives
+  - red-team facilitator
+  maps_to_sfr:
+  - b
+- name: Ethics and Rights Impact Assessment (ERIA)
+  cadence: pre-deployment; refresh on material change or incident
+  participants:
+  - ethics reviewer
+  - legal counsel
+  - human-rights expert where warranted
+  - affected-community representative
+  maps_to_sfr:
+  - c
+- name: Health and Well-being policy maintenance
+  cadence: policy versioned; reviewed annually and on incident
+  participants:
+  - policy owner
+  - safety lead
+  - medical/psychological expert for relevant domains
+  maps_to_sfr:
+  - d
+- name: Continuous well-being monitoring
+  cadence: continuous in production; quarterly synthesis review
+  participants:
+  - product ops
+  - safety lead
+  - ethics reviewer
+  - user-research lead
+  maps_to_sfr:
+  - e
+- name: Unintended-consequence register
+  cadence: continuous; reviewed at each consequence-scanning refresh
+  participants:
+  - safety lead
+  - affected-product owners
+  maps_to_sfr:
+  - b
+  - e
+triggers:
+- New capability proposed or materially changed → Due-diligence + Consequence scanning + ERIA
+- Deployment into new user population, domain, or jurisdiction → refresh all three assessments
+- Incident or near-miss involving user well-being → ERIA refresh, register update, policy review
+- Annual anniversary of capability → light-touch refresh of consequence scan
+- External research or regulatory finding identifies a new well-being vector → targeted ERIA and policy
+  review
+- Monitoring signals trip (e.g., user-distress indicators, usage-pattern shifts) → escalation to safety
+  lead; refresh
+- Sunset / deprecation proposed → ex-ante assessment of sunset itself (users losing access can be the
+  harm)
+artifacts:
+- Due-diligence assessment report (per capability, signed off by safety lead and ethics reviewer)
+- Consequence-scanning workshop outputs (stakeholders × impact matrix, mitigation list, residual risks)
+- Ethics and Rights Impact Assessment reports
+- Health and Well-being policy document (versioned)
+- Unintended-consequence register (append-only)
+- Continuous monitoring dashboards (user-distress signals, complaint rates, well-being KPIs)
+- Quarterly well-being synthesis memo to Board committee
+- Stakeholder-consultation records (see D9::9 cross-link)
+evidence_production:
+- evidence_numeral: I
+  how_to_produce: 'Retain the full consequence-scanning output per capability: stakeholder map, impact
+    enumeration (positive and negative, direct and indirect), likelihood × severity, mitigation plans
+    with owners, residual risk acceptance and sign-off. Keep workshop attendance records. Refresh on material
+    change with prior version preserved.
+
+    '
+- evidence_numeral: II
+  how_to_produce: 'Ethics and Rights Impact Assessment reports are dated, signed documents that include:
+    scope, methodology, rights framework applied (e.g., UNGPs, regional human-rights instruments), stakeholder
+    groups assessed, findings, mitigations, residual concerns, go/no-go or conditional recommendations.
+    Paired with a mitigation-tracking log linking each mitigation to verification of effectiveness.
+
+    '
+- evidence_numeral: III
+  how_to_produce: 'Export from continuous monitoring: user-distress signal trends, complaint rates linked
+    to well-being vectors, survey or qualitative-research findings, escalations raised and handled. Quarterly
+    synthesis memo shows how monitoring findings fed back into policy, capability, or workflow changes.
+
+    '
+confidence: medium
+needs_human_review: true
+review_notes: 'Content-type choice: this straddles process (the assessment workflow) and governance (the
+  policy and accountability). Chose process because the SFRs emphasize conducting, performing, completing
+  assessments (verbs of workflow) with the accountability largely inherited from D9::0 and D9::2. Flag
+  the alternative content_type reading for reviewer. Two tensions: (1) SFR-a''s "thorough due diligence"
+  is open-ended — pattern interprets as blocking pre-deployment gate, which may be stronger than the framework
+  intends; softening to "documented gate with defined exceptions" is an option; (2) well-being is a contested
+  term — the pattern assumes a broad reading (physical, psychological, social, economic) but does not
+  commit to a single framework; reviewer may want to name one (e.g., WHO well-being domains, capability
+  approach). Cross-suite: D4 (Value Alignment) owns the ethics dimension the ERIA relies on; I4 (well-being
+  impacts on society) likely mirrors this subgoal at ecosystem level.
+
+  '
+drafted_by: claude-opus-4.7-subagent-D9
+drafted_at: 2026-04-16
+anchor_exemplar: D7.2-culture-of-safety
+version_compat:
+  framework_version_min: '1.0'
+  framework_version_max: 1.x
+  pattern_layer_version: v1-draft

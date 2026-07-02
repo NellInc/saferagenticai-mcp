@@ -1,0 +1,124 @@
+id: I6::idx9::market-driven-safety-validation-mechanis
+display_id: "I6_2"
+is_underlined_variant: true
+display_id_variant_note: "I6.2_underlined"
+suite_id: I6
+suite_title: Competitive Pressures
+subgoal_title: Market-Driven Safety Validation Mechanisms
+content_type: ecosystem
+summary: 'Market-driven validation — trust-marks, safety certifications, user- facing credentials — only
+  produces safer systems if the signals are credible. This subgoal expects the organization to contribute
+  to building such schemes (not just consume them) and to achieve trust- marks whose standards are independently
+  set and whose maintenance is non-trivial. Trust-marks earned by self-attestation don''t count; certification
+  by bodies the org funds don''t count either.
+
+  '
+normative_anchors:
+  sfrs_addressed:
+  - a
+  - b
+  evidence_addressed:
+  - I
+  - II
+  - III
+  sfrs_not_addressed: []
+  evidence_not_addressed: []
+cross_references:
+- I6::idx8::self-regulatory-market-oversight-mechani
+- I6::idx2::safety-washing
+- I6::idx11::professional-and-industry-association-co
+stakeholders:
+- name: Independent certification bodies
+  engagement_channel: 'Submit to certification by bodies with governance independence from certified firms (ISO 42001
+    accredited certifiers, sector- specific conformity-assessment bodies, AI Safety Institute voluntary
+    audits). Contribute to the body''s public comment processes for standards revision, but keep financial
+    and governance arm''s-length: no board seats, no disproportionate funding, no consulting relationships.
+
+    '
+  maps_to_sfr:
+  - a
+  - b
+- name: Trust-mark scheme authors and maintainers
+  engagement_channel: 'Contribute technical expertise to the development of trust-mark criteria (e.g., via public
+    comment on ISO drafts, NIST RFCs, IEEE standards). Where schemes do not yet exist for an emerging
+    capability, co-found with peers and civil society — not alone, to avoid vendor-captured schemes.
+
+    '
+  maps_to_sfr:
+  - a
+- name: User and developer communities
+  engagement_channel: 'Engage communities that will use the trust-marks as purchasing signals (enterprise procurement,
+    developer marketplaces, public procurement officers). Provide plain-language explanations of what
+    each mark represents and what it does not. Track mark adoption and complaints about misinterpretation.
+
+    '
+  maps_to_sfr:
+  - b
+- name: Third-party reviewers and benchmark consortia
+  engagement_channel: 'Participate in community-driven safety benchmarks (MLCommons AI Safety, HELM, HarmBench, external
+    red-team evaluations). Publish results — including failures — at the cadence the community expects.
+    Suppressing negative benchmark results breaks the scheme''s trust-bearing function.
+
+    '
+  maps_to_sfr:
+  - a
+  - b
+- name: Consumer-protection and standards regulators
+  engagement_channel: 'Work with consumer-protection regulators to ensure trust-marks are meaningful under applicable
+    consumer law (e.g., FTC deceptive-practice authority in the US, UK ASA rules, EU Unfair Commercial
+    Practices Directive). Self-attested marks that regulators consider misleading become liabilities.
+
+    '
+  maps_to_sfr:
+  - b
+engagement_modes:
+- mode: ISO 42001 (AI Management Systems) certification
+- mode: IEEE CertifAIEd certification program
+- mode: ISO/IEC JTC 1/SC 42 standards (foundation for many AI trust-marks)
+- mode: MLCommons AI Safety benchmark (as trust-mark input)
+- mode: NIST AI RMF conformance (as trust-mark basis)
+- mode: 'AI Safety Institute voluntary audits (UK, US, Japan, Singapore, Canada, EU)'
+- mode: Stanford HAI Foundation Model Transparency Index
+- mode: 'Sector-specific bodies: FDA AI/ML-enabled medical device pathways; EU AI Act conformity assessment bodies; finance-sector model-risk frameworks (SR 11-7 and successors)'
+- mode: 'Consumer protection regulators (FTC, CMA, EU consumer law regulators)'
+evidence_production:
+- evidence_numeral: I
+  how_to_produce: 'Maintain trust-mark framework documentation: each mark, its issuing body, the criteria,
+    the assessment methodology, the maintenance cadence, the revocation conditions. Cross-reference to
+    the Claims Register (I6.2 Safety Washing) so every claim citing a trust-mark is traceable.
+
+    '
+- evidence_numeral: II
+  how_to_produce: 'Retain community-driven validation records: benchmark submissions and results, stakeholder
+    feedback on trust-mark criteria, voting or comment records on scheme revisions, participation in peer
+    review of scheme governance. Published in the annual transparency report (I6.1).
+
+    '
+- evidence_numeral: III
+  how_to_produce: 'Document the feedback loop: market feedback (complaints, benchmark results, scorecard
+    movements) → internal response (investigation, remediation, product change) → public disclosure (what
+    was changed, why, when). Evidence that market signals actually produced change; an unchanging product
+    in the face of repeated negative signals is its own evidence.
+
+    '
+confidence: medium
+needs_human_review: true
+review_notes: "Trust-marks are a crowded, fast-moving space. The pattern's enduring elements:\n  (1) Independence\
+  \ is foundational. Vendor-captured schemes harm\n      the market by eroding signal credibility; participating\
+  \ in\n      them is worse than not participating.\n  (2) \"Open-washing\" anti-pattern applies: publishing\
+  \ on a\n      benchmark is not the same as contributing to its rigor.\n  (3) Market-driven validation\
+  \ cannot substitute for regulation\n      where genuine externalities exist; the SFR notes this\n  \
+  \    (\"proactive safety measures remain essential\"). Pattern\n      treats trust-marks as complements,\
+  \ not replacements.\nCross-suite:\n  (1) I6.idx8 is the broader self-regulatory framing; idx9\n    \
+  \  specializes to user-facing signals.\n  (2) I6.idx2 Safety Washing is the failure mode if trust-marks\n\
+  \      are misused.\n  (3) D9 Compliance governs internal use of trust-mark records.\nNell to consider\
+  \ whether the pattern should be more explicit about emerging regulatory trust-mark regimes (EU AI Act\
+  \ CE marking for high-risk systems is a de facto trust-mark with regulatory teeth; the line between\
+  \ \"voluntary\" and \"regulatory\" trust-marks is blurring).\n"
+version_compat:
+  framework_version_min: '1.0'
+  framework_version_max: 1.x
+  pattern_layer_version: v1-draft
+drafted_by: claude-opus-4.7-author
+drafted_at: 2026-04-16
+anchor_exemplar: I7.3-balanced-global-partnership

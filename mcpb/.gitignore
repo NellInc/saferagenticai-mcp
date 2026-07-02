@@ -1,0 +1,3 @@
+# Vendored dependencies + packed bundle are build artifacts (see scripts/build-mcpb.sh).
+server/lib/
+*.mcpb

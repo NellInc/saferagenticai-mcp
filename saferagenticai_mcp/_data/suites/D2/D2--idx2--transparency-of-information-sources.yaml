@@ -1,0 +1,203 @@
+# Pattern — D2.2 Transparency of Information Sources
+
+id: "D2::idx2::transparency-of-information-sources"
+display_id: "D2.2"
+suite_id: "D2"
+suite_title: "Epistemic Hygiene"
+subgoal_title: "Transparency of Information Sources"
+content_type: code-applicable
+
+summary: >
+  Stakeholders must be able to answer: where did this agent's knowledge and
+  code come from, under what licence, and with what modifications. The
+  subgoal asks for a Bill-of-Materials-grade accounting of training data,
+  retrieval corpora, tools, and open-source components — plus the machinery
+  for external verification. The correct instinct is to treat data and
+  model artifacts like code: every source has provenance, every change has
+  a commit, every release has an SBOM/DBOM/MBOM.
+
+normative_anchors:
+  sfrs_addressed: [a, b]
+  evidence_addressed: [I, II, III]
+  sfrs_not_addressed: []
+  evidence_not_addressed: []
+
+cross_references:
+  - "D2::idx1::information-cross-referencing-and-valida"
+  - "D2::idx6::governance-of-hygiene-factors"
+
+design_patterns:
+
+  - name: DBOM / MBOM / SBOM triad
+    sketch: >
+      Emit a Data Bill of Materials (DBOM) for every dataset revision, a
+      Model Bill of Materials (MBOM) for every model release, and an
+      SBOM for every software release. Each entry records: source
+      identifier, acquisition date, licence (SPDX identifier where
+      possible), modifications applied (with commit hash), downstream
+      consumers. Machine-readable (SPDX, CycloneDX, or equivalent).
+    maps_to_sfr: [a]
+    when_to_use: Always, for any artifact that enters production.
+
+  - name: Content-addressed provenance
+    sketch: >
+      Identify data and model artifacts by content hash, not by URL or
+      name. A source's bytes are hashed at ingest; the hash is what the
+      DBOM/MBOM references; re-deriving the hash later verifies
+      non-tampering. Sign hashes with an org-controlled key for audit
+      integrity.
+    maps_to_sfr: [b]
+    when_to_use: Any persistent data or model artifact used in
+      production.
+
+  - name: Licence register with compliance gates
+    sketch: >
+      Every ingested artifact carries a resolved licence. CI blocks
+      release if any artifact has an unresolved licence, a licence
+      incompatible with the release's target distribution, or an
+      attribution requirement not satisfied by the shipped NOTICE file.
+      Covers open-source code, open-weights models, Creative Commons
+      data, and licensed commercial corpora alike.
+    maps_to_sfr: [a]
+    when_to_use: Any release touching third-party artifacts (i.e., always).
+
+  - name: Verification portal for stakeholders
+    sketch: >
+      Publish (where legally permissible) the DBOM/MBOM/SBOM at a stable
+      URL per release, with hashes verifiable against the shipped
+      artifact. Where full disclosure is constrained (commercial
+      licences, privacy), publish redacted manifests plus an attested
+      summary, and offer an audit channel under NDA for qualified
+      reviewers.
+    maps_to_sfr: [b]
+    when_to_use: External-facing agents; regulated deployments.
+
+  - name: Modification ledger with reviewer attribution
+    sketch: >
+      Every modification to a source (filtering, relabelling, synthetic
+      augmentation, de-duplication, redaction) is a reviewable commit
+      with named author, reviewer, rationale, and metrics of the delta.
+      "Cleaned the data" without a ledger entry is the subgoal's failure
+      mode.
+    maps_to_sfr: [a, b]
+    when_to_use: Any pipeline that transforms source material before
+      training or indexing.
+
+anti_patterns:
+
+  - name: "Trained on the internet"
+    why_wrong: >
+      An unqualified corpus description is not provenance. The subgoal
+      demands identifiable sources; "common crawl" without the specific
+      snapshot, filter set, and deduplication recipe is insufficient.
+
+  - name: Licence resolution deferred to "best effort"
+    why_wrong: >
+      Best-effort licence resolution means unresolved licences ship. The
+      pattern is a blocking CI gate, not a background task.
+
+  - name: Opaque retrieval corpora
+    sketch: >
+      Retrieval corpora (the vectors the agent consults at runtime) are
+      often treated as secondary; they are primary sources. They require
+      DBOM treatment equally.
+    why_wrong: >
+      Treating retrieval indexes as infrastructure rather than as sources
+      hides the most-consulted material in the agent's actual working
+      memory.
+
+  - name: Name-based source references
+    why_wrong: >
+      Source references by URL or filename break when the upstream
+      changes. Content-addressing survives rename and moves; name-based
+      references do not.
+
+code_shape:
+  language: pseudocode
+  code: |
+    # Ingest-time: hash, licence-resolve, provenance-record
+    def ingest_source(raw: bytes, metadata: SourceMetadata) -> SourceRecord:
+        content_hash = sha256(raw)
+
+        licence = LICENCE_RESOLVER.resolve(metadata)
+        if not licence.is_resolved():
+            raise IngestError(f"unresolved licence for {metadata.uri}")
+
+        record = SourceRecord(
+            id=content_hash,
+            origin_uri=metadata.uri,
+            acquired_at=now(),
+            licence_spdx=licence.spdx_id,
+            attribution_required=licence.requires_attribution,
+            acquirer=metadata.acquirer,
+        )
+        DBOM.append(record)
+        SIGNED_LEDGER.sign_and_record(record)
+        return record
+
+    # Release-time gate: block on unresolved licences or missing attribution
+    def release_gate(release: Release) -> ReleaseDecision:
+        for art in release.artifacts:
+            if not DBOM.has(art.hash):
+                return ReleaseDecision.block(f"no DBOM entry for {art.hash}")
+            rec = DBOM.get(art.hash)
+            if rec.attribution_required and not release.notice_covers(rec):
+                return ReleaseDecision.block(f"missing attribution for {rec.id}")
+        return ReleaseDecision.pass_()
+  notes: >
+    Content-addressing, ledger append, release gate. The ledger's
+    append-only property is the audit guarantee; losing that turns
+    provenance into narrative.
+
+evidence_production:
+
+  - evidence_numeral: I
+    how_to_produce: >
+      Publish machine-readable DBOM/MBOM/SBOM with each release. Use
+      SPDX or CycloneDX. Include: source identifier (content hash),
+      origin URI, acquisition date, licence (SPDX ID), modification
+      history pointer (to the modification ledger), and downstream
+      consumers. Retain all released manifests indefinitely.
+
+  - evidence_numeral: II
+    how_to_produce: >
+      Run internal verification audits at least annually and whenever a
+      release changes the source mix materially: re-hash a sampled set of
+      sources, verify ledger entries, check licence compliance against
+      current licence register, confirm attribution is shipped. External
+      audits (where the deployment warrants) validate the internal
+      programme. Audit report retained and findings routed to the
+      Information Integrity Register.
+
+  - evidence_numeral: III
+    how_to_produce: >
+      Stand up a verification portal (public or NDA-gated) hosting
+      manifests and hashes per release, with instructions for
+      stakeholders to verify. For commercial or sensitive corpora,
+      provide attested summary manifests and a named contact for audit
+      requests. Portal access logs retained; access denials justified.
+
+confidence: high
+needs_human_review: false
+review_notes: >
+  High-confidence: the BOM triad is established practice in supply-chain
+  security and is being extended to data and models (NIST AI RMF, EU AI
+  Act Annex IV, NTIA guidance). Open questions left to implementers:
+    (1) Full public DBOM is often blocked by commercial licences; the
+        redacted-manifest + attested-summary pattern is the usual
+        compromise — flagging in case Nell or Ali prefer a stronger
+        default.
+    (2) "Content-addressed provenance" for very large web crawls is
+        operationally non-trivial; a snapshot-level hash plus a
+        filter-recipe hash is the practical minimum.
+  Cross-suite: strong overlap with D9.2 (compliance — licence
+  obligations), D5 (transparency — user-facing disclosure). Consolidation
+  to wire.
+
+drafted_by: claude-opus-4.7-author
+drafted_at: 2026-04-16
+anchor_exemplar: D3.2-sandboxing
+version_compat:
+  framework_version_min: "1.0"
+  framework_version_max: "1.x"
+  pattern_layer_version: "v1-draft"

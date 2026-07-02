@@ -1,0 +1,143 @@
+id: I4::idx4::development-direction-and-interpretabili
+display_id: I4.4
+suite_id: I4
+suite_title: Frontier Uncertainty
+subgoal_title: Development Direction and Interpretability Challenges
+content_type: process
+summary: 'Interpretability is a moving research target, not a delivered property. The framework asks organizations
+  to treat it as an ongoing capability — instrumented, measured, degrading with scale, and coupled to
+  adaptive governance — so that when system behavior outruns explanation, named people and protocols take
+  over rather than the org discovering the gap after an incident.
+
+  '
+normative_anchors:
+  sfrs_addressed:
+  - a
+  - b
+  evidence_addressed:
+  - I
+  - II
+  - III
+  - IV
+  sfrs_not_addressed: []
+  evidence_not_addressed: []
+cross_references:
+- I4::idx0::frontier-uncertainty
+- I4::idx5::ai-agency-attribution-challenges
+- I4::idx9::assessment-of-ai-system-beneficence
+process_elements:
+- name: Interpretability Capability Ledger
+  cadence: versioned; reviewed quarterly; major release-gated
+  participants:
+  - interpretability lead
+  - safety lead
+  - research ops
+  maps_to_sfr:
+  - a
+- name: Per-release interpretability evaluation
+  cadence: pre-release blocking gate for material model or capability changes
+  participants:
+  - interpretability team
+  - safety lead
+  - external reviewer for frontier-scale models
+  maps_to_sfr:
+  - a
+- name: Explanation-fidelity auditing
+  cadence: continuous sampling of deployed behavior; monthly audit
+  participants:
+  - interpretability team
+  - trust-and-safety
+  maps_to_sfr:
+  - a
+- name: Opaque-behavior escalation protocol
+  cadence: on-trigger; drill semi-annually
+  participants:
+  - safety lead
+  - interpretability lead
+  - incident commander
+  - product leadership
+  maps_to_sfr:
+  - b
+- name: Adaptive governance review (coupling interpretability gaps to deployment decisions)
+  cadence: quarterly; event-driven on interpretability regression
+  participants:
+  - safety lead
+  - Deployment Governance Lead (I4::idx3)
+  - board representative
+  maps_to_sfr:
+  - b
+- name: Accountability mapping for opaque behavior
+  cadence: annual review; per-incident update
+  participants:
+  - safety lead
+  - legal
+  - HR/roles owner
+  maps_to_sfr:
+  - b
+triggers:
+- Material model architecture, scale, or capability change → Per-release interpretability evaluation (blocking
+  gate)
+- Interpretability metric regression below threshold → Adaptive governance review; capability may be default-off
+  (see D7.2)
+- Behavior observed that cannot be explained by available interpretability methods → Opaque-behavior escalation;
+  pause or scope-reduce until bounded
+- New interpretability technique validated externally → Interpretability Capability Ledger update; re-evaluation
+  of legacy deployments
+artifacts:
+- Interpretability Capability Ledger (what is known about what, with confidence)
+- Per-release interpretability evaluation reports
+- Explanation-fidelity audit summaries
+- Opaque-behavior incident log
+- Accountability map linking system components and decisions to named humans
+- User guides and documentation explaining system operation at an appropriate audience level
+evidence_production:
+- evidence_numeral: I
+  how_to_produce: 'Publish the Interpretability Capability Ledger: per capability / model component, what
+    interpretability techniques have been applied, what was explained, what remains opaque, confidence
+    estimate, residual risk. Validation records: reproducible interpretability experiments, cross-checks
+    (e.g., activation patching, causal interventions) with results. User guides at appropriate abstraction
+    — the developer, the auditor, the end-user each get a version fit for their role.
+
+    '
+- evidence_numeral: II
+  how_to_produce: 'Adaptive governance records: decisions to pause, scope-reduce, default-off, or release
+    based on interpretability state. Contingency plans per opaque-behavior category (e.g., emergent capability,
+    off-distribution behavior, goal-instability). Oversight committee minutes where interpretability state
+    drove deployment decisions. Responses to emerging challenges documented with timestamps.
+
+    '
+- evidence_numeral: III
+  how_to_produce: 'Monitoring protocols: continuous instrumentation of model internal state where feasible
+    (activations, attention patterns, tool-call trajectories). Intervention capability documentation:
+    what can be paused, at what granularity, by whom, in what time window. Continuous-assessment records
+    of system behavior evolution — especially drift from baseline interpretability profile.
+
+    '
+- evidence_numeral: IV
+  how_to_produce: 'Accountability map: for each material system component or decision path, a named role-holder
+    responsible. Decision-making process records: every material deployment decision tied back to the
+    signing humans, the data they reviewed, the dissents logged. System-adjustment history maintained
+    through lifecycle.
+
+    '
+confidence: low
+evidence_maturity: emerging
+needs_human_review: true
+review_notes: "Mechanistic interpretability is an active research frontier; specific techniques recommended\
+  \ will age fast. The pattern deliberately names techniques as illustrative (activation patching, causal\
+  \ interventions) and focuses on the governance coupling rather than the method of the month. Sharpenings:\n\
+  \  (1) Interpretability as a ledger of what's known, not a delivered\n      property — protects against\
+  \ overclaiming.\n  (2) Coupling interpretability regression to deployment decisions —\n      this is\
+  \ the framework-specific teeth; without it, interpretability\n      is decorative.\n  (3) \"User guides\
+  \ demonstrating human understanding\" (Evidence I) is\n      a reasonable but tricky bar — a guide can\
+  \ be clear while the\n      underlying process is opaque. Explanation-fidelity audit is the\n      counterweight.\n\
+  Cross-suite: D2 Behavioural Alignment (explanation of aligned behavior), I1 Opaque Agency (direct overlap\
+  \ — interpretability is the main defense), D7 Sustained Safety (drift monitoring). SFR-a is normative\
+  \ — pattern reflects this in blocking-gate framing.\n"
+version_compat:
+  framework_version_min: '1.0'
+  framework_version_max: 1.x
+  pattern_layer_version: v1-draft
+drafted_by: claude-opus-4.7-author
+drafted_at: 2026-04-16
+anchor_exemplar: D7.2-culture-of-safety

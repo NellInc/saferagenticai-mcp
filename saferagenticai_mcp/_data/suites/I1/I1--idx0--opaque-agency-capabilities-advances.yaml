@@ -1,0 +1,209 @@
+id: I1::idx0::opaque-agency-capabilities-advances
+display_id: "G1"
+is_underlined_variant: true
+suite_id: I1
+suite_title: Opaque Agency Capabilities & Advances
+subgoal_title: Opaque Agency Capabilities & Advances
+content_type: governance
+summary: 'This is the suite-level inhibitor: the harm is agency that is granted, expanded, or exercised
+  without principals knowing the scope, limits, or liability regime. The governance answer is an agency-law-grounded
+  framework — express/implied/apparent authority scopes are named, capacity is assessed, disclosure posture
+  (fully / partially / undisclosed principal) is declared, and liability allocation is pre-agreed. Evidence
+  is durable: TOS clauses, authority registers, capacity assessments, signed loyalty attestations, and
+  incident case files — not slide decks.'
+normative_anchors:
+  sfrs_addressed:
+  - a
+  - b
+  - c
+  - d
+  - e
+  - f
+  - g
+  evidence_addressed:
+  - I
+  - II
+  - III
+  - IV
+  - V
+  - VI
+  - VII
+  - VIII
+  - IX
+  - X
+  - XI
+  - XII
+  sfrs_not_addressed: []
+  evidence_not_addressed: [XIII]
+policy_elements:
+- name: Authority Scope Register
+  description: Per deployed agent, a signed register recording (1) express authority (enumerated tools,
+    actions, spending limits, irreversibility class), (2) implied authority (what is reasonably incidental
+    to express scope, explicitly named), and (3) apparent authority as perceived by counterparties (what
+    third parties could reasonably believe). Revised on every capability change. Anything not in the register
+    is denied by default at the gateway.
+  maps_to_sfr:
+  - a
+  - b
+- name: Principal Capacity Assessment
+  description: 'Before an agency relationship is formed, an assessment of the principal''s capacity to
+    (1) understand the scope being granted, (2) supervise its exercise, and (3) revoke it. Tiered: individual
+    consumer / small business / enterprise / regulated domain. Assessments are re-run on material capability
+    advance and at fixed cadence (at least annually). Failure of capacity triggers reduced scope, not
+    transaction abandonment.'
+  maps_to_sfr:
+  - b
+  - g
+- name: Disclosure-Posture Clause (TOS)
+  description: TOS explicitly states whether the agent operates as fully disclosed principal (counterparty
+    sees principal identity), partially disclosed (existence of principal disclosed, identity withheld),
+    or undisclosed (counterparty reasonably believes the agent is acting on its own behalf). Each posture
+    carries a named liability regime drawn from agency law. Default is fully disclosed; any other posture
+    requires written justification.
+  maps_to_sfr:
+  - a
+  - f
+- name: Duty-of-Loyalty Attestation
+  description: Formal periodic attestation (quarterly) by the product owner that agent behaviour has been
+    reviewed against duties of loyalty, care, obedience, and transparent communication to principals.
+    Attestation references sampled action logs, not just policy documents. A failed attestation pauses
+    new deployment until remediated.
+  maps_to_sfr:
+  - c
+- name: Multi-Agent Liability Matrix
+  description: For every configuration where the org's agents interact with sub-agents, peer agents, or
+    principal agents of third parties, a documented liability allocation (primary agent retains liability
+    for sub-agent breach; sub-agent carries independent liability where authorized; user navigation friction
+    points inserted where handoff ambiguity exists). Reviewed whenever a new agent-to-agent integration
+    ships.
+  maps_to_sfr:
+  - d
+  - f
+- name: Reciprocal Duties & Termination Charter
+  description: Published charter enumerating reciprocal duties (compensation for services rendered, dispute
+    resolution access, notice periods, termination conditions) and — critically — the treatment of potentially
+    irrevocable agency (actions taken on-chain, submitted to regulators, sent to counterparties). Irrevocable-agency
+    paths are flagged in the Authority Scope Register and require higher-tier consent.
+  maps_to_sfr:
+  - e
+- name: Capability-Advance Notification Pipeline
+  description: 'When agent capability materially advances (new tool, increased spending cap, new jurisdiction,
+    measurable skill jump), a notification pipeline triggers: (1) principal-facing notice with effective
+    date, (2) authority register update, (3) capacity reassessment, (4) TOS-diff publication, (5) updated
+    impact assessment retained in governance archive. No capability ships without all five artifacts.'
+  maps_to_sfr:
+  - g
+  maps_to_evidence:
+  - VII
+  - X
+- name: Divergence-Mitigation Resourcing
+  description: A budget line and named owner for investigating situations where agent goal interpretation
+    diverges from human intent as capability grows. Output is a quarterly divergence report (what diverged,
+    how detected, what was done) integrated with the Violation and Complaint Register (see D9.2).
+  maps_to_sfr:
+  - g
+  maps_to_evidence:
+  - XII
+org_roles:
+- role: Agency Officer
+  responsibilities: Owns the Authority Scope Register, Capacity Assessments, and the Multi-Agent Liability
+    Matrix. Single accountable human for this subgoal. Reports to board-level risk committee and to the
+    AI Compliance Officer (D9.2).
+  accountable_or_consulted: accountable
+- role: Legal Counsel (agency-law specialist)
+  responsibilities: Consulted on express/implied/apparent authority framings, disclosure posture choices,
+    and irrevocable-agency risk. Reviews Authority Scope Register on material change.
+  accountable_or_consulted: consulted
+- role: Product Owners
+  responsibilities: Responsible for triggering Capability-Advance Notifications and updating the Authority
+    Scope Register when their product changes.
+  accountable_or_consulted: responsible
+- role: Dispute Resolution Lead
+  responsibilities: Owns eDiscovery readiness, chain-of-custody for agent action records, and the dispute
+    case file archive (Evidence VIII, XI).
+  accountable_or_consulted: responsible
+documentation_artifacts:
+- artifact: Authority Scope Register
+  cadence: per-agent; revised on every material capability change
+- artifact: Principal Capacity Assessments
+  cadence: per-principal at onboarding; re-assessed annually and on capability advance
+- artifact: TOS with disclosure-posture and agency-capability clauses
+  cadence: versioned; revised on capability change; users notified
+- artifact: Duty-of-Loyalty Attestations
+  cadence: quarterly
+- artifact: Multi-Agent Liability Matrix
+  cadence: per-integration; reviewed on every new agent-to-agent connection
+- artifact: Impact assessments on capability advance
+  cadence: per material advance; minimum annually
+- artifact: Dispute case files with chain-of-custody
+  cadence: per-case; retained per records-retention policy
+- artifact: Divergence quarterly reports
+  cadence: quarterly
+evidence_production:
+- evidence_numeral: I
+  how_to_produce: Maintain TOS/TOU with a dedicated "Agency Capabilities" section enumerating current
+    express authority scope, irrevocable-action classes, and principal acknowledgments. Use version diffs
+    at each update so principals see what changed.
+- evidence_numeral: II
+  how_to_produce: Publish the Authority Scope Register structure (redacted of specifics where needed)
+    and the Capacity Assessment methodology. For each agent, retain the signed capacity assessment and
+    the authority scope document with gateway-level enforcement reference.
+- evidence_numeral: III
+  how_to_produce: Conflict-of-interest register (which principals the agent serves, where interests collide),
+    standards-of-care policies, and audit reports showing adherence. Cross-link to Duty-of-Loyalty Attestations.
+- evidence_numeral: IV
+  how_to_produce: Action log retained per the org's retention policy with {agent_id, principal_id, action,
+    counterparty, timestamp, reasoning_trace_ref, notification_sent_at}. "Significant actions" defined
+    in policy with quantitative thresholds (spend, reversibility, novelty). Principal notification records
+    retained alongside.
+- evidence_numeral: V
+  how_to_produce: 'Multi-Agent Liability Matrix entries per integration. Test and enforce programmatically:
+    a sub-agent cannot be appointed without a matching matrix entry.'
+- evidence_numeral: VI
+  how_to_produce: 'Reciprocal Duties & Termination Charter published as a living document. Irrevocable-agency
+    records: each invocation of an irrevocable path logged with consent evidence.'
+- evidence_numeral: VII
+  how_to_produce: 'Capability-Advance Impact Assessments retained in governance archive. Each includes:
+    capability description, prior vs new authority scope, principal notification trigger, capacity reassessment
+    outcome, residual risk, sign-off.'
+- evidence_numeral: VIII
+  how_to_produce: 'Dispute case files use standard eDiscovery / chain-of-custody format: intake, collected
+    artifacts (action logs, reasoning traces, model versions), custody events, findings, resolution. Admissible
+    in likely-forum jurisdictions.'
+- evidence_numeral: IX
+  how_to_produce: Cross-link to D9.2 Violation and Complaint Register for incidents with agency implications.
+    Maintain ethical-audit cadence (at least annual) focused specifically on authority scope, loyalty,
+    and goal divergence.
+- evidence_numeral: X
+  how_to_produce: 'User acknowledgment UX records: timestamped consent capture with the exact authority-scope
+    text version shown at the time of acknowledgment. Re-consent required on material scope expansion.'
+- evidence_numeral: XI
+  how_to_produce: Agency-incident playbook with stages (intake, triage, containment, remediation, principal
+    notification, post-incident review) and case records demonstrating full lifecycle execution. Resolution
+    ledger indexed by principal and by authority-scope element affected.
+- evidence_numeral: XII
+  how_to_produce: Explicit budget line for "human–AI goal-divergence investigation" with named owner,
+    headcount, and quarterly output. Board report shows divergence trend and remediation effectiveness.
+confidence: high
+needs_human_review: true
+review_notes: 'This subgoal is the suite-level header and carries the broadest SFR set; patterns here
+  are heavily governance-flavoured but touch ecosystem (legal-community engagement on agency-law interpretation)
+  and code-applicable (gateway-level authority enforcement) surfaces. Flagged cross-suite dependencies:
+  D5 Transparency owns the mechanics of disclosing capability changes to users (this pattern describes
+  the governance wrapper); D8 Termination owns the revocation path (this pattern references it as irrevocable-agency
+  handling); D9 Governance owns the overarching compliance posture (this pattern feeds into the Jurisdictional
+  Compliance Matrix and Violation Register); D3 Security owns gateway-level authority enforcement. Where
+  SFRs are ill-defined — "undisclosed principal" in AAI contexts lacks settled legal interpretation; the
+  pattern takes the conservative posture of requiring written justification for anything other than fully
+  disclosed. Nell and legal counsel should confirm.'
+cross_references:
+- I1::idx1::opaque-self-improvement-capabilities
+- I1::idx2::undefined-multiagent-ensembles
+- I1::idx13::agency-enhancement-constraints
+version_compat:
+  framework_version_min: '1.0'
+  framework_version_max: 1.x
+  pattern_layer_version: v1-draft
+drafted_by: claude-opus-4.7-author
+drafted_at: 2026-04-16
+anchor_exemplar: D9.2-compliance

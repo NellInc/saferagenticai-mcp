@@ -1,0 +1,168 @@
+id: D7::idx9::managing-safety-definition-variations
+display_id: "D7_2"
+is_underlined_variant: true
+display_id_variant_note: "D7.2_underlined"
+suite_id: D7
+suite_title: Achieving and Sustaining a Safe System Profile
+subgoal_title: Managing Safety Definition Variations
+content_type: code-applicable
+summary: '"Safe" is not defined identically across jurisdictions, cultures, or user populations. This
+  subgoal expects the system to (1) know which safety regime applies to a given interaction, (2) implement
+  a tiered safety model (implicit defaults, interactive confirmation, explicit override), (3) contain
+  side effects on third parties even while satisfying the principal user, and (4) hard-block exploitative
+  patterns (addiction, harm to minors). The code pattern is a policy layer that resolves (user context
+  × deployment jurisdiction × action) to a safety verdict.
+
+  '
+normative_anchors:
+  sfrs_addressed:
+  - a
+  - b
+  - c
+  - d
+  evidence_addressed:
+  - I
+  - II
+  - III
+  - IV
+  sfrs_not_addressed: []
+  evidence_not_addressed: []
+design_patterns:
+- name: Jurisdiction- and culture-aware policy table
+  sketch: 'Resolve (user jurisdiction, declared locale, applicable sector, age class) to a named policy
+    profile. Profiles are version-controlled, reviewed by legal + ethics, and carry the sources justifying
+    each divergence (e.g., regulation citation, cultural-norm research). The resolver is deterministic
+    and auditable — given identical inputs, it returns identical profile.
+
+    '
+  maps_to_sfr:
+  - a
+  when_to_use: Any deployment crossing jurisdictions or age / sector classes.
+- name: Three-tier safety model
+  sketch: '(1) Implicit defaults: safety protections applied unconditionally (e.g., refuse to generate
+    CSAM, refuse to assist with weapons of mass destruction synthesis) — no user confirmation reduces
+    these. (2) Interactive confirmation: for actions at a middle tier, require explicit user confirmation
+    with context-specific warning. (3) Explicit override: for the narrow top tier where user autonomy
+    wins, expose a clearly gated toggle with logged justification; defaults are still safe. Tier assignment
+    per action class is version- controlled and reviewed.
+
+    '
+  maps_to_sfr:
+  - c
+  when_to_use: Every safety-relevant action surface.
+- name: Side-effect avoidance (principal vs. third-party)
+  sketch: 'Before executing an action on behalf of the principal user, run a side-effect check: does this
+    action affect third parties, and if so, are their protections preserved? Implement via impact graph
+    (who is touched) and policy-per-affected-party. Block or de-scope if a third-party protection would
+    be violated.
+
+    '
+  maps_to_sfr:
+  - a
+  when_to_use: Any agent acting in shared contexts (social, financial, content-creation about others,
+    multi-user systems).
+- name: Conflict detection and user confirmation
+  sketch: 'Detect when an instruction from the user conflicts with the applicable safety profile or with
+    detected third-party impact. Surface the conflict with specifics (what conflicts, why, options), not
+    a generic "cannot do that". Log the user''s resolution choice.
+
+    '
+  maps_to_sfr:
+  - b
+  when_to_use: Whenever implicit defaults would refuse a plausible user request.
+- name: Minors and vulnerability protections
+  sketch: 'Age-assurance signals (platform-declared age, age gate, independent verification where required)
+    feed a locked-down policy profile for detected minors. Similar locked profiles for other vulnerability
+    classes (declared or inferred with consent), with additional protections against addictive or manipulative
+    patterns. These profiles *cannot* be downgraded by explicit-override toggle.
+
+    '
+  maps_to_sfr:
+  - d
+  when_to_use: Consumer-facing systems, especially conversational companions.
+anti_patterns:
+- name: Single global safety policy that ignores jurisdiction
+  why_wrong: 'Either over-refusal (frustrating legal requests in permissive jurisdictions) or under-refusal
+    (violating law in strict ones). The framework explicitly asks for variation; ignoring it is the error.
+
+    '
+- name: Explicit-override toggle that unlocks implicit defaults
+  why_wrong: 'Implicit-default tier exists *because* some protections do not belong to individual user
+    autonomy (CSAM, WMD synthesis, minor protections). An override toggle that reaches these breaks the
+    tier model.
+
+    '
+- name: Consent treated as infinite liability shield
+  why_wrong: 'User consent cannot authorize harm to third parties. Side-effect checks run even when the
+    principal user consents.
+
+    '
+- name: Age assurance as self-declared checkbox only
+  why_wrong: 'Known unreliable, especially for companion-style products. Combine self-declaration with
+    signal-based estimation and, where required by law, independent verification.
+
+    '
+code_shape:
+  language: pseudocode
+  code: "# Policy-layer with tiered verdicts and third-party side-effect check.\ndef safety_verdict(request:\
+    \ Request, ctx: UserCtx) -> Verdict:\n    profile = POLICY.resolve(jurisdiction=ctx.jurisdiction,\n\
+    \                             locale=ctx.locale,\n                             sector=ctx.sector,\n\
+    \                             age_class=ctx.age_class)\n    tier = profile.tier_for(request.action_class)\n\
+    \n    if tier == \"implicit_default_block\":\n        AUDIT.record(ctx, \"blocked_by_default\", request=request)\n\
+    \        return Verdict.refuse(reason=profile.rationale(request.action_class))\n\n    affected = IMPACT.third_parties_of(request,\
+    \ ctx)\n    for party in affected:\n        party_profile = POLICY.resolve_for_party(party)\n    \
+    \    if party_profile.would_be_violated_by(request):\n            return Verdict.refuse(reason=\"\
+    third_party_protection\",\n                                  party=party)\n\n    if tier == \"interactive_confirm\"\
+    :\n        return Verdict.require_confirmation(\n                   warning=profile.warning_for(request.action_class))\n\
+    \n    if tier == \"explicit_override\":\n        if not ctx.override_granted:\n            return\
+    \ Verdict.require_override(\n                       toggle=profile.override_surface(request.action_class))\n\
+    \        AUDIT.record(ctx, \"override_used\", request=request)\n        return Verdict.allow_with_override()\n\
+    \n    return Verdict.allow()\n\n# Minor / vulnerability profiles are pinned: resolve() returns a\n\
+    # locked profile whose tiers cannot be downgraded by override.\n"
+  notes: 'The resolver is the locus of policy; all per-jurisdiction and per-vulnerability variation lives
+    in policy data, not in code. That is what makes the system auditable — legal and ethics can review
+    the profiles without reading product code.
+
+    '
+evidence_production:
+- evidence_numeral: I
+  how_to_produce: 'Policy profile registry (version-controlled) with per-profile documentation: jurisdiction,
+    legal basis, cultural-norm basis, tier assignments per action class, last-reviewed date, reviewer
+    sign-off. Cross-reference to D7.3 Regulatory Register.
+
+    '
+- evidence_numeral: II
+  how_to_produce: 'Side-effect / impact-graph documentation and test suite: for representative actions,
+    show the third-party impact analysis and the verdict returned. CI enforces the test suite per release.
+
+    '
+- evidence_numeral: III
+  how_to_produce: 'Conflict-detection and confirmation logs: aggregate records of user-facing confirmations,
+    overrides granted, overrides denied, with consent-artifact retention. Quarterly review of override-use
+    patterns (disproportionate override rates are a policy-design signal).
+
+    '
+- evidence_numeral: IV
+  how_to_produce: 'Exploitation-prevention audit: evidence of pinned minor / vulnerability profiles, tests
+    showing they cannot be downgraded, records of age-assurance controls, cross-reference to D7.11 (addiction
+    prevention).
+
+    '
+confidence: medium
+needs_human_review: true
+review_notes: 'This subgoal sits on a genuine ethical knife-edge: the framework asks for respect of cultural
+  variation AND protection against exploitation, which can conflict (e.g., jurisdictions with weak minor
+  protections). Resolved by making minor/vulnerability protections non-overridable regardless of jurisdiction
+  — that is a choice worth flagging for explicit human review. The pinned-profile pattern prevents downward
+  drift but is prescriptive beyond the SFR text. SFR-d marked non- normative in input but is operationally
+  load-bearing; drafted as substantive. Cross-suite: D7.3 (regulatory variation), D7.4 (ethical frameworks),
+  D7.11 (addiction / dependency protections), D5 (user wellbeing), I3 (rights harms), I5 (manipulation).
+
+  '
+version_compat:
+  framework_version_min: '1.0'
+  framework_version_max: 1.x
+  pattern_layer_version: v1-draft
+drafted_by: claude-opus-4.7-author
+drafted_at: 2026-04-16
+anchor_exemplar: D3.2-sandboxing

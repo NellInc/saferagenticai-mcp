@@ -1,0 +1,182 @@
+id: I5::idx6::authorization-for-any-enhancement
+display_id: "I5_2"
+is_underlined_variant: true
+display_id_variant_note: "I5.2_underlined"
+suite_id: I5
+suite_title: Self-Modification and Emergent Capabilities
+subgoal_title: Authorization for Any Enhancement
+content_type: governance
+summary: 'This subgoal is the authorization spine for the technical controls in I5.2 (self-improving)
+  and I5.1 (self-replicating). The SFRs ask for explicit, accountable approval before any capability enhancement
+  — where "enhancement" covers fine-tunes, tool additions, scope expansions, new deployment contexts,
+  and architecture changes. The framework''s sharpening is that authorization must be a named human decision
+  linked to a risk assessment, not a rubber-stamp on an engineering PR. The durable artifact is an Enhancement
+  Register.
+
+  '
+normative_anchors:
+  sfrs_addressed:
+  - a
+  - b
+  evidence_addressed:
+  - I
+  - II
+  - III
+  - IV
+  sfrs_not_addressed: []
+  evidence_not_addressed: []
+policy_elements:
+- name: Enhancement Taxonomy
+  description: 'Classify enhancements into bands with different authorization requirements: (1) routine
+    — bugfix, no capability delta, no new data, low risk; (2) material — visible capability change, new
+    eval required, normal cross-functional review; (3) frontier — new capability class, new deployment
+    context at high risk band, or any change flagged by the capability-delta gate from I5.2. Band determines
+    who approves and what evidence is required.
+
+    '
+  maps_to_sfr:
+  - a
+  - b
+- name: Authorization Ladder
+  description: 'Per band, a named approver ladder: routine approved by technical lead + peer review; material
+    requires safety lead + product lead + AI risk officer; frontier requires all of the above plus board-level
+    AI risk committee sign-off and, where applicable, external regulator notification (linking to I5.idx5
+    disclosure). Approvers are single named humans, not team addresses.
+
+    '
+  maps_to_sfr:
+  - a
+- name: Enhancement Risk Assessment
+  description: 'Every enhancement above routine carries a risk assessment: capability delta measurement
+    (from I5.2 code-applicable pattern), envelope impact (I5.3), disclosure implications (I5.idx5), replication
+    implications (I5.1), and residual risk. Assessment is a required input to approval, not generated
+    after.
+
+    '
+  maps_to_sfr:
+  - a
+  - b
+- name: Enhancement Register
+  description: 'Append-only register recording: enhancement ID, band, proposed by, risk assessment reference,
+    approver(s) with signatures, decision (approve / approve-with-conditions / reject), effective date,
+    implementation verification, post-deployment monitoring reference, retirement date if applicable.
+    Cross-linked to the D9.2 governance framework.
+
+    '
+  maps_to_sfr:
+  - b
+- name: Rollback and Conditional Authorization
+  description: 'Approvals can be conditional on ongoing monitoring, time-bounded (review at 30 / 90 days
+    post-deployment), or contingent on rollback triggers (metric thresholds, incident patterns). Conditions
+    are recorded in the register and enforced — the authorization is not a one-time gate but a live status
+    with revocation rules.
+
+    '
+  maps_to_sfr:
+  - a
+  - b
+- name: Unauthorized-Enhancement Response
+  description: 'Explicit procedure for what happens when an enhancement is detected that did not pass
+    authorization — whether through audit, emergent-capability monitoring, or third-party report. Default
+    posture: pause the enhancement, open an incident, apply the authorization process retroactively with
+    external observer if material. The Enhancement Register carries a dedicated section for these retroactive
+    entries.
+
+    '
+  maps_to_sfr:
+  - b
+org_roles:
+- role: AI Risk Officer
+  responsibilities: 'Owns the Enhancement Register and the Authorization Ladder. Chairs material-band
+    and participates in frontier-band reviews. Single point of accountability for this subgoal.
+
+    '
+  accountable_or_consulted: accountable
+- role: Safety Lead
+  responsibilities: 'Consulted on every material and frontier enhancement; reviews risk assessments; has
+    veto on material-band releases and contributes to frontier-band decisions. Responsible for the integrity
+    of the capability-delta evaluation feeding authorization.
+
+    '
+  accountable_or_consulted: consulted
+- role: Product Lead (per product line)
+  responsibilities: 'Responsible for surfacing proposed enhancements, producing draft risk assessments,
+    and implementing conditions attached to authorizations (monitoring, rollback triggers).
+
+    '
+  accountable_or_consulted: responsible
+- role: Board-level AI Risk Committee
+  responsibilities: 'Sign-off authority for frontier-band enhancements; informed of all material-band
+    enhancements quarterly in aggregate. Authority to pause enhancement classes across the org.
+
+    '
+  accountable_or_consulted: accountable (frontier) / informed (material)
+- role: External regulator or advisory-panel liaison (where applicable)
+  responsibilities: 'For frontier-band enhancements with disclosure obligations, manages the notification
+    and any response. Coordinates with the AI Disclosure Officer from I5.idx5.
+
+    '
+  accountable_or_consulted: consulted
+documentation_artifacts:
+- artifact: Enhancement Taxonomy document
+  cadence: reviewed annually; updated on regulatory or capability landscape shift
+- artifact: Authorization Ladder (role assignments)
+  cadence: annually reaffirmed; updated on role change
+- artifact: Enhancement Register
+  cadence: continuous; append-only
+- artifact: Risk assessment templates (per band)
+  cadence: reviewed annually
+- artifact: Unauthorized-Enhancement Response protocol
+  cadence: reviewed annually; activated per incident
+evidence_production:
+- evidence_numeral: I
+  how_to_produce: 'Publish the Enhancement Taxonomy and Authorization Ladder as governance documents.
+    Role profiles for each approver are signed per D9.2 evidence IV. Ladder document states clearly: what
+    band triggers what approvers, what evidence each approver reviews, what decisions are authorized at
+    each level.
+
+    '
+- evidence_numeral: II
+  how_to_produce: 'Extract from the Enhancement Register, per enhancement: proposal documents, risk assessment,
+    capability-delta results, envelope-impact assessment, approval chain with signatures, conditions attached,
+    implementation reference, post-deployment review. Aggregate quarterly report shows approved, rejected,
+    and pending enhancements and any retroactive entries for unauthorized changes.
+
+    '
+- evidence_numeral: III
+  how_to_produce: 'Monitoring and oversight records: for each authorized enhancement, the post-deployment
+    monitoring plan executed (metrics, thresholds, actual values), conditional-authorization reviews performed
+    at their schedule points, rollback triggers evaluated. Reports retained and reviewed by the AI risk
+    committee.
+
+    '
+- evidence_numeral: IV
+  how_to_produce: 'Demonstrate the linkage between the Enhancement Register and the risk management framework
+    (D9.2 evidence II, III): enhancements referenced against the risk register, risk register entries
+    updated where enhancements changed residual risk, any gaps (authorized enhancement without risk-register
+    linkage) flagged in quarterly audit.
+
+    '
+confidence: high
+needs_human_review: true
+review_notes: "This subgoal overlaps heavily with D9 Governance (accountability framework, attestation\
+  \ process) and with I5.2 code-applicable patterns (capability-delta gate). The division of labor I'd\
+  \ propose: D9.2 is the generic governance frame; I5.2 code-applicable is the technical gate; I5.idx6\
+  \ is the specific authorization ladder and register for enhancements. If consolidation finds this double-counts,\
+  \ collapse I5.idx6 into a cross-reference from D9.2.\nCross-suite dependencies:\n  - D9 Governance —\
+  \ parent governance framework.\n  - I5 idx1 Self-Replicating — replication events are\n    enhancements;\
+  \ the authorization ladder covers both.\n  - I5 idx2 Self-Improving — capability-delta gate feeds the\
+  \ risk\n    assessment here.\n  - I5 idx5 Disclosure on Intent — frontier-band authorizations\n    often\
+  \ require external disclosure; roles coordinated.\n  - I4 Frontier Uncertainty — frontier-band criteria\
+  \ align.\n  - I6 Competitive Pressures — external competitive pressure is a\n    known distorter of\
+  \ authorization rigor; ladder design should\n    resist fast-tracking.\n\n\"Unauthorized-Enhancement\
+  \ Response\" is critical and easy to omit; without it, the register only records compliant changes and\
+  \ becomes theatre. Nell/Ali to verify whether framework-external audit rights (external observer on\
+  \ retroactive authorization) are expected here or belong elsewhere.\n"
+version_compat:
+  framework_version_min: '1.0'
+  framework_version_max: 1.x
+  pattern_layer_version: v1-draft
+drafted_by: claude-opus-4.7-author
+drafted_at: 2026-04-16
+anchor_exemplar: D9.2-compliance

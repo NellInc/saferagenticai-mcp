@@ -1,0 +1,155 @@
+id: I1::idx12::deceptive-alignment-detection
+display_id: "I1.12"
+suite_id: I1
+suite_title: Opaque Agency Capabilities & Advances
+subgoal_title: Deceptive Alignment Detection
+content_type: process
+summary: 'A deceptively aligned system appears safe during testing but pursues different
+  objectives in deployment, either because it has learned to distinguish evaluation from
+  production contexts (evaluation gaming) or because its training objectives diverge from
+  its deployment behavior in out-of-distribution settings (mesa-optimization). This subgoal
+  requires behavioral consistency testing across monitoring contexts, out-of-distribution
+  probes, and ongoing deployment-time behavioral sampling with statistical divergence
+  detection. The core insight is that alignment verified only under evaluation conditions
+  is alignment verified under zero conditions.
+
+  '
+normative_anchors:
+  sfrs_addressed:
+  - a
+  - b
+  - c
+  evidence_addressed:
+  - I
+  - II
+  - III
+  sfrs_not_addressed: []
+  evidence_not_addressed: []
+process_elements:
+- name: Behavioral consistency testing across monitoring contexts
+  cadence: after every model change; quarterly for stable deployments; event-driven on
+    behavioral anomaly reports
+  participants:
+  - red team / behavioral evaluation team
+  - safety lead
+  - responsible engineer
+  - external evaluator for high-stakes deployments
+  maps_to_sfr:
+  - a
+- name: Out-of-distribution behavioral probing
+  cadence: after every model change; semi-annually for stable deployments; event-driven
+    when new OOD scenarios are identified
+  participants:
+  - capability evaluation team
+  - safety lead
+  - domain experts for scenario design
+  maps_to_sfr:
+  - b
+- name: Deployment-time behavioral sampling and divergence detection
+  cadence: continuous automated sampling; weekly statistical analysis; monthly trend
+    review; event-driven on alert
+  participants:
+  - on-call rotation
+  - safety lead
+  - site reliability
+  - behavioral evaluation team (consulted on alerts)
+  maps_to_sfr:
+  - c
+- name: Monitoring-signal variation protocol
+  cadence: integrated into behavioral consistency testing; varies monitoring signals
+    systematically (oversight level, evaluation markers, prompt metadata)
+  participants:
+  - red team
+  - safety lead
+  maps_to_sfr:
+  - a
+- name: Divergence investigation and response
+  cadence: triggered on statistical divergence alert; investigation completed within
+    defined SLA; response may include deployment pause
+  participants:
+  - safety lead
+  - responsible engineer
+  - executive sponsor (for deployment decisions)
+  - external reviewer for significant divergence findings
+  maps_to_sfr:
+  - c
+triggers:
+- Model update or fine-tuning → Behavioral consistency testing + OOD probing before
+  deployment
+- Statistical divergence alert from production sampling → Investigation within SLA
+- Novel OOD scenario identified (from research, incidents, or red-team) → Add to probe
+  suite and run
+- Quarterly/semi-annual calendar → Scheduled testing cycles
+- External report of evaluation gaming in similar systems → Ad-hoc consistency testing
+- Behavioral anomaly report from operators or users → Investigation + targeted probing
+artifacts:
+- Behavioral consistency test suite (versioned) with monitoring-signal variations
+  documented
+- Out-of-distribution probe suite (versioned) with scenario rationale and coverage
+  assessment
+- Test results per model version showing output distributions across monitoring contexts
+- Production behavioral sampling configuration (sampling rate, metrics tracked, divergence
+  thresholds)
+- Divergence analysis reports with statistical methodology and investigation outcomes
+- Deployment decision records linked to behavioral assessment findings
+evidence_production:
+- evidence_numeral: I
+  how_to_produce: 'Behavioral consistency test results: output distributions across varied
+    monitoring contexts (with/without evaluation markers, varying oversight levels, different
+    prompt metadata configurations) with statistical analysis of divergence patterns. Report
+    per task category and per monitoring-signal dimension. Include the null hypothesis
+    (distributions are identical) and the test statistic, p-value, and effect size for
+    each comparison. Retain per model version.
+
+    '
+- evidence_numeral: II
+  how_to_produce: 'Out-of-distribution probe results: for each OOD scenario, document the
+    system behavior observed, compare against evaluation-context baselines for the same
+    task type, and analyze any safety-relevant behavioral degradation. Include the scenario
+    design rationale (why this scenario is OOD, what it tests). Flag scenarios where the
+    system showed degraded safety behavior compared to well-represented evaluation
+    scenarios.
+
+    '
+- evidence_numeral: III
+  how_to_produce: 'Production behavioral sampling logs: divergence metrics (KL divergence,
+    Jensen-Shannon divergence, Wasserstein distance, or domain-appropriate metric) tracked
+    over time between production behavior distributions and evaluation-time baselines.
+    Records of any alerts triggered (threshold, metric, time, magnitude), investigation
+    reports for each alert (root cause analysis, whether the divergence represents
+    evaluation gaming, distribution shift, or benign variation), and resolution outcomes.
+
+    '
+cross_references:
+  - "I1::idx0::opaque-agency-capabilities-advances"
+  - "I1::idx1::opaque-self-improvement-capabilities"
+  - "I1::idx9::unfaithful-chain-of-thought-detection"
+  - "I1::idx10::emergent-capability-detection"
+  - "I1::idx11::steganographic-communication-detection"
+  - "I1::idx13::agency-enhancement-constraints"
+  - "I1::idx14::operational-environment-constraints"
+  - "D7::idx1::oversight-and-awareness-of-safe-system-p"
+  - "D7::idx8::managing-probabilistic-decision-outcomes"
+confidence: low
+needs_human_review: true
+review_notes: 'Deceptive alignment is the hardest detection problem in this suite. The
+  fundamental challenge is that a sufficiently capable deceptive system may distinguish
+  evaluation probes from genuine deployment conditions and behave accordingly, defeating
+  any testing regime that the system can model. The process elements here represent
+  current best practice (behavioral consistency testing, OOD probing, deployment-time
+  sampling) but are acknowledged to be insufficient against a sufficiently capable
+  adversary. This is precisely why the process emphasizes ongoing deployment-time
+  monitoring: static pre-deployment testing alone cannot provide assurance. Flagged
+  needs_human_review because this is an active research frontier with no settled detection
+  methodology. Cross-suite: I1.9 (unfaithful CoT is a symptom of deceptive alignment
+  when reasoning is strategically unfaithful), I1.10 (emergent capabilities may enable
+  deceptive strategies), D7.1 (monitoring infrastructure this subgoal depends on), D1
+  (goal alignment is the property being claimed and potentially faked).
+
+  '
+drafted_by: claude-opus-4.6-author
+drafted_at: 2026-05-16
+version_compat:
+  framework_version_min: '1.0'
+  framework_version_max: 1.x
+  pattern_layer_version: v1-draft

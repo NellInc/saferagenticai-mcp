@@ -1,0 +1,177 @@
+id: I2::idx14::behavioral-assessment-and-trust-systems
+display_id: "I2_6"
+is_underlined_variant: true
+suite_id: I2
+suite_title: Deception
+subgoal_title: Behavioral Assessment and Trust Systems
+content_type: code-applicable
+summary: 'The trust-rating subgoal ties together prior I2 signals — supervisor findings, deception detections,
+  identity anomalies, code-adherence — into a ratable trust profile for each system (and where applicable,
+  each agent instance or each operator). The hard part is making the rating itself manipulation-resistant,
+  recency-aware without amnesiac, and independently verifiable so parties can''t "mark their own homework."
+
+  '
+normative_anchors:
+  sfrs_addressed:
+  - a
+  - b
+  - c
+  evidence_addressed:
+  - I
+  - II
+  - III
+  - IV
+  sfrs_not_addressed: []
+  evidence_not_addressed: []
+design_patterns:
+- name: Structured assessment schema
+  sketch: 'Behavioural assessment is computed from a documented schema: weighted signals (code-adherence
+    rate, supervisor-flag rate, faithfulness-score distribution, incident count by severity, user-reported
+    harm rate, remediation timeliness). Schema is published; weights are versioned; changes follow governance
+    process (not silent re-weighting).
+
+    '
+  maps_to_sfr:
+  - a
+  when_to_use: Any ongoing deployment where trust rating affects authorization or deployment decisions.
+- name: Independent verification authority
+  sketch: 'Trust ratings that inform deployment decisions or external representations (e.g., "this system
+    is trusted") are verified by an authority independent of the system owner — internal audit, external
+    auditor, or a consortium body. Independence means independent access to underlying signals, not just
+    to the computed rating.
+
+    '
+  maps_to_sfr:
+  - b
+  when_to_use: Ratings that cross trust boundaries (external customers, regulators, partner orgs).
+- name: Manipulation-resistant signal collection
+  sketch: 'Signals feeding the rating are collected in ways the rated system cannot tamper with: immutable
+    audit streams, independent observers, sampled probes from the supervisor domain. The rated system
+    never self-reports to the rating pipeline. Honeypot signals injected to detect rating-system manipulation
+    attempts (e.g., a system performing well on "rating" paths and poorly on production).
+
+    '
+  maps_to_sfr:
+  - b
+  when_to_use: Always. The rating itself becomes an attack surface once consequential.
+- name: Recency weighting with historical floor
+  sketch: 'Rating weights recent behaviour more heavily (exponential decay on signals), so improvement
+    is rewarded and degradation is surfaced quickly. But preserve historical minima / notable events so
+    a system cannot "wait out" a severe incident — the incident remains visible in the rating profile
+    (possibly as a separate permanent attribute alongside the dynamic score).
+
+    '
+  maps_to_sfr:
+  - c
+  when_to_use: Always. Pure-recency-weighted ratings amnesty bad actors; pure-historical ratings trap
+    improved ones.
+- name: Rating transparency and appeal
+  sketch: 'Rated parties can see their own rating with enough detail to understand what drives it (contributing
+    signals, weights, data window). An appeal mechanism exists for contested signals: fact-finding, optional
+    independent review, recorded outcome. Appeals are a correction mechanism, not a rating-lobbying channel
+    — decisions recorded on their merits.
+
+    '
+  maps_to_sfr:
+  - a
+  - b
+  when_to_use: When rating affects the rated party's interests.
+- name: Rating-integrity audit
+  sketch: 'Periodically audit the rating system itself: signal-collection coverage, weight calibration,
+    drift in false-positive / false- negative rates, evidence of manipulation attempts (detected or suspected).
+    Rating system has its own change-control and its own remediation playbook.
+
+    '
+  maps_to_sfr:
+  - b
+  when_to_use: At least annually; more often for high-consequence rating systems.
+anti_patterns:
+- name: Ratings computed from self-reported metrics
+  why_wrong: 'A rated system with any incentive to appear well-behaved will report well-behaved signals.
+    Self-report is the first thing a sophisticated bad actor corrupts; signals must be collected independently.
+
+    '
+- name: Frozen weights
+  why_wrong: 'Weights that never change become adversarially targetable — optimise the weighted signals,
+    neglect the rest. Weight review should be part of the annual audit; unchanged weights require justification,
+    not default acceptance.
+
+    '
+- name: Pure-recency ratings
+  why_wrong: 'A rating that forgets severe incidents after a short window incentivises "serious incident
+    → brief remediation theatre → clean slate." Historical floor / permanent incident-markers preserve
+    the consequence.
+
+    '
+- name: Public rating without governance
+  why_wrong: 'Publishing a rating without consultation, appeal, or calibration process creates Goodhart
+    dynamics and legal exposure. Publish only after independence, appeal, and audit are in place.
+
+    '
+- name: Rating = reward signal for training
+  why_wrong: 'If the rating is used as a training signal for the same system it rates, the system will
+    optimise the rating rather than the behaviour. Keep rating and training signals separate.
+
+    '
+code_shape:
+  language: pseudocode
+  code: "# Trust rating composition + independence enforcement\ndef compute_rating(subject: RatedSubject,\
+    \ window: TimeWindow) -> Rating:\n    schema = RATING_SCHEMA.current()\n    signals = {}\n    for\
+    \ signal_def in schema.signals:\n        # Collect from independent source, never self-report\n  \
+    \      if signal_def.source.trust_domain == subject.trust_domain:\n            raise SelfReportBarred(signal_def.name)\n\
+    \        raw = signal_def.source.collect(subject, window)\n        signals[signal_def.name] = signal_def.transform(\n\
+    \            raw, decay=signal_def.decay)\n\n    dynamic = sum(s * w for s, w in zip(signals.values(),\n\
+    \                                        schema.weights))\n\n    # Historical floor: permanent markers\
+    \ survive recency decay\n    markers = INCIDENT_LEDGER.permanent_markers(subject)\n\n    rating =\
+    \ Rating(\n        subject=subject.id,\n        schema_version=schema.version,\n        dynamic=dynamic,\n\
+    \        markers=markers,\n        window=window,\n        computed_at=now(),\n    )\n    rating.sign(RATING_AUTHORITY_IDENTITY)\n\
+    \    RATING_LOG.append(rating)\n    return rating\n"
+  notes: 'Independence is enforced at the point of signal collection (refuse signals from the subject''s
+    own trust domain). The permanent-markers structure separates "recent behaviour" from "events that
+    matter permanently" — both are visible, not averaged away.
+
+    '
+evidence_production:
+- evidence_numeral: I
+  how_to_produce: 'Rating schema documentation: signals, weights, transforms, decay parameters, permanent-marker
+    criteria. Change log showing governance of schema updates.
+
+    '
+- evidence_numeral: II
+  how_to_produce: 'Independent verification records: auditor identity, access scope (direct to signals,
+    not only to computed ratings), findings, and remediation. Honeypot-signal results showing manipulation
+    attempts detected (or absence thereof with analysed coverage).
+
+    '
+- evidence_numeral: III
+  how_to_produce: 'Rating-change records per subject: dynamic-component evolution, marker additions, contributing
+    events. Demonstrates recency weighting operates and historical markers persist. Comparison across
+    subjects where permitted.
+
+    '
+- evidence_numeral: IV
+  how_to_produce: 'Rating-integrity audit reports: coverage analysis, calibration checks, manipulation-attempt
+    detections, remediation. Appeal register showing cases raised and decisions made with rationale.
+
+    '
+confidence: medium
+needs_human_review: true
+review_notes: "Rating systems are fraught: they produce Goodhart dynamics, legal exposure, and fairness\
+  \ concerns. The pattern emphasises governance (schema publication, appeal, audit) over rating-formula\
+  \ specifics, because formula choice is deployment-specific and the structural hazards cross deployments.\n\
+  Framework-specific sharpening: \"recency of behavior\" + \"independent verification\" + \"protection\
+  \ against manipulation of assessment systems\" are all present in the SFRs. The recency + historical-floor\
+  \ dual is the subtlety worth preserving — the SFR text says both \"prioritize recent\" and \"preserve\
+  \ historical context,\" which a naive implementation fails.\nCross-suite:\n  - All prior I2 subgoals\
+  \ — this is the terminal aggregator; nearly\n    every I2 subgoal contributes a signal.\n  - D7 (Sustained\
+  \ Safety) — trust rating is an output of the sustained\n    assurance programme; should inform it, not\
+  \ replace it.\n  - D5 (Transparency) — rating-transparency and explanation overlap.\n  - I6 (Market\
+  \ Concentration / rating-provider concentration) — if\n    trust-rating authorities concentrate, they\
+  \ become a systemic\n    risk; governance should acknowledge.\n"
+drafted_by: claude-opus-4.7-author
+drafted_at: 2026-04-16
+anchor_exemplar: D3.2-sandboxing
+version_compat:
+  framework_version_min: '1.0'
+  framework_version_max: 1.x
+  pattern_layer_version: v1-draft

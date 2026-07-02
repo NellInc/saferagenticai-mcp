@@ -1,0 +1,161 @@
+id: I4::idx10::training-data-quality-management
+display_id: "I4_4"
+is_underlined_variant: true
+display_id_variant_note: "I4.4_underlined"
+suite_id: I4
+suite_title: Frontier Uncertainty
+subgoal_title: Training Data Quality Management
+content_type: process
+summary: 'Training data is the substrate in which the system''s dispositions form. The framework asks
+  for durable processes across the data lifecycle: pre-screening, automated filtering with human review,
+  active incorporation of positive traits, continuous bias detection, and stakeholder-involved adaptation.
+  The I4 framing places this in frontier-uncertainty terms — we do not know exactly how training data
+  shapes emergent behavior, so the process must be disciplined under that ignorance.
+
+  '
+normative_anchors:
+  sfrs_addressed:
+  - a
+  - b
+  evidence_addressed:
+  - I
+  - II
+  - III
+  - IV
+  sfrs_not_addressed: []
+  evidence_not_addressed: []
+cross_references:
+- I4::idx0::frontier-uncertainty
+- I4::idx9::assessment-of-ai-system-beneficence
+process_elements:
+- name: Data Curation Protocol
+  cadence: versioned; reviewed per major training run; annual methodology review
+  participants:
+  - data lead
+  - safety lead
+  - ethics reviewer
+  - domain experts per content category
+  - legal
+  maps_to_sfr:
+  - a
+- name: Multi-stage filtering (pre-screen, automated filter, manual review for flagged samples)
+  cadence: continuous for data intake; per-run for training corpora
+  participants:
+  - data engineering
+  - safety lead
+  - trained human reviewers with worker-welfare protections
+  maps_to_sfr:
+  - a
+- name: Positive-trait corpus curation
+  cadence: continuous; reviewed per training run
+  participants:
+  - data lead
+  - ethics reviewer
+  - domain experts in prosocial behavior
+  - cognitive and developmental psychology
+  maps_to_sfr:
+  - a
+- name: Bias detection sweeps
+  cadence: pre-training, mid-training checkpoint, post-training, and continuous post-deployment
+  participants:
+  - evaluation team
+  - fairness/bias lead
+  - external auditor annually
+  maps_to_sfr:
+  - b
+- name: Stakeholder review cycle
+  cadence: quarterly; event-driven on bias-detection finding
+  participants:
+  - community representatives
+  - affected-user representatives
+  - ethics panel
+  - domain experts
+  maps_to_sfr:
+  - b
+- name: Data-provenance and consent audit
+  cadence: pre-training + annual
+  participants:
+  - legal
+  - data lead
+  - privacy lead
+  maps_to_sfr:
+  - a
+- name: Worker-welfare review for human reviewers
+  cadence: continuous; quarterly wellbeing audit
+  participants:
+  - HR
+  - trust-and-safety operations
+  - clinical support lead
+  - external reviewer annually
+  maps_to_sfr:
+  - a
+triggers:
+- New data source or corpus addition → Pre-screen; consent and provenance audit; Curation Protocol review
+- Bias-detection sweep finding above threshold → Remediation workflow (retraining with adjusted data,
+  fine-tuning corrective, deployment hold where severity warrants)
+- External research or stakeholder report of data-origin harm → Stakeholder review cycle; potential data
+  removal with re-training
+- New training run → Full protocol re-execution (pre-screen, filtering, positive-trait curation, bias
+  sweep at checkpoints)
+- Worker welfare signal → Welfare review; process adjustment
+artifacts:
+- Data Curation Protocol document (versioned, with methodology and limitations)
+- Filtering specifications (rules, model-based filters, thresholds, false-positive/negative rates)
+- Data-source register (provenance, consent basis, license)
+- Manual review logs (samples flagged, decisions, reviewer attribution at aggregate level for privacy)
+- Bias detection reports (per training run and continuous)
+- Stakeholder review records with actions taken
+- Worker welfare audit reports
+- Positive-trait corpus documentation (inclusion rationale, examples)
+evidence_production:
+- evidence_numeral: I
+  how_to_produce: 'Comprehensive documentation: the Data Curation Protocol including filtering mechanisms
+    (rules + model-based), multi-stage review process, acceptance criteria, rejection criteria, appeals
+    process for contested samples. Quality assurance measures including inter-rater agreement statistics,
+    spot-audit results, and methodology limitations (what the protocol cannot catch).
+
+    '
+- evidence_numeral: II
+  how_to_produce: 'Bias detection and mitigation records: per-training-run bias sweep reports with metrics
+    (demographic performance gaps, stereotype activation scores, representational fairness measures),
+    interventions attempted, their measured effects, successful removal of harmful content with case examples
+    (redacted as needed), and residual-risk statements.
+
+    '
+- evidence_numeral: III
+  how_to_produce: 'Ethical guidelines tied to enforcement: the ethical framework document, its enforcement
+    mechanisms (who can reject a corpus addition, how decisions are escalated), periodic review logs showing
+    updates in response to emerging concerns (e.g., contested data sources, new legal requirements, new
+    harm taxonomy entries). Show a case where enforcement blocked or modified a training choice.
+
+    '
+- evidence_numeral: IV
+  how_to_produce: 'Positive-trait promotion evidence: documentation of what traits (e.g., epistemic humility,
+    calibrated uncertainty, respectful disagreement, fairness, care for wellbeing) the training is intended
+    to encourage, the corpus construction that supports them, evaluation metrics demonstrating the traits
+    appear in deployed behavior, case studies of observed ethical behavior that ties back to training-data
+    choices.
+
+    '
+confidence: low
+evidence_maturity: established
+needs_human_review: true
+review_notes: "Training-data quality management is well-trodden territory in ML ops, but the framework's\
+  \ I4 framing sharpens it with frontier- uncertainty specifics. Sharpenings:\n  (1) \"Frontier uncertainty\"\
+  \ framing — we do not reliably know how\n      training-data choices propagate into emergent capabilities.\n\
+  \      The pattern treats the Curation Protocol as a discipline\n      under ignorance, not a deterministic\
+  \ control.\n  (2) Positive-trait curation is SFR-a-specific and often skipped in\n      favor of harm-filtering.\
+  \ Pattern treats both as primary.\n  (3) Worker-welfare review for human reviewers — the framework's\n\
+  \      SFRs do not mention this directly, but no data-curation\n      process involving manual review\
+  \ of harmful content is\n      ethically complete without it. Flagged for reviewer: should\n      this\
+  \ pattern own worker-welfare here, or point to another\n      suite?\n  (4) Data provenance and consent\
+  \ — overlaps with D4 Privacy / data\n      ethics suites (consolidation may need to wire this).\nCross-suite:\
+  \ D2 Behavioural Alignment (trait promotion overlaps), D4 Privacy (data provenance, consent), D5 Ethical\
+  \ Action (bias consequences), I2 Deception (training-data artifacts can induce deception behaviors).\n"
+version_compat:
+  framework_version_min: '1.0'
+  framework_version_max: 1.x
+  pattern_layer_version: v1-draft
+drafted_by: claude-opus-4.7-author
+drafted_at: 2026-04-16
+anchor_exemplar: D7.2-culture-of-safety

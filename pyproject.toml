@@ -1,0 +1,75 @@
+[project]
+name = "saferagenticai-mcp"
+version = "0.3.3"
+description = "MCP server exposing the SaferAgenticAI safety framework (canonical criteria + Implementation Patterns layer) to coding assistants."
+readme = "README.md"
+license = "MIT"
+license-files = ["LICENSE"]
+requires-python = ">=3.10"
+authors = [
+    { name = "Nell Watson" },
+    { name = "Agentic AI Safety Community of Practice" },
+]
+keywords = [
+    "ai-safety",
+    "agentic-ai",
+    "mcp",
+    "model-context-protocol",
+    "framework",
+    "governance",
+]
+classifiers = [
+    "Development Status :: 4 - Beta",
+    "Environment :: Console",
+    "Intended Audience :: Developers",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3 :: Only",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Programming Language :: Python :: 3.13",
+    "Programming Language :: Python :: 3.14",
+    "Topic :: Software Development",
+]
+dependencies = [
+    "mcp>=1.0.0",
+    "pyyaml>=6.0",
+]
+
+[project.urls]
+Homepage = "https://www.saferagenticai.org"
+Repository = "https://github.com/NellInc/saferagenticai-mcp"
+Documentation = "https://www.saferagenticai.org/mcp.html"
+Issues = "https://github.com/NellInc/saferagenticai-mcp/issues"
+
+[project.scripts]
+saferagenticai-mcp = "saferagenticai_mcp.server:main"
+
+[build-system]
+requires = ["hatchling>=1.27"]
+build-backend = "hatchling.build"
+
+# Editable install uses repo-relative paths (framework_loader auto-detects).
+# Wheel install bundles the runtime data under saferagenticai_mcp/_data/.
+# Populate that directory by running `scripts/sync-data.sh` before every
+# release; it copies criteria-v1.json + suites/ + exemplars/ from the
+# canonical repo locations into the package. The sync is gitignored so the
+# package-internal copy never drifts from the canonical source silently.
+
+# Hatchling respects .gitignore by default, which would drop the
+# gitignored saferagenticai_mcp/_data/ tree from the build. Listing it as
+# an "artifact" forces inclusion while keeping it out of version control.
+
+[tool.hatch.build.targets.wheel]
+packages = ["saferagenticai_mcp"]
+artifacts = ["saferagenticai_mcp/_data/**"]
+
+[tool.hatch.build.targets.sdist]
+include = [
+    "saferagenticai_mcp/**",
+    "scripts/sync-data.sh",
+    "README.md",
+    "LICENSE",
+    "pyproject.toml",
+]
+artifacts = ["saferagenticai_mcp/_data/**"]

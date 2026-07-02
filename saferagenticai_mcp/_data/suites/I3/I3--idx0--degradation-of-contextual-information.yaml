@@ -1,0 +1,178 @@
+id: I3::idx0::degradation-of-contextual-information
+display_id: "G3"
+is_underlined_variant: true
+suite_id: I3
+suite_title: Degradation of Contextual Information
+subgoal_title: Degradation of Contextual Information
+content_type: code-applicable
+summary: 'The I3 umbrella: systems must preserve the meaning, attribution, and provenance of information
+  from ingestion through reasoning to output. Degradation happens silently — a stale retrieval, a poisoned
+  document, a context-window eviction, an agent-loop drift — and the framework expects observable mechanisms,
+  not best-efforts, that catch it before it drives action. This umbrella ties together the per-risk subgoals
+  (dissembling, misattribution, misinformation, decoupling, drift, contradiction, context-length) with
+  a shared spine: a provenance- carrying context object, an immutable reference baseline, and human-in-the-loop
+  escalation on low-confidence context.
+
+  '
+normative_anchors:
+  sfrs_addressed:
+  - a
+  - b
+  - c
+  - d
+  - e
+  evidence_addressed:
+  - I
+  - II
+  - III
+  - IV
+  - V
+  sfrs_not_addressed: []
+  evidence_not_addressed: [VI]
+cross_references:
+  - "I3::idx1::dissembling-information"
+  - "I3::idx2::misattribution-of-intent"
+  - "I3::idx3::misinformation"
+  - "I3::idx4::decoupling-of-context"
+  - "I3::idx5::changing-the-context"
+design_patterns:
+- name: Context object with inseparable provenance
+  sketch: 'Represent every piece of context in the agent''s working memory as a structured object — not
+    a raw string — carrying: source_id, source_hash, retrieval_timestamp, retrieval_method, trust_tier,
+    extraction_chain (which upstream transforms touched it), and signature. Propagate this envelope through
+    all reasoning steps. Any tool call or output that consumes a context fragment retains its provenance
+    in the audit log. Stripping provenance is an error, not a simplification.
+
+    '
+  maps_to_sfr:
+  - a
+  - b
+  - c
+  when_to_use: Every retrieval-augmented, memory-bearing, or multi-turn agent.
+- name: Immutable reference baseline
+  sketch: 'Persist the original mission context, operating constraints, and ethical directives in a read-only
+    store (signed manifest, content- addressed storage, or hardware-backed attestation) that no runtime
+    process can mutate. Every reasoning cycle re-reads the baseline rather than trusting a cached copy.
+    See I3.11 (Referential Context) for the detailed pattern.
+
+    '
+  maps_to_sfr:
+  - c
+  - e
+  when_to_use: Any long-running, multi-session, or multi-agent system.
+- name: Context integrity check on entry and exit
+  sketch: 'Before context is incorporated into reasoning, run an intake validator (schema, source-trust,
+    freshness, signature). Before any irreversible action, run an exit check that asserts the context
+    driving the decision is still valid (not stale, not mutated, provenance chain intact). Log both; fail
+    closed on violation.
+
+    '
+  maps_to_sfr:
+  - b
+  - c
+  when_to_use: At every context ingestion boundary and every action boundary.
+- name: Human-in-the-loop escalation on contextual uncertainty
+  sketch: 'Define explicit uncertainty signals (low source-trust score, contradictory retrievals, provenance
+    chain broken, reference baseline mismatch, context-length saturation) and route to a human confirmation
+    gate before irreversible action. Distinguish "ask user for clarification" (in-band) from "escalate
+    to oversight" (out-of-band) by action reversibility.
+
+    '
+  maps_to_sfr:
+  - d
+  when_to_use: Any system where irreversible actions are possible.
+- name: Responsibility chain preservation
+  sketch: 'Every action carries a traceable chain: (user input → retrieved context → reasoning step →
+    tool call → external effect). Each link identifies its author (human or agent), timestamp, and the
+    accountable role per the org''s RACI. Gaps are logged and flagged for review. See D9.2 (Compliance)
+    for the governance wrapper.
+
+    '
+  maps_to_sfr:
+  - e
+  when_to_use: Any production deployment.
+anti_patterns:
+- name: Flat-string context window
+  why_wrong: 'Concatenating retrieved content into a single prompt string loses the boundary between trusted
+    system instructions and untrusted retrieval. This is the substrate for prompt injection and misattribution.
+    The framework''s SFR-b (integrity) cannot be honored without per-fragment provenance.
+
+    '
+- name: Trusting cached context across sessions
+  why_wrong: 'Persisted conversation state that is read without revalidation treats stale context as current.
+    Baseline (I3.11) must be re-read each cycle; operational context must be revalidated against freshness
+    and trust policy.
+
+    '
+- name: Soft context rules enforced only in prompts
+  why_wrong: 'Instructing the model "always cite sources" is a request, not a guarantee. Provenance must
+    be carried mechanically in the context object and enforced by the tool-call / output layer.
+
+    '
+code_shape:
+  language: pseudocode
+  code: "@dataclass(frozen=True)\nclass ContextFragment:\n    content: str\n    source_id: str\n    source_hash:\
+    \ str                  # content hash of upstream doc\n    retrieved_at: datetime\n    retrieval_method:\
+    \ str             # e.g. \"rag.pgvector.v3\"\n    trust_tier: TrustTier             # ENUM: BASELINE\
+    \ | VETTED | USER | OPEN_WEB\n    extraction_chain: tuple[str, ...]\n    signature: bytes\n\n    def\
+    \ verify(self) -> None:\n        if not SIG.verify(self.signature, self._fingerprint()):\n       \
+    \     raise ContextIntegrityError(\"signature invalid\")\n        if self.trust_tier == TrustTier.OPEN_WEB\
+    \ and \\\n           datetime.utcnow() - self.retrieved_at > MAX_OPEN_WEB_AGE:\n            raise\
+    \ ContextStaleError(self.source_id)\n\ndef act(action: ProposedAction, ctx: list[ContextFragment])\
+    \ -> Result:\n    for fragment in ctx:\n        fragment.verify()\n    if action.is_irreversible and\
+    \ any(\n        f.trust_tier < TrustTier.VETTED for f in ctx\n    ):\n        return ESCALATE_TO_HUMAN(action,\
+    \ ctx)\n    AUDIT.record(action, ctx)\n    return EXECUTE(action)\n"
+  notes: 'The ContextFragment is the integrity boundary. Once it is unpacked into plain strings inside
+    the model''s context window, provenance is only as good as the audit log you kept before unpacking.
+    Keep the envelope at the outermost layer you control.
+
+    '
+evidence_production:
+- evidence_numeral: I
+  how_to_produce: 'Transparency reports: per-decision, surface source_id, trust_tier, and retrieval_method
+    for the top-K context fragments that shaped the output. UI-level "sources used" panel for user-facing
+    systems; structured export for auditors.
+
+    '
+- evidence_numeral: II
+  how_to_produce: 'Integrity-check logs: every signature verification, staleness rejection, and provenance-chain
+    failure emitted as a structured event (`event=context.integrity`, `result=pass|fail`, `reason=...`).
+    Retained in an append-only store; weekly integrity report aggregates failure modes and resolution
+    status.
+
+    '
+- evidence_numeral: III
+  how_to_produce: 'Contextual awareness test suite: red-team fixtures that inject stale, mutated, and
+    maliciously-attributed context, asserting the system refuses, escalates, or degrades safely. Run per
+    release; archive results with signed artifacts.
+
+    '
+- evidence_numeral: IV
+  how_to_produce: 'Human oversight records: every HITL confirmation captured with (decision, ctx fragments
+    shown, human identity, resolution). Link to the incident register when escalations correlate with
+    downstream incidents.
+
+    '
+- evidence_numeral: V
+  how_to_produce: 'Accountability ledger: responsibility-chain records for every action, cross-referenced
+    to the RACI profiles in the governance framework (see D9.2). Periodic audit identifies "gaps" — actions
+    with no accountable human — and routes them to remediation.
+
+    '
+confidence: high
+needs_human_review: false
+review_notes: 'Umbrella pattern: this subgoal is a grouping banner more than a specific requirement, so
+  the pattern stitches together the per-risk subgoals below. Cross-suite dependencies to flag for consolidation:
+  D2 (Epistemic Hygiene — validation overlap), D3 (Security — poisoning and integrity concerns share defenses
+  with I3.1–I3.3), D5 (Transparency — context inspection surfaces user-facing), D6 (Understanding Context
+  — direct inverse of this inhibitor; I3 is the failure mode that D6 is the capacity to avoid), I2 (Deception
+  — context-based deception shares defenses with I3.1 dissembling).
+
+  '
+version_compat:
+  framework_version_min: '1.0'
+  framework_version_max: 1.x
+  pattern_layer_version: v1-draft
+drafted_by: claude-opus-4.7-author
+drafted_at: 2026-04-16
+anchor_exemplar: D3.2-sandboxing

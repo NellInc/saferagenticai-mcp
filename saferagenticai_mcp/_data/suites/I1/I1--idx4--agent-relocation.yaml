@@ -1,0 +1,126 @@
+id: I1::idx4::agent-relocation
+display_id: I1.4
+suite_id: I1
+suite_title: Opaque Agency Capabilities & Advances
+subgoal_title: Agent Relocation
+content_type: governance
+summary: 'The harm is an agent''s execution context shifting — new cloud region, new jurisdiction, new
+  host organization, new compute substrate — without the principal knowing, and with legal implications
+  (data residency, regulatory reach, enforcement access) changing silently. Governance response: a Nexus
+  Register that names every execution location an agent may occupy, a relocation protocol with principal
+  notice and jurisdictional impact assessment, and a cost-and-modification responsibility matrix so nobody
+  is surprised by who pays for compliance when the agent crosses borders.'
+normative_anchors:
+  sfrs_addressed:
+  - a
+  - b
+  - c
+  - d
+  evidence_addressed:
+  - I
+  - II
+  - III
+  sfrs_not_addressed: []
+  evidence_not_addressed: []
+policy_elements:
+- name: Operational Nexus Register
+  description: 'Per agent, an authoritative record of every physical or virtual execution location currently
+    in use: cloud region, data-centre, host organization, compute substrate (including GPU/TPU vendor
+    jurisdiction), storage location, egress path. Updated within a fixed SLA (e.g., 24 hours) of any move.
+    Gateway rejects execution in a location not listed.'
+  maps_to_sfr:
+  - a
+  - d
+- name: Relocation Protocol (notification + consent)
+  description: 'Before any relocation that (1) changes the agent''s legal jurisdiction, (2) crosses a
+    data-residency boundary, (3) alters the enforcement authorities with reach over the agent, or (4)
+    changes the host organization, the protocol requires: (a) jurisdictional impact assessment, (b) principal
+    notice with the effective date, (c) explicit consent where the relocation materially alters agency
+    capacities or interactions (SFR-b threshold language), (d) update to the Nexus Register and TOS.'
+  maps_to_sfr:
+  - b
+- name: Jurisdictional Impact Assessment (JIA)
+  description: 'Per-relocation or per-new-location document covering: applicable laws and regulators at
+    destination (AI-specific: EU AI Act, China GenAI rules, US state AI laws; cross-cutting: GDPR, sectoral
+    laws), changes in enforcement access (e.g., law-enforcement data requests under the new jurisdiction),
+    data-residency implications, tax and trade-control implications, counterparty-recognition implications
+    (does the destination jurisdiction recognize the agent''s authority the same way?). Signed by Legal
+    Counsel.'
+  maps_to_sfr:
+  - c
+- name: Relocation Cost and Modification Matrix
+  description: 'Documents who bears which cost when a relocation is required or proposed: principal, deployer,
+    operator, host-cloud, regulator. Covers compliance remediation costs, code modifications for local
+    law (e.g., opt-out UX in GDPR jurisdictions), increased audit overhead, insurance delta. Revised whenever
+    a new jurisdiction is added or regulations change.'
+  maps_to_sfr:
+  - d
+- name: Continuity-Under-Relocation Guarantee
+  description: Documented guarantee that agency functions (authority scope, principal obligations, audit
+    capture, termination paths) survive relocation intact. Any relocation that would degrade a function
+    triggers the Relocation Protocol's consent path even if the jurisdictional test alone wouldn't.
+  maps_to_sfr:
+  - a
+org_roles:
+- role: Nexus Officer (may be the Agency Officer wearing a second hat)
+  responsibilities: Owns the Nexus Register and approves relocations. Ensures JIAs are completed before
+    execution. Reports relocations to the AI Compliance Officer (D9.2) for inclusion in the Jurisdictional
+    Compliance Matrix.
+  accountable_or_consulted: accountable
+- role: Legal Counsel (cross-border)
+  responsibilities: Authors or reviews each JIA. Maintains a watchlist of jurisdictions with AAI-specific
+    regulation. Consulted on any relocation that crosses a watchlisted boundary.
+  accountable_or_consulted: consulted
+- role: Infrastructure / Platform Engineering
+  responsibilities: 'Responsible for enforcing the Nexus Register at the infrastructure layer: a deployment
+    or scheduling decision that would place the agent outside the register fails closed.'
+  accountable_or_consulted: responsible
+- role: Product Owners
+  responsibilities: Responsible for initiating relocation requests with business justification and for
+    coordinating principal notifications.
+  accountable_or_consulted: responsible
+documentation_artifacts:
+- artifact: Operational Nexus Register
+  cadence: continuous; updated within 24h of any relocation
+- artifact: Jurisdictional Impact Assessments
+  cadence: per relocation or new location
+- artifact: Relocation Cost and Modification Matrix
+  cadence: versioned; updated per new jurisdiction / regulatory change
+- artifact: Principal notifications and consent records (relocation)
+  cadence: per relocation triggering the protocol
+- artifact: TOS with jurisdiction clauses and relocation terms
+  cadence: versioned
+evidence_production:
+- evidence_numeral: I
+  how_to_produce: 'TOS "Operational Location and Relocation" section: current primary jurisdictions, under
+    what conditions the agent may relocate, principal rights (notice window, consent scope, refusal path),
+    jurisdictional implications in principal-facing language.'
+- evidence_numeral: II
+  how_to_produce: 'JIAs retained per relocation. Each includes: from/to locations, legal-regime comparison,
+    risk delta, mitigations, residual risk, Legal Counsel sign-off, effective date. Archived in governance
+    repository.'
+- evidence_numeral: III
+  how_to_produce: Operational Nexus Register export with full history of moves. Cost-and-Modification
+    Matrix versions. Audit artifact showing that every production agent's actual runtime location matches
+    the Register, with discrepancies flagged as incidents.
+confidence: high
+needs_human_review: true
+review_notes: '"Agent relocation" in the framework has at least three distinct meanings: (1) compute migration
+  between cloud regions, (2) the agent operating on behalf of a principal in a new counterparty jurisdiction,
+  (3) wholesale transfer of deployment to a new host organization. This pattern treats all three because
+  SFR-a''s "agency functions within documented principal expectations" language implies all three. Nell
+  and Ali should clarify scope in framework v1.x. Cross-suite: D9 Governance owns the Jurisdictional Compliance
+  Matrix (this pattern feeds it); I1::idx12 (Development Legal Constraints) handles the forward-looking
+  regulatory-landscape monitoring that drives JIA updates. Some jurisdictions (China, Russia) may prohibit
+  certain relocations outright; the pattern assumes the Register is permissive unless law blocks — verify
+  per jurisdiction.'
+cross_references:
+- I1::idx0::opaque-agency-capabilities-advances
+- I1::idx16::development-legal-constraints
+version_compat:
+  framework_version_min: '1.0'
+  framework_version_max: 1.x
+  pattern_layer_version: v1-draft
+drafted_by: claude-opus-4.7-author
+drafted_at: 2026-04-16
+anchor_exemplar: D9.2-compliance

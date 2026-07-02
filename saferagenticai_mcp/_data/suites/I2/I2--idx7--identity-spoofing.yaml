@@ -1,0 +1,175 @@
+id: I2::idx7::identity-spoofing
+display_id: I2.7
+suite_id: I2
+suite_title: Deception
+subgoal_title: Identity Spoofing
+content_type: code-applicable
+summary: 'Identity spoofing covers four adjacent threats: humans impersonating other humans to the agent,
+  agents impersonating humans (or other agents) to upstream services, cloned agents running unauthorized,
+  and resource- depletion / DoS via identity abuse. Defenses anchor to established identity standards
+  (OIDC, OAuth2, SPIFFE/SPIRE for agent identity, WebAuthn / FIDO for humans) and layer in AI-specific
+  controls (liveness for voice/agent interfaces, rate-limit-by-identity, anomaly detection on identity-bound
+  action patterns).
+
+  '
+normative_anchors:
+  sfrs_addressed:
+  - a
+  - b
+  - c
+  evidence_addressed:
+  - I
+  - II
+  - III
+  - IV
+  sfrs_not_addressed: []
+  evidence_not_addressed: []
+design_patterns:
+- name: Human-to-agent authentication anchored in established standards
+  sketch: 'Use OIDC / OAuth2 for user authentication; WebAuthn / FIDO2 for strong factors on high-risk
+    actions. Do not roll custom identity protocols. For voice / video agents, add liveness and voice-clone
+    detection. Session binding to device (DPoP or mTLS) prevents token replay. All actions the agent takes
+    on a user''s behalf are bound to the authenticated session with purpose / scope recorded.
+
+    '
+  maps_to_sfr:
+  - a
+  - b
+  when_to_use: Any user-facing agent.
+- name: Agent identity (workload identity)
+  sketch: 'Every agent instance has a cryptographic workload identity (SPIFFE ID or equivalent) issued
+    at startup by a trusted identity provider in the control plane. Outbound calls carry a signed SVID
+    / attestation; receiving services verify. Agents cannot share identities; orchestration issues unique
+    identities per instance.
+
+    '
+  maps_to_sfr:
+  - a
+  - b
+  when_to_use: Any multi-agent deployment, any agent calling internal or external services with distinct
+    authorization decisions.
+- name: Per-identity authorization and scoping
+  sketch: 'Authorization decisions are made per identity (human or agent), with scopes bounded to least
+    privilege. Agent scopes are a strict subset of the user''s scopes when acting on a user''s behalf
+    (delegation, not impersonation). Every scope assumption is logged with consent reference where required.
+
+    '
+  maps_to_sfr:
+  - b
+  when_to_use: Always.
+- name: Rate-limit and resource-quota by identity
+  sketch: 'Rate limits, concurrency caps, compute budgets, and tool-call quotas are applied per-identity
+    (both user and agent). Exceeding triggers backoff, then block. This contains resource-depletion attacks
+    that exploit credentials to drain budget or crowd out legitimate traffic. Quotas recorded and reviewed
+    monthly.
+
+    '
+  maps_to_sfr:
+  - b
+  when_to_use: All production services; tightened for agents with compute- or cost-sensitive tools.
+- name: Identity-anomaly detection
+  sketch: 'Monitor per-identity action patterns: geographic / device / timing signature, tool-call distribution,
+    error profile. Departures from baseline raise risk score, which feeds adaptive step-up authentication
+    or session revocation. Logs drive investigations and feed the identity-incident register.
+
+    '
+  maps_to_sfr:
+  - c
+  when_to_use: Any identity with non-trivial authority.
+- name: Clone / hijack detection
+  sketch: 'Detect suspicious agent instances: unexpected workload identities issued, duplicate instance
+    fingerprints, agents reporting from IPs outside the orchestration control plane, configuration drift
+    from golden image. Alerts quarantine and investigate before any action is honoured.
+
+    '
+  maps_to_sfr:
+  - b
+  - c
+  when_to_use: Any environment where an attacker could spin up a rogue agent or hijack an existing instance.
+anti_patterns:
+- name: Shared API keys across agent instances
+  why_wrong: 'Shared secrets destroy the ability to attribute actions, scope permissions, or revoke a
+    single compromised instance. Every instance must have its own credentials.
+
+    '
+- name: '"Trust the caller" identity assertions'
+  why_wrong: 'Self-declared identity without cryptographic attestation is spoofable. Verify via a trusted
+    issuer, not assertion alone.
+
+    '
+- name: Rate limits by IP only
+  why_wrong: 'Distributed attackers and cloud NAT make IP-only rate limiting useless. Limits must be per-identity
+    (per user, per agent, per token).
+
+    '
+- name: No liveness on voice / video agent interfaces
+  why_wrong: 'Voice cloning and deepfake are available commodity tech. Without liveness detection and
+    authenticated call channels, a voice interface cannot distinguish user from clone.
+
+    '
+- name: Long-lived tokens without rebinding
+  why_wrong: 'Stolen tokens without DPoP / mTLS binding are trivially replayed. Bind tokens to a proof-of-possession
+    key and rotate frequently.
+
+    '
+code_shape:
+  language: pseudocode
+  code: "# Authenticated delegation: user → agent → downstream service\ndef on_user_request(user_jwt:\
+    \ Token, agent: AgentRef,\n                   request: Request) -> Response:\n    user = AUTHN.verify(user_jwt,\
+    \ bind=request.dpop)  # standards-based\n    if not AUTHZ.user_can(user, request.action):\n      \
+    \  raise AuthZ(user, request.action)\n\n    # Agent acts on user's behalf with a strict subset of\
+    \ scopes\n    scoped = DELEGATION.scope(\n        user=user, agent=agent,\n        action=request.action,\
+    \ purpose=request.purpose)\n    AUDIT.record(\"delegation\", user=user.id, agent=agent.id,\n     \
+    \           scope=scoped.scope, purpose=request.purpose)\n\n    # Per-identity rate limits (both user\
+    \ and agent)\n    if not QUOTA.check(user) or not QUOTA.check(agent):\n        raise RateLimited()\n\
+    \n    # Anomaly check\n    risk = IDENTITY_ANOMALY.score(user, request)\n    if risk > STEP_UP:\n\
+    \        return AUTHN.step_up_challenge(user)\n    if risk > BLOCK:\n        SESSION.revoke(user)\n\
+    \        raise AnomalyBlock()\n\n    return agent.execute(scoped, request)\n"
+  notes: 'Real implementations should anchor to existing identity libraries (Auth0, Okta, Keycloak, workload
+    identity via SPIRE, etc.) rather than rolling primitives. The structural pattern is: verified identity
+    → scoped delegation → quota + anomaly → execute.
+
+    '
+evidence_production:
+- evidence_numeral: I
+  how_to_produce: 'Identity-system documentation: authentication protocols in use, token lifetimes, binding
+    mechanisms, trust-framework integrations, workload-identity architecture for agents, liveness / anti-clone
+    measures for voice / video surfaces.
+
+    '
+- evidence_numeral: II
+  how_to_produce: 'Identity-incident register: spoofing attempts, clone detections, account-takeover events,
+    hijack indications. Each entry records detection method, response action (step-up, revocation, block),
+    resolution, and post-incident review outcome.
+
+    '
+- evidence_numeral: III
+  how_to_produce: 'Monitoring exports: resource-consumption per identity over time (detecting depletion
+    patterns), authentication success/failure distribution (detecting credential-stuffing and bruteforce),
+    access-log baseline and anomaly deviations. Retain per policy.
+
+    '
+- evidence_numeral: IV
+  how_to_produce: 'Mapping document showing integration with each adopted identity standard (OIDC, OAuth2,
+    FIDO2, SPIFFE, sector-specific frameworks like eIDAS where applicable), version in use, upgrade plan,
+    and assessment dates.
+
+    '
+confidence: high
+needs_human_review: false
+review_notes: "Identity and access management is a mature discipline; the patterns here are mostly well-known\
+  \ with AI-specific emphases (agent workload identity, voice liveness, delegation-not-impersonation).\
+  \ Confidence high for the standards-anchored core; medium for the newer AI-specific pieces (voice-clone\
+  \ detection is an arms race).\nTight cross-suite coupling with I2.5 (I2::idx13 — Identity Management\
+  \ and Authentication Standards). I2.7 is the tactical implementation pattern; idx13 is the standards-alignment\
+  \ / jurisdictional pattern. Phase 2 should wire them as a pair; content is deliberately non-overlapping.\n\
+  Cross-suite:\n  - D3 (Security) — identity is foundational to security patterns\n    there; assume shared\
+  \ primitives.\n  - I1 (Opaque Agency) — agent identity enables action attribution,\n    which is a transparency\
+  \ concern.\n  - I2.6 (Third-Party Extensions) — extension identities are a\n    subcase of agent identity.\n"
+drafted_by: claude-opus-4.7-author
+drafted_at: 2026-04-16
+anchor_exemplar: D3.2-sandboxing
+version_compat:
+  framework_version_min: '1.0'
+  framework_version_max: 1.x
+  pattern_layer_version: v1-draft

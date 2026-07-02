@@ -1,0 +1,128 @@
+id: I1::idx6::poor-mutual-agent-optimization
+display_id: I1.6
+suite_id: I1
+suite_title: Opaque Agency Capabilities & Advances
+subgoal_title: Poor Mutual Agent Optimization
+content_type: code-applicable
+summary: 'When agents optimize each other (shared caches, collaborative planning, mutual prompt tuning,
+  exchanged embeddings), resources can be drained and capabilities can drift without any individual principal
+  seeing it. The defence is explicit: collaborative optimization runs in a declared mode with budgets,
+  visible-to-principal state, and liability assignment baked in. Anything not declared is treated like
+  an undeclared sub-agent call and refused.'
+normative_anchors:
+  sfrs_addressed:
+  - a
+  - b
+  - c
+  - d
+  - e
+  evidence_addressed:
+  - I
+  - II
+  - III
+  sfrs_not_addressed: []
+  evidence_not_addressed: []
+design_patterns:
+- name: Declared optimization mode
+  sketch: 'An agent''s deployment manifest declares explicitly which optimization collaborations are permitted:
+    shared cache with peer agent X, joint planning with peer agent Y, embedding exchange with registry
+    Z. Each declaration names the scope, the resource budget, the liability regime, and whether principal
+    consent is required. Runtime refuses undeclared collaborations.'
+  maps_to_sfr:
+  - a
+  - d
+  when_to_use: Any agent whose architecture contemplates peer optimization.
+- name: Resource budget per collaboration
+  sketch: 'Every declared collaboration carries a hard budget: compute (CPU/GPU seconds), network (bytes),
+    tokens, wall time, money. Enforced by the runtime, not relied-upon as a soft limit. Budget exhaustion
+    pauses the collaboration and emits a structured event; budget increases require a manifest change
+    (which in turn triggers the capability-advance notification pipeline, I1::idx0).'
+  maps_to_sfr:
+  - c
+  when_to_use: Any inter-agent interaction that could consume shared or principal-billed resources.
+- name: Principal-visible collaboration state
+  sketch: 'The agent''s principal-facing state surface exposes: which collaborations are active, their
+    current budget consumption, their stated purpose, their expected completion. Not buried in logs; surfaced
+    where the principal already looks. When a collaboration materially affects output or cost, consent
+    is captured once per activation window.'
+  maps_to_sfr:
+  - a
+  - b
+  when_to_use: Always when collaborations are active.
+- name: Outcome-attribution log
+  sketch: 'Every action resulting from a collaboration is logged with the contribution breakdown: which
+    peer contributed what. When an action''s outcome is disputed, the log supports liability assignment
+    per the Multi-Agent Liability Matrix (I1::idx0).'
+  maps_to_sfr:
+  - d
+  - e
+  when_to_use: Always.
+- name: Collaboration-scoped circuit breaker
+  sketch: Per-collaboration monitoring for runaway consumption, oscillation (ping-pong optimization that
+    never converges), or capability drift. Trip conditions pause the specific collaboration without killing
+    the agent. Restart requires named sign-off and a root-cause entry.
+  maps_to_sfr:
+  - c
+  when_to_use: Always in production.
+anti_patterns:
+- name: Implicit shared-cache coupling
+  why_wrong: Agents that implicitly share state through a common cache or embedding store couple their
+    optimizations invisibly. A drift in one agent infects the others; no one principal can see that it's
+    happened.
+- name: Collaborative fine-tuning without manifest change
+  why_wrong: If peer agents exchange gradients or prompt-tuned prefixes, the behaviour-surface has changed
+    — which is self-improvement (I1::idx1) and must pass through that pipeline, not slip through as "optimization".
+- name: Budgets only in dashboards, not enforcement
+  why_wrong: A "budget" that emits a warning and keeps running is not a budget. Framework evidence III
+    requires procedures for monitoring AND managing resource consumption.
+- name: Liability "to be determined" clauses
+  why_wrong: Evidence III and SFR-d require clear responsibility for outcomes of collaboration. Declining
+    to specify who owns what until after a problem is not governance; it's an invitation to dispute.
+code_shape:
+  language: pseudocode
+  code: "# Peer-optimization collaboration with manifest gating and resource budget\ndef open_collaboration(peer:\
+    \ PeerAgent, purpose: str, ctx: AgentContext) -> Collaboration:\n    decl = ctx.manifest.collaborations.find(peer_id=peer.id,\
+    \ purpose=purpose)\n    if decl is None:\n        AUDIT.violation(ctx, \"undeclared_collaboration\"\
+    , peer=peer.id)\n        raise CollabViolation(f\"undeclared collaboration with {peer.id}\")\n\n \
+    \   if decl.requires_consent and not consent_store.current(ctx.principal_id, decl.id):\n        raise\
+    \ ConsentRequired(decl.id)\n\n    budget = ResourceBudget.from_decl(decl)   # hard caps, enforced\
+    \ by runtime\n    collab = Collaboration(\n        id=new_id(),\n        peer=peer,\n        decl=decl,\n\
+    \        budget=budget,\n        correlation_id=ctx.correlation_id,\n        liability=decl.liability_regime,\
+    \      # references Multi-Agent Liability Matrix\n    )\n    principal_surface.publish_active_collab(ctx.principal_id,\
+    \ collab.summary())\n    circuit_breakers.attach(collab)\n    AUDIT.record(ctx, \"collaboration_opened\"\
+    , collab_id=collab.id)\n    return collab\n\ndef on_collab_step(collab: Collaboration, contribution:\
+    \ dict):\n    collab.budget.charge(contribution[\"resource_use\"])       # raises on exhaust\n   \
+    \ outcome_log.append(collab_id=collab.id, contribution=contribution)\n"
+  notes: The manifest check is the single enforcement point for "declared vs undeclared" collaborations.
+    Budget and liability are carried as first-class properties of the Collaboration object, not as afterthoughts.
+evidence_production:
+- evidence_numeral: I
+  how_to_produce: 'TOS "Inter-System Optimization" section: the classes of collaborations the agent may
+    engage in, under what budgets, with what consent requirements, and with what liability regime. Principal-facing.'
+- evidence_numeral: II
+  how_to_produce: 'System documentation listing all declared collaborations per deployment: peer identity,
+    purpose, scope, budget caps, consent requirement, outcome-attribution approach, circuit-breaker triggers.
+    Reviewed on each new integration.'
+- evidence_numeral: III
+  how_to_produce: 'Operational records: per-collaboration budget-consumption time series, budget-exhaustion
+    events, circuit-breaker trips, collaborations retired for poor ROI. Quarterly review report summarizing.'
+confidence: medium
+needs_human_review: false
+review_notes: '"Poor Mutual Agent Optimization" is broadly defined; this pattern treats it as covering
+  shared-cache coupling, joint planning, and collaborative tuning. The boundary with I1::idx1 (Self-Improvement)
+  is a judgment call: if a peer''s contribution modifies this agent''s behaviour-surface, it is self-improvement
+  and the stricter pipeline applies. Noted as an anti-pattern to prevent slipping through the cracks.
+  Cross-suite: D3 Security owns resource quota enforcement primitives; I5 Future Tech Impact is relevant
+  because mutual optimization is a likely vector for capability surprise. SFRs b and e are non-normative
+  so org variance is expected.'
+cross_references:
+- I1::idx1::opaque-self-improvement-capabilities
+- I1::idx2::undefined-multiagent-ensembles
+- I1::idx8::emergent-system-cooperation
+version_compat:
+  framework_version_min: '1.0'
+  framework_version_max: 1.x
+  pattern_layer_version: v1-draft
+drafted_by: claude-opus-4.7-author
+drafted_at: 2026-04-16
+anchor_exemplar: D3.2-sandboxing

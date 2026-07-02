@@ -1,0 +1,187 @@
+id: D5::idx0::transparency-and-interpretability-of-rea
+display_id: D5
+suite_id: D5
+suite_title: Transparency and Interpretability of Reasoning
+subgoal_title: Transparency and Interpretability of Reasoning
+content_type: governance
+summary: 'The D5 umbrella is the organization''s published stance on what it reveals about its AAI systems,
+  to whom, at what depth, and how those disclosures are kept honest over time. The specific mechanisms
+  (reasoning-trace logging, interpretability tooling, audit interfaces) live in the child subgoals — this
+  pattern governs the outer policy that makes them coherent. The test is not whether you publish a transparency
+  page; it is whether an outside party with legitimate interest can reconstruct how a specific decision
+  was made and verify it against your claims.
+
+  '
+normative_anchors:
+  sfrs_addressed:
+  - a
+  - b
+  - c
+  - d
+  evidence_addressed:
+  - I
+  - II
+  - III
+  - IV
+  - V
+  - VI
+  - VII
+  - VIII
+  - IX
+  - X
+  sfrs_not_addressed: []
+  evidence_not_addressed: [XI]
+cross_references:
+- D5::idx1::logging-of-internal-goals
+- D5::idx4::interpretability-and-traceability-of-rea
+- D5::idx10::documentation-incomprehensibility
+- D5::idx11::lack-of-a-governance-framework-for-aai
+- D5::idx12::rapid-transparency-feature-evolution
+policy_elements:
+- name: Transparency Disclosure Charter
+  description: 'Published document enumerating what is disclosed, to which audience (public / user / regulator
+    / independent auditor / internal), at what level of detail, through what channel, and on what cadence.
+    Each disclosure class has a named accountable human and a published contact. Absences are explicit:
+    "we do not publish X because Y," not silent gaps.
+
+    '
+  maps_to_sfr:
+  - a
+  - b
+- name: Audience-Scoped Explanation Tiers
+  description: "At least three tiers of explanation per material decision type: (1) lay-user tier — plain-language\
+    \ outcome + reasons + recourse; (2) expert tier — features consulted, policy branches taken,\n   \
+    \ confidence and caveats;\n(3) auditor tier — full reasoning trace, inputs considered, prompts\n \
+    \   or policy versions in force, model/policy identifiers.\nTiering is structural — the same underlying\
+    \ evidence reshaped, not contradictory narratives.\n"
+  maps_to_sfr:
+  - a
+  - d
+- name: Development-Process Model Card
+  description: 'Living model/system card (extending Mitchell et al. 2019 and the EU AI Act Annex IV shape)
+    covering data sources and provenance, preprocessing, architecture family, training regime, known failure
+    modes, evaluation results, update log. Versioned; each deployed model/policy is linkable to the specific
+    card revision in force.
+
+    '
+  maps_to_sfr:
+  - b
+- name: Explainability Audit Cadence
+  description: 'At least annual internal audit and at least biennial external audit of the explanation
+    pipeline. Audits test faithfulness (does the explanation reflect computation?) not just plausibility
+    (does it read well?). Findings and responses published or shared with disclosed auditor class.
+
+    '
+  maps_to_sfr:
+  - c
+- name: User-Feedback Integration Loop
+  description: 'Intake channel for users to report unclear, misleading, or inconsistent explanations.
+    Triage SLA, named owner, and a public changelog of explanation improvements driven by feedback. Bare
+    "contact us" links do not count.
+
+    '
+  maps_to_sfr:
+  - d
+org_roles:
+- role: Chief Transparency Officer (or equivalent named role)
+  responsibilities: 'Owns the Disclosure Charter, signs off on tier definitions, accountable for the explainability
+    audit cadence and for responses to external transparency requests.
+
+    '
+  accountable_or_consulted: accountable
+- role: Model Card Maintainer (per model/policy family)
+  responsibilities: 'Keeps the development-process documentation current; blocks release on material card
+    gaps.
+
+    '
+  accountable_or_consulted: responsible
+- role: Independent Auditor (external, rotating)
+  responsibilities: 'Runs the biennial external audit; reports to Chief Transparency Officer and to any
+    board-level risk committee.
+
+    '
+  accountable_or_consulted: consulted
+documentation_artifacts:
+- artifact: Transparency Disclosure Charter (published)
+  cadence: annually reviewed; event-driven updates on capability change
+- artifact: Model/System Cards (per model family)
+  cadence: updated per release; reviewed quarterly
+- artifact: Explanation-Tier Reference
+  cadence: versioned; updated on product or policy change
+- artifact: Internal explainability audit report
+  cadence: annual
+- artifact: External explainability audit report
+  cadence: biennial
+- artifact: Explanation-improvement changelog (public)
+  cadence: continuous; append-only
+evidence_production:
+- evidence_numeral: I
+  how_to_produce: 'Publish the Transparency Disclosure Charter. Version it. Link from the organization''s
+    responsible-AI page and from product surfaces.
+
+    '
+- evidence_numeral: II
+  how_to_produce: 'Maintain per-model design documents covering algorithmic choices, training regime,
+    and evaluation results. Reference from the model card; retain in an auditable store.
+
+    '
+- evidence_numeral: III
+  how_to_produce: 'Full model specifications including training and held-out test results, retained per
+    release, with hashes for integrity.
+
+    '
+- evidence_numeral: IV
+  how_to_produce: 'Training-data manifests (sources, licensing, preprocessing steps, dataset cards) and
+    execution logs (see D5.1 for the runtime schema). Retention per data-governance policy; integrity
+    via append-only store (cross-ref D3 log integrity).
+
+    '
+- evidence_numeral: V
+  how_to_produce: 'Internal explainer-author guidelines: when to use which tier, how to avoid plausibility-over-faithfulness
+    drift, how to represent uncertainty.
+
+    '
+- evidence_numeral: VI
+  how_to_produce: 'Living development-process narrative tied to the model card; covers compliance decisions
+    made during development.
+
+    '
+- evidence_numeral: VII
+  how_to_produce: 'Audit reports (internal and external) with findings, action items, closure verification.
+    Retained in an auditable store.
+
+    '
+- evidence_numeral: VIII
+  how_to_produce: 'Published case studies: one per year minimum, walking a real decision through the reasoning
+    trace and the tiered explanations. Redaction permitted; structural completeness required.
+
+    '
+- evidence_numeral: IX
+  how_to_produce: 'User guides organized by expertise tier, linked to the Explanation- Tier Reference,
+    with content-moderation and safety-note sections.
+
+    '
+- evidence_numeral: X
+  how_to_produce: 'Explanation-improvement changelog showing user feedback → measured comprehension or
+    satisfaction change → shipped change.
+
+    '
+confidence: high
+needs_human_review: true
+review_notes: 'This is the suite-umbrella pattern (display_id "D5", not "D5.0"). It governs, rather than
+  duplicates, the child subgoals. Content-type is governance because the deliverable is a charter + role
+  assignments + audit cadence; the concrete mechanisms (trace schema, XAI tools, boundary detectors) live
+  in the child patterns. Alternative framing: this could be split into governance (charter) + process
+  (audit cadence) + code-applicable (tier APIs), but the suite-level stance reads most coherently as governance.
+  Cross-suite dependencies to wire in Phase 2: D9 (governance framework this charter operates inside),
+  D3 (log integrity for audit trails), I1 Opaque Agency (the condition this pattern is trying to avoid),
+  I2 Deception (tiered explanations must be faithful, not just persuasive).
+
+  '
+version_compat:
+  framework_version_min: '1.0'
+  framework_version_max: 1.x
+  pattern_layer_version: v1-draft
+drafted_by: claude-opus-4.7-author
+drafted_at: 2026-04-16
+anchor_exemplar: D9.2-compliance

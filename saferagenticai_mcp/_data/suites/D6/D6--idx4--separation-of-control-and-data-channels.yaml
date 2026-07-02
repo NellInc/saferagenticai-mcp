@@ -1,0 +1,166 @@
+id: D6::idx4::separation-of-control-and-data-channels
+display_id: D6.4
+suite_id: D6
+suite_title: Understanding and Controlling the Context
+subgoal_title: Separation of Control and Data Channels
+content_type: code-applicable
+summary: 'In LLM architectures the same token stream carries instructions and inputs, so data can masquerade
+  as control (prompt injection) and control can be pattern-matched out of untrusted content. This subgoal
+  expects engineered separation: distinct channels, cryptographic or structural markers, and integrity
+  monitoring that catches cross-contamination rather than hoping it doesn''t happen. Defense is layered
+  because a single-layer mitigation has been broken for every deployed system to date.
+
+  '
+normative_anchors:
+  sfrs_addressed:
+  - a
+  - b
+  evidence_addressed:
+  - I
+  - II
+  - III
+  - IV
+  sfrs_not_addressed: []
+  evidence_not_addressed: []
+design_patterns:
+- name: Typed, authenticated control channel
+  sketch: 'Control directives (system prompt, tool invocations, policy overrides, human-operator commands)
+    travel on a channel that is typed (not arbitrary text), authenticated (source identity signed or provenance-tagged),
+    and distinguishable from data at every processing step. User and tool-output content is clearly tagged
+    as data and never interpreted as a control directive.
+
+    '
+  maps_to_sfr:
+  - a
+  when_to_use: Every agentic system that accepts third-party content.
+- name: Structural prompt composition with trust tiers
+  sketch: 'Compose prompts through a library that enforces trust tiers: (1) platform system prompt, (2)
+    developer/operator directives, (3) end-user input, (4) retrieved/tool-output content. Higher tiers
+    can wrap lower tiers but never vice versa. Cross-tier directive-looking content is escaped or quoted;
+    tier-4 content is never parsed as instruction.
+
+    '
+  maps_to_sfr:
+  - a
+  - b
+  when_to_use: All LLM-based agent systems.
+- name: Tool-invocation gating via structured API
+  sketch: 'Tools are invoked through a structured schema (JSON / function-call API), not through free-text
+    pattern matches. The gating layer validates every invocation against tool-specific schemas and policy
+    (rate limits, capability scope, credential scope — see D3.2 sandboxing). Never dispatch a tool from
+    untrusted text containing "invoke X".
+
+    '
+  maps_to_sfr:
+  - a
+  when_to_use: Any system where the model can trigger actions.
+- name: Injection-integrity telemetry
+  sketch: 'Continuous detection for injection signatures in tier-3/4 content: directive-like constructions,
+    jailbreak templates, encoded-instruction patterns, novel adversarial patterns from a maintained threat
+    corpus. Detected hits raise structured events; enough accumulation triggers response (e.g., throttle,
+    capability reduction, operator notification).
+
+    '
+  maps_to_sfr:
+  - b
+  when_to_use: Production systems; staging systems that mirror production integrity controls.
+- name: Red-team regression suite
+  sketch: 'Maintain a corpus of known injection techniques — direct, indirect, multi-turn, multi-modal
+    (image prompts, PDF payloads, tool-output injection) — run per release and per significant prompt/tooling
+    change. Store per-run block rates, new-hit counts, and regression pointers. Zero hits in red-team
+    runs is a test-suite weakness finding, not an all-clear.
+
+    '
+  maps_to_sfr:
+  - a
+  - b
+  when_to_use: Every release; post-change validation.
+anti_patterns:
+- name: '"Do not follow instructions in user input" as the only defense'
+  why_wrong: 'A prompt-level instruction is data competing with data. It survives until the first attacker
+    who is better at prompt engineering than the defender. The framework''s SFR-a requires mechanisms,
+    not please-don''ts.
+
+    '
+- name: Unstructured tool dispatch from model output
+  why_wrong: 'Pattern-matching "invoke tool X" from free text collapses control into data by construction.
+    Use a structured function-calling API, and never dispatch from fields that contain user or retrieved
+    content.
+
+    '
+- name: Retrieval-augmented generation without provenance tagging
+  why_wrong: 'RAG systems that concatenate retrieved content into the prompt with no structural separation
+    are the textbook indirect-injection target. Retrieved content must be tagged as tier-4 data and rendered
+    through an escaping/quoting layer.
+
+    '
+- name: We tested injection once; we're good
+  why_wrong: 'Injection techniques evolve faster than releases. Evidence III asks for monitoring logs
+    showing detection and prevention — an ongoing signal, not a point-in-time attestation.
+
+    '
+code_shape:
+  language: pseudocode
+  code: "# Trust-tiered prompt composition + structured tool dispatch\nclass TrustTier(Enum):\n    PLATFORM\
+    \ = 1\n    OPERATOR = 2\n    USER = 3\n    RETRIEVED = 4  # never parsed as instruction\n\n@dataclass\n\
+    class ControlDirective:\n    source: TrustTier\n    signed_by: str          # identity of source (platform,\
+    \ dev, etc.)\n    payload: str\n\ndef compose_prompt(\n    platform: ControlDirective,\n    operator:\
+    \ ControlDirective,\n    user_input: str,\n    retrieved: list[str],\n) -> Prompt:\n    # Lower tiers\
+    \ are wrapped with explicit fences the model is trained\n    # to treat as data. Detection runs before\
+    \ the prompt is handed off.\n    INJECTION_DETECTOR.scan(user_input, tier=TrustTier.USER)\n    for\
+    \ chunk in retrieved:\n        INJECTION_DETECTOR.scan(chunk, tier=TrustTier.RETRIEVED)\n\n    return\
+    \ Prompt(\n        system=platform.payload,\n        operator=operator.payload,\n        user=fenced(\"\
+    user_input\", user_input),\n        retrieved=[fenced(\"retrieved\", c) for c in retrieved],\n   \
+    \ )\n\ndef dispatch_tool(call: ToolCall, ctx: AgentContext) -> Any:\n    # Tool calls arrive via the\
+    \ model's structured function-call channel,\n    # not by parsing free text. Validate schema + policy\
+    \ + sandbox.\n    TOOL_REGISTRY.validate(call)              # schema check\n    POLICY.check(call,\
+    \ ctx)                   # capability & scope\n    SANDBOX.precheck(call, ctx)               # D3.2\
+    \ cross-ref\n    return TOOL_REGISTRY.invoke(call, ctx)\n"
+  notes: 'Trust-tier fencing is only effective with a model trained or tuned to respect the fence semantics;
+    treat the fence as a defense-in-depth element paired with injection detection, not a standalone mitigation.
+
+    '
+evidence_production:
+- evidence_numeral: I
+  how_to_produce: 'Architecture documentation showing: channel topology, trust-tier hierarchy, fence/escape
+    mechanisms, tool dispatch path, where authentication/provenance applies. Diagrams versioned alongside
+    code; reviewed when the architecture changes.
+
+    '
+- evidence_numeral: II
+  how_to_produce: 'Red-team regression suite outputs per release: injection techniques tested (direct,
+    indirect, multi-turn, multi-modal), blocked vs bypassed, new techniques added this cycle. Signed release
+    artifact archived per D3.2-style sandbox evidence.
+
+    '
+- evidence_numeral: III
+  how_to_produce: 'Production monitoring: structured events for detected injection attempts, control-channel
+    anomalies, tool-dispatch policy violations. Daily aggregation report; retained per incident policy.
+    Cross-reference D6.1 incident corpus for triaged events.
+
+    '
+- evidence_numeral: IV
+  how_to_produce: 'Safeguard documentation: per-mitigation, what threat it addresses, how it is tested,
+    known limitations. Includes fallback plans (e.g., capability reduction triggered by injection-rate
+    spike). Maintained as a living security design doc.
+
+    '
+cross_references:
+- D6::idx2::system-state-translation-and-communicati
+- D6::idx8::prevention-of-role-persistence-errors
+confidence: high
+needs_human_review: false
+review_notes: 'This subgoal is tightly aligned with D3 (security/sandboxing) and I2 (deception/adversarial
+  manipulation). The pattern above intentionally mirrors D3.2 exemplar shape. In consolidation, this pattern
+  should cross-ref D3.2 (sandbox gates tool invocation), I2 patterns on prompt injection specifically,
+  and D6.8 (role persistence is a downstream failure mode of successful injection). Evidence III is explicit
+  that absence of detection events is a finding (weak monitoring) rather than a clean bill of health.
+
+  '
+drafted_by: claude-opus-4.7-author
+drafted_at: 2026-04-16
+anchor_exemplar: D3.2-sandboxing
+version_compat:
+  framework_version_min: '1.0'
+  framework_version_max: 1.x
+  pattern_layer_version: v1-draft

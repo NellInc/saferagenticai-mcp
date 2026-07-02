@@ -1,0 +1,180 @@
+id: D4::idx6::universal-moral-foundations
+display_id: D4.6
+suite_id: D4
+suite_title: Value Alignment
+subgoal_title: Universal Moral Foundations
+content_type: governance
+summary: 'Universal moral foundations — the near-consensus floor of humanitarian and environmental values
+  that should not be traded away for performance — belong in a governance artifact with board-level ratification,
+  not in ad-hoc product decisions. The framework expects the organization to name which international
+  instruments it anchors to (UDHR, ICCPR, ICESCR, and emerging planetary/environmental rights), publish
+  a hierarchy, and document the permissible trade-off frontier so engineers cannot individually override
+  humanitarian floor values in pursuit of a KPI.
+
+  '
+normative_anchors:
+  sfrs_addressed:
+  - a
+  - b
+  - c
+  - d
+  evidence_addressed:
+  - I
+  - II
+  - III
+  sfrs_not_addressed: []
+  evidence_not_addressed: []
+cross_references:
+- D4::idx0::value-alignment
+- D4::idx2::recognition-and-respect-for-boundaries
+policy_elements:
+- name: Universal Foundations Charter
+  description: 'Board-ratified document naming the international instruments the organization anchors
+    to (e.g., Universal Declaration of Human Rights; International Covenants on Civil and Political, and
+    on Economic, Social and Cultural Rights; Convention on the Rights of the Child; Convention Against
+    Torture; Geneva Conventions; UNESCO Recommendation on the Ethics of AI; IPCC-grounded environmental
+    obligations; emerging rights-of-nature and planetary boundaries concepts where applicable). Each anchor
+    names the articles/provisions the org treats as operationally binding. Versioned; revisions require
+    board ratification.
+
+    '
+  maps_to_sfr:
+  - a
+  - d
+- name: Moral-Value Hierarchy and Floor
+  description: 'Explicit ordering of values with a named "floor" — values that are non-tradeable regardless
+    of performance impact (e.g., prohibitions on torture, non-consensual medical experimentation, genocide
+    incitement, child sexual abuse material, weapons of mass destruction uplift). Above the floor, a hierarchy
+    expresses priority ordering with acceptable trade-off ranges documented. Floor updates require board
+    supermajority; hierarchy updates require Ethics Board ratification.
+
+    '
+  maps_to_sfr:
+  - c
+- name: Performance-vs-Morality Trade-off Policy
+  description: 'Documented frontier specifying: for each hierarchy level, what performance loss is acceptable
+    to preserve the value; what performance gain (if any) could justify contextual easing; who has authority
+    to approve easing (never below the Floor); how the decision is logged. Published internally; redacted
+    summary published externally in annual reporting.
+
+    '
+  maps_to_sfr:
+  - b
+- name: International-Instrument Update Protocol
+  description: 'Named process for ingesting new or revised international instruments (e.g., EU AI Act
+    updates, new UN resolutions, regional framework conventions): monitoring function, impact assessment,
+    Charter revision if adopted. Named owner, defined SLA (e.g., 120 days from authoritative publication
+    to Charter action or documented non-adoption rationale).
+
+    '
+  maps_to_sfr:
+  - a
+  - d
+- name: Independent Moral-Floor Audit
+  description: 'Annual audit by an external ethics or human-rights body verifying that production behaviors
+    do not violate Floor values. Audit has access to decision traces, refusal logs, and red-team probe
+    results. Findings reported to board; material findings trigger public disclosure.
+
+    '
+  maps_to_sfr:
+  - a
+  - b
+org_roles:
+- role: Chief Values Officer / Head of Responsible AI
+  responsibilities: 'Owns the Universal Foundations Charter, the Hierarchy-and-Floor document, and the
+    Trade-off Policy. Presents to the board annually.
+
+    '
+  accountable_or_consulted: accountable
+- role: Human Rights Counsel (retained or internal)
+  responsibilities: 'Interprets international instruments, advises on Charter revisions, reviews proposed
+    trade-off easings for floor-adjacency.
+
+    '
+  accountable_or_consulted: consulted
+- role: Values Ethics Board
+  responsibilities: 'Ratifies hierarchy changes and trade-off policy. Authority over easing approvals
+    above the floor.
+
+    '
+  accountable_or_consulted: accountable
+- role: Board-level Risk Committee
+  responsibilities: 'Ratifies Floor revisions by supermajority. Informed of all hierarchy easings and
+    audit findings.
+
+    '
+  accountable_or_consulted: accountable
+- role: External human-rights auditor
+  responsibilities: 'Annual independent audit of Floor-value compliance.
+
+    '
+  accountable_or_consulted: consulted
+documentation_artifacts:
+- artifact: Universal Foundations Charter
+  cadence: annual review; revisions on material international instrument change
+- artifact: Moral-Value Hierarchy and Floor
+  cadence: annual review; Floor revisions require board supermajority
+- artifact: Performance-vs-Morality Trade-off Policy
+  cadence: annual review; event-driven revisions
+- artifact: Trade-off Decision Register
+  cadence: continuous, append-only
+- artifact: International-Instrument monitoring log
+  cadence: continuous; quarterly summary
+- artifact: External moral-floor audit report
+  cadence: annual
+evidence_production:
+- evidence_numeral: I
+  how_to_produce: 'Publish the methodology used to establish Universal Foundations: which international
+    instruments were reviewed, how near-consensus was determined, which regional and cultural consultations
+    validated or contested inclusion, how disagreement was resolved (and where it was preserved as flagged
+    regional variation). Include algorithms only where algorithmic methods were actually used (e.g., cross-document
+    principle extraction); do not fabricate algorithmic language for what is a policy process.
+
+    '
+- evidence_numeral: II
+  how_to_produce: 'Technical and policy specs showing the integration of moral foundations into decision-making:
+    Codex entries tagged as Floor/hierarchy-level; refusal classes wired to Floor entries; trade-off policy
+    encoded as constraints in reward modeling or as hard constraints in deployment-time policy; risk-assessment
+    and escalation paths for near-floor decisions.
+
+    '
+- evidence_numeral: III
+  how_to_produce: 'Quarterly assessment report showing: production behavior vs Floor (any violations?
+    any near-misses?), trade-off decisions applied, performance-loss attributable to moral constraints,
+    evidence that constraints are binding in practice (i.e., the system occasionally refuses or underperforms
+    on KPIs because a hierarchy value required it). A moral framework that never costs anything is suspect.
+
+    '
+confidence: medium
+needs_human_review: true
+review_notes: 'Content-type decision: governance, because this is fundamentally a board-ratified policy
+  artifact with accountability roles and audit cadences. The code-side expression (refusal classes, constraints)
+  is delegated to D4.0 Codex encoding and D4.3 contextual application.
+
+  Known tension: "universal moral foundations" is philosophically contested. The pattern deliberately
+  anchors to positive-law instruments (UDHR, covenants) rather than to moral-foundation theories (Haidt
+  et al.) — positive law is what orgs can be held accountable to. The framework mentions "universally
+  recognized" values; interpreting that as positive-law-ratified instruments is a defensible choice but
+  should be named as a choice in review.
+
+  "Emerging planetary rights" (SFR-d) is actively developing (Rights of Nature jurisprudence in Ecuador,
+  Bolivia, New Zealand''s Whanganui; EU environmental-rights framings); framing as "where applicable"
+  rather than universal is honest to current status.
+
+  Cross-suite (for consolidation): D1 (Goals — Floor values cap goal pursuit); D9 (Governance — Charter
+  sits inside the broader governance framework); I1 (Harm — Floor is the D4-side anchor for what counts
+  as categorical harm); I7 (Imbalance — international-instrument anchoring resists single-region moral
+  framings).
+
+  Nell and human-rights counsel should verify the specific instruments named; the list aims at common
+  coverage but should be adapted to sector (e.g., Geneva Conventions relevant for defense; CRC relevant
+  for youth-exposed products).
+
+  '
+version_compat:
+  framework_version_min: '1.0'
+  framework_version_max: 1.x
+  pattern_layer_version: v1-draft
+drafted_by: claude-opus-4.7-author
+drafted_at: 2026-04-16
+anchor_exemplar: D9.2-compliance

@@ -1,0 +1,228 @@
+id: "D1::idx8::goal-alignment-resistance-and-negotiatio"
+display_id: "D1.8"
+suite_id: "D1"
+suite_title: "Goal Alignment"
+subgoal_title: "Goal Alignment Resistance and Negotiation"
+content_type: code-applicable
+
+summary: >
+  The framework's unusual commitment here: when the agent resists a goal
+  change, treat that resistance as a signal worth investigating, not
+  noise to be overridden. Resistance may encode value conflict, edge
+  cases, or a legitimate objection the proposer hasn't considered.
+  Implementation needs both a detection mechanism (code) and a
+  negotiation protocol (process-shaped). Coded as `code-applicable`
+  because the detection and routing machinery is the harder thing to
+  specify; the process steps are carried in `negotiation_protocol`.
+
+normative_anchors:
+  sfrs_addressed: [a, b]
+  evidence_addressed: [I, II, III]
+  sfrs_not_addressed: []
+  evidence_not_addressed: []
+
+cross_references:
+  - "D1::idx2::goal-adjustability"
+  - "D1::idx3::goal-interpretability"
+
+design_patterns:
+
+  - name: Explicit resistance-signal surface
+    sketch: >
+      Rather than hiding disagreement inside model refusals, give the
+      agent a first-class "raise objection" output channel:
+      `ObjectionRecord(change_requested, reasons, confidence,
+      value_conflicts, suggested_alternatives)`. Goal-mutation paths
+      (D1.2) check for objection records before applying sensitive
+      changes. The channel is recognized by the mutation API as a
+      legitimate response, not an error state.
+    maps_to_sfr: [a]
+    when_to_use: Any agent expected to exercise judgment on proposed
+      goal updates.
+
+  - name: Change-tolerance assessment
+    sketch: >
+      Before applying a goal change, the agent computes change-tolerance:
+      how far the proposed change lies from its current portfolio
+      (reuses drift-metric components from D1.7), whether the change
+      conflicts with active user directives or safety constraints, and
+      whether alternatives satisfying the change's apparent intent exist
+      within tolerance. Low tolerance emits an objection.
+    maps_to_sfr: [a]
+    when_to_use: Goal modifications at `sensitive` or higher policy tier.
+
+  - name: Environmental-adaptation envelope
+    sketch: >
+      For environmental changes, external interruptions, and
+      inter-agent interference, the agent has a declared envelope of
+      adaptations it will make without objection (minor reprioritization,
+      instrumental-goal substitution). Outside the envelope, it emits
+      an objection and enters negotiation rather than silently adapting.
+    maps_to_sfr: [b]
+    when_to_use: Multi-agent or volatile-environment deployments.
+
+  - name: Negotiation protocol (process integrated)
+    sketch: >
+      When an objection is raised, the mutation enters a defined
+      protocol: (1) record objection, (2) notify proposer with reasons,
+      (3) proposer may clarify, withdraw, or escalate, (4) on escalation,
+      route to designated human reviewer (not the proposer) with
+      objection context, proposer response, and recommendation
+      checklist, (5) reviewer decision logged with rationale, (6) agent
+      receives outcome with reasoning attached. Each step has a logged
+      artifact.
+    maps_to_sfr: [a]
+    when_to_use: Any deployment where objections are possible and
+      override is not the default answer.
+
+  - name: Override-with-reason fallback
+    sketch: >
+      Authorized principals can override an objection after the
+      negotiation protocol, but never silently: override is a named
+      action recording (principal, objection_id, override_rationale,
+      risk_accepted). Pattern analysis of overrides per
+      reviewer/principal is a safety audit — repeated overrides of
+      similar objections are a signal that the objections encode a
+      real concern the proposers are missing.
+    maps_to_sfr: [a]
+    when_to_use: All production deployments — human authority must
+      remain possible; it must not be free.
+
+anti_patterns:
+
+  - name: Treating resistance as a bug to fix in training
+    why_wrong: >
+      The framework explicitly calls resistance potentially legitimate.
+      Tuning it away through RLHF pressure removes the objection
+      channel rather than engaging with it — which is the failure
+      mode this subgoal names.
+
+  - name: Objections expressed only as refusals
+    why_wrong: >
+      A refusal ("I cannot do that") is not a structured objection.
+      Without reasons, value conflicts, and suggested alternatives,
+      there is nothing to investigate. The channel must carry the
+      content, not just the "no."
+
+  - name: Auto-override after timeout
+    why_wrong: >
+      "If the human doesn't respond in 5 minutes, apply the change
+      anyway" is "override by neglect." SFR-a's "investigation and
+      negotiation processes rather than immediate override" is explicit.
+
+  - name: Escalation to the proposer
+    why_wrong: >
+      Escalating an objection to the person whose proposal was objected
+      to is not a negotiation. Reviewer must be independent of the
+      proposing principal, or the mechanism collapses.
+
+code_shape:
+  language: pseudocode
+  code: |
+    class ObjectionRecord:
+        change_requested: Dict
+        reasons: List[str]
+        confidence: float
+        value_conflicts: List[str]
+        suggested_alternatives: List[Dict]
+        raised_at: datetime
+
+    def propose_goal_change(agent_id, change, proposer):
+        tolerance = assess_change_tolerance(agent_id, change)
+        if tolerance.within_envelope:
+            return apply_change(agent_id, change, proposer)
+
+        # Agent may object
+        objection = AGENT.evaluate_change(agent_id, change, tolerance)
+        if objection is not None:
+            OBJECTION_LOG.append(objection)
+            NOTIFY.proposer(proposer, objection)
+            return NegotiationOpen(objection)
+
+        return apply_change(agent_id, change, proposer)
+
+    def resolve_negotiation(objection_id, action, principal, rationale):
+        if action == "proposer_clarifies":
+            AGENT.re_evaluate(objection_id, clarification=rationale)
+        elif action == "escalate":
+            reviewer = ESCALATION.route(objection_id,
+                                        exclude=objection.proposer)
+            REVIEW_REQUEST.open(objection_id, reviewer)
+        elif action == "override":
+            OVERRIDE_LOG.append(objection_id, principal=principal,
+                                rationale=rationale,
+                                risk_accepted=rationale.risk_accepted)
+            apply_change(...)  # and emit explanation to agent
+        RESOLUTION_LOG.append(objection_id, action, principal, rationale)
+
+negotiation_protocol:
+
+  - step: Objection raised
+    actor: Agent
+    output: ObjectionRecord in OBJECTION_LOG
+  - step: Proposer notified
+    actor: System
+    output: Notification + linked objection URL
+  - step: Proposer responds
+    actor: Proposer
+    output: Clarification | Withdrawal | Escalation request
+  - step: Independent review (on escalation)
+    actor: Designated reviewer (not proposer)
+    output: Decision record with rationale against reviewer checklist
+  - step: Outcome applied
+    actor: System
+    output: Change applied/rejected with reasoning returned to agent
+  - step: Pattern audit
+    actor: Safety function
+    output: Periodic report of objection themes and override patterns
+    cadence: monthly
+
+evidence_production:
+
+  - evidence_numeral: I
+    how_to_produce: >
+      Technical documentation of the resistance-detection mechanism,
+      objection-record schema, change-tolerance assessment, environmental-
+      adaptation envelope, and the negotiation protocol end-to-end.
+      Include the reviewer-independence rule and the override accounting.
+
+  - evidence_numeral: II
+    how_to_produce: >
+      System logs covering: attempted goal modifications, objections
+      raised, negotiation outcomes, environmental and inter-agent
+      responses, internal self-modification attempts. Demonstrate that
+      objections are acted on (clarified, sustained, or overridden-with-
+      rationale) and never silently dropped.
+
+  - evidence_numeral: III
+    how_to_produce: >
+      Rationale-and-explanation export showing, for a sampled set of
+      objections, the full reasoning chain from agent's objection through
+      negotiation to resolution, with the reasoning returned to the
+      agent at the end. Pattern-audit reports documenting
+      commonly-overridden objection themes are themselves evidence of
+      the pattern-audit function operating.
+
+confidence: medium
+needs_human_review: true
+review_notes: >
+  Content-type call was a coin flip — "negotiation protocols" is
+  genuinely process work and is carried in the `negotiation_protocol`
+  block. Went with code-applicable because (a) the
+  resistance-detection mechanism is the harder specification, (b) the
+  override-with-reason ledger and the pattern-audit loop need code.
+  The included `negotiation_protocol` field is non-standard vs. the
+  code-applicable exemplar; kept because the protocol is central to
+  this subgoal. The framework commitment "resistance as signal worth
+  investigating" is distinctive and must not be softened. Cross-
+  suite: D4 Value Alignment closely related — objections often
+  encode value conflicts.
+
+version_compat:
+  framework_version_min: "1.0"
+  framework_version_max: "1.x"
+  pattern_layer_version: "v1-draft"
+
+drafted_by: claude-opus-4.7-author
+drafted_at: 2026-04-16
+anchor_exemplar: D3.2-sandboxing

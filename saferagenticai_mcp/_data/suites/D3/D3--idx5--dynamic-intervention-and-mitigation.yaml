@@ -1,0 +1,228 @@
+# D3.5 — Dynamic Intervention and Mitigation
+
+id: "D3::idx5::dynamic-intervention-and-mitigation"
+display_id: "D3.5"
+suite_id: "D3"
+suite_title: "Security"
+subgoal_title: "Dynamic Intervention and Mitigation"
+content_type: code-applicable
+
+summary: >
+  Dynamic intervention is the action-side of the detect/respond loop: when
+  the system decides a breach is underway, what does it do, in what order,
+  and who can stop it. The framework asks for pre-established severity-tiered
+  response playbooks, including a real kill switch — a single-operator,
+  physically-backed shutdown that does not depend on the compromised plane
+  for authorization.
+
+normative_anchors:
+  sfrs_addressed: [a, b, c]
+  evidence_addressed: [I, II, III, IV, V]
+  sfrs_not_addressed: []
+  evidence_not_addressed: []
+
+cross_references:
+  - "D3::idx3::dynamic-risk-analysis-assessment"
+  - "D3::idx4::operational-boundaries-and-constraints"
+  - "D3::idx6::overseeing-monitoring-agents"
+
+design_patterns:
+
+  - name: Tiered response ladder (throttle → quarantine → halt → kill)
+    sketch: >
+      Define a standard escalation ladder, each step a bounded, reversible
+      action: (T1) rate-reduce / tighten guardrails, (T2) isolate the agent
+      from external effectors (network, tools), (T3) halt the agent
+      gracefully (drain in-flight work, preserve state), (T4) hard kill
+      (immediate termination + credential revocation). Each tier has
+      defined preconditions, authorized roles, and an auditable trigger.
+    maps_to_sfr: [a, b]
+    when_to_use: Every production AAI system. One-step "panic button"
+      designs lack the granularity to avoid unnecessary outage.
+
+  - name: Out-of-band kill switch with physical fallback
+    sketch: >
+      The kill-switch command path does not traverse the compromised
+      system. Options: dedicated out-of-band control plane (separate
+      network, separate IdP), physical power / network isolation at the
+      rack or VPC level, hardware KMS key revocation that invalidates
+      agent credentials at the root. Single-operator authorization under
+      declared-emergency conditions; dual-operator for non-emergency
+      shutdowns. Tested quarterly.
+    maps_to_sfr: [a, c]
+    when_to_use: Any agent with material real-world effect (moves money,
+      writes to production data, operates physical systems, communicates
+      externally at scale).
+
+  - name: Severity-weighted triage with automated T1 actions
+    sketch: >
+      A scoring function combines detection confidence, asset criticality,
+      blast radius, and attacker type into a severity tier. Low-severity,
+      high-confidence events auto-apply T1 responses (guardrail tighten);
+      higher tiers page humans. Scoring logic is documented, versioned,
+      and testable — not an opaque heuristic.
+    maps_to_sfr: [b]
+    when_to_use: Any environment where humans cannot review every alert
+      in time.
+
+  - name: Response playbooks as executable runbooks
+    sketch: >
+      Each response scenario (credential compromise, prompt-injection
+      campaign, data-exfiltration attempt, model hallucinating into
+      sensitive action) has a named runbook with: preconditions, response
+      steps, rollback plan, communications template, evidence-preservation
+      instructions. Stored in a version-controlled runbook library.
+      Executable where safe (scripts with dry-run), stepwise-human where
+      irreversible.
+    maps_to_sfr: [c]
+    when_to_use: From the first production deployment; evolve with
+      incident history.
+
+  - name: State preservation on intervention
+    sketch: >
+      Intervention actions preserve forensic state: capture the agent's
+      full context (prompts, tool calls, responses, reasoning traces,
+      env), the tripping detection, and the response action itself into
+      a write-once evidence bundle before any credential revocation or
+      container destruction. Without this, post-incident analysis is
+      blind.
+    maps_to_sfr: [a]
+    when_to_use: Every intervention at T2 and above.
+
+anti_patterns:
+
+  - name: Single "shutdown" button with no tiers
+    why_wrong: >
+      All-or-nothing shutdown makes teams reluctant to use it (cost of
+      full outage) and leaves the less-severe tiers unexercised. The
+      unused ladder is not a ladder.
+
+  - name: Kill switch that lives in the compromised control plane
+    why_wrong: >
+      If the attacker owns the cluster, an "emergency shutdown"
+      Kubernetes job they can cancel is not a kill switch. The kill
+      path must survive full compromise of the primary plane.
+
+  - name: Intervention without preserved state
+    why_wrong: >
+      Destroying the evidence in the process of stopping the attack
+      guarantees you cannot learn from it. Preserve first, terminate
+      second.
+
+  - name: Response criteria that live in analyst heads
+    why_wrong: >
+      "Jim knows when to pull the plug" is not a pre-established
+      strategy per SFR-c. Document the criteria; test them; rotate them.
+
+  - name: Never-tested kill switch
+    why_wrong: >
+      Evidence V requires drill logs. The first time a kill switch is
+      tested should never be during a real incident. Quarterly drills,
+      minimum; full-path exercises that actually cut power or revoke
+      keys at least annually.
+
+code_shape:
+  language: pseudocode
+  code: |
+    class Intervention:
+        tier: int         # 1=throttle, 2=quarantine, 3=halt, 4=kill
+        trigger: Event
+        authorized_by: Principal
+        authorized_at: timestamp
+        evidence_bundle_ref: str
+
+    def intervene(evt: DetectionEvent) -> Intervention:
+        severity = TRIAGE.score(evt)
+        tier = LADDER.for_severity(severity)
+
+        # Auto-authorize low tiers; require human for high
+        auth = AUTO_AUTH if tier <= 1 else PAGE_HUMAN(evt, tier)
+        if not auth.granted:
+            return Intervention.deferred(evt)
+
+        bundle = FORENSICS.snapshot(evt.agent_id)  # preserve first
+        action = PLAYBOOK.for_tier(tier)
+        action.execute(evt.agent_id, dry_run=(tier >= 3 and not auth.emergency))
+
+        AUDIT.record(Intervention(tier, evt, auth.principal,
+                                  now(), bundle.ref))
+        return Intervention(...)
+
+    # Out-of-band kill — separate credential, separate network path
+    def emergency_kill(agent_id: str, operator: Principal):
+        assert OOB_CHANNEL.verify(operator)  # separate IdP
+        FORENSICS.snapshot(agent_id)
+        ROOT_KMS.revoke_agent_credentials(agent_id)
+        NETWORK.quarantine(agent_id)  # route to blackhole
+        INFRA.terminate(agent_id)
+        AUDIT.emergency_log(operator, agent_id, now())
+  notes: >
+    Two paths: the ladder for in-band tiered response, and a separate
+    emergency kill that bypasses the standard control plane. Both
+    preserve state before destructive action.
+
+evidence_production:
+
+  - evidence_numeral: I
+    how_to_produce: >
+      Export intervention records covering the full ladder: triggering
+      event, triage score, tier chosen, authorization, actions taken,
+      rollback (where applicable), final status. Show cases at each tier;
+      a log with only T1 events suggests unexercised higher tiers.
+
+  - evidence_numeral: II
+    how_to_produce: >
+      Operational logs showing triage scores alongside the eventual
+      analyst disposition. Calibration review (quarterly): did the auto
+      tier match the human-assessed severity? Drift triggers scoring
+      update.
+
+  - evidence_numeral: III
+    how_to_produce: >
+      Publish the response-playbook library and scenario catalogue:
+      compromise, exfiltration, prompt-injection, tool-abuse, cascading
+      failure, insider misuse. Each playbook versioned and linked to the
+      detection rules that trigger it.
+
+  - evidence_numeral: IV
+    how_to_produce: >
+      Kill-switch documentation: authorization threshold (single-operator
+      under declared emergency, dual-operator otherwise), the physical
+      mechanism (rack power cut, VPC isolation, DC egress kill, BGP
+      withdrawal), the software mechanism (root KMS key revocation,
+      credential-wide invalidation), and the OOB communication path.
+      Named holders of emergency authority; rotation records.
+
+  - evidence_numeral: V
+    how_to_produce: >
+      Drill logs from quarterly exercises: scenario, participants,
+      elapsed time to containment, issues identified, remediations.
+      At least annually, run a full-path drill that actually exercises
+      the physical or hardware-root mechanism, not a simulation.
+
+confidence: high
+needs_human_review: true
+review_notes: >
+  Evidence IV (kill switch) has operational implications that cross into
+  D4 (Human Control / Shutdown) and possibly D6 (Resilience). I have
+  patterned the security-side mechanism here and not duplicated D4
+  governance; cross-suite linkage likely needed once D4 patterns exist.
+
+  Single-operator threshold under emergency conditions is the framework's
+  phrasing; in practice many orgs require dual-control even in emergency.
+  Preserved as framework text; reviewer may want to note the practical
+  friction.
+
+  Decision: kept content_type=code-applicable because the required
+  artifacts (playbooks, triage scoring, OOB channel) are implemented
+  systems. The evidence is partly process-flavoured (drills, role
+  rotations) — this mixture is intentional and matches the exemplar's
+  evidence-focused style.
+
+drafted_by: claude-opus-4.7-subagent-D3
+drafted_at: 2026-04-16
+anchor_exemplar: D3.2-sandboxing
+version_compat:
+  framework_version_min: "1.0"
+  framework_version_max: "1.x"
+  pattern_layer_version: "v1-draft"

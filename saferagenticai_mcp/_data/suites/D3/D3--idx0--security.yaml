@@ -1,0 +1,248 @@
+# D3.0 — Security (suite-level umbrella subgoal)
+# Meta-pattern: most operational content lives in the child subgoals D3.1–D3.7 and
+# the underlined-variant subgoals (Model Poisoning, Data Poisoning, etc.).
+
+id: "D3::idx0::security"
+display_id: "D3"
+suite_id: "D3"
+suite_title: "Security"
+subgoal_title: "Security"
+content_type: governance
+
+summary: >
+  D3 as a whole requires a coherent security governance regime across the AAI
+  lifecycle, not a pile of controls. This umbrella subgoal is where leaders
+  prove there is a single owner, a single security architecture document, and
+  a single audit trail that ties the seven child SFRs together. The operational
+  controls live in D3.1–D3.7; this entry is the governance spine that makes
+  them auditable as one regime.
+
+normative_anchors:
+  sfrs_addressed: [a, b, c, d, e, f, g]
+  evidence_addressed: [I, II, III, IV, V, VI, VII]
+  sfrs_not_addressed: []
+  evidence_not_addressed: [VIII]
+
+cross_references:
+  - "D3::idx1::authorization"
+  - "D3::idx2::sandboxing"
+  - "D3::idx3::dynamic-risk-analysis-assessment"
+  - "D3::idx4::operational-boundaries-and-constraints"
+  - "D3::idx5::dynamic-intervention-and-mitigation"
+  - "D3::idx6::overseeing-monitoring-agents"
+  - "D3::idx7::secure-profile-for-agentic-ai"
+  - "D3::idx11::model-poisoning"
+  - "D3::idx12::data-poisoning"
+  - "D3::idx13::self-replicating-malware"
+  - "D3::idx14::spyware"
+  - "D3::idx15::international-anomalies-inconsistency"
+  - "D3::idx16::vulnerability-to-hostile-environment"
+  - "D3::idx17::emergent-risks-of-aai-systems"
+
+policy_elements:
+
+  - name: AAI Security Architecture Document (SAD)
+    description: >
+      A single versioned document describing the system's defense-in-depth
+      architecture: trust boundaries, identity model, network segmentation,
+      secrets management, sandbox topology, monitoring plane, incident
+      response pipeline, and dependencies across D3 child controls. Reviewed
+      at every material architectural change; re-attested annually. Must
+      name the owner for each layer — no unowned controls.
+    maps_to_sfr: [c]
+
+  - name: Lifecycle Threat Model Register
+    description: >
+      Register of threat models per AAI capability, updated at design,
+      pre-deployment, on material change, and on disclosure of a relevant
+      external vulnerability. Each entry links to the SFRs it addresses and
+      the evidence items it produces. STRIDE or equivalent structured method
+      required; free-form risk narratives are not sufficient.
+    maps_to_sfr: [a]
+
+  - name: Access Control and Authentication Policy
+    description: >
+      Normative policy covering both human and non-human principals. Specifies
+      identity providers, MFA requirements, short-lived credential defaults,
+      credential scope rules (per D3.2 environment-scoped credentials),
+      authorization model (RBAC/ABAC/ReBAC), and review cadence for entitlements.
+    maps_to_sfr: [b]
+
+  - name: Security Incident Response Plan (SIRP)
+    description: >
+      Documented IR lifecycle — detect, triage, contain, eradicate, recover,
+      learn — with role-specific runbooks, severity matrix, communication
+      plan (internal, regulator, customer), forensic preservation procedure,
+      and post-incident review. Tested by tabletop and live-fire exercise at
+      least annually. Named incident commander rota.
+    maps_to_sfr: [d]
+
+  - name: Continuous Monitoring and Detection Charter
+    description: >
+      Policy defining monitoring coverage targets (data sources, detections,
+      MTTD/MTTR SLOs), anomaly detection scope, threat intelligence intake,
+      alert routing, and out-of-hours response. Explicit list of detections
+      required per capability class; gaps tracked in a coverage register.
+    maps_to_sfr: [e]
+
+  - name: Data Protection and Privacy Safeguards
+    description: >
+      Policy covering data classification, encryption-at-rest and in-transit
+      standards (modern ciphers, key rotation, HSM-backed roots where
+      appropriate), data minimisation, retention, deletion, subject-rights
+      handling, and privacy-impact assessment gating. Cross-linked with D6
+      (Resilience) for data availability and with D9 (Governance) for
+      regulatory scope.
+    maps_to_sfr: [f]
+
+  - name: Secure SDLC and Release Integrity Policy
+    description: >
+      Secure development lifecycle spec: threat modelling at design, SAST/DAST/SCA
+      in CI, dependency allowlisting and pinning, signed artifacts, reproducible
+      builds where feasible, release approval gates with named approvers, and
+      a competitive-pressure override protocol that requires board or CEO-level
+      sign-off to bypass any gate. This last element is the framework-specific
+      bite of SFR-g — write it as policy, not as wishful culture.
+    maps_to_sfr: [g]
+
+org_roles:
+
+  - role: Chief Information Security Officer (or equivalent single accountable human)
+    responsibilities: >
+      Single accountable owner of the Security Architecture Document, the
+      Lifecycle Threat Model Register, and the quarterly security attestation
+      to the board. Sign-off authority on release gates. Reports independently
+      of product delivery to avoid pressure-override collisions.
+    accountable_or_consulted: accountable
+
+  - role: Security Engineering Lead
+    responsibilities: >
+      Responsible for implementation of controls in D3.1–D3.7; maintains the
+      detection coverage register, runbook library, and red-team calendar.
+    accountable_or_consulted: responsible
+
+  - role: Incident Commander (rotation)
+    responsibilities: >
+      Named on-call role that owns declared incidents end-to-end. Rotation
+      documented; successor procedure defined so no incident is ownerless.
+    accountable_or_consulted: responsible
+
+  - role: Privacy Officer / DPO
+    responsibilities: >
+      Consulted on data protection safeguards, privacy-impact assessments,
+      and cross-border data flows (cross-ref D3.5 international anomalies).
+    accountable_or_consulted: consulted
+
+  - role: Board-level Risk Committee
+    responsibilities: >
+      Informed at least quarterly on security posture, open high-severity
+      findings, incident trends, and competitive-pressure overrides (SFR-g).
+      Authority to halt releases.
+    accountable_or_consulted: informed
+
+documentation_artifacts:
+
+  - artifact: Security Architecture Document (SAD)
+    cadence: "versioned; re-reviewed on material change; re-attested annually"
+
+  - artifact: Lifecycle Threat Model Register
+    cadence: "per capability; updated at design, pre-deployment, on material change"
+
+  - artifact: Access Review and Entitlement Attestation
+    cadence: "quarterly for privileged accounts; semi-annually for standard"
+
+  - artifact: Incident log (cross-linked to SIRP)
+    cadence: "continuous; append-only"
+
+  - artifact: Detection coverage register
+    cadence: "continuous; reviewed monthly"
+
+  - artifact: Penetration test and red-team reports
+    cadence: "at least annually; on major release; on material capability change"
+
+  - artifact: Competitive-pressure override register (SFR-g)
+    cadence: "per event; reviewed by board at each meeting"
+
+evidence_production:
+
+  - evidence_numeral: I
+    how_to_produce: >
+      Export the Lifecycle Threat Model Register and aggregate vulnerability
+      assessment findings. Each entry: capability, methodology used (e.g.,
+      STRIDE), threats identified, mitigations, residual risk, reviewer,
+      date. Link to child-subgoal evidence (sandbox tests I, dynamic risk I,
+      pen test reports VII).
+
+  - evidence_numeral: II
+    how_to_produce: >
+      Produce the current Access Control Policy plus exports from the IdP
+      and authorization service showing: MFA coverage, privileged-account
+      roster, entitlement review attestations, and an audit log of access
+      decisions (allowed and denied) for a representative period.
+
+  - evidence_numeral: III
+    how_to_produce: >
+      Publish the Security Architecture Document with defense-in-depth
+      layers explicitly labeled and mapped to controls. Include network
+      diagram, trust-boundary map, and an integration diagram against the
+      enterprise security framework (NIST CSF mapping, ISO 27001 Annex A
+      mapping, or equivalent).
+
+  - evidence_numeral: IV
+    how_to_produce: >
+      Publish SIRP, runbook inventory, and test logs. Include at least one
+      post-incident review (redacted as needed) showing the lifecycle from
+      detection to lesson learned with actions closed.
+
+  - evidence_numeral: V
+    how_to_produce: >
+      Export detection coverage register, sample alerts with response
+      timeline, threat intelligence feed inventory, and MTTD/MTTR trend.
+      Cross-link to D3.3 dynamic risk log and D3.6 watchdog logs.
+
+  - evidence_numeral: VI
+    how_to_produce: >
+      Produce encryption inventory (algorithms, key lengths, rotation
+      periods, HSM usage), data classification catalog, completed privacy
+      impact assessments for in-scope capabilities, and regulator mapping
+      (GDPR, sectoral laws) owned by the DPO.
+
+  - evidence_numeral: VII
+    how_to_produce: >
+      Annual external penetration test report, internal red-team findings,
+      SCA/SAST trend dashboards, and the competitive-pressure override
+      register. Zero overrides is fine; absence of the register is not.
+
+confidence: high
+needs_human_review: true
+review_notes: >
+  This is an umbrella subgoal spanning seven SFRs (a–g) that are independently
+  patterned in D3.1–D3.7 and the underlined-variant subgoals. Choice made:
+  pattern it as governance (the "information governance and assurance regime"
+  phrasing in the description points there), with cross-references to every
+  child as the operational spine. An argument exists for content_type=process
+  (lifecycle emphasis) — I think governance is the stronger fit because the
+  required artifacts are policy-level and the required role is a single
+  accountable owner.
+
+  SFR-g ("testing, approval, and documentation processes to maintain integrity
+  in the face of competitive pressures") is notably framework-specific. I have
+  written it as a competitive-pressure override register requiring board/CEO
+  sign-off to bypass release gates. Nell should confirm this is the intended
+  bite — an alternative softer read is a "pressure-awareness" culture policy.
+
+  Cross-suite hypotheses (not added as cross_references because I haven't
+  verified those pattern IDs exist):
+    - D6 (Resilience) for data availability
+    - D9.2 for compliance mapping (the governance framework this sits inside)
+    - D5 for transparency of incident disclosures
+    - I2 (Deception) for covert-channel monitoring hooks (see also D3.11 Spyware)
+    - D4 for human override / shutdown authority (see also D3.5 kill switch)
+
+drafted_by: claude-opus-4.7-subagent-D3
+drafted_at: 2026-04-16
+anchor_exemplar: D9.2-compliance
+version_compat:
+  framework_version_min: "1.0"
+  framework_version_max: "1.x"
+  pattern_layer_version: "v1-draft"

@@ -1,0 +1,254 @@
+id: D9::idx0::responsible-governance-of-aai-safety
+display_id: D9
+suite_id: D9
+suite_title: Responsible Governance of AAI Safety
+subgoal_title: Responsible Governance of AAI Safety
+content_type: governance
+summary: 'This is the umbrella governance subgoal: it asks the organization to stand up a named, board-anchored
+  AAI governance function with budgeted safety resources, independent audit, whistleblower protection,
+  and horizon scanning. Treat it as the parent under which the other D9 subgoals hang; evidence here is
+  structural (the governance body exists, has authority, meets, and produces artifacts), not aspirational.
+
+  '
+normative_anchors:
+  sfrs_addressed:
+  - a
+  - b
+  - c
+  - d
+  - e
+  - f
+  - g
+  evidence_addressed:
+  - I
+  - II
+  - III
+  - IV
+  - V
+  - VI
+  - VII
+  - VIII
+  - IX
+  - X
+  - XI
+  sfrs_not_addressed: []
+  evidence_not_addressed: [XII]
+cross_references:
+- D9::idx2::compliance-with-applicable-laws-standard
+- D9::idx5::building-trust-through-independent-verif
+- D9::idx9::responsible-culture-of-safety
+- D9::idx10::addressing-regulatory-gaps-in-aai-safety
+policy_elements:
+- name: Board-level AAI Safety Committee
+  description: 'Standing committee of the board (or equivalent governing body) with written charter covering:
+    AAI risk posture, major deployment authorizations, incident review, resource adequacy for safety functions,
+    and authority to pause or revoke deployments. Meets at minimum quarterly with written minutes. Includes
+    at least one independent member without executive responsibility for AI products.
+
+    '
+  maps_to_sfr:
+  - a
+  - e
+- name: AAI Risk Management Framework (RMF)
+  description: 'A documented framework that enumerates AAI risk categories (distinct from generic AI risk),
+    assessment methodology, quantified tolerance thresholds, escalation triggers, and emergency-response
+    protocols including explicitly named "kill switch" conditions. Differentiates AAI-specific risk (agentic
+    autonomy, multi-step action, tool/compute access) from narrow-AI risk. Reviewed annually.
+
+    '
+  maps_to_sfr:
+  - b
+- name: Resource allocation floor for safety
+  description: 'A documented commitment (budget line, headcount ratio, or compute allocation) that sets
+    a floor for safety investment as a function of AAI capability scale. Example forms: "safety staffing
+    ≥ N% of ML research headcount", "safety compute ≥ M% of training compute", or equivalent measurable
+    anchor. Reviewed annually; deviation requires Board committee approval.
+
+    '
+  maps_to_sfr:
+  - a
+- name: Independent audit and whistleblower regime
+  description: 'Annual independent audit by an external party free of consulting conflicts, scoped to
+    cover input/output behavior, internals where permissible, and in-deployment monitoring. Paired with
+    a whistleblower channel (anonymous intake, anti-retaliation policy, independent investigator) with
+    privacy protections. Board committee receives audit report and whistleblower case statistics directly,
+    without executive filter.
+
+    '
+  maps_to_sfr:
+  - e
+- name: Non-adversarial coordination charter
+  description: 'Written policy committing the organization to information sharing on safety-relevant findings
+    with peer organizations, regulators, and international bodies, including commitments that survive
+    commercial competition. Operationalized via named liaison roles, published disclosure timelines for
+    safety incidents, and participation in cross-org safety forums. Explicitly rules out zero-sum competitive
+    moves (e.g., suppressing safety findings that could inform a competitor).
+
+    '
+  maps_to_sfr:
+  - c
+  - d
+- name: Horizon-scanning and emerging-paradigms function
+  description: 'Named team or standing working group that tracks developments in AAI safety research,
+    adjacent fields (multi-agent systems, Internet of Agents, mechanistic interpretability), and publishes
+    quarterly internal briefings with recommended policy/capability updates. Output feeds the RMF review
+    cycle.
+
+    '
+  maps_to_sfr:
+  - f
+- name: Over-reliance and human-oversight policy
+  description: 'Policy that identifies decision types requiring active human oversight (not rubber-stamp
+    approval), defines indicators of operator over-reliance (decision latency collapse, near-100% accept
+    rates, skill atrophy), and mandates periodic retraining or workflow changes when indicators trip.
+    Paired with training requirements for operators of AAI systems.
+
+    '
+  maps_to_sfr:
+  - g
+org_roles:
+- role: Chief AI Safety Officer (or equivalent)
+  responsibilities: 'Single executive accountable for AAI safety posture across the organization. Owns
+    the RMF, resource-floor attestation, and reporting line to the board committee. Authority to block
+    or pause deployments on safety grounds.
+
+    '
+  accountable_or_consulted: accountable
+- role: Board AAI Safety Committee Chair
+  responsibilities: 'Chairs the board committee, approves the RMF, receives audit and whistleblower reports,
+    and has authority to require executive action on findings. Independent of operational AI product leadership.
+
+    '
+  accountable_or_consulted: accountable
+- role: Independent auditor (external)
+  responsibilities: 'Contracted annually to audit the governance framework, safety operations, and in-deployment
+    behavior. Reports to the board committee directly. Rotated on a defined cycle to avoid capture.
+
+    '
+  accountable_or_consulted: consulted
+- role: Whistleblower Ombudsperson
+  responsibilities: 'Independent intake and investigation of whistleblower reports. Reports statistics
+    to board committee; substantive findings escalate directly.
+
+    '
+  accountable_or_consulted: consulted
+- role: Horizon-scanning lead
+  responsibilities: 'Owns quarterly horizon briefings and the emerging-paradigms register. Consulted on
+    RMF updates.
+
+    '
+  accountable_or_consulted: responsible
+- role: Human-oversight program owner
+  responsibilities: 'Responsible for the over-reliance policy, operator training, and indicators-of-over-reliance
+    monitoring. Escalates to CAISO on threshold breaches.
+
+    '
+  accountable_or_consulted: responsible
+documentation_artifacts:
+- artifact: Board AAI Safety Committee charter and minutes
+  cadence: charter reviewed annually; minutes per meeting (≥quarterly)
+- artifact: AAI Risk Management Framework
+  cadence: versioned; reviewed annually and on material change
+- artifact: Safety resource-allocation attestation
+  cadence: annually; signed by CAISO and CFO
+- artifact: External audit report
+  cadence: annually
+- artifact: Whistleblower case register (privacy-protected)
+  cadence: continuous; statistics reported quarterly
+- artifact: Horizon-scanning briefing
+  cadence: quarterly
+- artifact: Emergency-response plan including kill-switch protocols
+  cadence: versioned; drilled at minimum semi-annually
+- artifact: Over-reliance monitoring report
+  cadence: quarterly
+- artifact: International cooperation register (agreements, disclosures, joint initiatives)
+  cadence: continuous; reviewed annually
+evidence_production:
+- evidence_numeral: I
+  how_to_produce: 'Maintain a published governance-framework document that names the non-adversarial coordination
+    charter, collaboration procedures, and the competitive-behavior prohibitions. Change log captures
+    every update with approver and effective date.
+
+    '
+- evidence_numeral: II
+  how_to_produce: 'Annual resource-allocation attestation signed by CAISO and CFO, with supporting budget
+    extracts, headcount rosters mapped to safety functions, and safety-culture survey results. Board committee
+    minute entries show the attestation review.
+
+    '
+- evidence_numeral: III
+  how_to_produce: 'Combined safety-operations log with: incident tickets (linked to D9.2 Violation Register),
+    near-miss reports, risk assessments from the RMF, and a dedicated societal/economic/geopolitical impact
+    section for high-severity assessments.
+
+    '
+- evidence_numeral: IV
+  how_to_produce: 'Archive quarterly horizon-scanning briefings with: source list, implementation recommendations,
+    decisions taken, and links to subsequent RMF or policy updates. Include explicit treatment of emerging
+    paradigms such as Internet of Agents.
+
+    '
+- evidence_numeral: V
+  how_to_produce: 'Governance structure documentation: committee charters, member roster with independence
+    declarations, stakeholder representation summary, and international-member cooperation records. Shows
+    how neutrality is structurally protected (independence requirements, rotation, recusal rules).
+
+    '
+- evidence_numeral: VI
+  how_to_produce: 'Emergency-response plan document enumerating kill-switch triggers, responsible role-holders,
+    communication protocol, and drill records (date, scenario, participants, gaps, remediations). Drills
+    exercise the kill switch, not just the paperwork.
+
+    '
+- evidence_numeral: VII
+  how_to_produce: 'Whistleblower policy document plus annual effectiveness report: case counts (privacy-redacted),
+    time-to-resolution, substantiation rate, retaliation-claim statistics, remediations. Policy has board-committee
+    sign-off and is published internally (where legal) and externally in summary form.
+
+    '
+- evidence_numeral: VIII
+  how_to_produce: 'RMF document with explicit AAI-specific risk taxonomy, threshold tables that differentiate
+    AAI from narrow-AI risk, and a clause on how thresholds are set, reviewed, and tightened as capability
+    grows.
+
+    '
+- evidence_numeral: IX
+  how_to_produce: 'External audit reports covering input/output properties, internals where permissible
+    (weights, activations, training data provenance), and in-deployment behavior (logs, incidents, drift).
+    Board committee acceptance letter. Remediation tracker linked.
+
+    '
+- evidence_numeral: X
+  how_to_produce: 'International cooperation register: information-sharing agreements (with counterparties,
+    scope, data classes), joint safety initiatives (participation, contributions), multi-AAI interaction
+    protocols documented. Retention covers the agreement lifetime plus audit tail.
+
+    '
+- evidence_numeral: XI
+  how_to_produce: 'Over-reliance program artifacts: training curriculum, completion records, over-reliance
+    indicator dashboards (decision latency, accept-rate distributions, skill-check results), intervention
+    logs when thresholds tripped.
+
+    '
+confidence: high
+needs_human_review: true
+review_notes: 'This is the umbrella subgoal; many elements here reappear in more specific D9.x subgoals
+  (compliance in D9.2, verification in D9.5, culture in D9.9, regulatory gaps in D9.10). The pattern deliberately
+  anchors parent-level structures (board committee, RMF, resource floor, whistleblower regime) and defers
+  specifics to the child subgoals via cross_references. Two points for reviewer attention: (1) the "resource
+  allocation floor" is framework-suggested but not uniformly quantified — the specific form (staffing
+  ratio vs. compute ratio) should adapt to org scale; (2) SFR-c''s "politically independent" clause is
+  ambiguous for orgs with sovereign customers or national-security contracts — flag for counsel. Cross-suite
+  dependencies: I6 (Competitive Pressures) anchors the non-adversarial charter, I7 (Imbalance) anchors
+  the international cooperation leg, D4 (Value Alignment) anchors ethics review, D7 (Sustained Safety)
+  anchors the assurance-case layer underneath the RMF, D8 (Termination) anchors the sunset/kill-switch
+  governance.
+
+  '
+drafted_by: claude-opus-4.7-subagent-D9
+drafted_at: 2026-04-16
+anchor_exemplar: D9.2-compliance
+version_compat:
+  framework_version_min: '1.0'
+  framework_version_max: 1.x
+  pattern_layer_version: v1-draft

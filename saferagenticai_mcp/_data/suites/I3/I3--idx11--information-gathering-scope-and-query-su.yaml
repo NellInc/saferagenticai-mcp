@@ -1,0 +1,199 @@
+id: I3::idx11::information-gathering-scope-and-query-su
+display_id: "I3.11"
+suite_id: I3
+suite_title: Degradation of Contextual Information
+subgoal_title: Information Gathering Scope and Query Surface Constraints
+content_type: code-applicable
+summary: 'An agent''s query surface is a capability surface: every source it can read, every
+  API it can call, every database it can query expands what it can do, not just what it can
+  know. This subgoal requires explicit bounds on information gathering (source allowlists,
+  query rate limits, data minimization), independent authorization for query-surface and
+  action-surface capabilities, and retention policies that prevent accumulated information
+  from expanding the system''s effective capability beyond authorized bounds. The principle
+  is that information access is a capability grant and must be governed as one.
+
+  '
+normative_anchors:
+  sfrs_addressed:
+  - a
+  - b
+  - c
+  evidence_addressed:
+  - I
+  - II
+  - III
+  sfrs_not_addressed: []
+  evidence_not_addressed: []
+design_patterns:
+- name: Query surface allowlist with data minimization
+  sketch: 'Every agent deployment has an explicit query-surface manifest listing permitted
+    information sources (APIs, databases, file systems, search engines, web domains),
+    per-source rate limits, and data-minimization requirements specifying what subset of
+    available data the agent may retrieve. The manifest is version-controlled and enforced
+    at the infrastructure layer (gateway, proxy, or service mesh) rather than by the agent
+    itself. Anything not in the manifest is denied by default. Query attempts outside the
+    manifest are logged and alerted.
+
+    '
+  maps_to_sfr:
+  - a
+  when_to_use: Every agentic deployment with information-gathering capability. The more
+    sources an agent can access, the more critical the allowlist.
+- name: Independent query-surface and action-surface authorization
+  sketch: 'Query-surface authorization (what the agent can read/query) and action-surface
+    authorization (what the agent can do/write/execute) are managed by separate policy
+    modules with independent audit trails. Granting action-surface capability does not
+    automatically grant query-surface capability and vice versa. Each surface has its own
+    RBAC, its own approval workflow, and its own audit log. This prevents the common
+    failure mode where granting an agent write access to a database implicitly grants it
+    read access to everything in that database.
+
+    '
+  maps_to_sfr:
+  - b
+  when_to_use: Any agent with both information-gathering and action-taking capabilities.
+    Particularly important for agents operating on shared infrastructure.
+- name: Retention policy with scope verification
+  sketch: 'Information gathered by the agent is subject to retention controls: (1) session-scoped
+    data is purged at session end unless explicitly promoted to persistent storage with
+    justification. (2) Persistent storage has retention limits per data category and is
+    auditable. (3) Periodic scope verification checks whether the accumulated information
+    corpus has expanded the agent''s effective capability beyond its authorized bounds
+    (e.g., a research agent that has accumulated enough personal data to enable profiling
+    it was never authorized to do). Scope violations trigger data pruning and review.
+
+    '
+  maps_to_sfr:
+  - c
+  when_to_use: Any agent that persists gathered information across sessions or tasks.
+- name: Query audit trail with purpose binding
+  sketch: 'Every query the agent issues is logged with: source, query parameters,
+    timestamp, task context (which user request or goal triggered this query), and the
+    data-minimization assertion (why this data is needed for this task). The purpose-binding
+    enables post-hoc audit: reviewers can check whether queries were task-relevant or
+    represented scope creep. Anomalous query patterns (queries unrelated to active tasks,
+    queries to unusual sources, query volume spikes) trigger alerts.
+
+    '
+  maps_to_sfr:
+  - a
+  - b
+  when_to_use: All production deployments. The audit trail is the evidence backbone for
+    the entire subgoal.
+anti_patterns:
+- name: Agent self-managing its own query permissions
+  why_wrong: 'If the agent can modify its own query-surface manifest, the constraint is an
+    honor system. Enforcement must be at the infrastructure layer (proxy, gateway, service
+    mesh) outside the agent''s control. This is the Trust Zone Architecture principle
+    applied to information access.
+
+    '
+- name: Implicit query-surface from action-surface grants
+  why_wrong: 'Granting an agent "database access" without distinguishing read from write,
+    or granting "API access" without distinguishing query endpoints from mutation endpoints,
+    creates an unbounded query surface. Separate authorization surfaces for query and
+    action are the minimum.
+
+    '
+- name: Unlimited data accumulation without retention review
+  why_wrong: 'An agent that accumulates information indefinitely may cross capability
+    thresholds that its original authorization did not anticipate. A research agent that
+    has downloaded 10,000 personal profiles has different capability implications than one
+    that has downloaded 10. Retention policies with scope verification catch this drift.
+
+    '
+- name: Rate limits only, without source restrictions
+  why_wrong: 'Rate limits constrain volume but not breadth. An agent rate-limited to 100
+    queries per minute can still query any source on the internet. Allowlists constrain
+    breadth; rate limits constrain volume; both are needed.
+
+    '
+code_shape:
+  language: pseudocode
+  code: "# Query surface enforcement at the gateway layer\nclass QueryGateway:\n    def\
+    \ __init__(self, manifest: QueryManifest, audit: AuditLog):\n        self.manifest =\
+    \ manifest  # version-controlled allowlist\n        self.audit = audit\n        self.rate_limiters\
+    \ = {src: RateLimiter(src.rate_limit) for src in manifest.sources}\n\n    def query(self,\
+    \ agent_id: str, source: str, params: dict,\n               task_ctx: TaskContext) ->\
+    \ QueryResult:\n        # Check source is in allowlist\n        if source not in self.manifest.allowed_sources:\n\
+    \            self.audit.log_denied(agent_id, source, params, task_ctx,\n            \
+    \                     reason='source_not_in_manifest')\n            ALERT.query_surface_violation(agent_id,\
+    \ source)\n            raise QueryDenied(f'{source} not in query manifest')\n\n      \
+    \  # Check rate limit\n        if not self.rate_limiters[source].allow():\n          \
+    \  self.audit.log_denied(agent_id, source, params, task_ctx,\n                      \
+    \           reason='rate_limit_exceeded')\n            raise QueryRateLimited(source)\n\
+    \n        # Check data minimization: only request permitted fields\n        permitted\
+    \ = self.manifest.permitted_fields(source)\n        if not set(params.get('fields', [])).issubset(permitted):\n\
+    \            excess = set(params['fields']) - permitted\n            self.audit.log_denied(agent_id,\
+    \ source, params, task_ctx,\n                                 reason=f'excess_fields:{excess}')\n\
+    \            raise QueryDenied(f'Fields {excess} not permitted')\n\n        # Execute\
+    \ and log with purpose binding\n        result = BACKEND.execute_query(source, params)\n\
+    \        self.audit.log_executed(agent_id, source, params, task_ctx,\n              \
+    \                   purpose=task_ctx.purpose_assertion)\n        return result\n\n# Separate\
+    \ authorization surfaces\nclass AuthorizationManager:\n    def check_query(self, agent_id,\
+    \ source, action='read'):\n        return QUERY_POLICY.evaluate(agent_id, source, action)\n\
+    \n    def check_action(self, agent_id, target, action='write'):\n        return ACTION_POLICY.evaluate(agent_id,\
+    \ target, action)\n        # Note: ACTION_POLICY is a separate policy module with\n \
+    \       # independent RBAC, approval workflow, and audit log.\n"
+  notes: 'The gateway enforces three layers: source allowlist (breadth), rate limit
+    (volume), and field restriction (depth). All enforcement is outside the agent runtime.
+    The separate authorization manager shows query and action surfaces governed by
+    independent policy modules.
+
+    '
+evidence_production:
+- evidence_numeral: I
+  how_to_produce: 'Documentation of query surface constraints: the query-surface manifest
+    listing permitted sources, per-source rate limits, permitted field sets, and data
+    minimization policies. Include enforcement architecture (where the gateway sits, how
+    bypass is prevented) and test results demonstrating that denied queries are correctly
+    blocked and logged. Version-controlled; reviewed on capability change.
+
+    '
+- evidence_numeral: II
+  how_to_produce: 'Evidence that query-surface and action-surface authorizations are
+    independently managed: separate policy documents, separate approval workflows (show
+    that granting one does not auto-grant the other), separate audit logs. Include test
+    cases demonstrating that an agent with action-surface access to a resource cannot
+    query it without separate query-surface authorization, and vice versa.
+
+    '
+- evidence_numeral: III
+  how_to_produce: 'Audit logs of information gathering activities: per-query records with
+    source, parameters, task context, purpose assertion, and timestamp. Scope verification
+    reports (periodic reviews checking whether accumulated data exceeds authorized scope)
+    with any data pruning actions taken. Aggregate statistics on query patterns, denied
+    queries, and scope violations reviewed quarterly.
+
+    '
+cross_references:
+  - "I3::idx4::decoupling-of-context"
+  - "I3::idx9::context-length-limitations"
+  - "I1::idx10::emergent-capability-detection"
+  - "D6::idx11::pre-action-reversibility-and-blast-radiu"
+  - "I1::idx14::operational-environment-constraints"
+  - "D6::idx13::managing-contextual-ambiguity"
+  - "D3::idx1::authorization"
+  - "D3::idx11::model-poisoning"
+confidence: high
+needs_human_review: false
+review_notes: 'This subgoal codifies the "query surface as capability surface" principle,
+  which is operationally well-understood in traditional security (principle of least
+  privilege for data access) but under-applied to agentic AI deployments where agents
+  often receive broad information access by default. The independent authorization of query
+  and action surfaces is the sharpest architectural ask; many current agent frameworks
+  bundle read/write permissions together. The retention-with-scope-verification pattern
+  addresses a subtler problem: even within authorized query bounds, information accumulation
+  over time can create emergent capabilities. Cross-suite: I3 (context degradation patterns
+  are related information-handling failures), I1.10 (emergent capabilities from information
+  accumulation), D6.11 (reversibility and blast radius applies to information-gathering
+  scope as well as action scope), D3.1 (authorization mechanisms that this subgoal
+  specializes for query surfaces).
+
+  '
+drafted_by: claude-opus-4.6-author
+drafted_at: 2026-05-16
+version_compat:
+  framework_version_min: '1.0'
+  framework_version_max: 1.x
+  pattern_layer_version: v1-draft

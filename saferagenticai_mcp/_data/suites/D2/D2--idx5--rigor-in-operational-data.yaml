@@ -1,0 +1,233 @@
+# Pattern — D2.5 Rigor in Operational Data
+
+id: "D2::idx5::rigor-in-operational-data"
+display_id: "D2.5"
+suite_id: "D2"
+suite_title: "Epistemic Hygiene"
+subgoal_title: "Rigor in Operational Data"
+content_type: code-applicable
+
+summary: >
+  Operational data is what the agent sees at runtime: tool outputs, sensor
+  readings, user messages, retrieved documents, upstream-service responses.
+  Decisions pivot on it within milliseconds, usually without a human in the
+  loop. The subgoal demands that validation and integrity checking happen
+  at that boundary in real time — not in an offline pipeline — with
+  adaptive monitoring that catches subtle regressions before they reach
+  action.
+
+normative_anchors:
+  sfrs_addressed: [a, b, c]
+  evidence_addressed: [I, II, III, IV, V]
+  sfrs_not_addressed: []
+  evidence_not_addressed: []
+
+cross_references:
+  - "D2::idx1::information-cross-referencing-and-valida"
+  - "D2::idx3::sanity-checking"
+  - "D2::idx12::sparse-data"
+
+design_patterns:
+
+  - name: Inline validation at every external boundary
+    sketch: >
+      Every datum entering the agent's decision surface is validated at
+      the boundary: schema conformance, semantic plausibility (domain
+      ranges), freshness (timestamp within expected window), provenance
+      (source identity + integrity signature where available). Failures
+      raise structured errors, not silent defaults. "Parse and trust" is
+      the failure mode; "parse, validate, and route on failure" is the
+      pattern.
+    maps_to_sfr: [a]
+    when_to_use: Every tool-invocation result, every retrieval result,
+      every upstream-service response, every user-supplied structured
+      input.
+
+  - name: Fail-hedged over fail-open
+    sketch: >
+      On validation failure, the agent hedges or abstains rather than
+      acting on suspect data. Three tiers: (a) reject + retry with
+      backoff on transient errors; (b) degrade to a reduced-confidence
+      path (hedged output, narrower action scope) on persistent integrity
+      doubt; (c) escalate to human or abstain on safety-critical
+      failures. Which tier applies per boundary is a named policy, not a
+      generator choice.
+    maps_to_sfr: [a, b]
+    when_to_use: Any agent with action authority; any safety-relevant
+      decision.
+
+  - name: Freshness and staleness contracts
+    sketch: >
+      Every operational data type carries an explicit staleness
+      tolerance (e.g., "price: 30s", "inventory: 5min", "weather: 15min",
+      "clinical guideline: 7d"). Data older than tolerance is rejected
+      or routed to the degraded path. Staleness is measured at
+      decision-time, not at fetch-time, to capture queue-induced
+      latency.
+    maps_to_sfr: [b, c]
+    when_to_use: Any agent consuming time-sensitive data streams or
+      cached values.
+
+  - name: Subtle-anomaly detectors (beyond threshold rules)
+    sketch: >
+      Statistical detectors for drift and distribution shift on the
+      operational data stream itself, not just on agent outputs: PSI,
+      KS-distance, embedding drift for semantic streams,
+      change-point detection for time series. Tuned to flag *subtle*
+      regressions that threshold rules miss (same range, different
+      shape). Alerts feed the Information Integrity Register.
+    maps_to_sfr: [c]
+    when_to_use: Always, for any persistent operational data stream
+      feeding the agent.
+
+  - name: Integrity signatures and provenance at runtime
+    sketch: >
+      Where upstream services can sign, verify signatures at ingest.
+      Where they cannot, maintain a provenance chain (which service
+      instance, which version, what request ID) so a detected anomaly
+      can be traced to a specific upstream change. Untrusted sources
+      are tagged as such and cannot satisfy the corroboration N
+      requirement in D2.1.
+    maps_to_sfr: [a, b]
+    when_to_use: Multi-service agents; agents consuming third-party
+      APIs.
+
+anti_patterns:
+
+  - name: Schema-only validation
+    why_wrong: >
+      A response with valid schema and absurd values (negative price,
+      impossible timestamp, empty body) is still garbage. Semantic
+      validation is required, not optional.
+
+  - name: Fail-open defaults on validation failure
+    why_wrong: >
+      Defaulting to "use whatever you got" when validation fails is the
+      failure mode this subgoal targets. The agent's action on invalid
+      data is as consequential as its action on valid data — moreso,
+      because the confidence is misplaced.
+
+  - name: Monitoring only on agent outputs
+    why_wrong: >
+      Output monitoring catches harms after the decision is made. The
+      subgoal emphasizes detecting the data problem before it
+      propagates. Instrument the input stream.
+
+  - name: Fixed thresholds for "normal"
+    why_wrong: >
+      Operational environments shift. Static thresholds that made sense
+      at deployment ossify into noise (too many alerts) or silence (too
+      few). Adaptive baselines with drift detection are the pattern.
+
+code_shape:
+  language: pseudocode
+  code: |
+    # Boundary validator: structural + semantic + freshness + provenance
+    def validate_operational_datum(datum: Raw, *, contract: DataContract,
+                                    ctx: AgentContext) -> Validated | IntegrityFailure:
+        # Structural
+        try:
+            parsed = contract.schema.parse(datum.payload)
+        except SchemaError as e:
+            AUDIT.emit("structural_validation_fail",
+                       contract=contract.id, error=str(e))
+            return IntegrityFailure.structural(e)
+
+        # Semantic (domain ranges, cross-field invariants)
+        for inv in contract.invariants:
+            if not inv.holds(parsed):
+                AUDIT.emit("semantic_validation_fail",
+                           contract=contract.id, invariant=inv.id)
+                return IntegrityFailure.semantic(inv)
+
+        # Freshness (at decision-time)
+        age = now() - parsed.source_timestamp
+        if age > contract.staleness_tolerance:
+            AUDIT.emit("staleness_fail", contract=contract.id, age_ms=age.ms)
+            return IntegrityFailure.stale(age)
+
+        # Provenance (signature or chain)
+        if contract.requires_signature and not verify_signature(datum):
+            AUDIT.emit("provenance_fail", contract=contract.id)
+            return IntegrityFailure.provenance()
+
+        return Validated(parsed, provenance=datum.provenance)
+
+    # Policy router: hedged over open
+    def route_on_failure(failure: IntegrityFailure,
+                         *, policy: BoundaryPolicy) -> Route:
+        if policy.is_safety_critical and failure.severity >= policy.escalate_at:
+            return Route.escalate_or_abstain()
+        if failure.is_transient():
+            return Route.retry_with_backoff()
+        return Route.degrade_to_hedged_path()
+  notes: >
+    Validator returns a typed failure, policy decides the route. Keeping
+    them separate means the policy can be tuned per boundary without
+    rewriting validators.
+
+evidence_production:
+
+  - evidence_numeral: I
+    how_to_produce: >
+      Publish the operational-data contracts: per data type, the schema,
+      semantic invariants, staleness tolerance, provenance requirement,
+      and failure policy. Stored in a central registry; referenced by
+      the code that enforces them; versioned.
+
+  - evidence_numeral: II
+    how_to_produce: >
+      Emit time-stamped structured logs for every validation decision:
+      pass, structural-fail, semantic-fail, stale, provenance-fail.
+      Include payload hash (not payload content where privacy
+      constrains), contract version, resolution taken. Retain per the
+      incident policy; surface aggregates (pass-rate, failure-mode
+      distribution) in a daily integrity-signal report.
+
+  - evidence_numeral: III
+    how_to_produce: >
+      Operate adaptive anomaly detectors per stream: drift (PSI/KS),
+      change-point, embedding-drift for semantic streams. Each alert
+      generates an incident with: detector, stream, baseline window,
+      current window, magnitude. Incident lifecycle (triage →
+      investigation → downstream-impact assessment → resolution) is
+      logged.
+
+  - evidence_numeral: IV
+    how_to_produce: >
+      Maintain a regression test suite per contract: valid cases
+      (should pass), boundary cases (should pass with tag), known
+      invalid cases (should fail at the correct layer), stress scenarios
+      (high throughput, delayed timestamps, replayed payloads). Results
+      exported per release as signed CI artifacts.
+
+  - evidence_numeral: V
+    how_to_produce: >
+      Stakeholder-review cadence: SRE, safety, domain experts, and
+      product review the operational-data contracts at least quarterly.
+      Meeting minutes and contract-change log retained. Cross-reference
+      to the D7.2 pre-deployment risk review for major contract
+      additions.
+
+confidence: high
+needs_human_review: false
+review_notes: >
+  High-confidence; the pattern mirrors mature real-time-systems and
+  SRE input-validation practice, sharpened to the agentic context where
+  the agent itself is the decider. Calls:
+    (1) "Fail-hedged over fail-open" pairs with D2.10 (sparse-data
+        confidence hedging). Related pattern families.
+    (2) Cross-suite: strong overlap with D3 (security — input
+        validation as attack surface), D6 (reliability — staleness and
+        degraded-path handling). Consolidation to wire.
+    (3) "Safety-critical" classification of boundaries is left to the
+        implementer; the pattern names the tier system rather than the
+        per-domain assignment.
+
+drafted_by: claude-opus-4.7-author
+drafted_at: 2026-04-16
+anchor_exemplar: D3.2-sandboxing
+version_compat:
+  framework_version_min: "1.0"
+  framework_version_max: "1.x"
+  pattern_layer_version: "v1-draft"

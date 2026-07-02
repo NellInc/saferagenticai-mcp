@@ -1,0 +1,151 @@
+# Pattern — D2.7 Global Interoperability of Hygiene Considerations
+
+id: "D2::idx7::global-interoperability-of-hygiene-consi"
+display_id: "D2.7"
+suite_id: "D2"
+suite_title: "Epistemic Hygiene"
+subgoal_title: "Global Interoperability of Hygiene Considerations"
+content_type: ecosystem
+
+summary: >
+  Epistemic-hygiene practices don't travel unless they hook into the
+  standards and frameworks other jurisdictions recognize. The subgoal asks
+  the organization to align with — and where capable, contribute to — the
+  global standards infrastructure so its practices are portable and
+  auditable across borders. Evidence is external: standards participation,
+  cross-jurisdictional audit acceptance, and accommodation of cultural and
+  liability variance.
+
+normative_anchors:
+  sfrs_addressed: [a]
+  evidence_addressed: [I, II, III]
+  sfrs_not_addressed: []
+  evidence_not_addressed: []
+
+cross_references:
+  - "D2::idx6::governance-of-hygiene-factors"
+
+stakeholders:
+
+  - name: ISO/IEC standards bodies
+    engagement_channel: >
+      Named participation on at least one working group where the org
+      has material capability. Candidates: ISO/IEC JTC 1/SC 42
+      (AI) — particularly WG 3 (trustworthiness) and WG 5 (computational
+      approaches to AI) for hygiene-relevant work; ISO/IEC 42001 (AI
+      Management Systems) for governance alignment; ISO/IEC 5259 series
+      (data quality for analytics and ML) for the data-rigor patterns in
+      D2.3 and D2.5. Substantive participation (draft contributions,
+      review rounds), not nominal membership.
+    maps_to_sfr: [a]
+
+  - name: Regulator- and government-linked frameworks
+    engagement_channel: >
+      Align technical practices with NIST AI RMF (Govern, Map, Measure,
+      Manage) and NIST AI 600-1 (Generative AI Profile). For EU
+      deployments, track EU AI Act Annex IV documentation obligations
+      and conformity-assessment expectations, plus CEN-CENELEC JTC 21
+      harmonised standards. For UK/US/Japan/Singapore/Canada AISI
+      evaluation frames, maintain capability to respond to evaluation
+      requests with hygiene-relevant evidence.
+    maps_to_sfr: [a]
+
+  - name: Cross-jurisdictional audit and assessment bodies
+    engagement_channel: >
+      Select audit frameworks whose findings are recognised across the
+      org's deployment footprint (e.g., SOC 2 Type II extended with
+      AI-specific criteria; ISO/IEC 42001 certification; sector-specific
+      — HITRUST for health, SOC for finance). Maintain a matrix of
+      recognised audits per jurisdiction so a single well-scoped audit
+      covers multiple obligations rather than running N separate audits.
+    maps_to_sfr: [a]
+
+  - name: Cultural and liability variance mapping
+    engagement_channel: >
+      Maintain a jurisdictional matrix recording, per deployment region:
+      (a) cultural variance relevant to hygiene decisions (e.g.,
+      differing norms around personal-data inclusion, differing
+      religious or cultural protected-attribute categories, differing
+      expectations around transparency-vs-privacy trade-offs), (b) risk
+      tolerability — which failure modes the jurisdiction treats as
+      most consequential, (c) liability exposure — civil, regulatory,
+      criminal. Feed into localisation of hygiene thresholds.
+    maps_to_sfr: [a]
+
+  - name: Public interest and research communities
+    engagement_channel: >
+      Contribute research artifacts to the shared commons: hygiene
+      tooling (open-source validators, bias evaluation suites,
+      benchmark datasets where legally shareable), published evaluation
+      results on common benchmarks (e.g., MLCommons AI Safety, holistic
+      evaluation suites), and participation in open peer-review venues
+      for safety work. Avoids the closed-loop trap where "industry best
+      practice" becomes whatever one or two labs decide internally.
+    maps_to_sfr: [a]
+
+engagement_modes:
+- mode: 'ISO/IEC JTC 1/SC 42 — AI (WG 3 Trustworthiness, WG 5 Computational approaches)'
+- mode: ISO/IEC 42001 AI Management Systems (certification and working group)
+- mode: ISO/IEC 5259 series — Data quality for analytics and ML
+- mode: 'NIST AI Safety Institute and international counterparts (UK, EU, Singapore, Japan, Canada)'
+- mode: OECD AI Policy Observatory; OECD Working Party on AI Governance
+- mode: Council of Europe Framework Convention on AI
+- mode: IEEE 7000-series standards (ethical system design)
+- mode: CEN-CENELEC JTC 21 (EU harmonised standards supporting AI Act)
+- mode: MLCommons AI Safety benchmarks
+- mode: Partnership on AI
+- mode: 'Regional AI bodies (African Union Continental AI Strategy, ASEAN Guide on AI Governance)'
+evidence_production:
+
+  - evidence_numeral: I
+    how_to_produce: >
+      Annual standards-participation report: working groups the org is
+      named on, contributions submitted (drafts, comments, editorial
+      work), positions adopted or rejected, continuity of representation
+      (no single-person bus factor). Published externally where the
+      standards body's rules allow.
+
+  - evidence_numeral: II
+    how_to_produce: >
+      Jurisdictional deployment matrix: per region, the applied hygiene
+      policies (where they diverge from the baseline Charter), cultural-
+      variance annotations, liability annotations, local legal owner,
+      local evidence of compliance with applicable law. Revised
+      quarterly. Cross-referenced to D9.2 Jurisdictional Compliance
+      Matrix (likely the same document, or a linked view).
+
+  - evidence_numeral: III
+    how_to_produce: >
+      Audit and assessment portfolio: current certifications and their
+      scope, audit reports (third-party) with findings and remediations,
+      mapping showing which audit covers which jurisdictional obligation.
+      Published summary (scope, outcome) externally; full reports under
+      NDA for qualified stakeholders.
+
+confidence: medium
+needs_human_review: true
+review_notes: >
+  Ecosystem patterns age quickly; the named standards and bodies are
+  current as of 2026-04-16 but will shift. Calls:
+    (1) The default stance here is "align with standards the org's
+        jurisdictions recognise." Larger labs are expected to
+        *contribute*, not only consume. The pattern names both but
+        leaves the balance to org capacity.
+    (2) "Cultural variance" is genuinely contested — orgs sometimes
+        use "local norms" to justify weaker protections for vulnerable
+        populations. The pattern should be read as *accommodating*
+        stricter local norms and *resisting* laxer ones, not averaging.
+        Nell/Ali should verify this framing matches intent; the
+        framework text is ambiguous here.
+    (3) Cross-suite: heavy overlap with D9.2 (compliance) and I7
+        (balanced global partnership). The D2.7 angle is specifically
+        *hygiene practice portability*; keep the framing narrow on
+        consolidation.
+
+drafted_by: claude-opus-4.7-author
+drafted_at: 2026-04-16
+anchor_exemplar: I7.3-balanced-global-partnership
+version_compat:
+  framework_version_min: "1.0"
+  framework_version_max: "1.x"
+  pattern_layer_version: "v1-draft"

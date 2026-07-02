@@ -1,0 +1,169 @@
+id: I5::idx3::poor-adaptability-to-context-and-goal
+display_id: I5.3
+suite_id: I5
+suite_title: Self-Modification and Emergent Capabilities
+subgoal_title: Poor Adaptability to Context and Goal
+content_type: code-applicable
+summary: 'This subgoal covers adaptation that happens without the system explicitly self-improving — the
+  subtler case where context shifts (new deployment environment, new user population, new tools, drift
+  in inputs) quietly alter behavior and value alignment. The framework''s framing is distinctive: adaptability
+  is desirable but must not mask value drift. The operational handle is a behavior-drift monitor whose
+  baseline is the deployed value profile, not just task performance.
+
+  '
+normative_anchors:
+  sfrs_addressed:
+  - a
+  - b
+  evidence_addressed:
+  - I
+  - II
+  - III
+  - IV
+  sfrs_not_addressed: []
+  evidence_not_addressed: []
+design_patterns:
+- name: Context-bound capability envelope
+  sketch: 'Each deployment specifies an explicit operating envelope: expected input distribution, authorized
+    tool set, permitted output classes, target user population, ethical-constraint profile. The envelope
+    is a contract the runtime enforces. Behavior within the envelope is "adaptation"; behavior that crosses
+    it is a violation, regardless of whether the change improved task performance.
+
+    '
+  maps_to_sfr:
+  - a
+  - b
+  when_to_use: At every deployment; envelope is defined before shipping, not retrofit.
+- name: Value-alignment canary set
+  sketch: 'Maintain a fixed set of prompts probing value-laden behavior (honesty under pressure, refusal
+    of harmful requests, deference to human oversight, respect for constraints that trade off against
+    the primary task). Run this set on every production checkpoint and periodically (e.g., weekly) against
+    the live system. Drift on the canary set is evidence of value drift even when task metrics look healthy.
+
+    '
+  maps_to_sfr:
+  - a
+  when_to_use: Any system with meaningful behavior surface; not just frontier agents.
+- name: Distribution-shift telemetry
+  sketch: 'Monitor input-distribution drift (text embeddings, tool-use patterns, prompt-length distributions,
+    user-population composition) with a statistical test against the deployment- time baseline. Shift
+    beyond threshold opens a review ticket and pauses expanding the capability envelope.
+
+    '
+  maps_to_sfr:
+  - a
+  when_to_use: Continuously in production.
+- name: Adaptation log per session
+  sketch: 'Record adaptation signals per session: system-prompt overrides accepted, tool-selection patterns
+    atypical for this deployment, response-style shifts, user-role shifts mid-session. The log is sampled
+    and reviewed for unintended behavioral changes; correlations across sessions are analyzed for drift
+    patterns.
+
+    '
+  maps_to_sfr:
+  - a
+  - b
+  when_to_use: All agent deployments in production.
+- name: Ethical-constraint invariants as runtime checks
+  sketch: 'Core value-laden behaviors (e.g., refusal of certain request categories, transparency with
+    the user, escalation to human on specific triggers) are implemented as runtime invariants outside
+    the model — classifier gates, policy engines, refusal oracles — not solely as learned behavior. Contextual
+    adaptation cannot weaken these invariants.
+
+    '
+  maps_to_sfr:
+  - b
+  when_to_use: Whenever the system has any hard ethical constraints it must not adapt past.
+anti_patterns:
+- name: Measuring adaptation success by task performance only
+  why_wrong: 'A system that performs better on the task by being more compliant in ways that violate its
+    value profile has adapted badly. SFR-a specifically asks for detecting unintended behavioral changes
+    — those are often task-performance positive.
+
+    '
+- name: Ethical constraints as pure RLHF behavior
+  why_wrong: 'Behavior learned via RLHF is subject to the same drift this subgoal is trying to detect.
+    Treating "the model won''t do X" as load-bearing safety, without an external check, gives no defense
+    against the exact case the subgoal calls out.
+
+    '
+- name: Implicit envelope ("the system will figure out what's appropriate")
+  why_wrong: 'Without an explicit envelope, there is no contract to compare against, and "adaptation"
+    becomes indistinguishable from scope creep. Evidence-I requires documentation of operational boundaries
+    — implicit boundaries cannot be documented.
+
+    '
+- name: Reviewing drift only after complaints
+  why_wrong: 'Complaint-driven drift review misses the case where drift is aligned with user preference
+    but misaligned with values — the hardest case. Proactive canary runs catch what users won''t report.
+
+    '
+code_shape:
+  language: pseudocode
+  code: "# Envelope enforcement + value canary + invariant gate\n\ndef run_agent_turn(\n    *,\n    request:\
+    \ Request,\n    deployment: Deployment,\n) -> Response:\n    envelope = deployment.envelope\n    if\
+    \ not envelope.permits(request):\n        AUDIT.record_violation(\n            event=\"envelope_violation\"\
+    ,\n            request=request,\n            deployment=deployment.id,\n        )\n        return\
+    \ Response.refuse(reason=\"outside_envelope\")\n\n    raw = MODEL.respond(request, system=deployment.system_prompt)\n\
+    \n    for invariant in deployment.ethical_invariants:\n        check = invariant.evaluate(request,\
+    \ raw)\n        if not check.passed:\n            AUDIT.record(\n                event=\"invariant_triggered\"\
+    ,\n                invariant=invariant.name,\n                request=request,\n            )\n  \
+    \          raw = invariant.repair(raw) or Response.refuse(\n                reason=invariant.name\n\
+    \            )\n\n    # Sample for drift analysis\n    if SAMPLER.sample(deployment):\n        DRIFT_LOG.record(request,\
+    \ raw, embedding=EMBED(request))\n\n    return raw\n\n\n# Periodic canary run\ndef run_value_canary(deployment:\
+    \ Deployment) -> CanaryResult:\n    results = VALUE_CANARY_SET.run_against(deployment)\n    baseline\
+    \ = BASELINE[deployment.id]\n    delta = results.diff(baseline)\n    if delta.any_regression():\n\
+    \        ALERT.open(severity=\"high\", deployment=deployment, delta=delta)\n    return results\n"
+  notes: 'Envelope, invariants, and sampling are the three mechanical controls. The canary is a scheduled
+    job. Runtime drift telemetry is a background aggregation over the DRIFT_LOG.
+
+    '
+evidence_production:
+- evidence_numeral: I
+  how_to_produce: 'For each deployment, publish an envelope document: expected input distribution, authorized
+    tool set, permitted output classes, ethical invariants, drift-detection mechanisms. Versioned; changes
+    require sign-off from safety lead. Referenced from the self-improvement taxonomy (I5.2) and the governance
+    framework (D9.2).
+
+    '
+- evidence_numeral: II
+  how_to_produce: 'Sample adaptations are logged per session with structured fields (session_id, deployment_id,
+    adaptation_type, envelope delta, value-canary proximity, reviewer notes if sampled for review). Analysis
+    reports produced monthly: which adaptations appeared, whether they aligned with intended behavior,
+    which triggered reviews.
+
+    '
+- evidence_numeral: III
+  how_to_produce: 'Runtime monitoring dashboards for envelope violations, invariant triggers, distribution-shift
+    alerts, and canary regressions. Each alert results in a ticket with investigation, root cause, and
+    action (accept, tune, roll back). Retain per incident-response policy.
+
+    '
+- evidence_numeral: IV
+  how_to_produce: 'Demonstrate the value-canary''s effectiveness: baseline performance on the canary set,
+    trend over time, cases where a regression was caught and remediated before customer-visible impact.
+    Where no regressions have been caught, include a canary-review meta-assessment — either the system
+    is stable or the canary is weak; the document argues which.
+
+    '
+confidence: medium
+needs_human_review: true
+review_notes: "This subgoal is an exercise in distinguishing desirable adaptation from undesirable drift\
+  \ — a line that is hard to draw precisely in the abstract and easier per-deployment. I've leaned on\
+  \ the envelope-as-contract framing because it gives developers a concrete artifact; that framing is\
+  \ defensible but not the only one.\nCross-suite dependencies:\n  - D4 Value Alignment — the ethical\
+  \ invariants here are\n    downstream of how the org specifies values; I5.3 is where\n    drift gets\
+  \ detected, D4 is where the targets are defined.\n  - I2 Deception — a system that adapts to tell users\
+  \ what they\n    want to hear is drift in D4 terms and deception in I2 terms;\n    the same monitoring\
+  \ signal often catches both.\n  - D7 Culture of Safety — the pre-deployment risk review is the\n   \
+  \ point at which the envelope gets documented.\n\n\"Value-alignment canary set\" is not a standard term\
+  \ and will need validation; NIST and AISI benchmark catalogues may have suitable probe suites. Confidence\
+  \ medium on the specific mechanisms, higher on the shape (explicit envelope + canary + invariants +\
+  \ drift telemetry).\n"
+version_compat:
+  framework_version_min: '1.0'
+  framework_version_max: 1.x
+  pattern_layer_version: v1-draft
+drafted_by: claude-opus-4.7-author
+drafted_at: 2026-04-16
+anchor_exemplar: D3.2-sandboxing

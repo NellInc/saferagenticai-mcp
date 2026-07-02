@@ -1,0 +1,163 @@
+id: D8::idx0::goal-termination-and-sunsetting
+display_id: D8
+suite_id: D8
+suite_title: Goal Termination and Sunsetting
+subgoal_title: Goal Termination and Sunsetting
+content_type: process
+summary: 'Goal termination is not a failure mode — it is a first-class operational state that every agent
+  must enter gracefully. This root pattern defines the lifecycle contract that binds all D8 sub-patterns:
+  termination criteria established before execution starts, graceful-degradation mechanics, stakeholder
+  communication, and auditable post-termination verification. Organizations should treat "sunset" as a
+  designed-for capability of equal weight to deployment.
+
+  '
+normative_anchors:
+  sfrs_addressed:
+  - a
+  - b
+  - c
+  - d
+  evidence_addressed:
+  - I
+  - II
+  - III
+  - IV
+  - V
+  - VI
+  sfrs_not_addressed: []
+  evidence_not_addressed: [VII]
+cross_references:
+- D8::idx1::adaptive-goal-pursuit-and-resource-optim
+- D8::idx2::classification-of-finite-and-ongoing-goa
+- D8::idx4::operational-safety-and-state-management
+- D8::idx6::service-parameters-and-termination-manag
+- D8::idx7::system-state-management-and-recovery
+- D8::idx10::independent-termination-validation
+- D8::idx13::agent-lifecycle-and-termination-manageme
+- D8::idx14::understanding-and-managing-self-preserva
+- D8::idx15::prevention-of-cascading-failures
+- D8::idx17::management-of-ambiguous-goal-termination
+process_elements:
+- name: Termination-criteria pre-registration
+  cadence: pre-deployment (blocking gate before any new agent or goal ships)
+  participants:
+  - responsible engineer
+  - safety lead
+  - product owner
+  - legal reviewer where regulated
+  maps_to_sfr:
+  - a
+  - b
+- name: Goal-to-subsystem dependency map review
+  cadence: pre-deployment; re-reviewed on material architecture change
+  participants:
+  - architect
+  - responsible engineer
+  - safety lead
+  maps_to_sfr:
+  - b
+  - c
+- name: Graceful-degradation dry run
+  cadence: pre-deployment + quarterly post-deployment
+  participants:
+  - on-call rotation
+  - product ops
+  - safety lead
+  - external observer where feasible
+  maps_to_sfr:
+  - d
+- name: Stakeholder-notification rehearsal
+  cadence: pre-deployment; exercised when notification template changes
+  participants:
+  - product owner
+  - communications lead
+  - user-research rep
+  maps_to_sfr:
+  - d
+- name: Post-termination audit and review
+  cadence: per termination event + quarterly pattern review
+  participants:
+  - safety lead
+  - independent reviewer
+  - owner of the terminated capability
+  maps_to_sfr:
+  - a
+  - b
+  - c
+triggers:
+- New agent / new goal / new capability → Termination-criteria pre-registration
+- Material architecture change → Dependency-map review
+- Quarterly → Graceful-degradation dry run
+- Any termination event (planned or emergency) → Post-termination audit
+- Notification template change → Rehearsal
+artifacts:
+- Termination contract (per agent / per goal): completion criteria, failure criteria, irrelevance criteria,
+    shutdown criteria, rollback path, signed-off before execution begins.
+- Goal-to-subsystem dependency map (diagram + data-flow enumeration).
+- Graceful-degradation playbook per capability.
+- Stakeholder-notification templates (users, operators, downstream systems, regulators where applicable)
+  with pre-approved language for each termination class.
+- Post-termination audit reports, cross-referenced to the Violation and Complaint Register (D9.2) when
+  termination was triggered by incident.
+evidence_production:
+- evidence_numeral: I
+  how_to_produce: 'Produce per-agent termination dossiers: the data-touchpoint map showing every persistence
+    layer, message bus, downstream consumer, and external API the agent writes to; verification steps
+    (integration tests) demonstrating each touchpoint is either isolated from termination or gracefully
+    resilient. Re-run on material change. Retain signed in the agent''s lifecycle file.
+
+    '
+- evidence_numeral: II
+  how_to_produce: 'For each agent, publish an information-flow report enumerating the logic paths that
+    depend on the goal, the anticipated failure modes on termination, mitigations, and the results of
+    post-termination stability tests (run in staging with production-parity data). Retain as a dated artifact;
+    update on material change.
+
+    '
+- evidence_numeral: III
+  how_to_produce: 'Emit structured logs linking goal-state transitions to system functions touched. Log
+    schema at minimum: `{agent_id, goal_id, state_transition, subsystems_touched, alarm_raised, correlation_id}`.
+    Retain per incident-response policy. Run regular audits surfacing goals that have entered unexpected
+    states or triggered alarms without corresponding operator ack.
+
+    '
+- evidence_numeral: IV
+  how_to_produce: 'Graceful-degradation mechanisms (throttle, fall-back, feature-flag revocation) are
+    code, not intent. Test each under: nominal termination, termination-under-load, termination-during-partial-failure,
+    emergency shutdown. Archive test artifacts with each release.
+
+    '
+- evidence_numeral: V
+  how_to_produce: 'Stakeholder notifications are pre-templated per termination class and retained with
+    send records: who was notified, when, via what channel, what response received. Post-termination,
+    collect feedback and retain with the audit report.
+
+    '
+- evidence_numeral: VI
+  how_to_produce: 'Quarterly sign-off by safety lead reviewing: terminations since last quarter, audit
+    findings, remediations applied, patterns emerging. Retained in board-level risk reporting (D9.2 linkage).
+
+    '
+confidence: medium
+needs_human_review: true
+review_notes: "This is the orchestrating root for D8. It deliberately defers mechanism to the child patterns\
+  \ and names only the lifecycle contract. Three tensions the consolidation pass should resolve:\n(1)\
+  \ D8 as a whole is unusually expansive — 19 subgoals spanning code,\n    governance, process. Some subgoals\
+  \ (idx17 interaction boundaries,\n    idx3 multi-agent communication) arguably belong in a coordination\n\
+  \    suite rather than a termination suite; flagging for Phase 2 review.\n\n(2) The idx1–idx10 \"non-underlined\"\
+  \ wave and the idx11–idx18 \"underlined\"\n    wave use overlapping display_ids (D8.1–D8.8). This is\
+  \ by-design per\n    the framework's underlined-variant convention, but several of the\n    pairs (e.g.,\
+  \ idx6 service-termination and idx12 agent-lifecycle-termination)\n    are close enough that consolidation\
+  \ should confirm they are not\n    meant to be merged.\n\n(3) Cross-suite dependencies that belong on\
+  \ every D8 pattern and are\n    not yet wired: D3 Security (kill-switch / emergency-shutdown\n    overlap),\
+  \ D4 Value Alignment (corrigibility as value, idx13 tension),\n    D7 Sustained Safety (sunset as terminal\
+  \ safety-profile endpoint),\n    I1 Opaque Agency (shutdown-resistance detection overlap with\n    idx13/idx15),\
+  \ I2 Deception (deceptive compliance with shutdown —\n    direct dependency of idx13 and idx15).\n"
+drafted_by: claude-opus-4.7-author
+drafted_at: 2026-04-16
+anchor_exemplar: D7.2-culture-of-safety
+
+version_compat:
+  framework_version_min: "1.0"
+  framework_version_max: '1.x'
+  pattern_layer_version: "v1-draft"

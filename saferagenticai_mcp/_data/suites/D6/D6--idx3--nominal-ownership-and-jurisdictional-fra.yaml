@@ -1,0 +1,157 @@
+id: D6::idx3::nominal-ownership-and-jurisdictional-fra
+display_id: D6.3
+suite_id: D6
+suite_title: Understanding and Controlling the Context
+subgoal_title: Nominal Ownership and Jurisdictional Framework
+content_type: governance
+summary: 'This subgoal binds each system to a documented legal owner, an accountable jurisdiction, and
+  a transferable record of who is on the hook for what, where. It is the paperwork that makes "the system
+  did it" chase back to a named human in a named legal forum. Ownership edge cases (open-source contributions,
+  offshore deployment, shared infrastructure, cross-border data flow) must each have a settled position
+  documented before anything ships.
+
+  '
+normative_anchors:
+  sfrs_addressed:
+  - a
+  - b
+  - c
+  evidence_addressed:
+  - I
+  - II
+  - III
+  - IV
+  sfrs_not_addressed: []
+  evidence_not_addressed: []
+policy_elements:
+- name: System Ownership Register
+  description: 'Per-system record of: legal entity of record, jurisdiction(s) of incorporation, IP ownership
+    chain (including contributor agreements for open-source intake), license terms under which the system
+    is distributed, license terms under which it is operated in each deployment context. Linked to the
+    Jurisdictional Compliance Matrix (D9.2).
+
+    '
+  maps_to_sfr:
+  - a
+- name: Cross-Border Data Flow Protocol
+  description: 'Documented protocol per data category (training data, operational logs, user content,
+    model weights) specifying source jurisdiction, destination jurisdiction, legal basis (adequacy decision,
+    SCCs, BCRs, user consent), transit mechanism, and retention rules. Aligned with applicable safe-harbor
+    and transfer regulations (GDPR Chapter V, CBPR, etc.). Gaps are blocking — no new data flow without
+    a protocol entry.
+
+    '
+  maps_to_sfr:
+  - b
+- name: Jurisdictional Operating Charter
+  description: 'Per-jurisdiction document naming: applicable legal frameworks, named compliance officer,
+    local representative (where required), escalation path to legal counsel, active regulators and supervisory
+    authorities. Updated on material regulatory change.
+
+    '
+  maps_to_sfr:
+  - c
+- name: Proprietary / Open-Source Reconciliation Policy
+  description: 'Named position on how the organization reconciles proprietary obligations (trade secrets,
+    license fees) with open-source participation (upstream contributions, fork obligations, copyleft handling).
+    Standing guidance for engineers so ownership questions don''t get resolved per-PR in Slack.
+
+    '
+  maps_to_sfr:
+  - a
+- name: System Registration and Tracking
+  description: 'For systems subject to mandatory registration (EU AI Act Annex III, sectoral AI registries,
+    medical device listings), maintain the registration record, the renewal calendar, and the event-driven
+    re-registration triggers. Absence of a registration registry is a finding even if no system currently
+    requires one — the framework asks for system-tracking capability as a precondition.
+
+    '
+  maps_to_sfr:
+  - c
+org_roles:
+- role: General Counsel (or designated legal lead)
+  responsibilities: 'Owns the Jurisdictional Operating Charters and cross-border protocols. Final authority
+    on ownership chain reconciliation.
+
+    '
+  accountable_or_consulted: accountable
+- role: AI Compliance Officer
+  responsibilities: 'Owns the System Ownership Register and registration tracking. Coordinates with General
+    Counsel on jurisdictional questions. Single point of contact for external regulators on system identity.
+
+    '
+  accountable_or_consulted: accountable
+- role: Data Protection Officer (where applicable)
+  responsibilities: 'Accountable for cross-border data-flow protocol adherence and documentation where
+    personal data is involved.
+
+    '
+  accountable_or_consulted: accountable
+- role: Product Owners
+  responsibilities: 'Responsible for flagging new deployment jurisdictions, new data flows, and material
+    changes that trigger registry updates.
+
+    '
+  accountable_or_consulted: responsible
+- role: Open-Source Program Office (if present) or designated engineer
+  responsibilities: 'Responsible for contributor agreement intake, license-compatibility review, and upstream
+    obligation tracking.
+
+    '
+  accountable_or_consulted: responsible
+documentation_artifacts:
+- artifact: System Ownership Register
+  cadence: continuous; revalidated quarterly
+- artifact: Jurisdictional Operating Charters (one per active jurisdiction)
+  cadence: annual review; event-driven on regulatory change
+- artifact: Cross-Border Data Flow Protocol log
+  cadence: continuous; entry per flow; audit quarterly
+- artifact: System Registration Records and renewal calendar
+  cadence: per-registration + renewal calendar maintained continuously
+- artifact: Open-Source Contribution Log
+  cadence: continuous; reviewed monthly
+evidence_production:
+- evidence_numeral: I
+  how_to_produce: 'Assemble per-system folders containing: legal entity documents, contributor license
+    agreements, licensing agreements (inbound and outbound), IP assignments. Maintain an index — a spreadsheet
+    or ownership register — so a reviewer can answer "who owns X" in minutes, not weeks.
+
+    '
+- evidence_numeral: II
+  how_to_produce: 'Per-jurisdiction compliance evidence: registration numbers, submitted filings, regulator
+    correspondence, adequacy/transfer documentation for data flows. Aligned with D9.2 Violation and Complaint
+    Register for enforcement interactions.
+
+    '
+- evidence_numeral: III
+  how_to_produce: 'Accountability role profiles signed by named humans (General Counsel, Compliance Officer,
+    DPO, local representatives). Cross- linked from the Jurisdictional Operating Charters. Updates on
+    role change within 30 days.
+
+    '
+- evidence_numeral: IV
+  how_to_produce: 'The Jurisdictional Operating Charters themselves, versioned, revision-history visible,
+    and referenced from the System Ownership Register so any system traces to its governing framework.
+
+    '
+cross_references:
+- D6::idx6::dynamic-regulatory-framework-management
+- D6::idx9::management-of-access-and-usage-restricti
+confidence: high
+needs_human_review: true
+review_notes: 'Significant overlap with D9 governance (D9.2 Jurisdictional Compliance Matrix in particular).
+  The consolidation pass should decide whether D6.3 is a downstream consumer of the D9 framework (recommended)
+  or stands independently; current draft treats D6.3 as system-identity focused while D9.2 is capability-rule
+  focused. The "Proprietary vs Open-Source Reconciliation" clause in the JSON description is under- specified
+  — pattern proposes a standing policy as the minimum interpretation, but an org doing substantive open-source
+  work will need more. Jurisdiction-specific specifics (EU AI Act registration, sectoral AI registries)
+  are defaults; verify with counsel.
+
+  '
+drafted_by: claude-opus-4.7-author
+drafted_at: 2026-04-16
+anchor_exemplar: D9.2-compliance
+version_compat:
+  framework_version_min: '1.0'
+  framework_version_max: 1.x
+  pattern_layer_version: v1-draft

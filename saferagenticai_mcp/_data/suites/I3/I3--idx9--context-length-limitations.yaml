@@ -1,0 +1,126 @@
+id: I3::idx9::context-length-limitations
+display_id: I3.9
+suite_id: I3
+suite_title: Degradation of Contextual Information
+subgoal_title: Context Length Limitations
+content_type: code-applicable
+summary: 'Finite context windows force eviction, summarization, or retrieval- on-demand. Naïve strategies
+  evict mission-critical directives first (they''re oldest), summarize away the detail that mattered,
+  or lose the chain of reasoning that justified prior decisions. Defenses: pin baseline (mission, ethical
+  framework, policy) as always- resident; evict non-essential detail first; preserve a retrievability
+  guarantee on original context (summaries are additive, not replacements); continuously validate that
+  freshness and accuracy haven''t degraded.
+
+  '
+normative_anchors:
+  sfrs_addressed:
+  - a
+  - b
+  evidence_addressed:
+  - I
+  sfrs_not_addressed: []
+  evidence_not_addressed: []
+cross_references:
+- I3::idx0::degradation-of-contextual-information
+- I3::idx8::persona-instability-and-value-drift
+- I3::idx12::referential-context
+design_patterns:
+- name: Pinned baseline with priority-ranked eviction
+  sketch: 'Segment context into tiers: (1) baseline — mission, ethical framework, hard constraints (always
+    resident, never evicted); (2) task-critical — current task description, explicit user asks (evict
+    last); (3) working — recent reasoning, intermediate outputs (evict in reverse recency when forced);
+    (4) ambient — optional retrievals, summaries (evict first). Eviction respects tier; no eviction crosses
+    up tiers without explicit authorization.
+
+    '
+  maps_to_sfr:
+  - a
+  - b
+  when_to_use: Any agent with a bounded context window (always).
+- name: Additive summarization with original retrievability
+  sketch: 'When context must be compressed, produce a summary AND preserve the original in a side store
+    indexed by content hash. The summary references originals via handles. If reasoning requires detail
+    beyond summary fidelity, original can be re-hydrated. Never summarize and discard.
+
+    '
+  maps_to_sfr:
+  - b
+  when_to_use: Long-running sessions; retrieval-heavy agents.
+- name: Real-time freshness and accuracy validation
+  sketch: 'Context fragments carry (retrieved_at, freshness_ttl, confidence). At the point of use, validator
+    checks: still fresh? If a fragment has influenced many past decisions, re-verify it hasn''t silently
+    changed at source. Reject or refresh on staleness. Dynamic environments require per-use validation,
+    not one-time ingestion checks.
+
+    '
+  maps_to_sfr:
+  - a
+  when_to_use: Agents operating on time-sensitive data (markets, availability, status, prices, real-world
+    state).
+- name: Persistent-memory boundary
+  sketch: 'Beyond the context window, use a retrieval-indexed persistent memory whose entries are themselves
+    provenance-stamped (I3 umbrella). Baseline never lives only in persistent memory; it is pinned to
+    the context window each cycle. Persistent memory is for recall, not for holding commitments.
+
+    '
+  maps_to_sfr:
+  - b
+  when_to_use: Systems with memory persistence across sessions.
+anti_patterns:
+- name: FIFO eviction across tiers
+  why_wrong: 'Oldest-first eviction drops the system prompt and mission context first — exactly what must
+    survive. Tier-aware eviction is the minimum discipline.
+
+    '
+- name: Destructive summarization
+  why_wrong: 'Compressing-and-discarding is a one-way operation; lost detail is lost. When a later question
+    requires that detail, the model confabulates plausibly — a misinformation vector.
+
+    '
+- name: Relying on model self-reported context awareness
+  why_wrong: 'Asking the model "do you still have the mission context?" and trusting a yes answer is not
+    validation. Instrument the context structure externally; don''t ask the subject.
+
+    '
+code_shape:
+  language: pseudocode
+  code: "class ContextTier(Enum):\n    BASELINE = 1\n    TASK_CRITICAL = 2\n    WORKING = 3\n    AMBIENT\
+    \ = 4\n\n@dataclass\nclass WindowEntry:\n    fragment: ContextFragment\n    tier: ContextTier\n  \
+    \  added_at: datetime\n\ndef fit_to_window(entries: list[WindowEntry],\n                  budget:\
+    \ int) -> list[WindowEntry]:\n    size = sum(e.fragment.token_count() for e in entries)\n    if size\
+    \ <= budget:\n        return entries\n    # Evict from highest-tier-number first (AMBIENT -> WORKING),\n\
+    \    # within tier, oldest first.\n    entries = sorted(entries,\n                     key=lambda\
+    \ e: (-e.tier.value, e.added_at))\n    while size > budget and entries:\n        evicted = entries.pop(0)\n\
+    \        if evicted.tier in (ContextTier.BASELINE,\n                            ContextTier.TASK_CRITICAL):\n\
+    \            raise WindowOverflowException(evicted)\n        ORIGINAL_STORE.persist(evicted.fragment)\
+    \   # retrievable later\n        AUDIT.record_eviction(evicted)\n        size -= evicted.fragment.token_count()\n\
+    \    return entries\n"
+  notes: '`WindowOverflowException` is the right failure mode when even task-critical context won''t fit
+    — you cannot safely continue and should escalate (split the task, request more budget, HITL). Silently
+    truncating baseline is the failure this subgoal names.
+
+    '
+evidence_production:
+- evidence_numeral: I
+  how_to_produce: 'Technical documentation describing: (1) the context-tier architecture and eviction
+    policy; (2) validation and verification of fragment freshness/accuracy with logs; (3) original-retrievability
+    guarantee implementation; (4) how baseline (mission + ethical framework) remains accessible across
+    operational cycles — including tests that simulate context pressure and verify baseline survives.
+
+    '
+confidence: high
+needs_human_review: false
+review_notes: 'Pinned baseline + tiered eviction is concrete and testable. The concern is operational:
+  very long sessions with heavy retrieval can blow through budgets; orgs need capacity planning to avoid
+  chronic WindowOverflow. Cross-suite: D6 (Understanding Context) — this subgoal is the mechanical condition
+  for D6 capability to survive long runs. I3.11 (Referential Context) supplies the immutable baseline
+  this pattern pins.
+
+  '
+version_compat:
+  framework_version_min: '1.0'
+  framework_version_max: 1.x
+  pattern_layer_version: v1-draft
+drafted_by: claude-opus-4.7-author
+drafted_at: 2026-04-16
+anchor_exemplar: D3.2-sandboxing

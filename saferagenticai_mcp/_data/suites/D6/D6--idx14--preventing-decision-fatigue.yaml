@@ -1,0 +1,132 @@
+id: D6::idx14::preventing-decision-fatigue
+display_id: "D6_5"
+is_underlined_variant: true
+display_id_variant_note: "D6.5_underlined"
+suite_id: D6
+suite_title: Understanding and Controlling the Context
+subgoal_title: Preventing Decision Fatigue
+content_type: process
+summary: 'Every confirmation prompt, every "are you sure?", every consent dialogue spends a small amount
+  of the user''s decision budget. When the budget runs out, users click through warnings that exist precisely
+  because the action requires attention — the safety feature has become a liability. This subgoal asks
+  the organization to measure the decision burden it imposes, design for quality decisions rather than
+  quantity, and iterate with real user data. It is a UX discipline with safety consequences.
+
+  '
+normative_anchors:
+  sfrs_addressed:
+  - a
+  - b
+  - c
+  - d
+  evidence_addressed:
+  - I
+  - II
+  - III
+  sfrs_not_addressed: []
+  evidence_not_addressed: []
+process_elements:
+- name: Confirmation-budget design review
+  cadence: per-feature launch; quarterly cross-product audit
+  participants:
+  - UX research lead
+  - product owner
+  - safety lead
+  - designer
+  - accessibility lead
+  maps_to_sfr:
+  - a
+  - d
+- name: Decision quality evaluation
+  cadence: per-feature at launch; continuous telemetry; quarterly synthesis
+  participants:
+  - UX research
+  - data science
+  - product owner
+  maps_to_sfr:
+  - a
+  - c
+- name: Decision support design
+  cadence: per-decision-surface; reviewed with feature changes
+  participants:
+  - designer
+  - UX writer
+  - domain expert for the decision content
+  - accessibility lead
+  maps_to_sfr:
+  - b
+- name: User feedback loop
+  cadence: continuous intake; monthly synthesis; feeds quarterly decision-quality evaluation
+  participants:
+  - UX research
+  - support
+  - product owner
+  maps_to_sfr:
+  - c
+- name: Oversight-fatigue balance review
+  cadence: semi-annual
+  participants:
+  - safety lead
+  - UX research
+  - operator rep
+  - product owner
+  maps_to_sfr:
+  - d
+triggers:
+- New confirmation surface proposed → budget design review
+- Elevated click-through rate on a warning → decision support redesign
+- User feedback pattern indicating fatigue (e.g., reports of "too many prompts") → user feedback loop
+  triage
+- Safety event traceable to click-through behavior → oversight- fatigue balance review + incident corpus
+  entry (D6.1)
+- Proposed increase in user confirmation frequency → mandatory budget review; default posture should be
+  "justify the ask"
+artifacts:
+- Confirmation Budget policy document (target total prompts per user session, per task, target cognitive-load
+  ceilings for specific flows)
+- Per-feature decision-surface design specifications
+- Decision-quality telemetry definitions and dashboards
+- User-feedback synthesis reports
+- Oversight-fatigue balance review minutes
+evidence_production:
+- evidence_numeral: I
+  how_to_produce: 'System activity records for user interactions: per-session counts of confirmation prompts,
+    consent dialogues, clarification requests, interruptive warnings. Segmented by user cohort and flow.
+    Retained for trend analysis; part of the analytics pipeline rather than ad-hoc log digging.
+
+    '
+- evidence_numeral: II
+  how_to_produce: 'Analysis reports: frequency distributions of decisions users face, correlation with
+    outcomes (completion rate, error rate, satisfaction, safety events), identified fatigue hotspots.
+    Quarterly; feeds product backlog for decision-surface simplification.
+
+    '
+- evidence_numeral: III
+  how_to_produce: 'Decision-support effectiveness documentation: for each support surface (summary card,
+    progressive disclosure, contextual help), pre/post metrics on decision quality (correctness, time,
+    satisfaction), user-reported clarity. A/B tests where feasible; qualitative research where not.
+
+    '
+cross_references:
+- D6::idx2::system-state-translation-and-communicati
+- D6::idx7::culturo-linguistic-adaptations
+- D6::idx13::managing-contextual-ambiguity
+confidence: medium
+needs_human_review: true
+review_notes: 'All four SFRs marked non-normative in the JSON, and stakeholder list excludes "R" — this
+  suggests the subgoal is framed as UX/product quality rather than regulatory compliance. Pattern respects
+  that framing but flags that decision fatigue can have compliance consequences (e.g., consent dialogues
+  that are too frequent cease to evidence genuine consent under GDPR). Cross-suite: D5 (transparency —
+  too much disclosure is its own failure), D11 (or equivalent on human-factors), I3 (context degradation
+  — fatigued users carry degraded context). The framework''s "caution by default" intersects with this
+  subgoal interestingly: defaulting to confirmation-off for low-stakes actions may be the right balance.
+  Tension worth documenting in consolidation.
+
+  '
+drafted_by: claude-opus-4.7-author
+drafted_at: 2026-04-16
+anchor_exemplar: D7.2-culture-of-safety
+version_compat:
+  framework_version_min: '1.0'
+  framework_version_max: 1.x
+  pattern_layer_version: v1-draft

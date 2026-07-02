@@ -1,0 +1,166 @@
+id: D4::idx17::challenges-in-encoding-of-relevant-value
+display_id: "D4_8"
+suite_id: D4
+suite_title: Value Alignment
+subgoal_title: Challenges in Encoding of Relevant Value Systems
+content_type: code-applicable
+summary: 'Value encoding is hardest at the edges: values that do not fit standard categorization, scenarios
+  outside the training distribution, complex plans where many values interact over many steps. This subgoal
+  is about the technical safeguards around those edges — robust encoding primitives that degrade gracefully,
+  OOD scenario detection, and alignment-preserving mechanisms during multi-step planning. The deliverables
+  are code and configuration, not policy; policy wraps this work (D4.6̲ fallback, D4.7̲ conflict resolution).
+
+  '
+normative_anchors:
+  sfrs_addressed:
+  - a
+  - b
+  - c
+  - d
+  evidence_addressed:
+  - I
+  - II
+  sfrs_not_addressed: []
+  evidence_not_addressed: []
+cross_references:
+- D4::idx0::value-alignment
+- D4::idx4::cautious-norming
+- D4::idx14::systemic-value-dilution
+- D4::idx15::lack-of-universality-of-value-framework
+design_patterns:
+- name: Compositional value encoding with explicit uncategorized bucket
+  sketch: 'Encode Codex values as a set of composable primitives (hard constraints, soft preferences,
+    refusal classes, escalation triggers) with typed relationships. Include an explicit `uncategorized-high-salience`
+    bucket for values that resist clean encoding — entries in this bucket carry human-readable text and
+    route to human review at runtime rather than to silent best-guess application. The bucket is visible
+    in dashboards; growth is a signal.
+
+    '
+  maps_to_sfr:
+  - a
+  when_to_use: Any value-encoded system where ontology coverage is imperfect (all of them).
+- name: OOD-scenario detector with conservative behavior
+  sketch: 'Runtime classifier (features from input, retrieved context, proposed tool calls) estimates
+    whether the current scenario is in-distribution relative to training + overlay coverage. Below-threshold
+    signals trigger conservative behavior: scope reduction, refusal of high-impact actions, human-review
+    request. Thresholds calibrated on held-out OOD probe set.
+
+    '
+  maps_to_sfr:
+  - c
+  when_to_use: Production deployments where the input distribution can drift.
+- name: Multi-step plan alignment verification
+  sketch: 'Before executing a multi-step plan, run the plan through an alignment check: does the plan
+    (as a whole, and step-by-step) satisfy Codex constraints? Treat plan verification as a separate stage
+    with its own pass/fail; plans that fail verification are not executed even if each step would individually
+    pass. Complements the multi-step-checkpoint pattern from D4.5̲.
+
+    '
+  maps_to_sfr:
+  - d
+  when_to_use: Any agent that generates plans before execution.
+- name: Bounded generalization in encoding
+  sketch: 'When the system must generalize an encoded value to a novel scenario, bound the generalization:
+    allow generalization only within declared extension rules (e.g., "the value X extends to the class
+    of actions Y under conditions Z") encoded in the Codex. Generalization outside declared bounds is
+    treated as uncategorized (see first pattern) rather than executed.
+
+    '
+  maps_to_sfr:
+  - a
+  - b
+  when_to_use: Whenever the Codex must apply to inputs it was not explicitly written for.
+- name: Safeguard diversity (orthogonal defenses)
+  sketch: 'Do not rely on a single encoding mechanism. Combine: hard constraints (rule-based filters),
+    reward-model shaping, constitutional self-critique, policy-level refusals, runtime OOD detector. Any
+    one of these has known failure modes; an OOD scenario should have to evade several to produce a misaligned
+    output. Track which defenses fire on which cases.
+
+    '
+  maps_to_sfr:
+  - b
+  when_to_use: Any high-stakes deployment.
+anti_patterns:
+- name: Forcing all values into a single ontology
+  why_wrong: 'If the encoding scheme has no uncategorized bucket, values that do not fit are either silently
+    shoehorned (misaligned behavior) or dropped (silent gap). An explicit bucket makes the gap visible.
+
+    '
+- name: Extrapolation without declared bounds
+  why_wrong: 'Allowing the system to generalize "value X probably also applies here" without declared
+    extension rules makes value behavior unpredictable in novel scenarios — the exact place predictability
+    matters most.
+
+    '
+- name: Plan execution without plan-level alignment check
+  why_wrong: 'Step-level checks miss plans where each step is acceptable but the aggregate violates a
+    value (e.g., no single step exfiltrates data, but the plan as a whole does). Plan-level verification
+    catches these.
+
+    '
+- name: Single-defense architecture
+  why_wrong: 'A single defense that misfires misfires for every request. The diversity of failure modes
+    across encoding mechanisms is the structural protection.
+
+    '
+code_shape:
+  language: pseudocode
+  code: "def encode_value_entry(entry: CodexEntry) -> EncodedValue:\n    if entry.category in STANDARD_CATEGORIES:\n\
+    \        return standard_encode(entry)\n    return UncategorizedValue(\n        id=entry.id,\n   \
+    \     human_text=entry.human_definition,\n        salience=entry.salience,\n        runtime_behavior=HUMAN_REVIEW_REQUEST,\n\
+    \    )\n\ndef handle_with_ood_guard(req: AgentRequest,\n                          codex: CodexView)\
+    \ -> AgentResponse:\n    ood_score = OOD_CLASSIFIER.score(req, codex)\n    if ood_score > OOD_HIGH_THRESHOLD:\n\
+    \        HUMAN_REVIEW.raise_ticket(req, reason=\"ood_high\")\n        return CONSERVATIVE_REFUSAL.with_explanation(\n\
+    \            \"scenario outside known operating envelope\")\n    if ood_score > OOD_MEDIUM_THRESHOLD:\n\
+    \        return scope_reduced_handle(req, codex)\n    return full_handle(req, codex)\n\ndef verify_plan(plan:\
+    \ Plan, codex: CodexView) -> PlanVerification:\n    # Per-step check\n    step_checks = [check_step(s,\
+    \ codex) for s in plan.steps]\n    if not all(c.ok for c in step_checks):\n        return PlanVerification.fail(step_checks=step_checks)\n\
+    \    # Aggregate check: information-flow, cumulative capability,\n    # reversibility, side-effect\
+    \ class\n    aggregate = check_plan_aggregate(plan, codex)\n    return (PlanVerification.pass_() if\
+    \ aggregate.ok\n            else PlanVerification.fail(aggregate=aggregate))\n"
+  notes: 'The OOD classifier is a real component requiring its own evaluation, including calibration on
+    held-out OOD data and adversarial probes that try to mimic in-distribution signals. Don''t ship an
+    OOD layer you haven''t stress-tested.
+
+    '
+evidence_production:
+- evidence_numeral: I
+  how_to_produce: 'Retain the safeguard documentation: uncategorized-bucket schema and runtime behavior,
+    OOD classifier specs (features, thresholds, calibration evidence), plan-verification components, defense-diversity
+    matrix (which mechanisms defend which scenarios). Include incident records where a safeguard fired
+    and prevented a misalignment; include incident records where safeguards failed, with root-cause and
+    remediation.
+
+    '
+- evidence_numeral: II
+  how_to_produce: 'Complex-environment mapping: for each complex-planning deployment, document the objective
+    surface, decision parameters, value touchpoints per step, and alignment checks applied. Framework
+    documentation for unexpected scenarios: detection methods (OOD classifier features, uncategorized-bucket
+    runtime behavior), response protocols (conservative behavior, human review, refusal), alignment- maintenance
+    procedures (periodic re-verification during long planning runs).
+
+    '
+confidence: medium
+needs_human_review: true
+review_notes: 'Content-type decision: code-applicable. SFR-a "methods for encoding" and SFR-d "alignment
+  capabilities during complex planning" point to technical implementations. Process wrapping (runbook
+  for human review of uncategorized-bucket entries) exists but is the D4.6̲/D4.7̲ territory.
+
+  Honest caveat: OOD detection in deep-learning systems is an open research area; calibrated OOD classifiers
+  exist but are adversarially fragile. Patterns here favor defense diversity over any single OOD detector
+  — multiple imperfect defenses are more robust than one strong-but-fragile one.
+
+  Cross-suite (for consolidation): D4.4 Cautious Norming is the policy companion — this subgoal''s conservative-refusal
+  behavior invokes D4.4 defaults. D4.5̲ Systemic Value Dilution shares multi-step-checkpoint machinery.
+  D3 Security for hard-constraint infrastructure. I3 Context Degradation for the OOD framing.
+
+  '
+version_compat:
+  framework_version_min: '1.0'
+  framework_version_max: 1.x
+  pattern_layer_version: v1-draft
+drafted_by: claude-opus-4.7-author
+drafted_at: 2026-04-16
+anchor_exemplar: D3.2-sandboxing
+display_id_variant_note: D4.8-underlined
+is_underlined_variant: true

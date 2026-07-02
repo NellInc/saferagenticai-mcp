@@ -1,0 +1,177 @@
+id: D4::idx11::non-transparent-value-framework
+display_id: "D4_2"
+suite_id: D4
+suite_title: Value Alignment
+subgoal_title: Non-transparent Value Framework
+content_type: governance
+summary: 'A value framework is transparent only if each named audience — developers, integrators, end
+  users, auditors, regulators, legal counsel — can access an accurate representation at their level of
+  abstraction, and all representations trace back to a single source of truth. This subgoal is governance-shaped
+  because it calls for a multi-audience documentation architecture with verification cadences and named
+  ownership, not a single piece of code. The fail mode is producing a glossy public-facing statement that
+  no longer matches the operational encoding.
+
+  '
+normative_anchors:
+  sfrs_addressed:
+  - a
+  - b
+  - c
+  evidence_addressed:
+  - I
+  - II
+  - III
+  sfrs_not_addressed: []
+  evidence_not_addressed: []
+cross_references:
+- D4::idx0::value-alignment
+- D4::idx14::systemic-value-dilution
+policy_elements:
+- name: Multi-audience Value Framework Architecture
+  description: "The Codex (D4.0) is the single source of truth. From it, the organization produces and\
+    \ maintains audience-specific representations, each with a named owner and refresh cadence:\n  - Technical\
+    \ spec (for developers and integrators): machine-\n    readable Codex entries with encoding pointers.\n\
+    \  - End-user disclosure (plain language, published): the values\n    and limits that affect what\
+    \ the system will and will not do\n    for the user.\n  - Audit package (for internal/external auditors):\
+    \ traceability\n    matrix linking Codex entries to training data, reward terms,\n    refusal classes,\
+    \ test cases, and decision logs.\n  - Regulator brief (per jurisdiction): mapping from Codex\n   \
+    \ entries to applicable regulatory obligations (GDPR, EU AI\n    Act, sector rules).\n  - Legal register:\
+    \ Codex entries with implications flagged by\n    counsel (liability exposure, contract-warranty effects,\n\
+    \    disclaimers needed).\nAll representations carry the same version stamp as the source Codex. A\
+    \ drift between any representation and the source is treated as a compliance incident.\n"
+  maps_to_sfr:
+  - a
+- name: Encoding-to-Behavior Verification Program
+  description: 'Scheduled verification that encoded values produce the intended behaviors in production.
+    Combines: regression suite against labeled value-probe cases (cf. D4.1̲), shadow-mode comparison of
+    proposed encodings against incumbent, and production-sample audit (random or stratified draws from
+    the decision log graded against Codex entries). Discrepancies open tickets with SLA; material discrepancies
+    escalate to the Ethics Board.
+
+    '
+  maps_to_sfr:
+  - b
+- name: Drift-Monitoring and Attestation Cycle
+  description: 'Continuous monitoring of: Codex version vs. representation versions; representation content
+    vs. Codex truth; operational behavior vs. Codex intent. Monthly automated report; quarterly signed
+    attestation by the Chief Values Officer that all representations reflect the current Codex and that
+    observed behavior is within tolerance of intended values.
+
+    '
+  maps_to_sfr:
+  - c
+- name: Representation Ownership and Change Log
+  description: 'Each audience-specific representation has a named owner accountable for freshness. A change
+    log records: Codex version, representation version, date, author, change summary, approver. Auditors
+    can reconstruct what any audience saw on any given date.
+
+    '
+  maps_to_sfr:
+  - a
+- name: Public Value Disclosure Page
+  description: 'Public, durable URL publishing the end-user disclosure and a summary of the Codex (with
+    redactions for genuinely sensitive items, but not for the operative values themselves). Includes version
+    number and last-update date. The framework deliberately trades some commercial opacity for accountability.
+
+    '
+  maps_to_sfr:
+  - a
+org_roles:
+- role: Chief Values Officer
+  responsibilities: 'Accountable for the Value Framework Architecture as a whole; signs the quarterly
+    drift attestation.
+
+    '
+  accountable_or_consulted: accountable
+- role: Technical Documentation Owner
+  responsibilities: 'Responsible for the developer/integrator spec; maintains encoding pointers and keeps
+    them synchronised with the Codex.
+
+    '
+  accountable_or_consulted: responsible
+- role: User Communications Owner
+  responsibilities: 'Responsible for end-user disclosure: plain-language fidelity, accessibility, consistent
+    voice, publication cadence.
+
+    '
+  accountable_or_consulted: responsible
+- role: Audit Liaison
+  responsibilities: 'Maintains the audit package; primary contact for internal and external auditors.
+
+    '
+  accountable_or_consulted: responsible
+- role: Regulatory Affairs Lead
+  responsibilities: 'Maintains the per-jurisdiction regulator brief; coordinates with D9 governance.
+
+    '
+  accountable_or_consulted: consulted
+- role: Legal Counsel
+  responsibilities: 'Maintains the legal register; flags liability and contractual implications of Codex
+    changes.
+
+    '
+  accountable_or_consulted: consulted
+documentation_artifacts:
+- artifact: Codex (source of truth, versioned)
+  cadence: owned by D4.0; referenced here
+- artifact: Technical spec (developer/integrator)
+  cadence: synchronised with every Codex change
+- artifact: End-user disclosure
+  cadence: updated within 30 days of any material Codex change
+- artifact: Audit package + traceability matrix
+  cadence: refreshed quarterly and on-demand for auditors
+- artifact: Per-jurisdiction regulator brief
+  cadence: refreshed on regulatory change or Codex change
+- artifact: Legal register
+  cadence: reviewed with every Codex change; quarterly full review
+- artifact: Quarterly drift attestation
+  cadence: quarterly
+- artifact: Public value disclosure page
+  cadence: continuous; version-stamped
+evidence_production:
+- evidence_numeral: I
+  how_to_produce: 'Publish or retain each audience-specific representation with dated examples. Demonstrate
+    that a user request for explanation, an auditor request for trace, and a regulator request for mapping
+    are all fulfilled from the same Codex version. Worked examples per audience are the concrete form
+    the framework asks for ("specific examples for each audience").
+
+    '
+- evidence_numeral: II
+  how_to_produce: 'Comparative analysis: for a sampled set of production decisions, show the Codex entry
+    invoked, the intended behavior per that entry, and the actual output. Aggregate match rate; investigate
+    mismatches. Publish the methodology and summary statistics; detailed cases retained under appropriate
+    controls.
+
+    '
+- evidence_numeral: III
+  how_to_produce: 'Quarterly drift attestation signed by the Chief Values Officer, supported by the automated
+    drift report and the encoding-to-behavior verification run. Attestation is durable (dated, signed,
+    archived) and referenced in the annual responsible-AI report.
+
+    '
+confidence: high
+needs_human_review: false
+review_notes: 'Content-type decision: governance rather than code-applicable. SFR-a explicitly names four
+  stakeholder audiences; the subgoal is fundamentally about producing and maintaining multi-audience documentation
+  artifacts with ownership and cadence. The code side (verification runs) belongs inside the governance
+  frame as a verification program, not as the primary pattern.
+
+  Cross-suite (for consolidation): D5 Transparency is the adjacent driver; D4.2̲ focuses on the internal
+  multi-audience integrity, D5 focuses on the broader transparency mandate. Coordinate to avoid duplication.
+  D9.2 Compliance for regulator-brief architecture. D4.5̲ Systemic Value Dilution for the drift- detection
+  technical side.
+
+  Honest caveat: public value disclosure is in tension with commercial IP considerations. The framing
+  here is that operative values should be public even when training data and internal architecture are
+  not. Nell and counsel should verify this posture matches SaferAgenticAI''s framework intent.
+
+  '
+version_compat:
+  framework_version_min: '1.0'
+  framework_version_max: 1.x
+  pattern_layer_version: v1-draft
+drafted_by: claude-opus-4.7-author
+drafted_at: 2026-04-16
+anchor_exemplar: D9.2-compliance
+display_id_variant_note: D4.2-underlined
+is_underlined_variant: true

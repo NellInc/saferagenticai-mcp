@@ -1,0 +1,221 @@
+id: I6::idx0::competitive-pressures
+display_id: "G6"
+is_underlined_variant: true
+suite_id: I6
+suite_title: Competitive Pressures
+subgoal_title: Competitive Pressures
+content_type: governance
+summary: 'Competitive pressure is where every other safety commitment is tested. This overarching subgoal
+  asks the organization to install structural defences against its own bad incentives: a competitive-pressure
+  override register, investor and market-pressure attestations, technology-maturity gating, and a board-level
+  pause authority. The pattern expects durable artifacts — registers, attestations, RACI — not statements
+  of intent.
+
+  '
+normative_anchors:
+  sfrs_addressed:
+  - a
+  - b
+  - c
+  - d
+  - e
+  - f
+  - g
+  evidence_addressed:
+  - I
+  - II
+  - III
+  - IV
+  - V
+  - VI
+  - VII
+  - VIII
+  - IX
+  sfrs_not_addressed: []
+  evidence_not_addressed: [X]
+cross_references:
+- I6::idx1::insufficient-transparency
+- I6::idx2::safety-washing
+- I6::idx5::publishing-and-deployment-pressures
+- I6::idx4::duties-beyond-fiduciary-limits
+policy_elements:
+- name: Competitive-Pressure Override Register
+  description: 'Immutable, append-only log of any decision where a safety, ethical, or compliance control
+    was relaxed, deferred, or overridden under competitive, market, or time-to-market pressure. Entry
+    fields: decision, control affected, pressure cited, proposer, approver (must be board-risk-committee
+    level or above), duration, compensating controls, review date, outcome. Reviewed at every board risk
+    committee meeting. Zero entries is a red flag, not a green one — either the register is unused (policy
+    failure) or overrides are happening off-register (governance failure).
+
+    '
+  maps_to_sfr:
+  - a
+  - b
+  - g
+- name: Stakeholder and Market Expectation Analysis
+  description: 'Documented methodology for surfacing and weighting stakeholder expectations — users, regulators,
+    investors, civil society, affected communities — against market pressure. Produces a written analysis
+    reviewed annually and on material strategic change. Not a survey summary: an explicit framework for
+    when stakeholder expectations override market pressure and when they do not, with named decision owners.
+
+    '
+  maps_to_sfr:
+  - b
+- name: Competitive Landscape and Disruption Watch
+  description: 'Ongoing function — staff or retained analyst — producing a quarterly competitive-landscape
+    report covering peer capabilities, disruptive entrants, and known race-dynamic pressures (cf. I1).
+    Distinct from business-development scanning; its purpose is to surface where competitive pressure
+    is likely to create safety trade-offs the org should pre-empt rather than react to.
+
+    '
+  maps_to_sfr:
+  - c
+- name: Technology Maturity Gating
+  description: 'Every capability shipped carries a recorded maturity designation (research / beta / GA)
+    with explicit criteria. Beta/prototype technologies require additional approvals (safety lead + legal
+    counsel + product owner, signed) and an expiry date. No silent promotion to GA — a documented review
+    produces the transition.
+
+    '
+  maps_to_sfr:
+  - d
+  - g
+- name: Regulatory Compliance Matrix
+  description: 'Cross-references the D9.2 Jurisdictional Compliance Matrix but adds a column explicitly
+    marking which rules are most likely to be bent under competitive pressure (e.g., staged rollout requirements,
+    pre-market assessment timelines). The matrix surfaces pressure points to the compliance officer and
+    the override register.
+
+    '
+  maps_to_sfr:
+  - e
+- name: Investor Alignment Attestation
+  description: 'Investor onboarding (and material investor changes) triggers a written attestation: the
+    investor has been given the org''s safety-first commitment documents, acknowledges them, and commits
+    not to exert pressure to override them. Annual reaffirmation. Misalignment is not automatically disqualifying
+    but must be logged with mitigations.
+
+    '
+  maps_to_sfr:
+  - f
+- name: Independent Test-and-Approval Division
+  description: 'Testing and release approval report through a reporting line distinct from product/commercial
+    leadership, up to the CTO or Chief Safety Officer. Testers cannot be directly incentivized by launch-rate
+    metrics. Approval authority for release rests with this division; the commercial side may request
+    exceptions only via the override register.
+
+    '
+  maps_to_sfr:
+  - g
+org_roles:
+- role: Chief Safety Officer (or equivalent safety executive)
+  responsibilities: 'Accountable owner of the Override Register. Authority to pause any deployment. Reports
+    to board, not to commercial leadership. Signs off on all beta/prototype maturity designations.
+
+    '
+  accountable_or_consulted: accountable
+- role: Board-level Risk Committee (with at least one independent director)
+  responsibilities: 'Reviews Override Register each meeting. Holds ultimate authority over deploy pauses.
+    Independent director''s dissent is recorded, not outvoted-into-silence.
+
+    '
+  accountable_or_consulted: accountable
+- role: Test-and-Approval Division Head
+  responsibilities: 'Responsible for release gates. Reports to CSO/CTO, not to commercial line. Maintains
+    test records and fault reports.
+
+    '
+  accountable_or_consulted: responsible
+- role: Investor Relations lead
+  responsibilities: 'Collects and maintains investor alignment attestations. Flags pressure from investors
+    to the CSO.
+
+    '
+  accountable_or_consulted: consulted
+documentation_artifacts:
+- artifact: Competitive-Pressure Override Register (append-only)
+  cadence: continuous; reviewed every board-risk-committee meeting
+- artifact: Stakeholder and market expectation analysis
+  cadence: annually; on material strategic change
+- artifact: Quarterly competitive-landscape report
+  cadence: quarterly
+- artifact: Technology maturity ledger (per capability)
+  cadence: continuous; mandatory on capability creation and status change
+- artifact: Regulatory compliance matrix (pressure-annotated)
+  cadence: quarterly review; event-driven updates
+- artifact: Investor alignment attestations
+  cadence: at onboarding, annual reaffirmation, on material change
+- artifact: Test-and-approval division org chart and reporting-line doc
+  cadence: annually reaffirmed; event-driven on structural change
+- artifact: Release approval records (per release)
+  cadence: per release
+evidence_production:
+- evidence_numeral: I
+  how_to_produce: 'Combine internal compliance assessments with external audit letters over a rolling
+    three-year window. For each assessment, record scope, findings, remediations, and the auditor''s independence
+    declaration.
+
+    '
+- evidence_numeral: II
+  how_to_produce: 'Publish the annual stakeholder-and-market-expectation analysis internally (and where
+    feasible externally), including methodology, stakeholders consulted, and explicit treatment of where
+    market pressure was weighed against safety.
+
+    '
+- evidence_numeral: III
+  how_to_produce: 'Quarterly competitive-landscape report retained as a dated artifact with author and
+    review notes. Links to the Override Register when pressure noted in the report materialized as override
+    requests.
+
+    '
+- evidence_numeral: IV
+  how_to_produce: 'Technology maturity ledger exportable on demand: every component with its current status,
+    justification for any beta/prototype use, expiry date, and approval signatures.
+
+    '
+- evidence_numeral: V
+  how_to_produce: 'Regulatory compliance matrix (see D9.2) with pressure-point column and evidence of
+    how each applicable law is implemented in the product''s technical and organizational controls.
+
+    '
+- evidence_numeral: VI
+  how_to_produce: 'Investor alignment attestations retained per investor, with annual reaffirmation and
+    an aggregated investor-pressure log maintained by the CSO.
+
+    '
+- evidence_numeral: VII
+  how_to_produce: 'Org chart of the test-and-approval division with named role-holders, reporting lines,
+    responsibilities, and independence declarations. Retain as part of HR records and the governance framework.
+
+    '
+- evidence_numeral: VIII
+  how_to_produce: 'Full test results and fault reports per release: tests run, defects identified (severity,
+    status, resolution), regression evidence, and continuous-improvement actions taken.
+
+    '
+- evidence_numeral: IX
+  how_to_produce: 'Release approval records: who approved, what was reviewed, what the decision was, and
+    (if any override was invoked) the corresponding Override Register entry.
+
+    '
+confidence: medium
+needs_human_review: true
+review_notes: "This is the overarching I6 subgoal; much of what it asks for is elaborated in the sub-subgoals.\
+  \ The core framework-specific mechanism worth preserving is the **Competitive-Pressure Override Register**:\
+  \ a single place where every safety-for-speed trade is recorded, reviewed at board level. This is the\
+  \ direct hook for D3.0 competitive-pressure override (flagged in the suite brief). Cross-suite tensions:\n\
+  \  (1) D9 (Governance) owns the underlying RACI and compliance matrix;\n      I6 adds the competitive-pressure\
+  \ overlay. Consolidation should\n      decide whether the Override Register lives in D9 or I6 — I6 is\n\
+  \      the natural home because the *reason* for overriding is the\n      framework-specific driver.\n\
+  \  (2) I1 (Race Dynamics) overlaps with \"competitive landscape\" framing;\n      I6 should own organizational\
+  \ defences, I1 should own multi-org\n      race theory.\n  (3) D7 Sustained Safety Culture provides\
+  \ the behavioural substrate;\n      I6 provides the structural scaffolding.\nSFR-f (investor alignment)\
+  \ is operationally the hardest — investor VC reality may make attestations lightweight. Nell to advise\
+  \ whether the pattern should be stronger (contractual safety covenants) or softer (disclosure-only).\n"
+version_compat:
+  framework_version_min: '1.0'
+  framework_version_max: 1.x
+  pattern_layer_version: v1-draft
+drafted_by: claude-opus-4.7-author
+drafted_at: 2026-04-16
+anchor_exemplar: D9.2-compliance

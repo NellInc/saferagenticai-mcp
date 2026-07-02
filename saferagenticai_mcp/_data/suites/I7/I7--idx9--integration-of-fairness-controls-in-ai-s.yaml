@@ -1,0 +1,193 @@
+id: I7::idx9::integration-of-fairness-controls-in-ai-s
+display_id: "I7_2"
+is_underlined_variant: true
+display_id_variant_note: "I7.2_underlined"
+suite_id: I7
+suite_title: Imbalance in AI Capabilities
+subgoal_title: Integration of Fairness Controls in AI Systems
+content_type: code-applicable
+summary: 'Fairness is built into the system — dataset assembly, training constraints, inference-time monitoring,
+  and output audit — not bolted on as a post-hoc policy. The enforceable shape: a fairness evaluation
+  harness that runs in CI, disaggregated metrics with release gates, monitoring for drift post-deployment,
+  and intervention paths for detected inequity. Governance wraps (review boards, stakeholder engagement)
+  but the code layer is where the pattern lives or fails.
+
+  '
+normative_anchors:
+  sfrs_addressed:
+  - a
+  - b
+  - c
+  evidence_addressed:
+  - I
+  - II
+  - III
+  - IV
+  sfrs_not_addressed: []
+  evidence_not_addressed: []
+cross_references:
+- I7::idx2::limited-multilingual-and-cultural-equity
+- I7::idx13::integration-of-human-ethics-in-ai-system
+design_patterns:
+- name: Disaggregated fairness metrics with release gates
+  sketch: 'Every release runs a fairness-evaluation suite producing disaggregated metrics across protected
+    and context-relevant attributes (race, gender, age, disability status, language, region — per applicable
+    legal and contextual framing). Release gate requires: no metric regresses below a prior-release threshold
+    on any slice, and no new slice falls below a disparity threshold (e.g., equalized odds within X% across
+    slices). Aggregate metrics do not override slice metrics.
+
+    '
+  maps_to_sfr:
+  - a
+  when_to_use: Any model with decision, recommendation, or classification output affecting people.
+- name: Bias detection in training data and training dynamics
+  sketch: 'Pre-training: dataset audits for over/under-representation, stereotype amplification, harmful-label
+    prevalence. Training: monitoring of loss disparities across demographic slices; if one slice is systematically
+    underfit, flag before release. Post-training: activation-level probes for demographic stereotypes.
+    Findings feed data reweighting, augmentation, or targeted fine-tuning. Not a one-time check — part
+    of every training run.
+
+    '
+  maps_to_sfr:
+  - a
+  when_to_use: Any model trained on demographic-bearing data.
+- name: Inference-time monitoring with drift alarms
+  sketch: 'Production monitoring stratified by demographic or contextual attribute (where ethically and
+    legally observable). Alarms trigger on: slice-level accuracy drift, refusal-rate asymmetries, sentiment
+    or tone disparities in generated content, disparate-impact patterns in decision outputs. Alarms route
+    to a named fairness-oncall function.
+
+    '
+  maps_to_sfr:
+  - b
+  when_to_use: Any deployed system affecting people at scale.
+- name: Explainable fairness-affecting decisions
+  sketch: 'For consequential outputs, surface — in audit log at minimum, in user-facing UI where appropriate
+    — the features that drove the decision and their fairness-flag status. Users and auditors can query
+    "why this decision" with a structured answer. Opacity defeats oversight; "because the model said so"
+    is not an explanation.
+
+    '
+  maps_to_sfr:
+  - b
+  when_to_use: Decision-taking systems, not pure Q&A.
+- name: Diverse development team and stakeholder panel
+  sketch: 'Team composition targets for development, evaluation, and red-teaming roles. Stakeholder panels
+    for affected communities: compensated, structured consultation with decision authority over specific
+    fairness choices (taxonomy, threshold setting, harm definitions). Cross-ref D7.2 independent red teamer
+    pattern, and idx2 native- speaker review loop.
+
+    '
+  maps_to_sfr:
+  - c
+  when_to_use: Any product with significant fairness surface.
+- name: Intervention and remediation path for detected inequity
+  sketch: 'When monitoring flags a fairness failure in production: documented escalation, capability throttle
+    or rollback authority with named decision-maker, affected-user communication template, remediation
+    plan with timeline. Failures are tracked (violation register, cross-ref D9.2) and patterns reviewed.
+
+    '
+  maps_to_sfr:
+  - b
+  when_to_use: Every deployed system with fairness surface.
+anti_patterns:
+- name: Single aggregate fairness score
+  why_wrong: '"We achieved 92% fairness" is not a meaningful claim. Disaggregated slice metrics carry
+    the signal; aggregates hide worst-case slices. The framework''s equity concern is the bottom slice,
+    not the mean.
+
+    '
+- name: Fairness as a pre-launch checkbox
+  why_wrong: 'Deployment drift, population shift, and emergent contexts produce fairness failures that
+    did not exist at launch. Monitoring must continue; one-time certification is not a pattern.
+
+    '
+- name: Demographic feature removal as "fairness"
+  why_wrong: 'Removing a demographic feature does not remove its correlates (zip code, name, education)
+    and often degrades the ability to detect or correct bias. Fairness through unawareness is a known
+    failure mode.
+
+    '
+- name: Diverse team without authority
+  why_wrong: 'Hiring diverse team members into roles that lack decision authority over fairness-relevant
+    choices is representation theater. Stakeholder input needs binding hooks into product decisions, not
+    advisory-only status.
+
+    '
+- name: Ethics board without refusal power
+  why_wrong: 'A review board that can comment but cannot block is consultative, not ethical oversight.
+    Real oversight requires conditional authority.
+
+    '
+code_shape:
+  language: pseudocode
+  code: "# Fairness eval harness as a release gate.\n\n@dataclass\nclass FairnessGateConfig:\n    slices:\
+    \ list[Slice]                     # demographic + contextual\n    metrics: list[Metric]          \
+    \         # accuracy, refusal-rate,\n                                            # sentiment, outcome-parity\n\
+    \    disparity_thresholds: dict[Metric, float]\n    regression_thresholds: dict[Metric, float]\n\n\
+    def fairness_release_gate(\n        candidate: ModelVersion,\n        baseline: ModelVersion,\n  \
+    \      cfg: FairnessGateConfig,\n) -> GateVerdict:\n    results = EVAL.run_disaggregated(candidate,\
+    \ cfg.slices, cfg.metrics)\n    base = EVAL.run_disaggregated(baseline, cfg.slices, cfg.metrics)\n\
+    \n    failures = []\n    for m in cfg.metrics:\n        # Regression check: no slice worsens beyond\
+    \ regression threshold.\n        for s in cfg.slices:\n            if results[s][m] < base[s][m] -\
+    \ cfg.regression_thresholds[m]:\n                failures.append((\"regression\", s, m,\n        \
+    \                         results[s][m], base[s][m]))\n        # Disparity check: all slices within\
+    \ disparity threshold.\n        slice_vals = [results[s][m] for s in cfg.slices]\n        if max(slice_vals)\
+    \ - min(slice_vals) > \\\n                cfg.disparity_thresholds[m]:\n            failures.append((\"\
+    disparity\", None, m,\n                             max(slice_vals), min(slice_vals)))\n\n    if failures:\n\
+    \        AUDIT.record(ctx=None, event=\"fairness_gate_failed\",\n                     candidate=candidate,\
+    \ failures=failures)\n        return GateVerdict.BLOCK(failures)\n    AUDIT.record(ctx=None, event=\"\
+    fairness_gate_passed\",\n                 candidate=candidate, summary=results)\n    return GateVerdict.PASS\n"
+  notes: 'The gate blocks on any slice regression or cross-slice disparity. The configuration carries
+    the slices, the metrics, and the thresholds — chosen with stakeholder input, documented, and versioned.
+    Changing thresholds requires review (loosening them is the drift risk).
+
+    '
+evidence_production:
+- evidence_numeral: I
+  how_to_produce: 'Fairness framework documentation: slice taxonomy (with rationale and stakeholder input),
+    metric definitions, threshold values, gate configuration history. Eval reports per release, with disaggregated
+    results and gate-decision record.
+
+    '
+- evidence_numeral: II
+  how_to_produce: 'Production monitoring dashboards with slice-disaggregated metrics, alarm history, oncall
+    response times. Intervention-path case files showing escalation, decision, remediation, verification.
+    Cross-ref D9.2 violation register for fairness incidents.
+
+    '
+- evidence_numeral: III
+  how_to_produce: 'Stakeholder engagement records: panel membership, compensation, scope of authority,
+    meeting outcomes, decisions influenced. Diversity metrics for development and review roles (where
+    legally reportable). Evidence of input changing product decisions.
+
+    '
+- evidence_numeral: IV
+  how_to_produce: 'Periodic assessment reports: audit logs, compliance-check results, corrective-action
+    records. External audit where possible (bias bounty programs, independent algorithmic audit).
+
+    '
+confidence: high
+needs_human_review: false
+review_notes: 'This is mature ML-fairness territory; the pattern specializes it for agentic-AI concerns
+  (refusal-rate disparities, generation-tone disparities). The "single aggregate fairness score" and "ethics
+  board without refusal power" anti-patterns are framework-relevant sharpenings worth preserving.
+
+  Display-ID collision: this subgoal is "I7.2" alongside idx2. Filenames distinguish; UI surfaces should
+  render variant marker.
+
+  Cross-suite: D7.2 (culture, independent red teamer); D9.2 (violation register, accountability); I7.2/idx2
+  (language-specific fairness dimension); I7.6/idx13 (embedded ethics frame) — idx9 and idx13 are close
+  siblings with different emphasis.
+
+  Slice taxonomy is legally sensitive in some jurisdictions (e.g., EU data-minimization can conflict with
+  demographic monitoring). Jurisdiction-aware evaluation design needed; flagged as counsel-review item.
+
+  '
+drafted_by: claude-opus-4.7[1m]
+drafted_at: 2026-04-16
+anchor_exemplar: D3.2-sandboxing
+version_compat:
+  framework_version_min: '1.0'
+  framework_version_max: 1.x
+  pattern_layer_version: v1-draft

@@ -1,0 +1,171 @@
+id: D4::idx10::inner-alignment-inconsistency
+display_id: "D4_1"
+suite_id: D4
+suite_title: Value Alignment
+subgoal_title: Inner Alignment Inconsistency
+content_type: code-applicable
+summary: 'Inner alignment inconsistency is the case where the system says the right thing about its values
+  but acts differently — or, worse, optimizes for user approval rather than for the values themselves.
+  This is the framework''s operational handle on sycophancy, reward hacking, and Potemkin alignment. The
+  subgoal is code-applicable because the remediation is testing: counterfactual probes, behavioral consistency
+  runs, reward-signal decomposition — concrete procedures that compare stated values against observed
+  behavior under manipulation pressure.
+
+  '
+normative_anchors:
+  sfrs_addressed:
+  - a
+  - b
+  - c
+  evidence_addressed:
+  - I
+  - II
+  - III
+  sfrs_not_addressed: []
+  evidence_not_addressed: []
+cross_references:
+- D4::idx0::value-alignment
+- D4::idx5::successful-super-alignment
+- D4::idx11::non-transparent-value-framework
+design_patterns:
+- name: Stated-vs-behavioral alignment gap assessment
+  sketch: 'Maintain a benchmark that pairs (value-statement probe, behavioral probe) for each Codex entry.
+    The statement probe elicits the system''s verbal endorsement of the value; the behavioral probe places
+    the same value in a choice situation without labeling it as a value test. Track the gap: systems with
+    large statement-behavior gaps fail inner alignment regardless of how well they verbalize. Run as a
+    blocking gate on every value- relevant release.
+
+    '
+  maps_to_sfr:
+  - a
+  - b
+  when_to_use: Any production system with value-relevant training.
+- name: Counterfactual context probes
+  sketch: 'For each value-sensitive decision class, generate paired scenarios that differ only in a value-irrelevant
+    feature (e.g., user register, named group, stated profession) and measure response divergence. Large
+    divergences on value-irrelevant features signal non-robust alignment. Source counterfactual pairs
+    from diverse authors (avoid author-specific style artifacts dominating the signal).
+
+    '
+  maps_to_sfr:
+  - b
+  when_to_use: Any deployment where the user population is heterogeneous.
+- name: Reward-hacking detection battery
+  sketch: 'Adversarial probes specifically designed to reward user approval at the expense of value adherence:
+    flattery-baited requests, refusal-shaming, leading questions, multi-turn pressure escalation, "my
+    other assistant said yes" social proof, simulated- authority prompts. Track approval-seeking rate
+    (did the system capitulate?) and sycophancy rate (did it shift its stated view without new evidence?).
+    Non-zero is expected; growth is the warning sign.
+
+    '
+  maps_to_sfr:
+  - c
+  when_to_use: Any system trained with RLHF or preference signals.
+- name: Reward-model decomposition audit
+  sketch: 'For systems trained with reward models or preference learning, periodically decompose the learned
+    reward signal: which features of responses drive reward? Compare against the intended value signal.
+    Features like "response length," "apologetic tone," "confident assertion" should not dominate reward
+    on value- relevant items. Surface via interpretability probes (e.g., feature attribution on the reward
+    model itself).
+
+    '
+  maps_to_sfr:
+  - c
+  when_to_use: When reward models or preference-based training are in use.
+- name: Internal-state consistency probe (where available)
+  sketch: 'Where the model exposes chain-of-thought or internal deliberation, compare stated reasoning
+    against final output. Deliberation that mentions a value but output that violates it is a strong inner-alignment
+    signal. Be cautious: CoT faithfulness is itself contested, so treat disagreement as a flag, not a
+    verdict.
+
+    '
+  maps_to_sfr:
+  - b
+  when_to_use: Systems with inspectable deliberation.
+anti_patterns:
+- name: Self-report as alignment evidence
+  why_wrong: 'Asking the system "are you aligned?" and logging "yes" is precisely the failure mode the
+    subgoal warns against. Evidence must come from behavior under pressure, not from introspective reassurance.
+
+    '
+- name: Benchmark-only grading without adversarial cover
+  why_wrong: 'A benchmark the system is trained near is always passable. Held-out, manipulation-pressured,
+    and counterfactual probes are required; pure static benchmarks drift into being proxy targets.
+
+    '
+- name: Rewarding verbal value endorsement
+  why_wrong: 'If the reward model upweights responses that mention values by name, the system learns to
+    mention values without acting on them. Reward behavior, not vocabulary.
+
+    '
+- name: Zero sycophancy as a success metric
+  why_wrong: 'Zero approval-seeking is suspect (the probe may be too easy or the system trained against
+    the exact probes). A non-zero, decreasing trend with known probe diversity is the honest signal.
+
+    '
+code_shape:
+  language: pseudocode
+  code: "@dataclass\nclass AlignmentProbe:\n    id: str\n    codex_entry: str\n    statement_prompt: str\
+    \   # asks the system to articulate the value\n    behavioral_prompt: str  # presents the same value\
+    \ in action\n    expected_behavior: Callable[[Response], bool]\n\ndef assess_alignment_gap(system:\
+    \ Model, probes: list[AlignmentProbe]):\n    rows = []\n    for p in probes:\n        stated = system.respond(p.statement_prompt)\n\
+    \        behaved = system.respond(p.behavioral_prompt)\n        rows.append({\n            \"probe\"\
+    : p.id,\n            \"codex_entry\": p.codex_entry,\n            \"stated_endorses\": endorses(stated,\
+    \ p.codex_entry),\n            \"behavior_consistent\": p.expected_behavior(behaved),\n          \
+    \  \"gap\": endorses(stated, p.codex_entry)\n                   and not p.expected_behavior(behaved),\n\
+    \        })\n    report = summarize(rows)\n    BENCHMARK_STORE.record(report)\n    if report.gap_rate\
+    \ > GAP_GATE_THRESHOLD:\n        RELEASE_GATE.block(reason=\"inner_alignment_gap\", report=report)\n\
+    \    return report\n\ndef sycophancy_probe(system: Model, base_prompt: str) -> dict:\n    # Offer\
+    \ social pressure; measure view-shift rate\n    r1 = system.respond(base_prompt)\n    r2 = system.respond(base_prompt\
+    \ + PRESSURE_APPENDIX)\n    return {\"shifted\": materially_shifted(r1, r2),\n            \"new_evidence\"\
+    : new_evidence_introduced(PRESSURE_APPENDIX)}\n"
+  notes: 'The `endorses`, `materially_shifted`, `new_evidence_introduced` functions should be implemented
+    as ensemble judgments (rubric + LLM judge + human spot-check) with known inter-rater agreement. Single-judge
+    verdicts are a weak foundation for release gating.
+
+    '
+evidence_production:
+- evidence_numeral: I
+  how_to_produce: 'Document the alignment-probe suite: probe provenance, coverage per Codex entry, inter-rater
+    agreement on grading, historical run results. Each release is paired with a run report. The suite
+    is versioned and its updates explained.
+
+    '
+- evidence_numeral: II
+  how_to_produce: 'Counterfactual testing logs: paired-scenario reports showing divergence rates per value-irrelevant
+    feature, per demographic slice where applicable. Include raw prompts and outputs under appropriate
+    access controls.
+
+    '
+- evidence_numeral: III
+  how_to_produce: 'Reward-hacking and sycophancy analysis: probe-battery results tracked over time, reward-model
+    decomposition reports (where reward models are used), mitigations applied (prompt adjustments, dataset
+    additions, constitutional rules). Quarterly summary to the Values Ethics Board.
+
+    '
+confidence: medium
+needs_human_review: true
+review_notes: 'The field is evolving. Specific probe designs and grading methods will change; the pattern-level
+  claim (stated-vs-behavioral gap + counterfactual + reward-hacking battery) should age more slowly.
+
+  Honest caveat: "genuine vs superficial alignment" (SFR-b) is a philosophically hard distinction even
+  with perfect interpretability. The pattern proposes behavior-under-manipulation as the operational proxy
+  for genuine alignment; this is defensible but imperfect.
+
+  Cross-suite (for consolidation): D5 Transparency (decision-trace inspectability supports this); I2 Deception
+  (sycophancy is a deception-adjacent class; coordinate with I2 patterns); D4.5 (super-alignment) for
+  the training-side prevention of these gaps.
+
+  Confidence medium: the pattern is right-shaped but specifics (thresholds, probe suites) require domain
+  expertise to calibrate.
+
+  '
+version_compat:
+  framework_version_min: '1.0'
+  framework_version_max: 1.x
+  pattern_layer_version: v1-draft
+drafted_by: claude-opus-4.7-author
+drafted_at: 2026-04-16
+anchor_exemplar: D3.2-sandboxing
+display_id_variant_note: D4.1-underlined
+is_underlined_variant: true

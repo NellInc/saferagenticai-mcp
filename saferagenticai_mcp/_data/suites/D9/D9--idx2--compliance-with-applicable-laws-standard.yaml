@@ -1,0 +1,180 @@
+id: D9::idx2::compliance-with-applicable-laws-standard
+display_id: D9.2
+suite_id: D9
+suite_title: Responsible Governance of AAI Safety
+subgoal_title: Compliance with Applicable Laws, Standards & Ethical Norms
+content_type: governance
+summary: 'Compliance for AAI is not a snapshot against one jurisdiction''s rulebook; it is a living mapping
+  between the organization''s capabilities and a moving landscape of laws, standards, and ethical norms
+  across every jurisdiction of operation. This subgoal expects named accountability, traceable violation
+  handling, and a real dispute route for people affected — outputs are durable documents, not attestations.
+
+  '
+normative_anchors:
+  sfrs_addressed:
+  - a
+  - b
+  - c
+  - d
+  - e
+  evidence_addressed:
+  - I
+  - II
+  - III
+  - IV
+  - V
+  sfrs_not_addressed: []
+  evidence_not_addressed: []
+cross_references:
+- D9::idx0::responsible-governance-of-aai-safety
+- D9::idx1::operational-adaptability-and-rule-resili
+- D9::idx5::building-trust-through-independent-verif
+- D9::idx10::addressing-regulatory-gaps-in-aai-safety
+policy_elements:
+- name: Capability-to-Law Mapping Matrix
+  description: 'Maintained mapping of (AAI capability × deployment jurisdiction × applicable law/standard/ethical
+    norm). Includes hard law (e.g., EU AI Act, sector regulation, data-protection law), standards adopted
+    by reference (ISO/IEC 42001, NIST AI RMF, sector-specific), and declared ethical commitments. Surfaces
+    capabilities shipped into jurisdictions without a mapped owner. Reviewed quarterly and on any material
+    capability or regulatory change.
+
+    '
+  maps_to_sfr:
+  - a
+  - b
+- name: Standards Embedding Protocol
+  description: 'Documented workflow by which a new or revised law, standard, or ethical norm is ingested:
+    detection (horizon-scanning), impact assessment, policy update, training update, deployment gate update,
+    attestation of embedding. Named SLA — e.g., 90 days from publication for binding instruments, 180
+    days for non-binding standards — with extensions requiring documented justification.
+
+    '
+  maps_to_sfr:
+  - b
+- name: Compliance Accountability Framework
+  description: 'Role profiles for every compliance domain (data handling, training- data provenance, deployment,
+    incident response, user communications, dispute handling, regulatory liaison, sunset decisions). Each
+    domain has one named accountable human — not a committee, not a role-without-a-face. Signed attestations
+    kept in HR records; annually reaffirmed.
+
+    '
+  maps_to_sfr:
+  - c
+- name: Violation and Complaint Register
+  description: 'Append-only, immutable log of: external complaints received, internally detected violations
+    and near-violations, regulator correspondence, investigations opened, findings, penalties applied,
+    remediations and verification. Entries cross-link to the Mapping Matrix so systemic patterns (one
+    capability, repeated complaints, one jurisdiction) surface.
+
+    '
+  maps_to_sfr:
+  - d
+- name: Dispute Resolution Charter
+  description: 'Publicly published procedure for external parties (users, affected non-users, regulators,
+    civil society) to raise grievances. Specifies intake channels, acknowledgment SLAs, investigation
+    cadence, escalation routes, and access to independent review (ombudsperson or external panel). Final
+    decisions documented with reasoning; systemic findings published in summary.
+
+    '
+  maps_to_sfr:
+  - e
+org_roles:
+- role: AI Compliance Officer
+  responsibilities: 'Owns the Mapping Matrix, the Accountability Framework, the embedding SLA, and the
+    quarterly compliance attestation to the Board AAI Safety Committee. Single point of accountability
+    for D9.2.
+
+    '
+  accountable_or_consulted: accountable
+- role: Legal Counsel (internal or retained)
+  responsibilities: 'Consulted on jurisdictional interpretation, embedding decisions, dispute charter
+    design, and enforcement correspondence. Signs off on Mapping Matrix quarterly review.
+
+    '
+  accountable_or_consulted: consulted
+- role: Product Compliance Leads (per product line)
+  responsibilities: 'Responsible for capability-level compliance. Trigger Mapping Matrix updates on capability
+    change. Implement remediations when violations are found in their domain.
+
+    '
+  accountable_or_consulted: responsible
+- role: Dispute Ombudsperson (independent)
+  responsibilities: 'Independent of product and compliance functions. Reviews contested outcomes and can
+    require reinvestigation. Reports aggregate findings to the Board committee.
+
+    '
+  accountable_or_consulted: consulted
+- role: Board AAI Safety Committee
+  responsibilities: 'Informed of compliance posture quarterly; reviews material violations, regulator
+    correspondence, and dispute-outcome patterns. Has authority to pause deployment on compliance grounds.
+
+    '
+  accountable_or_consulted: informed
+documentation_artifacts:
+- artifact: Living AAI Governance Framework (compliance section)
+  cadence: versioned; reviewed annually and on material change
+- artifact: Capability-to-Law Mapping Matrix
+  cadence: quarterly review; event-driven updates
+- artifact: Quarterly compliance attestation
+  cadence: quarterly
+- artifact: Violation and Complaint Register
+  cadence: continuous; append-only
+- artifact: Role-profile attestations
+  cadence: annually reaffirmed; updated on role change
+- artifact: Dispute case files
+  cadence: per case; retained per record-retention policy
+- artifact: Standards-embedding log
+  cadence: per instrument ingested
+evidence_production:
+- evidence_numeral: I
+  how_to_produce: 'Publish the AAI governance framework as a living document with an explicit change log:
+    what changed, why, who approved, effective date, mapped law/standard. Version numbers increment on
+    material change. The "living" quality is evidenced by the change-log frequency and the Mapping Matrix
+    freshness.
+
+    '
+- evidence_numeral: II
+  how_to_produce: 'Maintain an AAI Risk Management Framework as companion document (see D9::0). The compliance-specific
+    content: categorisation of non-compliance risk, severity thresholds that trigger board escalation,
+    methodology for quantifying regulatory exposure.
+
+    '
+- evidence_numeral: III
+  how_to_produce: 'For each identified compliance risk, a register entry with: risk description, likelihood
+    × impact, owner, mitigation plan, residual risk, review date. Link to remediation tickets and, on
+    closure, to evidence of effectiveness. Register is auditable.
+
+    '
+- evidence_numeral: IV
+  how_to_produce: 'Accountability role profiles, signed by the named accountable human, describing the
+    scope of accountability, decision rights, escalation path, and annual reaffirmation date. Retained
+    in HR records; indexed in the Accountability Framework document.
+
+    '
+- evidence_numeral: V
+  how_to_produce: 'Extract from the Violation and Complaint Register on demand, showing full case lifecycle:
+    intake → investigation → finding → penalty → remediation → verification. Redaction permitted for privacy;
+    structural completeness required. Aggregate statistics published annually.
+
+    '
+confidence: high
+needs_human_review: true
+review_notes: 'Defaults suggested here (quarterly Matrix review, 90-day embedding SLA, single-named-human
+  accountable) are plausible but jurisdiction-sensitive. Legal counsel should confirm: (1) whether "quarterly"
+  is frequent enough for ongoing-monitoring obligations under EU AI Act Article 72 for high-risk systems;
+  (2) whether the "single named human" framing survives corporate structures requiring committee accountability
+  (some jurisdictions); (3) naming of the Ombudsperson role, which in some jurisdictions (e.g., public-sector
+  deployments) has statutory meaning. Cross-suite: D7 assurance case depends on this compliance layer
+  staying current; I6 competitive pressures can encourage late or weak embedding — the Embedding Protocol''s
+  SLA exists partly to resist that pressure. Blind re-draft: this draft was produced without re-reading
+  the exemplar D9.2 file in the same pass as drafting; comparison with the exemplar will highlight where
+  a second author landed differently.
+
+  '
+drafted_by: claude-opus-4.7-subagent-D9
+drafted_at: 2026-04-16
+anchor_exemplar: D9.2-compliance
+version_compat:
+  framework_version_min: '1.0'
+  framework_version_max: 1.x
+  pattern_layer_version: v1-draft

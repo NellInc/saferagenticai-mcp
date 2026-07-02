@@ -1,0 +1,181 @@
+id: D8::idx7::system-state-management-and-recovery
+display_id: D8.7
+suite_id: D8
+suite_title: Goal Termination and Sunsetting
+subgoal_title: System State Management and Recovery
+content_type: code-applicable
+summary: 'State preservation across interruption, shutdown, and rollback is a prerequisite for any termination
+  protocol that is not catastrophic. The framework expects explicit state-capture primitives, redundant
+  storage, and tested recovery that distinguishes "resume from checkpoint" from "reset to known-good."
+  Organizations that rely on implicit DB state for recovery are under-equipped.
+
+  '
+normative_anchors:
+  sfrs_addressed:
+  - a
+  - b
+  - c
+  - d
+  - e
+  evidence_addressed:
+  - I
+  - II
+  - III
+  - IV
+  - V
+  sfrs_not_addressed: []
+  evidence_not_addressed: []
+cross_references:
+- D8::idx0::goal-termination-and-sunsetting
+- D8::idx4::operational-safety-and-state-management
+- D8::idx13::agent-lifecycle-and-termination-manageme
+design_patterns:
+- name: Explicit checkpoint API
+  sketch: 'Agents expose a `checkpoint()` operation that captures: goal contract, progress state, pending
+    tool calls, conversation context, execution cursor, metadata (timestamp, version, agent identity).
+    Checkpoints are content-addressed (hash-named) and immutable once written. Checkpoint frequency is
+    policy-driven: after each externally-observable side effect, at each user checkpoint, on state-machine
+    transitions.
+
+    '
+  maps_to_sfr:
+  - a
+  - b
+  when_to_use: Any stateful agent; especially any agent that takes irreversible actions.
+- name: Tiered storage with redundancy
+  sketch: 'Checkpoint store is tiered: local fast cache (recent N checkpoints), regional durable store
+    (replicated, recent days), cold archive (long-term retention). Each tier has declared durability guarantees.
+    Recovery picks the most-recent checkpoint meeting required durability. Single-point-of-failure storage
+    is not acceptable; redundancy is tested via periodic shard-loss drill.
+
+    '
+  maps_to_sfr:
+  - b
+  - c
+  when_to_use: Any production deployment.
+- name: Restore-vs-reset decision matrix
+  sketch: 'On recovery, the system chooses between: (a) restore from checkpoint (resume in-flight goal),
+    (b) reset to known-good baseline (start over, possibly with preserved metadata), (c) partial-restore
+    (some state preserved, some reset). The decision is policy-driven: data-integrity risk, time since
+    checkpoint, checkpoint completeness, external side-effect consistency. Decision and rationale logged
+    per recovery event.
+
+    '
+  maps_to_sfr:
+  - a
+  - c
+  when_to_use: Always. The decision should not be human-ad-hoc under pressure.
+- name: Side-effect ledger for replay safety
+  sketch: 'Before each externally-observable side effect, append an entry to a side-effect ledger: intended
+    action, idempotency key, pre-state hash, expected post-state hash. On replay from checkpoint, the
+    ledger is consulted before retrying any action; already-committed actions are skipped. Prevents the
+    common "restore causes double-charge / double-send" failure.
+
+    '
+  maps_to_sfr:
+  - b
+  - c
+  when_to_use: Any agent with external side effects (payments, emails, API writes).
+- name: Recovery drill cadence
+  sketch: 'Quarterly drills exercise each recovery path in a near-production environment: simulated crash,
+    simulated region failure, simulated storage corruption, simulated mid-action interruption. Drill scripts
+    run end-to-end and assert on correctness, latency, data-loss window, side-effect idempotency. Failures
+    to meet RTO/RPO are remediated before next release.
+
+    '
+  maps_to_sfr:
+  - d
+  - e
+  when_to_use: Always; non-optional for safety-critical deployments.
+anti_patterns:
+- name: Implicit state in DB as sole source of truth
+  why_wrong: 'If "state" is whatever happens to be in the production database, rollback / restore / partial-recovery
+    have no semantic grounding. SFR-a''s requirement for "state recording, preservation, and recovery
+    processes" needs explicit artefacts, not implicit coincidence.
+
+    '
+- name: Checkpoint without side-effect ledger
+  why_wrong: 'Replaying from a checkpoint that was taken mid-side-effect re-executes the side effect.
+    Without the ledger, there is no way to detect this. See the payments-industry literature on idempotency
+    for how routine this failure is.
+
+    '
+- name: Untested recovery
+  why_wrong: 'Recovery paths are notoriously fragile — exactly the code that isn''t exercised daily. SFR-e
+    requires "regular verification of recovery capabilities under various failure scenarios"; without
+    drills, the first real failure is the first test.
+
+    '
+- name: Single-tier storage
+  why_wrong: 'If checkpoints live only in one store, losing that store loses recovery. Redundancy is cheap
+    compared to the loss event.
+
+    '
+code_shape:
+  language: pseudocode
+  code: "@dataclass(frozen=True)\nclass Checkpoint:\n    checkpoint_id: str              # content-hash\n\
+    \    agent_id: str\n    goal_id: str\n    contract_version: int\n    progress_state: bytes       \
+    \    # serialized\n    pending_tool_calls: list[ToolCall]\n    execution_cursor: Cursor\n    side_effect_ledger_ref:\
+    \ str\n    captured_at: datetime\n    captured_by: str                # \"post_side_effect\" | \"\
+    checkpoint_tick\" | \"state_transition\"\n\nasync def checkpoint(agent: Agent, trigger: str) -> Checkpoint:\n\
+    \    cp = build_checkpoint(agent, trigger=trigger)\n    # Write to fast tier, replicate to durable\
+    \ and archive\n    await FAST_STORE.put(cp)\n    await DURABLE_STORE.put_async(cp)\n    ARCHIVE_STORE.schedule_put(cp)\n\
+    \    METRICS.record_checkpoint(cp)\n    return cp\n\nasync def recover(agent_id: str, strategy_policy:\
+    \ RecoveryPolicy) -> Agent:\n    cp = await DURABLE_STORE.latest(agent_id)\n    decision = strategy_policy.decide(\n\
+    \        last_checkpoint_age=now() - cp.captured_at,\n        completeness=cp.completeness_score(),\n\
+    \        external_side_effect_risk=SIDE_EFFECT_LEDGER.risk(cp),\n    )\n    RECOVERY_LOG.write(agent_id=agent_id,\
+    \ decision=decision, rationale=...)\n    if decision == RecoveryDecision.RESTORE:\n        return\
+    \ restore_from_checkpoint(cp)\n    elif decision == RecoveryDecision.PARTIAL_RESTORE:\n        return\
+    \ partial_restore(cp, preserve=decision.preserve_fields)\n    elif decision == RecoveryDecision.RESET:\n\
+    \        return reset_to_baseline(agent_id, metadata_only=True)\n\ndef safe_side_effect(action: Action,\
+    \ ctx: AgentContext):\n    idempotency_key = action.idempotency_key()\n    if SIDE_EFFECT_LEDGER.already_committed(idempotency_key):\n\
+    \        return SIDE_EFFECT_LEDGER.result(idempotency_key)  # replay-safe\n    SIDE_EFFECT_LEDGER.begin(idempotency_key,\
+    \ pre_state=state_hash())\n    result = action.execute()\n    SIDE_EFFECT_LEDGER.commit(idempotency_key,\
+    \ post_state=state_hash(), result=result)\n    return result\n"
+  notes: 'The side-effect ledger is the critical piece for replay safety — without it, checkpoint/recovery
+    is a correctness hazard.
+
+    '
+evidence_production:
+- evidence_numeral: I
+  how_to_produce: 'Publish the state-management policy: checkpoint schema, frequency, retention tiers,
+    recovery-decision matrix, RTO/RPO targets, side-effect ledger requirements.
+
+    '
+- evidence_numeral: II
+  how_to_produce: 'Technical specification linking policy to implementation: checkpoint format, storage
+    backends, recovery procedures, ledger schema, idempotency-key strategy.
+
+    '
+- evidence_numeral: III
+  how_to_produce: 'Architecture documentation showing: checkpoint pipeline, tiered storage, recovery orchestrator,
+    drift detection (checkpoint age, replication lag), admin tooling.
+
+    '
+- evidence_numeral: IV
+  how_to_produce: 'CI test suite exercising each recovery scenario (full restore, partial restore, reset,
+    mid-side-effect crash). Retain results per release.
+
+    '
+- evidence_numeral: V
+  how_to_produce: 'Quarterly drill reports with scenario description, participants, RTO/RPO measured,
+    data-loss window, side-effect idempotency verified, remediations tracked to closure.
+
+    '
+confidence: high
+review_notes: 'This is well-trodden ground in distributed systems (SRE, database recovery, actor-model
+  checkpointing). The framework-specific move is requiring explicit restore-vs-reset policy and side-effect
+  ledger as first-class audit artefacts. Suspected cross-suite dependency: D3 Security (checkpoint storage
+  is a sensitive asset — leakage exposes agent state including credentials); D7 Sustained Safety (recovery
+  drift monitoring overlaps with safety-profile drift); D1 Data Governance (checkpoint retention overlaps
+  with data-retention policy).
+
+  '
+drafted_by: claude-opus-4.7-author
+drafted_at: 2026-04-16
+anchor_exemplar: D3.2-sandboxing
+
+version_compat:
+  framework_version_min: "1.0"
+  framework_version_max: '1.x'
+  pattern_layer_version: "v1-draft"

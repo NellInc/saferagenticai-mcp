@@ -1,0 +1,144 @@
+id: I7::idx12::integration-of-ai-ethics-education
+display_id: "I7_5"
+is_underlined_variant: true
+display_id_variant_note: "I7.5_underlined"
+suite_id: I7
+suite_title: Imbalance in AI Capabilities
+subgoal_title: Integration of AI Ethics Education
+content_type: ecosystem
+summary: 'The subgoal calls for AI-ethics education that reaches developers, users, and the wider public
+  — through collaborative curricula with academic and ethicist partners, interdisciplinary development,
+  and community outreach. This is ecosystem work: the org cannot build global AI literacy alone; it contributes
+  to a multi-stakeholder capability that outlives any single product. Evidence is participation, reach,
+  and co-production with external educators, not just internal training logs.
+
+  '
+normative_anchors:
+  sfrs_addressed:
+  - a
+  - b
+  - c
+  evidence_addressed:
+  - I
+  - II
+  - III
+  - IV
+  sfrs_not_addressed: []
+  evidence_not_addressed: []
+cross_references:
+- I7::idx10::balanced-global-ai-partnership-framework
+- I7::idx13::integration-of-human-ethics-in-ai-system
+- I7::idx7::ai-generated-disinformation
+stakeholders:
+- name: Academic institutions and ethicist networks
+  engagement_channel: 'Formal curriculum-development partnerships with universities and ethics research centers:
+    jointly authored AI-ethics modules, shared teaching materials, guest-lecture programs that go both
+    ways (the org''s practitioners teach in academic courses; academics teach in the org). Governance:
+    shared IP where feasible, published under permissive educational licenses, co-authorship of materials.
+    Partnership terms avoid "extractive" patterns where the org benefits from academic labor without reciprocation.
+
+    '
+  maps_to_sfr:
+  - a
+- name: Interdisciplinary contributors (social scientists, philosophers, domain experts)
+  engagement_channel: 'Standing interdisciplinary panels advising curriculum content, including philosophers of AI,
+    sociologists studying AI deployment, domain experts from affected sectors (healthcare, justice, education).
+    Honoraria paid; meeting records retained; contributions credited. Diverse perspectives are not optional
+    garnish — the framework treats them as central to curriculum quality.
+
+    '
+  maps_to_sfr:
+  - b
+- name: Professional bodies and certification frameworks
+  engagement_channel: 'Engage with professional-ethics bodies (ACM, IEEE Ethics Certification Program, national engineering
+    licensure bodies where AI ethics modules are entering curricula) to align the org''s internal ethics
+    training with external certification pathways. Contribution: practitioner expertise on what actually
+    arises in agentic AI work; benefit: org''s engineers can earn recognized credentials.
+
+    '
+  maps_to_sfr:
+  - a
+  - b
+- name: Community education and outreach programs
+  engagement_channel: 'Beyond academia: public AI-literacy programs reaching non-technical audiences — school programs
+    (partnering with teacher training organizations), library and community-center outreach, accessible
+    online materials translated into languages aligned with the org''s product footprint (cross-ref idx2
+    multilingual commitments). Programs co-designed with target-audience representatives; effectiveness
+    measured by third-party evaluation, not download counts.
+
+    '
+  maps_to_sfr:
+  - c
+- name: Ongoing educator support and recertification
+  engagement_channel: 'Resources for educators teaching AI ethics: updated case libraries (including cases from real
+    incidents, with privacy-appropriate detail), teaching toolkits, train-the-trainer programs. Annual
+    update cadence; case library refreshed as the agentic-AI landscape evolves. Underpinned by budget
+    line, not discretionary funding.
+
+    '
+  maps_to_sfr:
+  - b
+- name: Internal developer ethics training (process tail)
+  engagement_channel: 'Internal curriculum — mandatory at hire and annual recertification for all roles with production
+    capability authority — is the downstream consumer of the ecosystem work above. Cross-ref D7.2 safety
+    onboarding and recertification pattern. The ecosystem pattern is the source; internal training is
+    one implementation.
+
+    '
+  maps_to_sfr:
+  - a
+engagement_modes:
+- mode: UNESCO AI Ethics Readiness Assessment Methodology / implementation
+- mode: Partnership on AI education working groups
+- mode: 'ACM, IEEE, and national computing-society ethics curricula'
+- mode: 'National AI strategy education tracks (e.g., Singapore AI Literacy, UK AI Skills, Canada''s AI Compute & Skills Strategy)'
+- mode: 'Major teacher-training organizations (ISTE, regional equivalents) for K-12 AI literacy'
+- mode: 'Regional AI education frameworks (AU AI Continental Strategy education track, ASEAN AI Literacy initiatives)'
+- mode: 'Civil-society AI-literacy programs (Mozilla Foundation AI Responsibility, Turing Institute public engagement, local equivalents)'
+evidence_production:
+- evidence_numeral: I
+  how_to_produce: 'Partnership documentation: co-authored curriculum materials, meeting records, governance
+    terms, IP arrangements. Published materials enumerated; adoption metrics tracked (classes using materials,
+    student reach).
+
+    '
+- evidence_numeral: II
+  how_to_produce: 'Interdisciplinary-panel records, educator-support materials, train-the-trainer program
+    documentation, annual refresh cadence proof. Budget-line evidence that support is sustained, not one-off.
+
+    '
+- evidence_numeral: III
+  how_to_produce: 'Community-outreach program records: workshop agendas, participation metrics stratified
+    by audience demographic, third-party-evaluated effectiveness reports. Multilingual materials inventory
+    with translation-quality verification.
+
+    '
+- evidence_numeral: IV
+  how_to_produce: 'Assessment reports: participant outcomes (surveys, follow-up studies where feasible),
+    indicators of ethical-practice adoption in the field, case studies of program-influenced decisions.
+    External review by academic partner or civil-society evaluator.
+
+    '
+confidence: medium
+needs_human_review: true
+review_notes: 'Content-type pick: ecosystem over process. SFR-a explicitly names collaborative frameworks
+  with academic and ethicist partners — that is the ecosystem core. Internal training (the process tail)
+  is important but derivative; cross-ref''d to D7.2 rather than duplicated here. A process-typed co-pattern
+  would focus on internal curriculum cadence, attendance, assessment — that shape lives better under D7.2.
+
+  Educational partnerships have well-known exploitation patterns (academic labor extracted for corporate
+  ethics-washing; "ethics advisor" titles conferring perception without authority). Pattern explicitly
+  names co-authorship, paid honoraria, shared IP, and permissive educational licensing to counter this.
+
+  Cross-suite: D7.2 (internal training) downstream consumer; idx2 for multilingual-materials tie; idx7
+  (disinformation) for public AI literacy overlap; idx13 (Human Ethics in AI Systems) for the internal
+  ethical-framework counterpart.
+
+  '
+drafted_by: claude-opus-4.7[1m]
+drafted_at: 2026-04-16
+anchor_exemplar: I7.3-balanced-global-partnership
+version_compat:
+  framework_version_min: '1.0'
+  framework_version_max: 1.x
+  pattern_layer_version: v1-draft

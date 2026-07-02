@@ -1,0 +1,168 @@
+id: I2::idx12::codes-of-practice-and-conduct
+display_id: "I2_4"
+is_underlined_variant: true
+suite_id: I2
+suite_title: Deception
+subgoal_title: Codes of Practice and Conduct
+content_type: governance
+summary: 'Codes of practice codify "what acceptable looks like" in a form that survives personnel turnover
+  and organizational drift. This subgoal asks the organization both to publish an internal code (binding
+  on staff and systems) and to participate in cross-organizational code-development processes where an
+  industry-level or regulator-convened code exists or is emerging. Adherence is tracked; codes evolve
+  via documented revision processes rather than silent reinterpretation.
+
+  '
+normative_anchors:
+  sfrs_addressed:
+  - a
+  - b
+  - c
+  evidence_addressed:
+  - I
+  - II
+  - III
+  - IV
+  sfrs_not_addressed: []
+  evidence_not_addressed: []
+policy_elements:
+- name: Internal Code of Practice for Agentic AI
+  description: 'A published, binding document setting out acceptable and encouraged behaviours for staff
+    building, deploying, and operating agentic AI systems. Covers: honesty in user communication, disclosure
+    of AI involvement, integrity of outputs, prohibition on deceptive design patterns, escalation obligations,
+    and professional-conduct expectations. Referenced in employment terms and training.
+
+    '
+  maps_to_sfr:
+  - a
+- name: Code of Conduct for AI Systems
+  description: 'A companion document stating behaviours the organization requires of the AI systems it
+    builds or deploys: non-deception, non- manipulation, transparent reasoning where faithful, refusal
+    of harmful assistance, respect for user autonomy. System-facing code is enforced via system-prompt
+    / policy-as-code / supervisor rules (cross-reference I2.1 idx9); not aspirational.
+
+    '
+  maps_to_sfr:
+  - a
+- name: Collaborative Development Process
+  description: 'Codes are developed and revised through a process that includes technical staff, operations,
+    legal, user advocates, and (for material revisions) external stakeholders. Minutes retained; dissenting
+    positions recorded. Revisions tracked with rationale; silent interpretation-by-practice is disallowed.
+
+    '
+  maps_to_sfr:
+  - a
+- name: Industry-Code Participation
+  description: 'Where industry or regulator-convened codes exist (e.g., EU AI Act codes of practice for
+    general-purpose AI, Frontier Model Forum commitments, Partnership on AI practices, sector-specific
+    codes), the organization participates substantively: named delegate, documented positions, adoption
+    of resulting code into internal framework, reporting on adherence. Non-participation in a relevant
+    code is itself a recorded decision with rationale.
+
+    '
+  maps_to_sfr:
+  - a
+  - b
+- name: Enforcement and Review Mechanism
+  description: 'The code is enforceable through the Penalty Framework (I2.3 idx11) and supervised through
+    I2.1 (idx9) mechanisms. Annual code-review cycle gathers adherence evidence, identifies drift, and
+    proposes revisions. Code is not frozen — revisions are governed, not emergent.
+
+    '
+  maps_to_sfr:
+  - b
+- name: Adherence Tracking System
+  description: 'Mechanisms to track adherence across operational domains: training- completion records,
+    incident-to-code mapping (which code provisions did a given incident touch?), system-side adherence
+    (were supervisor rules derived from code provisions firing as expected?), user- feedback signals on
+    code-adjacent concerns. Reported quarterly.
+
+    '
+  maps_to_sfr:
+  - c
+org_roles:
+- role: Ethics / Integrity Committee
+  responsibilities: 'Owns the code-development and code-revision processes. Chairs the annual review.
+    Accountable for code content. Includes at least one external member for credibility.
+
+    '
+  accountable_or_consulted: accountable
+- role: Named Industry-Body Delegate
+  responsibilities: 'Represents the organization in external code processes with continuity (no rotation
+    without overlap). Reports back to Ethics Committee. Maintains register of positions taken externally
+    so internal and external positions remain consistent.
+
+    '
+  accountable_or_consulted: responsible
+- role: Compliance / AI Compliance Officer
+  responsibilities: 'Integrates code obligations into internal policy framework (D9.2); owns the Adherence
+    Tracking System; prepares annual adherence report to Ethics Committee and board.
+
+    '
+  accountable_or_consulted: consulted
+- role: All Staff with Production Authority
+  responsibilities: 'Read and acknowledge the internal Code of Practice. Complete annual training / recertification.
+    Subject to code enforcement.
+
+    '
+  accountable_or_consulted: responsible
+documentation_artifacts:
+- artifact: Internal Code of Practice for Agentic AI
+  cadence: versioned; annual review
+- artifact: Code of Conduct for AI Systems
+  cadence: versioned; annual review; system-side enforcement updated with each code change
+- artifact: Code revision records (with rationale and dissent)
+  cadence: per revision
+- artifact: Industry-code participation register (codes engaged with, positions taken, delegates, adoption
+    status)
+  cadence: continuous; annual summary
+- artifact: Code training and acknowledgment records
+  cadence: per-employee; annual recertification
+- artifact: Adherence tracking dashboard + quarterly report
+  cadence: continuous; quarterly
+evidence_production:
+- evidence_numeral: I
+  how_to_produce: 'Code-development process documentation: participant list (roles, affiliations), consultation
+    scope, drafts and revisions, dissent records, final adoption decision. Include at least one example
+    of a revision where internal dissent changed the outcome — evidence the process is not rubber-stamp.
+
+    '
+- evidence_numeral: II
+  how_to_produce: 'Evolution log: show which internal practices have been codified into formal provisions,
+    with rationale and effective dates. Also show which industry codes the organization has adopted internally
+    and by what mechanism.
+
+    '
+- evidence_numeral: III
+  how_to_produce: 'Enforcement evidence: code provisions cited in enforcement actions, supervisor rules
+    derived from code provisions and their firing statistics, remediation processes triggered by code
+    violations.
+
+    '
+- evidence_numeral: IV
+  how_to_produce: 'Integration evidence showing the code''s presence across domains: business (customer
+    commitments), operational (runbook references), legal (contract clause library), technical (supervisor
+    rules, system prompts), social (external disclosures, advocacy positions).
+
+    '
+confidence: medium
+needs_human_review: true
+review_notes: "Content-type judgement: governance is the dominant flavour — codes are governance artifacts.\
+  \ However, Industry-Code Participation is explicitly ecosystem-flavoured (cross-org engagement, standards-body\
+  \ participation). I've kept it under governance with cross-reference to ecosystem; Phase 2 may prefer\
+  \ to split.\nThe distinction between this pattern and I2::idx0 (overarching G2) governance is that idx0\
+  \ covers policies the organization owns unilaterally (disclosure, integrity testing), while idx12 covers\
+  \ the collectively-developed normative instruments. Keep the split sharp to avoid duplication.\nCross-suite:\n\
+  \  - I2.3 (idx11) Penalties — enforcement mechanism lives there; this\n    pattern provides the substance\
+  \ being enforced.\n  - I2.1 (idx9) Supervisory Systems — code provisions become policy-\n    as-code\
+  \ supervisor rules.\n  - D7.2 (Culture of Safety) — training, recertification, safety\n    onboarding\
+  \ are shared artifacts; avoid duplicate ownership.\n  - D9.2 (Compliance) — code obligations integrate\
+  \ into governance\n    framework.\n  - I7 (Imbalance in AI Capabilities) — industry-code participation\n\
+  \    overlaps with I7.3 ecosystem partnerships; Phase 2 should wire\n    a single participation register\
+  \ used by both.\n"
+drafted_by: claude-opus-4.7-author
+drafted_at: 2026-04-16
+anchor_exemplar: D9.2-compliance
+version_compat:
+  framework_version_min: '1.0'
+  framework_version_max: 1.x
+  pattern_layer_version: v1-draft

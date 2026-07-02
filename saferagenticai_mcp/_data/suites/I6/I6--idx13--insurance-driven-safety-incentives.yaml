@@ -1,0 +1,125 @@
+id: I6::idx13::insurance-driven-safety-incentives
+display_id: "I6_6"
+is_underlined_variant: true
+display_id_variant_note: "I6.6_underlined"
+suite_id: I6
+suite_title: Competitive Pressures
+subgoal_title: Insurance-Driven Safety Incentives
+content_type: ecosystem
+summary: 'Insurance markets are a market-based filter on unsafe AI development: uninsurable practices
+  become uneconomical. This subgoal expects the organization to actively engage with AI-coverage insurers
+  (not only passively purchase general liability), to share loss data into industry actuarial pools, and
+  to maintain internal risk management detailed enough to support underwriting. The pattern is ecosystem
+  because its leverage is in insurance-market development, not in a single policy; internal risk-management
+  is the substrate.
+
+  '
+normative_anchors:
+  sfrs_addressed:
+  - a
+  - b
+  evidence_addressed:
+  - I
+  - II
+  - III
+  sfrs_not_addressed: []
+  evidence_not_addressed: []
+cross_references:
+- I6::idx0::competitive-pressures
+- I6::idx5::publishing-and-deployment-pressures
+- I6::idx3::insufficient-insights-into-future-conseq
+stakeholders:
+- name: AI-coverage insurers and reinsurers
+  engagement_channel: 'Active engagement with insurers offering AI-specific coverage (Munich Re, Swiss Re AI offerings,
+    Lloyd''s syndicates with AI capability, Chaucer AI, Vouch, Coalition and successors, sector- specific
+    cyber insurers adding AI endorsements). Provide technical walk-throughs of the system, deploy-gate
+    process, override register, incident history. Accept underwriter site visits and model inspections
+    where offered.
+
+    '
+  maps_to_sfr:
+  - a
+- name: Insurance actuarial pools and loss-sharing consortia
+  engagement_channel: 'Contribute anonymized loss and incident data to industry actuarial pools. Without loss data,
+    AI coverage cannot be priced rigorously and insurers either refuse coverage (blocking deployment)
+    or misprice it (harming the market). Participate in emerging pools at the MLCommons AI Safety incident
+    level or industry equivalents.
+
+    '
+  maps_to_sfr:
+  - b
+- name: Broker and risk-manager community
+  engagement_channel: 'Work with AI-specialist brokers (Aon, Marsh, Willis Towers Watson, and specialist firms) to
+    support development of AI risk-management frameworks. Provide risk-assessment inputs that support
+    the broker community''s advisory role; they translate your safety posture to the underwriting market.
+
+    '
+  maps_to_sfr:
+  - b
+- name: Captive insurance or mutual arrangements (where applicable to org scale)
+  engagement_channel: 'For larger orgs or industry groups: participate in captive or mutual insurance arrangements
+    that internalize risk while requiring safety standards of members. Mutual arrangements create peer-pressure
+    for safety — failure by one member affects premiums for all.
+
+    '
+  maps_to_sfr:
+  - a
+- name: Regulators overseeing insurance markets
+  engagement_channel: 'Engage with insurance regulators (NAIC in US, EIOPA in EU, PRA/FCA in UK, MAS in Singapore)
+    on AI-risk classification and reserving guidance. Supportable regulatory clarity on AI risk is a public
+    good for the insurance market.
+
+    '
+  maps_to_sfr:
+  - a
+engagement_modes:
+- mode: 'AI-specialist insurers: Munich Re, Swiss Re AI coverage, Lloyd''s AI syndicates, Chaucer AI, Vouch, Coalition, cyber insurers adding AI endorsements'
+- mode: 'AI-specialist brokers: Aon, Marsh, Willis Towers Watson, specialist firms in AI risk advisory'
+- mode: 'Industry loss-sharing: MLCommons AI Safety incident database, AIAAIC, OECD AIM, emerging AI incident actuarial pools'
+- mode: 'Insurance regulators: NAIC (US), EIOPA (EU), PRA/FCA (UK), MAS (Singapore), IAIS (international)'
+- mode: 'Risk-management frameworks: COSO ERM, ISO 31000, NIST AI RMF (as translation layer to insurance language)'
+- mode: 'Sector-specific: medical-device insurance programs (for healthcare AI), motor insurance and UNECE WP.29 (for automotive AI), financial-services operational-risk pools'
+evidence_production:
+- evidence_numeral: I
+  how_to_produce: 'Maintain a compliance and licensing record including: regulatory filings, sector-specific
+    licenses, risk evaluations feeding underwriting, liability assessments and insurance coverage certificates.
+    Insurability gap analysis — if a capability is uninsurable, document why and what changes would make
+    it insurable. Reviewed annually and on material change.
+
+    '
+- evidence_numeral: II
+  how_to_produce: 'Technical risk-control documentation: emergency shutdown capabilities (cf. D3/D5 safety
+    controls), built-in safeguards (cf. D3.2 sandboxing), FMEA or equivalent failure-mode analyses per
+    capability, risk-assessment reports tied to the risk register (I6.1 evidence III). Underwriters can
+    review these documents; they are in plain language, not marketing prose.
+
+    '
+- evidence_numeral: III
+  how_to_produce: 'Incident response documentation: incident response plans per scenario, communication
+    protocols (internal, external, regulatory, insurer), damage-control procedures, staff training records
+    and drill reports (linking to D7.2 contingency drills). Insurers routinely require evidence of drill-tested
+    response plans; the documentation must show exercise, not just plan.
+
+    '
+confidence: medium
+needs_human_review: true
+review_notes: "Insurance-as-safety-filter is a framework-specific framing that is underdeveloped in practice:\
+  \ AI-specific coverage is nascent, loss data is sparse, and insurers struggle to underwrite frontier\
+  \ risk. The pattern's value is in getting orgs to engage with the developing market rather than in prescribing\
+  \ a mature one.\nSFRs (both) are normative (SFR-a: regulatory compliance and Safety First; SFR-b: comprehensive\
+  \ risk management). These are broadly uncontroversial internal practices; the ecosystem angle is the\
+  \ value-add of this subgoal over generic risk-management.\nCross-suite overlaps:\n  (1) D9.2 Compliance\
+  \ owns regulatory filings broadly.\n  (2) D7.2 Culture of Safety overlaps on contingency drills and\n\
+  \      incident response.\n  (3) I6.idx0 Override Register is a key underwriting input\n      (orgs\
+  \ with many overrides are harder to underwrite).\n  (4) D5 Interpretability / D3 Security — insurers\
+  \ may require\n      technical safeguards documented there.\n\nAli (listed as collaborator) has insurance/risk\
+  \ background (flagged in repo history); his review of the insurer and broker enumeration is particularly\
+  \ valuable. Some named firms may lose or add AI offerings; pattern favours principles (AI-specialist\
+  \ engagement + loss data sharing) over enumeration.\n"
+version_compat:
+  framework_version_min: '1.0'
+  framework_version_max: 1.x
+  pattern_layer_version: v1-draft
+drafted_by: claude-opus-4.7-author
+drafted_at: 2026-04-16
+anchor_exemplar: I7.3-balanced-global-partnership

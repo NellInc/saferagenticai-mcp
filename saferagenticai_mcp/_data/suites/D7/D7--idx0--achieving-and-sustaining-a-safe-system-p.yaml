@@ -1,0 +1,174 @@
+id: D7::idx0::achieving-and-sustaining-a-safe-system-p
+display_id: D7
+suite_id: D7
+suite_title: Achieving and Sustaining a Safe System Profile
+subgoal_title: Achieving and Sustaining a Safe System Profile
+content_type: process
+summary: 'D7 as a whole asks: what keeps an AAI system safe after launch day, when the team changes, the
+  model drifts, and the deployment context evolves? The answer is a *safety management system* — a named,
+  funded, audited program that integrates design-time assurance, runtime monitoring, incident learning,
+  and periodic re-qualification. This umbrella subgoal is best treated as the outer scaffold; the specific
+  mechanisms live in D7.1 through D7.7 and the underlined-variant subgoals.
+
+  '
+normative_anchors:
+  sfrs_addressed:
+  - a
+  - b
+  - c
+  - d
+  - e
+  evidence_addressed:
+  - I
+  - II
+  - III
+  - IV
+  - V
+  - VI
+  - VII
+  - VIII
+  - IX
+  - X
+  sfrs_not_addressed: []
+  evidence_not_addressed: [XI]
+process_elements:
+- name: Safety case ownership and renewal
+  cadence: authored pre-launch; reviewed at least annually and on material change
+  participants:
+  - safety lead
+  - responsible engineer
+  - independent reviewer
+  - executive sponsor
+  maps_to_sfr:
+  - a
+  - d
+- name: Lifecycle safety integration review (design → dev → test → deploy → operate → retire)
+  cadence: gate at each lifecycle transition
+  participants:
+  - product owner
+  - safety lead
+  - QA/assurance
+  - ops
+  maps_to_sfr:
+  - a
+- name: Continuous safety monitoring program
+  cadence: continuous telemetry; daily triage; weekly pattern review
+  participants:
+  - on-call rotation
+  - safety lead
+  - ML reliability
+  maps_to_sfr:
+  - b
+- name: Adaptive measure review
+  cadence: quarterly; event-driven on environmental or threat change
+  participants:
+  - safety lead
+  - threat modeler
+  - product ops
+  maps_to_sfr:
+  - c
+- name: Safety training and recertification program
+  cadence: mandatory at hire; annual recertification for anyone with production authority
+  participants:
+  - all eligible staff
+  - safety lead as instructor-of-record
+  maps_to_sfr:
+  - d
+  - e
+- name: Safety culture signal (leadership and board)
+  cadence: monthly all-hands safety item; quarterly board-level risk report
+  participants:
+  - executive sponsor
+  - safety lead
+  - board risk committee
+  maps_to_sfr:
+  - e
+triggers:
+- Any material change to model, tools, data, or deployment context → Lifecycle review
+- Monitoring flags sustained deviation (see D7.1) → Adaptive measure review
+- Incident or near-miss → Blameless post-mortem feeding safety-case update
+- Annual calendar → Safety case renewal
+- New hire with production authority → Onboarding; annual anniversary → Recertification
+- Novel capability proposed → Default-off enablement workflow (per D7.2)
+artifacts:
+- Safety case (versioned, signed, links claims to evidence)
+- Lifecycle gate records (design-review, test-readiness, deployment, retirement sign-offs)
+- Safety requirements traceability matrix (SFR ↔ design element ↔ test ↔ monitor ↔ evidence)
+- Monitoring dashboards and alert runbooks
+- Incident register and post-mortem archive
+- Quarterly adaptive-measure review minutes
+- Training records and recertification attestations
+- Annual safety report (internal + externally publishable summary)
+evidence_production:
+- evidence_numeral: I
+  how_to_produce: 'Maintain the safety case as a single versioned document that links each top-level safety
+    claim to (a) a design feature, (b) a test result, (c) a runtime monitor, and (d) the residual risk
+    accepted. Update on material change. Archive each version.
+
+    '
+- evidence_numeral: II
+  how_to_produce: 'For every critical component, retain schematic/architecture diagrams, redundancy-fault-injection
+    test results, and failure-mode-and-effects analyses. Re-run fault-injection tests at least annually
+    and on component change.
+
+    '
+- evidence_numeral: III
+  how_to_produce: 'System logs and monitoring outputs must be retained per a documented retention policy,
+    with structured events suitable for querying ("which invocations tripped safety monitor X in the last
+    90 days"). Link alerts to incident records.
+
+    '
+- evidence_numeral: IV
+  how_to_produce: 'Quarterly safety performance review report: metric dashboards, trend analysis, open/closed
+    action items from prior cycles, new recommendations. Signed off by safety lead, noted in board papers.
+
+    '
+- evidence_numeral: V
+  how_to_produce: 'Adaptive-measure log: for each environmental/threat change, what adjustment was made,
+    when, by whom, with what validation.
+
+    '
+- evidence_numeral: VI
+  how_to_produce: 'Shutdown procedures tested at least annually; test records retained with participants,
+    scenario, outcome, gaps. See D7.5 for depth.
+
+    '
+- evidence_numeral: VII
+  how_to_produce: 'Put all safety-related documents under version control (Git or document management
+    system) with immutable history. Maintain a traceability matrix linking each SFR to design, test, monitor,
+    evidence.
+
+    '
+- evidence_numeral: VIII
+  how_to_produce: 'Compliance evidence per D7.3: conformance certificates, audit reports, regulatory correspondence.
+    Flag standards updates and show how they were absorbed.
+
+    '
+- evidence_numeral: IX
+  how_to_produce: 'Training records: schedule, attendance, assessment scores, correlate with post-training
+    safety performance (e.g., fewer handling errors in teams that completed training).
+
+    '
+- evidence_numeral: X
+  how_to_produce: 'Safety culture metrics: reports raised per quarter, time-to-resolution, percentage
+    of near-misses surfaced by front-line staff (proxy for psychological safety to report). See D7.2 for
+    depth.
+
+    '
+confidence: medium
+needs_human_review: true
+review_notes: 'This is the umbrella subgoal; most specific content defers to D7.1–D7.7 and the underlined
+  variants. Drafted it as a process pattern because the SFRs emphasize organizational discipline (design-build-test
+  integration, monitoring, adaptation, documentation, culture) rather than a single code surface. Cross-suite
+  dependencies noted: D3 (security/continuous assurance), D8 (end-of-life), D9 (governance as the outer
+  shell), I4 (frontier-uncertainty gating on novel capability). Consolidation pass should wire concrete
+  `cross_references` once those IDs are visible.
+
+  '
+version_compat:
+  framework_version_min: '1.0'
+  framework_version_max: 1.x
+  pattern_layer_version: v1-draft
+drafted_by: claude-opus-4.7-author
+drafted_at: 2026-04-16
+anchor_exemplar: D7.2-culture-of-safety

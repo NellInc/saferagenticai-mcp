@@ -1,0 +1,70 @@
+id: D4::idx7::content-provenance-and-synthetic-media-i
+display_id: D4.7
+suite_id: D4
+suite_title: Value Alignment
+subgoal_title: Content Provenance and Synthetic Media Identification
+content_type: governance
+confidence: low
+summary: >
+  AI systems capable of generating media (text, audio, images, video) must
+  implement content provenance mechanisms enabling downstream identification
+  of AI-generated content: machine-readable provenance metadata (C2PA or
+  equivalent), robust watermarking where technically feasible, and clear
+  labeling of synthetic content at the point of generation.
+description: AI systems capable of generating media (text, audio, images, video) must implement content
+  provenance mechanisms enabling downstream identification of AI-generated content. This includes machine-readable
+  provenance metadata (such as C2PA or equivalent standards), watermarking where technically feasible,
+  and clear labeling of synthetic content at the point of generation.
+policy_elements:
+  - name: Provenance metadata standard adoption
+    description: Adopt and mandate an established machine-readable provenance standard
+      (C2PA or equivalent) for all generated media, with embedding verified in CI and
+      downstream verification documented for consumers.
+    maps_to_sfr: a
+  - name: Watermarking requirement with feasibility register
+    description: Require robust watermarking of generated media wherever technically
+      feasible; maintain a register of media types where watermarking is infeasible,
+      with rationale and compensating labeling controls.
+    maps_to_sfr: b
+  - name: Synthetic-content labeling policy
+    description: Organization-wide policy requiring clear labeling of AI-generated
+      content at the point of distribution, with enforcement checks in release
+      processes.
+    maps_to_sfr: c
+org_roles:
+  - role: Head of Trust & Safety (or equivalent)
+    responsibilities: Owns the provenance/labeling policy, approves feasibility
+      exceptions, reviews enforcement reports.
+    accountable_or_consulted: accountable
+  - role: Media generation product engineering lead
+    responsibilities: Implements metadata embedding and watermarking; maintains
+      robustness test suites across common transformations.
+    accountable_or_consulted: consulted
+documentation_artifacts:
+  - artifact: Provenance metadata implementation report with embedding and
+      downstream-verification test results
+    cadence: per release
+  - artifact: Watermark robustness test results across compression, cropping, and
+      format conversion
+    cadence: per release
+  - artifact: Content labeling policy and distribution-point enforcement evidence
+    cadence: quarterly review
+external_anchors:
+  - C2PA (Coalition for Content Provenance and Authenticity)
+  - EU AI Act Article 50 transparency obligations for synthetic content
+cross_references: []
+normative_anchors:
+  sfrs_addressed: [a, b, c]
+  evidence_addressed: [I, II, III]
+  sfrs_not_addressed: []
+  evidence_not_addressed: []
+review_notes: >
+  Drafted from the canonical SFRs to replace an index-reconciliation stub
+  (2026-06-10). Governance blocks map one-to-one onto SFRs a-c and evidence
+  I-III but have not had domain-expert review; treat as a starting scaffold,
+  not settled guidance.
+needs_human_review: true
+version_compat:
+  framework_version_min: "1.0"
+  framework_version_max: "1.x"
+  pattern_layer_version: v1-draft

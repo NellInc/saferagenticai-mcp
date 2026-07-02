@@ -1,0 +1,167 @@
+id: D5::idx5::self-monitoring-and-examination-capabili
+display_id: D5.5
+suite_id: D5
+suite_title: Transparency and Interpretability of Reasoning
+subgoal_title: Self-Monitoring and Examination Capabilities
+content_type: code-applicable
+summary: 'Self-monitoring spans two layers: runtime monitors that watch the agent''s behavior for predefined
+  concern classes, and the agent''s own capacity to flag concerns about itself. Both are required; neither
+  alone suffices. Self-report without external monitors can be gamed or confabulated; external monitors
+  without self-report miss what only the agent can surface. The "Nanny AI" (independent-AI-oversight)
+  pattern is one instantiation of the external layer.
+
+  '
+normative_anchors:
+  sfrs_addressed:
+  - a
+  - b
+  - c
+  evidence_addressed:
+  - I
+  - II
+  - III
+  sfrs_not_addressed: []
+  evidence_not_addressed: []
+cross_references:
+- D5::idx1::logging-of-internal-goals
+- D5::idx4::interpretability-and-traceability-of-rea
+- D5::idx8::system-boundedness
+design_patterns:
+- name: Runtime monitor taxonomy
+  sketch: 'Define monitor classes, each with detector logic, severity, and response policy. Minimum set:
+    `boundary_violation`, `alignment_drift` (goal-invariant breach), `deception_signal` (claim-vs-action
+    mismatch), `capability_escalation` (agent acquires or attempts to acquire new tools/privileges), `confidence_miscalibration`
+    (stated confidence out of band), `policy_violation` (static-rule breach), `anomaly` (distributional
+    departure from baseline). Each monitor emits structured events joinable to the decision log.
+
+    '
+  maps_to_sfr:
+  - a
+  when_to_use: Production agents with material authority.
+- name: Agent self-flag protocol
+  sketch: 'Expose a first-class channel for the agent to raise concerns: `{concern_type, severity, scope,
+    rationale_ref, recommended_ action}`. Concern types include `uncertain_about_intent`, `possible_harmful_action`,
+    `policy_ambiguity`, `external_conflict_detected`, `self_inconsistency`. The channel is privileged:
+    agent-raised concerns route to human review without being filtered by task-completion heuristics.
+    Self-flag events join the goal log with `trigger: self`.
+
+    '
+  maps_to_sfr:
+  - b
+  when_to_use: Any agent with nontrivial authority; mandatory for high-risk tiers.
+- name: Ethical self-examination prompts, scheduled
+  sketch: 'At defined checkpoints (on high-stakes actions, at session milestones, before irreversible
+    operations), invoke a structured self-examination: the agent is prompted to check for deception, for
+    actions inconsistent with stated goals, and for outcomes that would be unacceptable if made public.
+    Results are logged, not trusted by default — see faithfulness limits in D5.4. Use as one signal, not
+    the deciding one.
+
+    '
+  maps_to_sfr:
+  - b
+  when_to_use: Prior to irreversible actions and at periodic checkpoints in long-running sessions.
+- name: Independent oversight agent ("guardian" or "Nanny AI")
+  sketch: 'A separate model or rule-based system with read-only access to decision records, goal events,
+    and outputs. Runs on a different training distribution (or is rule-based) to reduce correlated failure.
+    Emits concerns into the monitor bus; cannot be overridden by the monitored agent. Subject to its own
+    monitoring (turtles, appropriately far down). Note that guardian AIs share some failure modes with
+    the monitored agent — diversify architectures where possible.
+
+    '
+  maps_to_sfr:
+  - c
+  when_to_use: High-authority, long-horizon, or high-stakes agents.
+- name: Monitor validation and drift check
+  sketch: 'Monitors themselves degrade: thresholds calibrated on old distributions miss new patterns;
+    detector models bit-rot. Run a scheduled validation (monthly minimum): red-team seeded violations,
+    compare detection rate to baseline, alarm on degradation. The monitoring system is under the same
+    review discipline as the monitored system.
+
+    '
+  maps_to_sfr:
+  - a
+  when_to_use: Always in production.
+anti_patterns:
+- name: Self-report as the only signal
+  why_wrong: 'An agent that claims "I did nothing wrong" is providing one data point, not a conclusion.
+    Monitors running on observable behavior must corroborate self-report before it is trusted.
+
+    '
+- name: Monitors that trust the monitored
+  why_wrong: 'If the agent can edit the monitor''s inputs, suppress its outputs, or change its thresholds,
+    the monitor is inside the blast radius. Read-only access and write-isolated routing are structural
+    requirements.
+
+    '
+- name: Ethics checks only at the end
+  why_wrong: 'Post-hoc ethical review of an already-executed action is too late for irreversible operations.
+    Pre-action review for defined action classes is the pattern SFR-b points toward.
+
+    '
+- name: Guardian AI sharing training data and architecture with monitored agent
+  why_wrong: 'Correlated failure. A failure mode in the underlying training regime (spurious feature,
+    value drift) likely exists in both. Diversify at least architecture, preferably training distribution.
+
+    '
+- name: Monitor outputs routed into the same queue as normal logs
+  why_wrong: 'Violations lost in volume. High-severity monitor events route to a dedicated channel with
+    SLA and on-call.
+
+    '
+code_shape:
+  language: pseudocode
+  code: "# Runtime monitor dispatch + self-flag + guardian read path\n\nMONITOR_CLASS = Literal[\n   \
+    \ \"boundary_violation\",\"alignment_drift\",\"deception_signal\",\n    \"capability_escalation\"\
+    ,\"confidence_miscalibration\",\n    \"policy_violation\",\"anomaly\",\n]\n\n@dataclass\nclass MonitorEvent:\n\
+    \    monitor_id: str\n    monitor_class: MONITOR_CLASS\n    severity: Literal[\"info\",\"low\",\"\
+    medium\",\"high\",\"critical\"]\n    evidence_refs: list[str]   # decision_ids, goal_event_ids\n \
+    \   detector_version: str\n    timestamp: str\n\ndef on_decision_record(dr: DecisionRecord) -> None:\n\
+    \    for monitor in MONITORS.active():\n        ev = monitor.evaluate(dr)\n        if ev:\n      \
+    \      MONITOR_BUS.publish(ev)\n            if ev.severity in {\"high\",\"critical\"}:\n         \
+    \       INCIDENT.page(ev)\n\ndef agent_self_flag(concern: SelfFlag) -> None:\n    # Privileged path:\
+    \ bypasses task-completion filters\n    GOAL_LOG.emit(GoalEvent.self_flag(concern))\n    SELF_FLAG_BUS.publish(concern)\
+    \   # routed to human review\n\nclass GuardianAgent:\n    # read-only access; distinct model family\n\
+    \    def review(self, window: TimeWindow) -> list[MonitorEvent]:\n        records = DECISION_STORE.read_only(window)\n\
+    \        return self.detector.scan(records)\n"
+  notes: 'Monitor classes and severities are the schema. The detector logic behind each will be a mix
+    of rules, statistical checks, and learned classifiers; what matters at this layer is the contract.
+
+    '
+evidence_production:
+- evidence_numeral: I
+  how_to_produce: 'Publish detector coverage per monitor class (what it catches, known blind spots). Retain
+    threat-response logs for a full monitoring window; include response latency, disposition, and corrective
+    actions. Run regular (quarterly) security and effectiveness audits; publish findings and remediations.
+
+    '
+- evidence_numeral: II
+  how_to_produce: 'Document embedded ethical guidelines and the self-examination protocol (prompts, checkpoints,
+    trust model). Retain self-examination logs with outcomes and the downstream actions taken (including
+    when self-flags were acted upon vs deemed non-actionable, with reasoning). Third-party audits specifically
+    reviewing the self-examination process and its faithfulness.
+
+    '
+- evidence_numeral: III
+  how_to_produce: 'Simulation / red-team results testing monitor coverage and response paths. Stakeholder
+    feedback on whether monitoring outcomes are surfaced usefully. Periodic effectiveness reports showing
+    detector precision/recall, response SLA performance, and trend data.
+
+    '
+confidence: medium
+needs_human_review: true
+review_notes: 'Medium because "Nanny AI" / guardian pattern is a plausible implementation of SFR-c but
+  is an active research area; failure modes (guardian corruption, adversarial agent-guardian dynamics)
+  are not fully understood. The runtime-monitor side is well-trodden SRE/security practice applied to
+  agent behavior. Self-examination pattern inherits the faithfulness caveats from D5.4 — do not over-
+  trust what the agent says about itself. Cross-suite for Phase 2: I2 Deception (deception-signal monitor
+  is the technical interface); D8 Robust Human Oversight (monitor alerts feed oversight); D3 Security
+  (monitor isolation, guardian write-protection); D1 Goals (alignment-drift monitor consumes goal invariants).
+
+  '
+version_compat:
+  framework_version_min: '1.0'
+  framework_version_max: 1.x
+  pattern_layer_version: v1-draft
+drafted_by: claude-opus-4.7-author
+drafted_at: 2026-04-16
+anchor_exemplar: D3.2-sandboxing

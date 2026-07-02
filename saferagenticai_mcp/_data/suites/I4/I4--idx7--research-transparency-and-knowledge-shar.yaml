@@ -1,0 +1,142 @@
+id: I4::idx7::research-transparency-and-knowledge-shar
+display_id: "I4_1"
+is_underlined_variant: true
+display_id_variant_note: "I4.1_underlined"
+suite_id: I4
+suite_title: Frontier Uncertainty
+subgoal_title: Research Transparency and Knowledge Sharing
+content_type: ecosystem
+summary: 'Frontier uncertainty is reduced faster when organizations share what they learn — especially
+  evaluation methodology, capability-surprise postmortems, and safety-relevant negative results. The framework
+  asks for substantive, externally-verifiable knowledge-sharing posture: open-by-default where safe, responsible-disclosure
+  where not, and credit for the reader''s time through accessible formats.
+
+  '
+normative_anchors:
+  sfrs_addressed:
+  - a
+  - b
+  evidence_addressed:
+  - I
+  - II
+  - III
+  - IV
+  sfrs_not_addressed: []
+  evidence_not_addressed: []
+cross_references:
+- I4::idx0::frontier-uncertainty
+- I4::idx6::cascading-vulnerabilities
+stakeholders:
+- name: Peer frontier labs (Frontier Model Forum members and equivalents)
+  engagement_channel: 'Structured information exchange through a pre-agreed protocol: capability-surprise disclosures,
+    evaluation methodology sharing, pre-deployment safety-case review exchange. Scope defined against
+    a shared sensitive-info taxonomy. Participation tracked annually: what was shared, what was received,
+    what resulted.
+
+    '
+  maps_to_sfr:
+  - a
+- name: Academic and independent safety researchers
+  engagement_channel: 'Research access program with clear criteria (credentialing, scope, terms). Publish: benchmarks,
+    evaluation suites, non-sensitive safety tooling, red-team artifacts, replication seeds where legally
+    shareable. Track actual citations and derived work, not download counts. Grants or fellowships where
+    capability access requires organizational context.
+
+    '
+  maps_to_sfr:
+  - a
+  - b
+- name: Capability-surprise registry (industry-wide)
+  engagement_channel: 'Contribute to — and where absent, help convene — a shared industry-wide capability-surprise
+    registry: structured disclosures of observed emergent capabilities with reproducibility hints, dangerous-capability
+    thresholds crossed, evaluation gaps exposed. Coordinate disclosure timing to enable responsible response
+    across labs.
+
+    '
+  maps_to_sfr:
+  - a
+  - b
+- name: Standards bodies and AISI network (NIST, UK AISI, EU AI Office, Singapore IMDA, Japan AISI,
+    Canadian AISI)
+  engagement_channel: 'Named participation with continuity in evaluation-methodology working groups. Contribute evaluations,
+    benchmarks, and threat models. Publish the org''s evaluation results against the agreed benchmarks
+    at an agreed cadence.
+
+    '
+  maps_to_sfr:
+  - b
+- name: Developing-world research institutions
+  engagement_channel: 'Shared-repository contributions with accessibility (low-bandwidth availability, mirrored compute
+    access), language-diversity in documentation, co-authorship opportunities with local institutions.
+    Pairs with I7 partnership patterns.
+
+    '
+  maps_to_sfr:
+  - a
+- name: Policymakers and general public
+  engagement_channel: 'Accessible-format summaries of safety-relevant findings: plain- language briefings, policy-oriented
+    synthesis documents, reproducible case examples. Not marketing — published findings that name limitations
+    and residual uncertainties.
+
+    '
+  maps_to_sfr:
+  - b
+engagement_modes:
+- mode: Frontier Model Forum and equivalent pre-deployment coordination venues
+- mode: 'AISI network — US, UK, EU AI Office, Singapore, Japan, Canada'
+- mode: MLCommons for shared benchmarks
+- mode: 'Partnership on AI (safety, transparency working groups)'
+- mode: 'ArXiv, OpenReview, and conference venues with reproducibility tracks (NeurIPS, ICML, ICLR, FAccT, AIES)'
+- mode: 'Open-source safety tooling ecosystems (evaluation harnesses, interpretability tooling, red-team frameworks)'
+- mode: 'Sensitive-info taxonomy and responsible-disclosure frameworks (e.g., CVE-equivalent for AI capability surprises)'
+- mode: UNESCO Open Science Recommendation
+evidence_production:
+- evidence_numeral: I
+  how_to_produce: 'Publish the org''s open-access and data-sharing policy. Maintain a collaborative-research
+    register: named partners, scope, duration, joint outputs. Cross-institution/interdisciplinary collaboration
+    records — not just co-authorship counts but evidence of substantive exchange (shared protocols, joint
+    evaluations, data covenants).
+
+    '
+- evidence_numeral: II
+  how_to_produce: 'Responsible-reporting guidelines: the org''s policy on what gets published, what gets
+    disclosed privately, what gets withheld, and the review process for each. Include sensitive-info taxonomy
+    with worked examples. Accessibility standards documented: plain- language summary requirements, language
+    availability commitments, format accessibility (screen-reader compatibility, etc.).
+
+    '
+- evidence_numeral: III
+  how_to_produce: 'Contribution log: artifacts submitted to public repositories (models, datasets, benchmarks,
+    evaluation suites, tooling) with license, scope, version. Conference and working-group participation
+    records: presentations given, working-group seats held, contributions accepted. Published annually
+    as part of the org''s transparency report.
+
+    '
+- evidence_numeral: IV
+  how_to_produce: 'Public-communication archive: policymaker briefings (with scope and attendance noted
+    where non-sensitive), accessible summaries per major release, non-technical explainers of safety-relevant
+    findings. Track reach and comprehension where feasible (reader surveys, citation traces in policy
+    documents).
+
+    '
+confidence: low
+evidence_maturity: established
+needs_human_review: true
+review_notes: "Research transparency at the frontier sits on an unresolved tension: openness accelerates\
+  \ collective safety work AND can accelerate capability diffusion. The pattern leans on structured mechanisms\
+  \ (sensitive-info taxonomy, responsible-disclosure protocols, capability-surprise registry) rather than\
+  \ a blanket stance. Sharpenings:\n  (1) Capability-surprise registry as an industry-wide artifact —\n\
+  \      the framework's \"novel substrate risks\" language (from I4\n      suite description) suggests\
+  \ a shared registry is the\n      frontier-uncertainty-specific knowledge commons.\n  (2) Pre-deployment\
+  \ coordination with peer labs — pattern flags this\n      as substantively different from post-publication\
+  \ sharing.\n  (3) Evidence IV (public communication) risks becoming marketing;\n      pattern emphasizes\
+  \ limitations and residual uncertainty as\n      markers of genuine transparency.\nCross-suite: I7 Imbalance\
+  \ (shared compute, shared data, shared evaluation methodology overlap), D3 Security (responsible-disclosure\
+  \ taxonomy), I1 Opaque Agency (transparency is the ecosystem-level counter).\n"
+version_compat:
+  framework_version_min: '1.0'
+  framework_version_max: 1.x
+  pattern_layer_version: v1-draft
+drafted_by: claude-opus-4.7-author
+drafted_at: 2026-04-16
+anchor_exemplar: I7.3-balanced-global-partnership

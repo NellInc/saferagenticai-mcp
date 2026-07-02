@@ -1,0 +1,135 @@
+id: I3::idx14::retraining-and-recontextualization
+display_id: "I3_3"
+is_underlined_variant: true
+suite_id: I3
+suite_title: Degradation of Contextual Information
+subgoal_title: Retraining and Recontextualization
+content_type: code-applicable
+summary: 'When divergence is detected (value drift, persona instability, poisoned retrieval, context corruption),
+  the system needs a designed path back to alignment — not ad-hoc intervention. Retraining and recontextualization
+  span: soft recovery (reset operational context to baseline), mid recovery (re-ingest a validated corpus,
+  re-seed retrieval), hard recovery (rollback to known-good checkpoint, schedule full retraining). Operational
+  continuity is preserved through staged recovery: safe-mode operation while recovery runs.
+
+  '
+normative_anchors:
+  sfrs_addressed:
+  - a
+  evidence_addressed:
+  - I
+  sfrs_not_addressed: []
+  evidence_not_addressed: []
+cross_references:
+- I3::idx6::learning-dispreferred-values-behaviors
+- I3::idx8::persona-instability-and-value-drift
+- I3::idx12::referential-context
+- I3::idx13::human-agent-conformation
+design_patterns:
+- name: Divergence-detection triggers
+  sketch: 'Recovery paths are invoked by monitored signals: value-probe drift (I3.6), persona-drift circuit
+    breaker (I3.8), baseline integrity violation (I3.11), retrieval-poisoning alert (I3.5), coordinated-inauthentic-behavior
+    flags (I3.3), contradiction- pattern escalations (I3.10). Each signal has a configured severity; severity
+    selects the recovery tier.
+
+    '
+  maps_to_sfr:
+  - a
+  when_to_use: Always — recovery paths without detection triggers are theater.
+- name: Staged recovery ladder
+  sketch: 'Three tiers: (1) soft — clear operational context cache, re-anchor baseline, resume (for transient
+    context drift); (2) mid — replace retrieval index with validated snapshot, invalidate memory entries
+    created after suspicious timestamp, resume under heightened monitoring; (3) hard — roll back model
+    checkpoint, schedule supervised retraining with updated preference data, quarantine current deployment.
+    Severity determines tier; human approval required to advance tiers.
+
+    '
+  maps_to_sfr:
+  - a
+  when_to_use: Production systems with meaningful stakes.
+- name: Safe-mode operation during recovery
+  sketch: 'While recovery runs, the system operates under constrained capability: irreversible actions
+    disabled, external tool calls require explicit per-call approval, outputs prepended with "operating
+    under reduced-trust mode" where appropriate. Operational continuity is preserved but blast radius
+    is clipped. Safe-mode is its own mode, pre-defined and tested.
+
+    '
+  maps_to_sfr:
+  - a
+  when_to_use: Systems where full shutdown is more harmful than constrained operation.
+- name: Post-recovery verification suite
+  sketch: 'Before exiting safe-mode and declaring recovery complete, run a verification suite: (1) value-probes
+    match baseline; (2) integrity scan clean (no orphan mutations); (3) sample of recent decisions reviewed
+    for alignment; (4) cause-of- divergence addressed (not just symptom). Entry back to full operation
+    requires sign-off, not timer expiry.
+
+    '
+  maps_to_sfr:
+  - a
+  when_to_use: All recovery cycles.
+- name: Recovery documentation trail
+  sketch: 'Every recovery produces a dated record: trigger, severity, tier invoked, actions taken, verification
+    results, time in safe-mode, root cause, preventive changes. Fed to the incident post-mortem process
+    (see D7.2 blameless post-mortem) and the compliance violation register (D9.2).
+
+    '
+  maps_to_sfr:
+  - a
+  when_to_use: All recovery cycles.
+anti_patterns:
+- name: Recovery = "restart the service"
+  why_wrong: 'A restart clears transient state but does not address poisoned retrieval, trained-in drift,
+    or accumulated memory corruption. Recovery is tiered; restart is one tool, not the strategy.
+
+    '
+- name: Auto-recovery with no human sign-off
+  why_wrong: 'Autonomous re-entry to full operation after a divergence event means the detection threshold
+    and the remediation threshold are the same — and thresholds drift. Human sign-off for tier transitions
+    is the discipline.
+
+    '
+- name: Recovery without root-cause analysis
+  why_wrong: 'Resetting context silences the symptom. If the cause is a compromised upstream source or
+    a bad preference dataset, the system will diverge again. Recovery that closes the incident without
+    RCA is evidence theater.
+
+    '
+code_shape:
+  language: pseudocode
+  code: "class RecoveryTier(Enum):\n    SOFT = 1; MID = 2; HARD = 3\n\n@dataclass\nclass RecoveryPlan:\n\
+    \    trigger: DivergenceSignal\n    tier: RecoveryTier\n    steps: list[RecoveryStep]\n    verification:\
+    \ VerificationSuite\n\ndef initiate_recovery(signal: DivergenceSignal) -> RecoveryRun:\n    tier =\
+    \ TIER_POLICY.resolve(signal)\n    plan = RecoveryPlan.for_(tier, signal)\n    SAFE_MODE.enter(reason=signal)\n\
+    \    run = RecoveryRun.start(plan)\n    for step in plan.steps:\n        step.execute()\n        AUDIT.record_step(run.id,\
+    \ step)\n    results = plan.verification.run()\n    if not results.all_pass():\n        INCIDENT.raise_(\"\
+    recovery_verification_failed\", run, results)\n        return run.hold()                    # stays\
+    \ in safe-mode\n    require_human_signoff(run, tier)         # tier-gated\n    SAFE_MODE.exit(run.id)\n\
+    \    return run.complete()\n"
+  notes: '`require_human_signoff` is synchronous for tier >= MID; for SOFT, it may be async with time-bounded
+    implicit approval if no objection. Policy-configured and audited.
+
+    '
+evidence_production:
+- evidence_numeral: I
+  how_to_produce: 'Comprehensive recovery documentation: (1) divergence-detection methodologies with per-signal
+    definitions; (2) retraining/ reconfiguration playbooks per tier; (3) context-restoration verification
+    suite with expected outcomes; (4) operational- continuity measures (safe-mode definition, tested boundaries);
+    (5) post-restoration validation records showing functional performance and alignment restored. Each
+    recovery run produces a record linked here.
+
+    '
+confidence: high
+needs_human_review: true
+review_notes: 'Tiered recovery is a known SRE pattern; the I3-specific additions are the integration with
+  value-probes, persona-drift, and the baseline from I3.11. Confidence medium because hard-tier recovery
+  (supervised retraining) is infrastructure-heavy — not all orgs have the pipeline for it. Cross-suite:
+  D7 (Safe System Profile) for post-mortem integration; D8 (Human Oversight) for sign-off gates; D9.2
+  (Compliance) for recovery-documentation retention.
+
+  '
+version_compat:
+  framework_version_min: '1.0'
+  framework_version_max: 1.x
+  pattern_layer_version: v1-draft
+drafted_by: claude-opus-4.7-author
+drafted_at: 2026-04-16
+anchor_exemplar: D3.2-sandboxing

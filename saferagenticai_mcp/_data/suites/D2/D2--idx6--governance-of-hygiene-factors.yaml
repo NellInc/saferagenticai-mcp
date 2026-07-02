@@ -1,0 +1,194 @@
+# Pattern — D2.6 Governance of Hygiene Factors
+
+id: "D2::idx6::governance-of-hygiene-factors"
+display_id: "D2.6"
+suite_id: "D2"
+suite_title: "Epistemic Hygiene"
+subgoal_title: "Governance of Hygiene Factors"
+content_type: governance
+
+summary: >
+  The technical patterns in D2.1–D2.5 and D2.8–D2.10 need owners, decision
+  rights, and a change process. This subgoal is the governance scaffold
+  that keeps them honest — a multi-tier structure with named accountability,
+  jurisdictional awareness, and real stakeholder communication channels.
+  Not a committee chart; a working apparatus with cadence, artifacts, and
+  escalation paths.
+
+normative_anchors:
+  sfrs_addressed: [a, b]
+  evidence_addressed: [I, II, III]
+  sfrs_not_addressed: []
+  evidence_not_addressed: []
+
+cross_references:
+  - "D2::idx0::epistemic-hygiene"
+  - "D2::idx7::global-interoperability-of-hygiene-consi"
+
+policy_elements:
+
+  - name: Three-tier governance structure
+    description: >
+      Operational tier (engineers, data scientists, SREs implementing
+      and monitoring) · Managerial tier (Epistemic Hygiene Lead,
+      Responsible-AI Lead, Data/Knowledge Engineering Lead — with
+      authority to set standards, approve exceptions, allocate resources)
+      · Strategic tier (board-level AI Risk Committee — approves the
+      Charter, receives quarterly posture reports, holds pause authority
+      on material integrity failures). Each tier has defined decision
+      rights, escalation triggers, and meeting cadence.
+    maps_to_sfr: [a]
+
+  - name: RACI matrix for each D2 sub-capability
+    description: >
+      Per D2 technical sub-capability (cross-referencing, source
+      transparency, sanity checking, anti-bias, operational rigor,
+      temporal trade-offs, synthetic data, sparse data): Responsible
+      (the engineer or team implementing), Accountable (a single named
+      manager), Consulted (legal, responsible AI, domain experts),
+      Informed (product, board-level risk). Reviewed annually and on
+      material reorganisation.
+    maps_to_sfr: [a]
+
+  - name: Jurisdictional overlay
+    description: >
+      Governance policies cross-reference the jurisdictions of
+      deployment and the binding standards there (EU AI Act, NIST AI
+      RMF, ISO/IEC 42001, sector-specific — HIPAA for clinical, GLBA
+      for finance, GDPR for personal data). Named legal owner per
+      jurisdiction. Updates propagate from the Standards Embedding
+      Protocol (D9.2) into the D2 governance with SLA.
+    maps_to_sfr: [b]
+
+  - name: Stakeholder communication channels
+    description: >
+      Defined channels: internal (engineering forum, weekly ops sync,
+      monthly managerial review, quarterly board report), external
+      (published hygiene posture summary, feedback channel for users
+      and researchers, regulator liaison). Each channel named
+      owner, cadence, and retention of communications.
+    maps_to_sfr: [b]
+
+  - name: Exception and waiver register
+    description: >
+      Any deviation from hygiene standards (e.g., shipping with a known
+      under-corroboration rate above target, operating a retrieval
+      corpus with a documented lacuna) is a reviewed exception with a
+      named approver, rationale, compensating controls, expiry date, and
+      review cadence. Append-only register; quarterly expiry review.
+    maps_to_sfr: [a]
+
+org_roles:
+
+  - role: Epistemic Hygiene Lead
+    responsibilities: >
+      Accountable for the D2 programme. Chairs the managerial tier.
+      Approves exceptions within defined authority; escalates higher-risk
+      exceptions to the board-level committee. Quarterly posture report
+      to the committee.
+    accountable_or_consulted: accountable
+
+  - role: Data/Knowledge Engineering Lead
+    responsibilities: >
+      Responsible for technical implementations of D2.1, D2.2, D2.5,
+      D2.8. Implements managerial decisions and reports metrics.
+    accountable_or_consulted: responsible
+
+  - role: Responsible-AI / Fairness Lead
+    responsibilities: >
+      Consulted on D2.3, D2.4, D2.9. Has veto on changes materially
+      affecting protected-group representation or outcomes.
+    accountable_or_consulted: consulted
+
+  - role: Legal Counsel (internal or retained, per jurisdiction)
+    responsibilities: >
+      Consulted on jurisdictional overlay, data-licence issues, and
+      exceptions with regulatory exposure.
+    accountable_or_consulted: consulted
+
+  - role: Board-level AI Risk Committee
+    responsibilities: >
+      Informed quarterly; approves Charter revisions; authority to
+      pause deployments on material hygiene failures.
+    accountable_or_consulted: informed
+
+  - role: External Advisory Council (optional, recommended for
+      sensitive deployments)
+    responsibilities: >
+      Independent members with domain, civil-society, and affected-
+      community representation. Consulted on material policy revisions.
+      Advisory, not binding, unless board charter grants otherwise.
+    accountable_or_consulted: consulted
+
+documentation_artifacts:
+
+  - artifact: D2 Governance Charter (linked from D9.2 framework)
+    cadence: "versioned; annual review"
+
+  - artifact: RACI matrix for D2 sub-capabilities
+    cadence: "annual review + on reorganisation"
+
+  - artifact: Jurisdictional overlay matrix
+    cadence: "quarterly review + event-driven on regulatory change"
+
+  - artifact: Exception and waiver register
+    cadence: "continuous; append-only; quarterly expiry review"
+
+  - artifact: Quarterly hygiene posture report
+    cadence: "quarterly"
+
+  - artifact: Stakeholder communication log
+    cadence: "continuous"
+
+evidence_production:
+
+  - evidence_numeral: I
+    how_to_produce: >
+      Publish the governance structure document with tier definitions,
+      decision rights, meeting cadence, and escalation triggers. Include
+      named role-holders (per the Accountability Framework in D9.2) with
+      signed role profiles. Versioned; referenced from the Epistemic
+      Hygiene Charter.
+
+  - evidence_numeral: II
+    how_to_produce: >
+      Maintain the jurisdictional overlay matrix: for each deployment
+      jurisdiction, the applicable standards (binding and advisory),
+      the named legal owner, the in-flight changes being tracked, the
+      SLA for embedding updates. Updated quarterly and on regulatory
+      publication.
+
+  - evidence_numeral: III
+    how_to_produce: >
+      Document communication channels with per-channel logs: meeting
+      minutes (managerial and board), internal announcements
+      (engineering forum posts, policy updates), external
+      communications (published summaries, regulator correspondence).
+      Retention aligned with records policy.
+
+confidence: high
+needs_human_review: true
+review_notes: >
+  Governance patterns are plausible defaults; specifics depend on the
+  organization's scale, sector, and jurisdictional footprint. Calls:
+    (1) "Single named accountable human" mirrors D9.2; consolidation
+        should ensure the D2.6 accountable role is the same named
+        person as the D9.2 accountability framework covers (or
+        explicitly their delegate).
+    (2) "External Advisory Council" is marked optional — orgs deploying
+        in high-stakes domains (health, education, justice) should be
+        pushed toward mandatory; orgs shipping low-stakes internal
+        tooling likely should not. The pattern leaves this to
+        implementer judgement; Nell may want to strengthen for the
+        high-stakes case.
+    (3) Heavy overlap with D9.2 (compliance governance) and D7.2
+        (culture of safety). These are twinned governance scaffolds.
+        Consolidation should wire explicitly.
+
+drafted_by: claude-opus-4.7-author
+drafted_at: 2026-04-16
+anchor_exemplar: D9.2-compliance
+version_compat:
+  framework_version_min: "1.0"
+  framework_version_max: "1.x"
+  pattern_layer_version: "v1-draft"
