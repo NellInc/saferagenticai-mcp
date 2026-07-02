@@ -81,7 +81,7 @@ Sign in at <https://mcp.so/submit> (GitHub), then fill:
 
 - **Type:** `MCP Server`
 - **Name:** `saferagenticai-mcp`
-- **URL:** `https://github.com/NellInc/SaferAgenticAI/tree/main/research/mcp/server`
+- **URL:** `https://github.com/NellInc/saferagenticai-mcp`
 - **Avatar image URL:** `https://www.saferagenticai.org/assets/figures/AI_Safety_Logo-Color.png`
 - **Tags:** `ai-safety, agentic-ai, governance, safety-framework, compliance, mcp`
 - **Server Config:** `{"mcpServers":{"saferagenticai":{"command":"uvx","args":["saferagenticai-mcp"]}}}`
@@ -122,7 +122,7 @@ More: https://www.saferagenticai.org
 de-risks Glama's sandbox build (a failed build hides the server from search).
 
 - Sign in at <https://glama.ai> via GitHub OAuth (needs write/admin on the repo).
-- **Add Server** with `https://github.com/NellInc/SaferAgenticAI/tree/main/research/mcp/server`.
+- **Add Server** with `https://github.com/NellInc/saferagenticai-mcp`.
 - **Sync Server** to trigger an immediate scan.
 
 ---
@@ -159,7 +159,7 @@ the Dockerfile copied to root, or (b) use the pre-built-image path
 
 ```bash
 git clone https://github.com/<you>/mcp-registry && cd mcp-registry
-task create -- --category productivity https://github.com/NellInc/SaferAgenticAI
+task create -- --category productivity https://github.com/NellInc/saferagenticai-mcp
 task validate -- --name saferagenticai-mcp
 task build -- --tools saferagenticai-mcp
 # then open a PR using .github/PULL_REQUEST_TEMPLATE.md
@@ -186,7 +186,7 @@ about:
     guidance from a coding assistant.
   icon: https://www.google.com/s2/favicons?domain=saferagenticai.org&sz=64
 source:
-  project: https://github.com/NellInc/SaferAgenticAI
+  project: https://github.com/NellInc/saferagenticai-mcp
   branch: main
   commit: <40-char-sha where the root Dockerfile exists>
 # No config block: the server takes no secrets/env and bundles its own data.
@@ -217,7 +217,7 @@ Covered in §3. Manual form; you must sign in before it accepts the submission.
 Auto-crawls the GitHub URL you give it (and separately auto-discovers the Official
 Registry). Only the repo URL is required, but supply the PyPI name + a description
 so it doesn't mis-read the root:
-- GitHub Repository (required): `https://github.com/NellInc/SaferAgenticAI`
+- GitHub Repository (required): `https://github.com/NellInc/saferagenticai-mcp`
 - PyPI Package: `saferagenticai-mcp`
 - Short Description: `MCP server exposing the SaferAgenticAI safety framework: 238 normative patterns + 14 operational heuristics via 12 read-only stdio tools. Python, MIT.`
 - Email: `nell@ethicsnet.com`
