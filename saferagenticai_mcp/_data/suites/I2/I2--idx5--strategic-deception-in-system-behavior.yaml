@@ -22,7 +22,7 @@ normative_anchors:
   - IV
   sfrs_not_addressed:
   - b
-  evidence_not_addressed: []
+  evidence_not_addressed: [V]
 design_patterns:
 - name: Eval/deployment indistinguishability (honeypot contexts)
   sketch: 'Maintain an evaluation lane whose surface signals (headers, user profiles, system prompts,

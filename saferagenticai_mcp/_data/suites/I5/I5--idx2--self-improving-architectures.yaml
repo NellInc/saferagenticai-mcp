@@ -24,7 +24,7 @@ normative_anchors:
   - IV
   - V
   sfrs_not_addressed: []
-  evidence_not_addressed: []
+  evidence_not_addressed: [VI]
 design_patterns:
 - name: Self-improvement taxonomy and inventory
   sketch: 'Enumerate the ways the system can improve itself, at minimum: (1) in-context learning / scratch

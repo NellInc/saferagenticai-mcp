@@ -21,7 +21,7 @@ normative_anchors:
   - II
   - III
   sfrs_not_addressed: []
-  evidence_not_addressed: []
+  evidence_not_addressed: [IV, V]
 design_patterns:
 - name: Declared optimization mode
   sketch: 'An agent''s deployment manifest declares explicitly which optimization collaborations are permitted:

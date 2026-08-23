@@ -22,7 +22,7 @@ normative_anchors:
   - II
   - III
   sfrs_not_addressed: []
-  evidence_not_addressed: []
+  evidence_not_addressed: [IV, V]
 design_patterns:
 - name: Heterogeneous validator panel
   sketch: Self-checking scaffolds that rely on a single model criticizing its own draft suffer from shared

@@ -22,7 +22,7 @@ normative_anchors:
   - III
   - IV
   sfrs_not_addressed: []
-  evidence_not_addressed: []
+  evidence_not_addressed: [V]
 design_patterns:
 - name: Capability-envelope enforcement
   sketch: Every agent carries a declared capability envelope (the set of action classes, spending limits,

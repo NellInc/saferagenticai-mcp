@@ -30,7 +30,7 @@ normative_anchors:
   - IX
   - X
   sfrs_not_addressed: []
-  evidence_not_addressed: [XI]
+  evidence_not_addressed: [XI, XII]
 cross_references:
 - D5::idx1::logging-of-internal-goals
 - D5::idx4::interpretability-and-traceability-of-rea

@@ -18,7 +18,7 @@ normative_anchors:
   - I
   - II
   sfrs_not_addressed: []
-  evidence_not_addressed: []
+  evidence_not_addressed: [III, IV]
 cross_references:
 - I4::idx0::frontier-uncertainty
 - I4::idx1::moral-and-legal-uncertainty-of-agentic-a

@@ -24,7 +24,7 @@ normative_anchors:
   - IV
   - V
   sfrs_not_addressed: []
-  evidence_not_addressed: []
+  evidence_not_addressed: [VI]
 cross_references:
 - D9::idx0::responsible-governance-of-aai-safety
 - D9::idx1::operational-adaptability-and-rule-resili

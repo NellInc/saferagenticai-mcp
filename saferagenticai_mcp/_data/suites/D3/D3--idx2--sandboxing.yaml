@@ -21,7 +21,7 @@ normative_anchors:
   sfrs_addressed: [a, b]
   evidence_addressed: [I, II, III]
   sfrs_not_addressed: []
-  evidence_not_addressed: []
+  evidence_not_addressed: [IV]
 
 cross_references:
   - "D3::idx1::authorization"
