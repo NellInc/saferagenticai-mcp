@@ -13,9 +13,13 @@ summary: >
   way to re-encode the generator's existing biases into the training
   signal at higher fidelity. The subgoal asks for mechanisms that treat
   synthetic data as a managed intervention: bounded in volume, explicit
-  in purpose, continuously monitored for distributional and behavioural
-  impact, and never a silent substitute for real data from
-  under-represented populations.
+  in purpose, provenance-tagged so bias monitoring (per D2.4/G2.4b) can
+  attribute observed drift to synthetic augmentation, continuously
+  monitored for distributional and behavioural impact, and never a
+  silent substitute for real data from under-represented populations.
+  The duties are conditional ("where synthetic data is used") and
+  recommended rather than mandatory; the pattern applies whenever
+  generated content enters a training or retrieval corpus.
 
 normative_anchors:
   sfrs_addressed: [a, b, c]
@@ -51,8 +55,10 @@ design_patterns:
       synthetic example is tagged in storage with (generator_id,
       generation_parameters_hash, generated_at, purpose_id). Training
       and evaluation pipelines can compute and report the ratio per
-      slice without recomputation.
-    maps_to_sfr: [a, b]
+      slice without recomputation, and bias monitoring (specified in
+      G2.4b, which this provenance supplements) can attribute observed
+      drift to synthetic augmentation.
+    maps_to_sfr: [b, c]
     when_to_use: Any dataset mixing real and synthetic data.
 
   - name: Generator audit before use
@@ -71,12 +77,15 @@ design_patterns:
   - name: Downstream impact monitoring
     sketch: >
       After synthetic data enters training, compare model behaviour
-      pre- and post-inclusion on disaggregated metrics (per D2.4).
-      Monitor for: seesaw effects (worst-group improves at the expense
-      of another), mode-collapse (reduced output diversity), fidelity
-      regression (model parrots synthetic artifacts). If any threshold
-      trips, the synthetic cohort is revisited.
-    maps_to_sfr: [c]
+      pre- and post-inclusion on disaggregated metrics (per D2.4, whose
+      continuous bias monitoring this consumes). Monitor for: seesaw
+      effects (worst-group improves at the expense of another),
+      mode-collapse (reduced output diversity), fidelity regression
+      (model parrots synthetic artifacts). Provenance tags are what let
+      observed drift be attributed to the synthetic cohort rather than
+      other pipeline changes. If any threshold trips, the synthetic
+      cohort is revisited.
+    maps_to_sfr: [b, c]
     when_to_use: Every release where synthetic data is material.
 
   - name: Sunset and refresh discipline

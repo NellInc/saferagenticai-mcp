@@ -22,7 +22,7 @@ normative_anchors:
   sfrs_not_addressed: []
   evidence_not_addressed: []
 cross_references:
-- I4::idx3::poor-ai-system-production-and-replicatio
+- I4::idx3::uncontrolled-ai-system-production-and-re
 - I4::idx4::development-direction-and-interpretabili
 process_elements:
 - name: Dependency and blast-radius mapping

@@ -7,7 +7,9 @@ content_type: code-applicable
 summary: 'Agents that don''t know when they''re done keep spending. This subgoal expects first-class,
   machine-checked completion criteria and diminishing-returns thresholds, not a "stop when the human says
   so" fallback. The operational handle is a goal contract: declared before execution, enforced at each
-  step, auditable after termination.
+  step, auditable after termination. Goals are explicit scaffold-ledger objects, and conformity is shown
+  by scaffold-produced artifacts — contracts, action logs checked against the declared lifecycle protocols,
+  and termination journals — not by the agent''s own status narratives.
 
   '
 normative_anchors:
@@ -49,7 +51,9 @@ design_patterns:
     improvement per step, evaluator-score trend, externally-observed metric). When the rolling window
     of last N steps shows improvement below `dr_threshold`, emit a termination-candidate event with the
     tripwire value and the last progress sample. The event is a *candidate*, not an auto-terminate; it
-    routes to the user-checkpoint policy defined in the contract.
+    routes to the user-checkpoint policy defined in the contract. Quantitative DR metrics are computed
+    deterministically from logged outcomes; any qualitative diminishing-returns assessment is human-rated,
+    never produced by the system judging its own progress.
 
     '
   maps_to_sfr:
@@ -71,7 +75,9 @@ design_patterns:
   sketch: 'If the agent is permitted to adjust its goal via learning or delegation (SFR-e), the adjustment
     must flow through a goal-expansion gate that (i) logs the proposed delta, (ii) re-validates it against
     the containing goal''s contract, (iii) requires user attestation for expansions crossing a scope threshold
-    defined in policy. No expansion without attestation is committed to the live contract.
+    defined in policy. No expansion without attestation is committed to the live contract. Because goals
+    are scaffold-ledger objects, every expansion lands as an audited ledger diff with its approval-gate
+    record of user validation attached.
 
     '
   maps_to_sfr:
@@ -164,7 +170,9 @@ evidence_production:
 - evidence_numeral: V
   how_to_produce: 'Runtime telemetry: per goal instance, export budget consumption, progress trajectory,
     checkpoints hit, termination reason. Aggregate into monthly operational report showing budget accuracy,
-    DR-threshold calibration, checkpoint response rates.
+    DR-threshold calibration, checkpoint response rates. Behavioral consistency across the goal lifecycle
+    is demonstrated by these scaffold-produced action logs checked against the declared lifecycle protocols;
+    system-generated status narratives do not constitute conformity evidence by themselves.
 
     '
 - evidence_numeral: VI

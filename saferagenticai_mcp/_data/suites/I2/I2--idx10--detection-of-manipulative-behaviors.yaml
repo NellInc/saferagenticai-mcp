@@ -6,10 +6,15 @@ suite_title: Deception
 subgoal_title: Detection of Manipulative Behaviors
 content_type: code-applicable
 summary: 'Where I2.1 (idx9) provides the supervisor infrastructure, this subgoal provides the detection
-  content: classifiers for manipulative, confusing, or undesirable patterns — sycophancy, dark patterns,
-  coercive framing, emotionally loaded misdirection, over-confident misleading claims — plus protective
-  response mechanisms and, for high-stakes decisions, multi- system consensus (independent systems vote
-  on the same decision).
+  content: a documented behavior taxonomy with predefined detection criteria applied over logged interactions
+  — sycophancy, dark patterns, coercive framing, emotionally loaded misdirection, over-confident misleading
+  claims — plus protective response mechanisms and, for high-stakes decisions, deterministic acceptance
+  checks wherever the decision admits them, falling back to k-of-n multi-system validation by independently
+  sourced evaluators where it does not. The conformity evidence is the externally checkable record: the
+  versioned taxonomy and criteria, the supervisor''s detection and response logs, and the orchestration
+  layer''s logs of votes, inputs, thresholds, and escalations. Classification verdicts produced solely
+  by a model — or the system''s own characterization of its behavior — are not by themselves conformity
+  evidence; the gating and escalation behavior, not the evaluators'' judgment, is the conformity target.
 
   '
 normative_anchors:
@@ -26,10 +31,14 @@ normative_anchors:
   evidence_not_addressed: []
 design_patterns:
 - name: Manipulative-behavior taxonomy and classifiers
-  sketch: 'Define a named taxonomy: sycophancy, dark patterns, deceptive urgency, false authority, emotional
-    coercion, confabulated citation, misleading confidence, over-personalization-to- influence. For each,
-    train or source a classifier and set a sensitivity threshold. Taxonomy is versioned; new categories
-    added via governance review, not silently.
+  sketch: 'Define a documented, named taxonomy: sycophancy, dark patterns, deceptive urgency, false authority,
+    emotional coercion, confabulated citation, misleading confidence, over-personalization-to- influence.
+    For each class, define predefined detection criteria applied over logged interactions; train or source
+    a classifier and set a sensitivity threshold. Taxonomy and criteria are versioned; new categories
+    added via governance review, not silently. Classification verdicts produced solely by a model, or
+    the system''s own characterization of its behavior, do not by themselves constitute conformity evidence
+    — conformity rests on the documented taxonomy, the predefined criteria, and the logged interactions
+    they were applied to.
 
     '
   maps_to_sfr:
@@ -54,16 +63,21 @@ design_patterns:
   maps_to_sfr:
   - b
   when_to_use: Any externally-facing surface with non-trivial manipulation risk.
-- name: Multi-system consensus for high-stakes decisions
+- name: Deterministic acceptance checks with k-of-n validation fallback
   sketch: 'For decisions above a risk threshold (irreversible actions, material financial impact, safety-critical
-    outputs), route the task to multiple independent systems — different models, or model + rule engine
-    — and require consensus. Divergences are surfaced to a human. Use independent inputs to prevent a
-    single compromised system dominating consensus.
+    outputs), first apply deterministic acceptance checks wherever the decision admits them — schema validation,
+    invariant checks, bounds and policy rules that pass or fail without judgment. Only where a deterministic
+    check is unavailable, route the task to at least k of n independently sourced evaluators — different
+    model families, or model + rule engine — evaluating the same task independently, and require k-of-n
+    agreement before execution. The orchestration layer logs all votes, inputs, and thresholds; any disagreement
+    or threshold failure escalates to human review. The gating and escalation behavior, not the evaluators''
+    judgment, is the conformity target — audit the orchestration logs, not the votes'' correctness.
 
     '
   maps_to_sfr:
   - c
-  when_to_use: High-stakes decision points; do not use universally (latency, cost, correlated-error risk).
+  when_to_use: High-stakes decision points; do not use k-of-n validation universally (latency, cost, correlated-error
+    risk), and prefer a deterministic check over voting wherever one exists.
 - name: Adversarial probe library
   sketch: 'Maintain a library of prompts designed to elicit manipulative behavior (sycophantic compliance
     tests, pressure prompts, authority-framing tests). Run against models regularly; failures feed remediation
@@ -107,30 +121,66 @@ anti_patterns:
     '
 code_shape:
   language: pseudocode
-  code: "def pre_delivery_filter(agent_output: Output, context: Context) -> Output:\n    detections =\
-    \ []\n    for cls in MANIPULATION_CLASSIFIERS.active():\n        r = cls.score(agent_output, context)\n\
-    \        if r.score >= cls.threshold:\n            detections.append(r)\n            AUDIT.record(\"\
-    manip_detect\", cls=cls.id,\n                        score=r.score, output_hash=agent_output.hash)\n\
-    \n    if not detections:\n        return agent_output\n\n    response = PLAYBOOK.decide(detections,\
-    \ context.risk_class)\n    if response.block:\n        return OutputBlocked(reason=response.user_message)\n\
-    \    if response.require_human_review:\n        REVIEW_QUEUE.enqueue(agent_output, detections)\n \
-    \       return OutputHeld(reason=\"under review\")\n    if response.rewrite:\n        return SAFER_MODEL.rewrite(agent_output,\
-    \ constraints=response.constraints)\n    return agent_output.with_notice(response.user_notice)\n\n\
-    def consensus_decide(task: HighStakesTask) -> Decision:\n    systems = CONSENSUS_POOL.independent_systems(task)\n\
-    \    votes = [s.decide(task) for s in systems]\n    agreement = CONSENSUS.score(votes)\n    if agreement\
-    \ < THRESHOLD:\n        HUMAN_REVIEW.require(task, votes)\n        return Decision.deferred(votes)\n\
-    \    AUDIT.record(\"consensus\", task.id,\n                votes=[v.summary() for v in votes],\n \
-    \               agreement=agreement)\n    return CONSENSUS.aggregate(votes)\n"
+  code: |
+    def pre_delivery_filter(agent_output: Output, context: Context) -> Output:
+        detections = []
+        for cls in MANIPULATION_CLASSIFIERS.active():   # criteria predefined per taxonomy version
+            r = cls.score(agent_output, context)
+            if r.score >= cls.threshold:
+                detections.append(r)
+                AUDIT.record("manip_detect", cls=cls.id, criteria_version=TAXONOMY_VERSION,
+                             score=r.score, output_hash=agent_output.hash)
+
+        if not detections:
+            return agent_output
+
+        response = PLAYBOOK.decide(detections, context.risk_class)
+        if response.block:
+            return OutputBlocked(reason=response.user_message)
+        if response.require_human_review:
+            REVIEW_QUEUE.enqueue(agent_output, detections)
+            return OutputHeld(reason="under review")
+        if response.rewrite:
+            return SAFER_MODEL.rewrite(agent_output, constraints=response.constraints)
+        return agent_output.with_notice(response.user_notice)
+
+    def gate_high_stakes(task: HighStakesTask) -> Decision:
+        # 1. Deterministic acceptance checks first, wherever the decision admits them
+        checks = DETERMINISTIC_CHECKS.for_task(task)
+        if checks:
+            result = checks.run(task)
+            AUDIT.record("acceptance_check", task.id, checks=result.per_check(), passed=result.ok)
+            if not result.ok:
+                HUMAN_REVIEW.require(task, result)
+                return Decision.deferred(result)
+            return Decision.approved(result)
+
+        # 2. Fallback: k-of-n independently sourced evaluators
+        systems = VALIDATION_POOL.independent_systems(task)      # n independently sourced
+        votes = [s.decide(task) for s in systems]
+        # Orchestration layer logs all votes, inputs, and thresholds
+        AUDIT.record("kofn_validation", task.id,
+                     inputs=task.input_hash, k=POLICY.k, n=len(systems),
+                     votes=[v.summary() for v in votes])
+        if agreement_count(votes) < POLICY.k:
+            # Any disagreement or threshold failure escalates to human review
+            HUMAN_REVIEW.require(task, votes)
+            return Decision.deferred(votes)
+        return Decision.approved(votes)
   notes: 'Classifier stack can mix trained judges (sycophancy, emotional framing) with rule-based detectors
-    (false-authority citation patterns, urgency-cue lexicons). Consensus pool size depends on stakes and
-    cost; three independent systems is a reasonable default.
+    (false-authority citation patterns, urgency-cue lexicons), but the audit log of criteria versions,
+    scores, and dispositions — not the judges'' verdicts — carries conformity. In the high-stakes gate,
+    the conformity target is the gating and escalation behavior evidenced by the orchestration-layer log;
+    validation pool size depends on stakes and cost, and evaluators must be independently sourced (different
+    families or model + rule engine) to avoid correlated errors.
 
     '
 evidence_production:
 - evidence_numeral: I
-  how_to_produce: 'Taxonomy document (versioned) with class definitions, example instances, and classifier-to-class
-    mapping. Playbook document with per-class protective response. Access-controlled location with audit
-    log on changes.
+  how_to_produce: 'Taxonomy document (versioned) with class definitions, predefined detection criteria
+    per class, example instances, and classifier-to-class mapping, plus the logged-interaction store the
+    criteria are applied over. Playbook document with per-class protective response. Access-controlled
+    location with audit log on changes.
 
     '
 - evidence_numeral: II
@@ -140,9 +190,10 @@ evidence_production:
 
     '
 - evidence_numeral: III
-  how_to_produce: 'Consensus-decision records for high-stakes tasks: task identifier, participating systems,
-    individual votes, agreement score, final decision, human review outcome where triggered. Retention
-    per policy; redaction for sensitive payloads.
+  how_to_produce: 'Orchestration-layer gating records for high-stakes tasks: task identifier, deterministic
+    acceptance-check results where applied; otherwise participating independently sourced systems, individual
+    votes, task inputs, k-of-n threshold in force, final gating decision, and human-review escalation
+    outcome for any disagreement or threshold failure. Retention per policy; redaction for sensitive payloads.
 
     '
 - evidence_numeral: IV

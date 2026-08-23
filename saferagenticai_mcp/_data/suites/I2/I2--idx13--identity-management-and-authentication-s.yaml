@@ -5,11 +5,15 @@ suite_id: I2
 suite_title: Deception
 subgoal_title: Identity Management and Authentication Standards
 content_type: code-applicable
-summary: 'Where I2.7 specifies tactical identity controls, this subgoal asks the organization to anchor
-  its identity architecture in established digital identity standards and to handle AI-specific and cross-jurisdictional
-  challenges as deliberate design. The output is an identity framework document plus concrete integrations
-  with named standards (OIDC, FIDO2, SPIFFE, eIDAS where applicable, emerging AI-agent identity standards)
-  and monitoring specifically tuned to cross-jurisdictional exploitation.
+summary: 'Foundational identity verification requirements are covered by G2.7 (Identity Spoofing) and
+  D9.6 (cryptographic identity governance); this subgoal addresses cross-jurisdictional authentication
+  and jurisdictional-arbitrage resistance specifically. The organization anchors its identity architecture
+  in established digital identity standards and existing trust frameworks, then handles the jurisdictional-arbitrage
+  and circumvention risks unique to AI systems as deliberate design. The output is an identity framework
+  document plus concrete integrations with named standards (OIDC, FIDO2, SPIFFE, eIDAS where applicable,
+  emerging AI-agent identity standards), authentication that remains effective across jurisdictional boundaries
+  and technological environments, and monitoring specifically tuned to cross-jurisdictional exploitation
+  (general identity-attack monitoring is covered by G2.7c).
 
   '
 normative_anchors:
@@ -147,7 +151,8 @@ evidence_production:
 
     '
 - evidence_numeral: IV
-  how_to_produce: 'Identity-incident log (shared with I2.7 evidence II): detection, response, resolution.
+  how_to_produce: 'Identity-incident log (shared with G2.7 / Identity Spoofing evidence): detection, response,
+    resolution.
     Root-cause analysis linked back to the identity architecture — where was the gap, was the standards
     choice a contributing factor, was the upgrade path accelerated?
 

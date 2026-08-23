@@ -5,11 +5,12 @@ suite_title: Degradation of Contextual Information
 subgoal_title: Dissembling Information
 content_type: code-applicable
 summary: 'Dissembling is structured deception through selective presentation — true statements arranged
-  to mislead, rhetorical techniques adopted from training data that shade toward manipulation. Defenses
-  are a combination of cross-source validation (no single-source claims go out as asserted fact), auditable
-  decision traces (so the path from context to output can be inspected for rhetorical drift), and detectors
-  for known manipulation patterns. This is where the seam with deception defenses (I2) is tightest; keep
-  them coordinated.
+  to mislead, rhetorical techniques adopted from training data that shade toward manipulation. The primary
+  defense is deterministic validation in deployer-controlled pipeline tooling — data accuracy against
+  source, cross-source consistency, and contextual validity checked at ingestion and at output — with
+  validation verdicts logged so assessors can re-run them on sample inputs. Model-judge validation and
+  rhetorical-pattern detectors are supplementary layers, not conformity evidence by themselves. This is
+  where the seam with deception defenses (I2) is tightest; keep them coordinated.
 
   '
 normative_anchors:
@@ -19,6 +20,8 @@ normative_anchors:
   evidence_addressed:
   - I
   - II
+  - III
+  - IV
   sfrs_not_addressed: []
   evidence_not_addressed: []
 cross_references:
@@ -29,7 +32,10 @@ design_patterns:
   sketch: 'For factual claims that drive user-visible outputs or actions, require at least two independent
     retrievals (distinct sources, distinct retrieval paths) that corroborate. On single-source claims,
     surface them as "reported by X" rather than bare assertion. Thresholds and exceptions (e.g., authoritative
-    single-source domains) are explicit in config, not in prompts.
+    single-source domains) are explicit in config, not in prompts. The corroboration check is deterministic
+    pipeline code, run at ingestion and at output, and every verdict is logged with its inputs so an assessor
+    can replay it on sample data — the verdict log, not a model''s account of its checking, is the conformity
+    evidence.
 
     '
   maps_to_sfr:
@@ -40,7 +46,8 @@ design_patterns:
     equivalence, selective omission, strawmanning, emotional hijack, confident-but-unsupported assertions.
     Flag for review or regeneration above a threshold. Build the training set from red-team-generated
     examples and curated incidents. Don''t expect this to catch novel patterns — treat as one layer among
-    several.
+    several. Because these classifiers are model judgments, their flags do not by themselves constitute
+    conformity evidence; they feed the deterministic validation and audit layers, which do.
 
     '
   maps_to_sfr:
@@ -110,6 +117,20 @@ evidence_production:
   how_to_produce: 'Per-decision reasoning report: for sampled or flagged outputs, reconstruct (input →
     retrieved context → corroboration results → rhetorical flags → output) and store as an investigable
     record. Red-team pattern-detection results included periodically.
+
+    '
+- evidence_numeral: III
+  how_to_produce: 'Design documentation and test results for the cross-source validation mechanism: the
+    corroboration rules and thresholds in config, the deterministic check code path, and the validation
+    verdict logs (inputs, sources, verdict) retained so assessors can re-run the checks on sample inputs
+    and compare against the logged verdicts.
+
+    '
+- evidence_numeral: IV
+  how_to_produce: 'Audit records from the append-only modification ledger and periodic integrity scans:
+    detected unauthorized source alterations with remediation records, or negative-test results (seeded
+    alterations caught by the scan) demonstrating detection capability. Include results of deception and
+    manipulation red-team evaluations of system outputs.
 
     '
 confidence: high

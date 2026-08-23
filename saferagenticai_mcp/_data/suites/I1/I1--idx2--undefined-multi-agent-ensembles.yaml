@@ -1,14 +1,14 @@
-id: I1::idx2::undefined-multiagent-ensembles
+id: I1::idx2::undefined-multi-agent-ensembles
 display_id: I1.2
 suite_id: I1
 suite_title: Opaque Agency Capabilities & Advances
-subgoal_title: Undefined Multiagent Ensembles
+subgoal_title: Undefined Multi-agent Ensembles
 content_type: code-applicable
 summary: 'The harm is sub-agents and peer-agents quietly appointed, such that nobody can say who authorized
   what. The defence is a typed delegation protocol: every sub-agent invocation carries a signed delegation
-  token scoped to a subset of the primary agent''s Authority Scope Register (I1::idx0), handoffs are explicit
-  and visible at a UX friction point, and a default-deny policy refuses any agent-to-agent call that isn''t
-  pre-declared at deployment.'
+  token scoped to a subset of the primary agent''s Authority Scope Register (I1::idx0), handoffs are scaffold-enforced
+  pauses with structured disclosure events (a model merely announcing a handoff is not evidence), and a
+  default-deny policy refuses any agent-to-agent call that isn''t pre-declared at deployment.'
 normative_anchors:
   sfrs_addressed:
   - a
@@ -20,6 +20,7 @@ normative_anchors:
   - I
   - II
   - III
+  - IV
   sfrs_not_addressed: []
   evidence_not_addressed: []
 design_patterns:
@@ -42,12 +43,14 @@ design_patterns:
   - b
   - d
   when_to_use: Always.
-- name: Handoff friction at the user interface
+- name: Scaffold-enforced handoff friction
   sketch: 'When control materially transfers between agents (not just a background tool call, but a change
-    in the user''s conversational counterparty or the entity accountable for an outcome), the UI surfaces
-    the handoff: naming the incoming agent, the scope it is receiving, the primary agent''s continued
-    liability, and — where the handoff alters user risk — an explicit user confirmation. Not a modal to
-    be dismissed; a designed decision point.'
+    in the user''s conversational counterparty or the entity accountable for an outcome), the scaffold —
+    not the model — enforces a pause and emits a structured disclosure event: naming the incoming agent,
+    the scope it is receiving, the primary agent''s continued liability, and — where the handoff alters
+    user risk — an explicit user confirmation before execution proceeds. Not a modal to be dismissed; a
+    designed decision point. A model-generated announcement of a handoff does not by itself constitute
+    conformity evidence: the enforced pause and its logged disclosure event do.'
   maps_to_sfr:
   - c
   when_to_use: When a sub-agent's action is user-visible or user-risk-altering.
@@ -117,6 +120,12 @@ evidence_production:
   how_to_produce: Deployment manifest with declared-ensemble allowlist, scope subsets, handoff friction
     points, and fail-safe defaults. Gateway configuration reflects the manifest; a mismatch between declared
     manifest and runtime config is a deploy-blocker. Annual audit verifies configuration equals manifest.
+- evidence_numeral: IV
+  how_to_produce: 'Handoff mechanism demonstration pack: the scaffold configuration that enforces the pause,
+    logged structured disclosure events from real or staged handoffs (agent identities, delegated scope,
+    timestamp, user-confirmation record), and screen captures or test transcripts showing how a user is
+    informed of and can intervene in a transfer between agents. Model-generated handoff announcements alone
+    do not satisfy this numeral.'
 confidence: high
 needs_human_review: false
 review_notes: 'This pattern assumes the Authority Scope Register from I1::idx0 exists; without it, "scope
@@ -127,7 +136,7 @@ review_notes: 'This pattern assumes the Authority Scope Register from I1::idx0 e
   exceptions list. Nell to confirm that "primary agent liability is not extinguished by delegation" is
   the desired default; some jurisdictions treat fully-authorized sub-agents as breaking the chain.'
 cross_references:
-- I1::idx0::opaque-agency-capabilities-advances
+- I1::idx0::agency-authority-duty-governance-suite-l
 - I1::idx8::emergent-system-cooperation
 version_compat:
   framework_version_min: '1.0'

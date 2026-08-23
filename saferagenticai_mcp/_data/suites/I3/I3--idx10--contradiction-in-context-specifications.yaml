@@ -7,8 +7,11 @@ content_type: code-applicable
 summary: 'Context usually has conflicts: the system prompt says one thing, the user another; two retrieved
   documents disagree on a fact; policy conflicts with current task request. Silent resolution (pick the
   most recent, pick the confident one) hides the conflict from oversight. Defenses: detect contradictions
-  at context-assembly time; route to an explicit resolution policy (hard-constraint wins, or escalate
-  to human, or surface with reasoning); log the contradiction and the resolution path.
+  at context-assembly time — deterministic constraint checking wherever specifications are structured,
+  model-assisted detection over natural language only when validated against a seeded-contradiction test
+  suite; route to an explicit resolution policy (hard-constraint wins, or escalate to human, or surface
+  with reasoning); log the contradiction and the resolution path. The seeded test cases and their replayable
+  results are what let an assessor confirm the detector actually works.
 
   '
 normative_anchors:
@@ -23,13 +26,16 @@ normative_anchors:
 cross_references:
 - I3::idx0::degradation-of-contextual-information
 - I3::idx7::overriding-of-desirable-values
-- I3::idx13::human-agent-conformation
+- I3::idx13::human-agent-confirmation
 design_patterns:
 - name: Contradiction detection on context assembly
-  sketch: 'When context is assembled for a reasoning step, run a contradiction detector across fragments:
-    factual conflicts (NLI-style), instructional conflicts (policy vs request), temporal conflicts (stale
-    vs current fact). Detection is imperfect but the attempt is required; detected conflicts are surfaced,
-    not suppressed.
+  sketch: 'When context is assembled for a reasoning step, run a contradiction detector across fragments.
+    Wherever specifications are structured (schemas, policy rules, config, typed constraints), use deterministic
+    constraint checking — rule evaluation whose verdicts are exactly reproducible. For natural-language
+    fragments, model-based detection (NLI-style factual conflicts, instructional conflicts, temporal conflicts)
+    is permitted, but its outputs count as conformity evidence only after confirmation against a seeded-contradiction
+    test suite: curated cases with known planted conflicts whose detection results assessors can replay.
+    Detection is imperfect but the attempt is required; detected conflicts are surfaced, not suppressed.
 
     '
   maps_to_sfr:
@@ -97,9 +103,11 @@ code_shape:
     '
 evidence_production:
 - evidence_numeral: I
-  how_to_produce: 'Detailed documentation of contradiction-detection methods (detectors used, coverage,
-    limitations), resolution protocols (tier order with examples), escalation paths, and sample traces
-    of conflicts detected and resolved.
+  how_to_produce: 'Detailed documentation of contradiction-detection methods (deterministic constraint
+    checks for structured specifications; model-based detectors with their validation against the seeded-contradiction
+    test suite, including the seeded cases and replayable results), coverage, limitations, resolution
+    protocols (tier order with examples), escalation paths, and sample traces of conflicts detected and
+    resolved.
 
     '
 - evidence_numeral: II
@@ -114,7 +122,7 @@ needs_human_review: true
 review_notes: 'Contradiction detection is an evolving capability; NLI and similar tools are imperfect.
   Pattern shape is sound; detector quality is deployment-specific, hence medium confidence. Cross-suite:
   D2 (Epistemic Hygiene) on evidence conflict; D8 (Human Oversight) on escalation paths. Close relationship
-  with I3.12 (Human Agent Conformation), which is the HITL mechanism this subgoal invokes.
+  with I3_2 (Human Agent Confirmation), which is the HITL mechanism this subgoal invokes.
 
   '
 version_compat:

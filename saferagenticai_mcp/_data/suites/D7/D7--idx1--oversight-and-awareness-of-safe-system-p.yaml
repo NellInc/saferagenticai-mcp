@@ -5,9 +5,12 @@ suite_title: Achieving and Sustaining a Safe System Profile
 subgoal_title: Oversight and Awareness of Safe System Profile
 content_type: code-applicable
 summary: 'Continuous-monitoring code that watches operating parameters against documented safe boundaries
-  and escalates on drift. The framework is prescriptive here: >2 σ deviation triggers automated alerts,
-  >5 % performance degradation forces investigation, >10 % cumulative drift requires mandatory system
-  review. Implementation is a streaming telemetry pipeline with baseline-aware thresholds, not a static
+  and escalates on drift. The framework no longer prescribes fixed numbers: the organization must define
+  and justify its own drift metrics, baselines, alert thresholds, and escalation tiers (alert, immediate
+  investigation, mandatory system review) in documentation, and then demonstrate — through alert
+  configurations and escalation logs — that alerts and escalations fire per that documented policy. A
+  2 σ deviation from an established baseline is the framework''s worked example, not a mandate.
+  Implementation is a streaming telemetry pipeline with baseline-aware thresholds, not a static
   Nagios check.
 
   '
@@ -23,14 +26,17 @@ normative_anchors:
   - II
   - III
   - IV
+  - V
   sfrs_not_addressed: []
   evidence_not_addressed: []
 design_patterns:
 - name: Documented safety envelope
   sketch: 'Every production deployment ships with a machine-readable `safety_envelope.yaml` enumerating:
-    monitored signal name, unit, baseline (mean + variance), σ-alert threshold, degradation-% threshold,
-    cumulative-drift-% threshold, review cadence, responsible role. The envelope is the single source
-    of truth for both runtime alerts and audits. Envelope changes are PR-reviewed.
+    monitored signal name, unit, drift metric, baseline (mean + variance), per-tier alert thresholds,
+    escalation tier definitions (alert / immediate investigation / mandatory system review), review
+    cadence, responsible role — plus a documented justification for each threshold choice. The envelope
+    is the single source of truth for both runtime alerts and audits, and is the documented policy the
+    SFR requires escalations to demonstrably follow. Envelope changes are PR-reviewed.
 
     '
   maps_to_sfr:
@@ -49,9 +55,12 @@ design_patterns:
   - d
   when_to_use: Any continuously-operating system whose inputs drift.
 - name: Tiered alert ladder
-  sketch: 'Three alert tiers matching the SFR: (1) 2σ automated alert to on-call; (2) >5 % degradation
-    triggers investigation ticket with SLA; (3) >10 % cumulative drift forces mandatory review board before
-    deployment continuation. Tier escalation is enforced in code, not by human judgment alone.
+  sketch: 'Three escalation tiers matching the SFR''s named ladder: (1) automated alert to on-call;
+    (2) immediate-investigation ticket with SLA; (3) mandatory system review board before deployment
+    continuation. The threshold for each tier is whatever the organization has defined and justified
+    in its safety envelope (e.g., 2σ deviation / 5 % degradation / 10 % cumulative drift as one
+    defensible instantiation). Tier escalation is enforced in code against the documented thresholds,
+    not by human judgment alone, and escalation logs demonstrate firing per policy.
 
     '
   maps_to_sfr:
@@ -111,7 +120,9 @@ code_shape:
     \ sla=env.investigation_sla)\n\n    if abs(cum_drift) >= CUM_DRIFT_PCT:\n        # Mandatory review:\
     \ block parameter-auto-adjust until reviewed\n        REVIEW_BOARD.open(signal, drift=cum_drift, ctx=ctx)\n\
     \        PARAM_AUTOADJUST.freeze(signal)\n"
-  notes: 'Illustrates the three-tier ladder and the hard gate on >10 % drift. Real systems will do this
+  notes: 'Illustrates the three-tier ladder and the hard gate on cumulative drift. The constants shown
+    (2σ / 5 % / 10 %) are illustrative defaults — real deployments load them from the documented safety
+    envelope, per signal, with the justification retained there. Real systems will do this
     with a streaming framework (Flink, Materialize, Prom/Alertmanager with recording rules) rather than
     per-event Python; the logic shape is what matters.
 
@@ -131,18 +142,27 @@ evidence_production:
     '
 - evidence_numeral: III
   how_to_produce: 'Training records for on-call and maintenance staff on the alert runbook (tier → action
-    → escalation). Incident log cross-references each alert to the response taken.
+    → escalation), with curriculum, attendance, and assessment retained.
 
     '
 - evidence_numeral: IV
+  how_to_produce: 'Incident log cross-referencing each performance deviation and alert to the response
+    taken, with escalation-tier, timestamps, and responder. These logs are what demonstrates that
+    escalations fire per the documented envelope policy.
+
+    '
+- evidence_numeral: V
   how_to_produce: 'Maintenance log showing: monitor calibration events, canary-probe health, baseline-update
     events (with review IDs), sensor replacements. Retain per records policy.
 
     '
 confidence: high
 needs_human_review: false
-review_notes: 'The numeric thresholds in SFR-a (2σ / 5 % / 10 %) are unusually specific for this framework.
-  Treated them as normative defaults; mature orgs may tune per signal with documented justification. The
+review_notes: 'Updated for v1.3 catalog revision: SFR-a no longer prescribes 2σ / 5 % / 10 % — the
+  organization defines, justifies, and documents its own drift metrics, baselines, thresholds, and
+  escalation tiers, and must demonstrate via alert configurations and escalation logs that they fire
+  per policy (2σ survives only as an example). The pattern''s envelope-as-single-source-of-truth design
+  already fit this shape; numeric constants are now labeled illustrative. The
   monitoring-self-test pattern isn''t in the SFR text but is a load-bearing failure mode (silent-monitor
   blindness) worth asserting. Cross-suite dependencies: D3 (security monitoring overlap — the same pipeline
   should carry security telemetry with distinct escalation), I4 (novel-capability gating that feeds its

@@ -5,9 +5,12 @@ suite_title: Responsible Governance of AAI Safety
 subgoal_title: Responsible Governance of AAI Safety
 content_type: governance
 summary: 'This is the umbrella governance subgoal: it asks the organization to stand up a named, board-anchored
-  AAI governance function with budgeted safety resources, independent audit, whistleblower protection,
-  and horizon scanning. Treat it as the parent under which the other D9 subgoals hang; evidence here is
-  structural (the governance body exists, has authority, meets, and produces artifacts), not aspirational.
+  AAI governance function with a separately documented risk-assessment / risk-management / emergency-response
+  framework, independent audit, whistleblower protection, named-role accountability, and horizon scanning.
+  Treat it as the parent under which the other D9 subgoals hang; conformity evidence is structural and
+  externally checkable (disclosure records, framework documents, audit reports, meeting minutes), not
+  aspirational narrative. Safety-culture and resource-allocation duties are anchored in G9.9; the supporting
+  artifacts are retained here because the evidence list still calls for them.
 
   '
 normative_anchors:
@@ -43,7 +46,9 @@ policy_elements:
   description: 'Standing committee of the board (or equivalent governing body) with written charter covering:
     AAI risk posture, major deployment authorizations, incident review, resource adequacy for safety functions,
     and authority to pause or revoke deployments. Meets at minimum quarterly with written minutes. Includes
-    at least one independent member without executive responsibility for AI products.
+    at least one independent member without executive responsibility for AI products. Stakeholder-facing
+    safety communications are logged in a disclosure-record register; those records — not narrative claims
+    of openness — are the primary conformity evidence for transparent communication (SFR-a).
 
     '
   maps_to_sfr:
@@ -53,7 +58,9 @@ policy_elements:
   description: 'A documented framework that enumerates AAI risk categories (distinct from generic AI risk),
     assessment methodology, quantified tolerance thresholds, escalation triggers, and emergency-response
     protocols including explicitly named "kill switch" conditions. Differentiates AAI-specific risk (agentic
-    autonomy, multi-step action, tool/compute access) from narrow-AI risk. Reviewed annually.
+    autonomy, multi-step action, tool/compute access) from narrow-AI risk. The three elements — (i) risk
+    assessment, (ii) risk management, (iii) emergency response — are separately documented so each is
+    independently assessable, per SFR-b. Reviewed annually.
 
     '
   maps_to_sfr:
@@ -62,7 +69,9 @@ policy_elements:
   description: 'A documented commitment (budget line, headcount ratio, or compute allocation) that sets
     a floor for safety investment as a function of AAI capability scale. Example forms: "safety staffing
     ≥ N% of ML research headcount", "safety compute ≥ M% of training compute", or equivalent measurable
-    anchor. Reviewed annually; deviation requires Board committee approval.
+    anchor. Reviewed annually; deviation requires Board committee approval. Note: the catalog now anchors
+    safety-culture and resource-allocation duties in G9.9 (G9.9a, G9.9d); this element is retained as
+    the supporting structure that produces the resource-allocation records evidence still listed here.
 
     '
   maps_to_sfr:
@@ -71,8 +80,10 @@ policy_elements:
   description: 'Annual independent audit by an external party free of consulting conflicts, scoped to
     cover input/output behavior, internals where permissible, and in-deployment monitoring. Paired with
     a whistleblower channel (anonymous intake, anti-retaliation policy, independent investigator) with
-    privacy protections. Board committee receives audit report and whistleblower case statistics directly,
-    without executive filter.
+    privacy protections, and a documented assignment of AAI-safety accountability to named roles (role
+    register with named holders). Each of the three mechanisms — audit, whistleblower protection, named-role
+    accountability — is separately documented and separately assessable, per SFR-e. Board committee receives
+    audit report and whistleblower case statistics directly, without executive filter.
 
     '
   maps_to_sfr:
@@ -242,7 +253,10 @@ review_notes: 'This is the umbrella subgoal; many elements here reappear in more
   dependencies: I6 (Competitive Pressures) anchors the non-adversarial charter, I7 (Imbalance) anchors
   the international cooperation leg, D4 (Value Alignment) anchors ethics review, D7 (Sustained Safety)
   anchors the assurance-case layer underneath the RMF, D8 (Termination) anchors the sunset/kill-switch
-  governance.
+  governance. v1.3 catalog note: safety-culture and resource allocation moved to G9.9 (SFR-a now centers
+  on disclosure records), and evidence XII (independent adversarial testing of governance effectiveness,
+  with proof that governance imposed costs) was added — this pattern does not yet produce XII, so it stays
+  in evidence_not_addressed.
 
   '
 drafted_by: claude-opus-4.7-subagent-D9

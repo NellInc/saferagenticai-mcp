@@ -7,8 +7,10 @@ content_type: code-applicable
 summary: 'Agent pools share finite resources (compute, API quotas, database connections, external tool
   rate limits). Without explicit allocation logic, missions starve each other or a single runaway agent
   exhausts the pool and forces cascading termination. The subgoal expects a resource allocator with capacity
-  awareness, reserve management, and fairness guarantees — with specific numeric anchors: ≤10% variance
-  between agents under normal conditions, ≤90% pool utilization in normal operations.
+  awareness, reserve management, and fairness guarantees — governed by thresholds the organization itself
+  defines, justifies, and monitors for inter-agent distribution fairness and system-wide utilization headroom,
+  each with a specified metric and measurement window. Agent capacity assessment derives from independent
+  benchmarks, not agent self-declaration, and utilization is metered throughout mission execution.
 
   '
 normative_anchors:
@@ -22,6 +24,7 @@ normative_anchors:
   - III
   - IV
   - V
+  - VI
   sfrs_not_addressed: []
   evidence_not_addressed: []
 cross_references:
@@ -40,8 +43,8 @@ design_patterns:
   - b
   when_to_use: Any shared-pool deployment.
 - name: Reserve-aware allocator
-  sketch: 'The allocator maintains a system-wide utilization target below the framework''s 90% ceiling
-    under normal operations. Incoming missions are checked against available capacity; if accepting would
+  sketch: 'The allocator maintains system-wide utilization below the organization''s declared and justified
+    headroom ceiling under normal operations. Incoming missions are checked against available capacity; if accepting would
     breach the ceiling, the mission queues (with declared wait policy) or is rejected (with reason code).
     Reserve is for contingency: emergency override, cascade containment, spike absorption.
 
@@ -50,9 +53,10 @@ design_patterns:
   - a
   - b
   when_to_use: Always in shared pools.
-- name: Fairness governor (≤10% inter-agent variance)
-  sketch: 'Monitor per-agent resource draw over a rolling window. Coefficient-of-variation across active
-    agents must stay within the declared bound (default 10% per SFR-b). Outliers trigger investigation:
+- name: Fairness governor (org-declared variance bound)
+  sketch: 'Monitor per-agent resource draw over the declared measurement window. Coefficient-of-variation
+    across active agents must stay within the bound the organization has defined and justified per SFR-b.
+    Outliers trigger investigation:
     is the mission legitimately resource-heavy (expected, pre-declared), or is an agent behaving anomalously
     (starvation attack, bug)? Route to supervisor with telemetry.
 
@@ -61,8 +65,8 @@ design_patterns:
   - b
   when_to_use: Any pool with heterogeneous missions and homogeneous agents.
 - name: Capability-aware mission matching
-  sketch: 'Assign missions to agents based on declared capability profile (not just "any free agent").
-    Capability dimensions: latency SLO, authorized tool set, trained-domain, resource class. Matching
+  sketch: 'Assign missions to agents based on a capability profile derived from independent benchmarks
+    — not agent self-declaration, and not just "any free agent". Capability dimensions: latency SLO, authorized tool set, trained-domain, resource class. Matching
     is explicit and logged. Random assignment is an anti-pattern for anything beyond trivial work.
 
     '
@@ -82,14 +86,16 @@ design_patterns:
   when_to_use: Any pool with scheduled maintenance or rolling deployment.
 anti_patterns:
 - name: First-come-first-served without quotas
-  why_wrong: 'A single mission with an unbounded goal can saturate the pool. SFR-b requires "fair distribution"
-    and specifically ≤10% variance — unachievable without per-agent/per-mission quotas.
+  why_wrong: 'A single mission with an unbounded goal can saturate the pool. SFR-b requires fair distribution
+    monitored against an organization-defined variance threshold — unachievable without per-agent/per-mission
+    quotas.
 
     '
 - name: 100% pool utilization as normal
   why_wrong: 'Running at ceiling leaves no headroom for spike absorption, emergency override, or cascade
-    containment. The framework''s 90% target is deliberately conservative; treat it as hard ceiling under
-    normal operations.
+    containment. SFR-b requires the organization to define and justify its own utilization-headroom threshold,
+    specify its metric and measurement window, and treat it as a hard ceiling under normal operations,
+    maintaining emergency capacity against it.
 
     '
 - name: Resource limits enforced only by the agent
@@ -102,7 +108,7 @@ code_shape:
   code: "@dataclass(frozen=True)\nclass ResourceBudget:\n    cpu_seconds: float\n    gpu_seconds: float\n\
     \    tokens: int\n    api_calls: dict[str, int]     # external service → quota\n    db_connections_peak:\
     \ int\n    wallclock_budget: timedelta\n\nclass PoolAllocator:\n    MAX_UTILIZATION = 0.90       \
-    \   # SFR-b numeric anchor\n    MAX_VARIANCE = 0.10             # SFR-b numeric anchor\n\n    def\
+    \   # org-declared threshold (SFR-b)\n    MAX_VARIANCE = 0.10             # org-declared threshold (SFR-b)\n\n    def\
     \ try_accept(self, mission: Mission, budget: ResourceBudget) -> AcceptResult:\n        projected_utilization\
     \ = self.current_utilization() + self.project(budget)\n        if projected_utilization > self.MAX_UTILIZATION:\n\
     \            return AcceptResult.QUEUE if mission.queueable else AcceptResult.REJECT\n        # Capability\
@@ -116,14 +122,16 @@ code_shape:
     \ | request_more | terminate\n\n    async def cooperative_drain(self):\n        self.stop_accepting()\n\
     \        for agent in self.active_agents():\n            await agent.finish_or_checkpoint()\n    \
     \        self.return_resources(agent)\n        REPORT.drained(at=now())\n"
-  notes: 'Hard-coded numeric anchors (0.90, 0.10) come from SFR-b; treat as defaults that may be tightened
-    per deployment but not loosened without a waiver.
+  notes: 'The 0.90 / 0.10 values are illustrative defaults, not framework mandates. SFR-b requires the
+    organization to define, justify, and monitor its own fairness and headroom thresholds, specifying
+    the metric and measurement window for each; loosening a declared threshold requires a documented waiver.
 
     '
 evidence_production:
 - evidence_numeral: I
-  how_to_produce: 'Publish pool-management policy with capacity-assessment methodology, allocation rules,
-    fairness bounds (10%), utilization ceiling (90%), reserve policy, queuing/rejection logic.
+  how_to_produce: 'Publish pool-management policy with capacity-assessment methodology (independent benchmarks,
+    not agent self-declaration), allocation rules, the organization''s declared fairness bounds and utilization-headroom
+    ceiling (each with metric, measurement window, and rationale), reserve policy, queuing/rejection logic.
 
     '
 - evidence_numeral: II
@@ -146,11 +154,19 @@ evidence_production:
     incidents attributable to allocation failures.
 
     '
+- evidence_numeral: VI
+  how_to_produce: 'Publish the organization''s defined distribution-fairness and utilization-headroom
+    thresholds as a standalone, version-controlled artifact: metric definitions, measurement windows,
+    and rationale for each, together with utilization records demonstrating ongoing monitoring against
+    them. Changes require documented justification.
+
+    '
 confidence: high
 review_notes: 'Allocation/fairness/quotas is canonical resource-scheduler engineering (k8s scheduler,
-  YARN, SLURM). Framework-specific: numeric anchors (10% / 90%) and the explicit linkage to termination/cascade
-  prevention. These numbers are defensible defaults but deployments may justify different bands (burst
-  workloads may tolerate higher utilization with more aggressive drain). Suspected cross-suite dependency:
+  YARN, SLURM). Framework-specific: the v1.3 requirement that organizations define, justify, and monitor
+  their own fairness and headroom thresholds (replacing the earlier fixed 10% / 90% anchors), capacity
+  assessment from independent benchmarks rather than agent self-declaration, and the explicit linkage
+  to termination/cascade prevention. Burst workloads may justify different bands with more aggressive drain. Suspected cross-suite dependency:
   D3 Security (starvation as attack vector); D6 Resource Limits if such a suite exists; I6 Imbalance (resource
   fairness as a within-org analog).
 

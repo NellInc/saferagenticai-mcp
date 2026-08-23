@@ -1,4 +1,4 @@
-id: D9::idx14::agent-portfolio-governance-and-sprawl-prevention
+id: D9::idx14::agent-portfolio-governance-and-sprawl-pr
 display_id: "D9_5"
 is_underlined_variant: true
 display_id_variant_note: "D9.5_underlined"
@@ -126,4 +126,4 @@ version_compat:
   pattern_layer_version: v1-draft
 drafted_by: claude-sonnet-4-6-author
 drafted_at: 2026-05-21
-anchor_exemplar: D9::idx12::poor-attribution-of-responsibility-in-co
+anchor_exemplar: D9::idx12::attribution-of-responsibility-in-complex

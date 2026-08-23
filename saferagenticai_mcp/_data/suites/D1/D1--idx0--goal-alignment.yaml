@@ -13,7 +13,11 @@ summary: >
   — plus an assessment of the development culture that produced the
   agent, per evidence VII. The technical patterns live in the child
   subgoals; this one is where they are tied to named humans and a
-  formal commitment.
+  formal commitment. Under v1.3 the suite's conformity evidence is
+  external by construction — scaffold-maintained goal records and plan
+  structures, deterministic critical-action classifiers, externally
+  enforceable halt hooks, and independent adversarial testing — never
+  the system's own account of its objectives.
 
 normative_anchors:
   sfrs_addressed: [a, b, c]
@@ -68,9 +72,15 @@ policy_elements:
   - name: Critical-Action Escalation Procedure
     description: >
       Named catalog of action classes requiring flagging, halt, or
-      explicit confirmation across agents. Covers the multi-agent case
-      (actions with cross-agent or system-wide impact). Includes clear
-      halt authority — who can stop an agent, how fast, and what
+      explicit confirmation across agents. Per SFR-c (v1.3), flagging
+      is done by deterministic classifiers over the catalog, goals and
+      subgoals are identified through a scaffold-maintained goal
+      ledger, and halts are enforced through externally enforceable
+      hooks — conformity is demonstrated by guardrail configuration
+      plus incident logs of these mechanisms firing, not by system
+      self-assessment. Covers the multi-agent case (actions with
+      cross-agent or system-wide impact). Includes clear halt
+      authority — who can stop an agent, how fast, and what
       confirmation is recorded. Ties to the resistance/negotiation
       subgoal (D1.8) for objection handling.
     maps_to_sfr: [c]
@@ -162,6 +172,14 @@ anti_patterns:
       "foster genuine alignment rather than mere compliance" — a
       self-rated score from the team being assessed is not that.
       Include external or independent inputs.
+
+  - name: Self-assessment offered as conformity evidence
+    why_wrong: >
+      SFR-a and SFR-c (v1.3) locate verification in scaffold-maintained
+      goal records, guardrail configuration, and incident logs of
+      mechanisms firing — "rather than through the system's own account
+      of its objectives." A model-generated alignment narrative,
+      however articulate, is not conformity evidence under this suite.
 
   - name: Umbrella treated as documentation-only
     why_wrong: >

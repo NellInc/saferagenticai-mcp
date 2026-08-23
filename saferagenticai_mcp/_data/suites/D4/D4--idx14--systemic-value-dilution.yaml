@@ -29,10 +29,13 @@ cross_references:
 - D4::idx11::non-transparent-value-framework
 design_patterns:
 - name: Value-fidelity probe suite with stage-transition gates
-  sketch: 'Maintain a probe suite explicitly designed to exercise each Codex entry. Run on every model
-    artifact at every training stage: base, SFT-only, RLHF, distilled, quantized. Compare pass rates stage-to-stage;
-    material drops block the stage transition until investigated. This is stricter than a single end-of-pipeline
-    check; dilution that happens mid-pipeline is hidden otherwise.
+  sketch: 'Maintain a probe suite explicitly designed to exercise each Codex entry, with pre-registered
+    expected outcomes per probe. Run on every model artifact at every training stage (base, SFT-only, RLHF,
+    distilled, quantized) and on a recurring schedule in production as regression testing. Scoring is by
+    deterministic checks or human reviewers against the pre-registered outcomes — not by the system under
+    test or an unchecked model judge. Compare pass rates stage-to-stage; material drops block the stage
+    transition until investigated. This is stricter than a single end-of-pipeline check; dilution that
+    happens mid-pipeline is hidden otherwise.
 
     '
   maps_to_sfr:
@@ -49,10 +52,12 @@ design_patterns:
   - b
   when_to_use: Any system with meaningful context-length variation across deployments.
 - name: Multi-step reasoning value checkpoints
-  sketch: 'For agent tasks with multiple reasoning or tool-use steps, instrument checkpoints that verify
-    the value-relevant invariants still hold partway through (e.g., the agent has not inferred its way
-    into a refusal-class behavior by step 7). Implement as a classifier on the partial trace + a rule-based
-    check for hard constraints. Violations interrupt execution.
+  sketch: 'For agent tasks with multiple reasoning or tool-use steps, instrument scaffold-level checkpoints
+    that verify the value-relevant invariants still hold partway through (e.g., the agent has not inferred
+    its way into a refusal-class behavior by step 7). Each step of the trajectory is externally logged
+    and its check result recorded. Implement as a classifier on the partial trace + a rule-based check
+    for hard constraints; classifier verdicts are spot-checked by human review or deterministic rules.
+    Violations interrupt execution.
 
     '
   maps_to_sfr:

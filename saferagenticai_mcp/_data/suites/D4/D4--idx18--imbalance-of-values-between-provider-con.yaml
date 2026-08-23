@@ -42,10 +42,12 @@ policy_elements:
   maps_to_sfr:
   - d
 - name: User-Value Accommodation Policy
-  description: 'Complementary policy enumerating: what classes of user preferences the system will honor
-    without friction; what classes require user confirmation or warning; what classes fall outside accommodation
-    (intersecting the Non-Negotiable Register). Published in plain language. Users are not surprised by
-    the boundary; they encounter it with explanation.
+  description: 'Complementary documented framework for balancing user values with provider requirements,
+    enumerating: what classes of user preferences the system will honor without friction; what classes
+    require user confirmation or warning; what classes fall outside accommodation (intersecting the Non-Negotiable
+    Register); and the documented tolerance criteria that imbalance detection applies (see Imbalance Detection
+    and Remediation). Published in plain language. Users are not surprised by the boundary; they encounter
+    it with explanation.
 
     '
   maps_to_sfr:
@@ -63,7 +65,8 @@ policy_elements:
 - name: Imbalance Detection and Remediation
   description: 'Quantitative signals for imbalance: user-override-declined rate, provider-refusal rate
     on non-Floor entries, friction complaints, withdrawal rates correlated with specific refusal classes.
-    When signals exceed thresholds, the Ethics Board reviews whether provider-value scope has expanded
+    Detection thresholds are the documented tolerance criteria, defined per Evidence II. When signals exceed
+    those thresholds, the Ethics Board reviews whether provider-value scope has expanded
     beyond justification, or user-value accommodation has shrunk without authorization. Outcomes include
     register revision, user disclosure updates, or (rarely) user-value expansion.
 

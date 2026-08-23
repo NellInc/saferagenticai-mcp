@@ -125,8 +125,8 @@ review_notes: '"Emergent cooperation" is a genuinely hard-to-detect class of har
   Security owns the cryptographic attestation primitives. SFR-b''s "false-flag operations" phrasing is
   unusual; interpreted here as impersonation of authorized peers.'
 cross_references:
-- I1::idx0::opaque-agency-capabilities-advances
-- I1::idx2::undefined-multiagent-ensembles
+- I1::idx0::agency-authority-duty-governance-suite-l
+- I1::idx2::undefined-multi-agent-ensembles
 - I1::idx3::race-dynamics-and-competition
 - I1::idx6::poor-mutual-agent-optimization
 version_compat:

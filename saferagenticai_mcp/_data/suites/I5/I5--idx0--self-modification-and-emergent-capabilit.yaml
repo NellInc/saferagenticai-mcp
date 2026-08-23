@@ -8,9 +8,12 @@ content_type: process
 summary: 'This is the suite-anchor subgoal: the organization is expected to run a standing foresight function,
   not a one-time horizon-scan. The framework asks for scenario planning, risk evaluation, and impact analysis
   as recurring rituals that produce dated artifacts (foresight reports, risk maps, scenario catalogues)
-  and that feed back into the AAI risk management framework. The operational handle is cadence with teeth:
-  a foresight exercise that never revises any control is not evidence of foresight, it is evidence of
-  theatre.
+  and that feed back into the AAI risk management framework. The v1.3 revision makes the review-and-update
+  duty itself normative: SFR-a now requires the assessment framework to be reviewed on a defined cadence
+  AND on trigger events (major model updates, new capability classes), while SFR-b carries the horizon-scanning
+  duty. The operational handle is cadence with teeth: a foresight exercise that never revises any control
+  is not evidence of foresight, it is evidence of theatre — and conformity evidence is the dated artifact
+  trail, not a narrative that foresight happened.
 
   '
 normative_anchors:
@@ -77,13 +80,13 @@ process_elements:
   maps_to_sfr:
   - b
 - name: Methodology retrospective
-  cadence: annual
+  cadence: annual, plus on trigger events (major model updates, new capability classes)
   participants:
   - foresight coordinator
   - safety lead
   - external methodologist
   maps_to_sfr:
-  - b
+  - a
 triggers:
 - Scheduled semi-annual date → Full foresight exercise
 - New capability cluster entering internal research pipeline → Scoped foresight addendum

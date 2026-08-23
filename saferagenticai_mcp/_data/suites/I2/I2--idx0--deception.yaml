@@ -6,10 +6,14 @@ suite_title: Deception
 subgoal_title: Deception  # canonical; umbrella nature reflected in summary
 content_type: governance
 summary: 'The overarching I2 subgoal asks organizations to treat deception — intentional and unintentional,
-  by the model or by operators — as a first-class safety domain with disclosure duties, integrity testing,
-  liability structure, and heightened controls for high-risk deployments. The governance artifacts this
-  produces (AI-disclosure policy, integrity test register, limitation-notice catalogue, liability posture
-  statement) feed every downstream I2 subgoal.
+  by the model or by operators — as a first-class safety domain with disclosure duties, deterministic
+  integrity testing, liability structure, and heightened controls for high-risk deployments. Integrity
+  testing is scored deterministically against ground-truth reference datasets and replayed across contexts
+  and personas under predefined tolerance rules; non-conformity identification is grounded in external
+  audits, complaint channels, and a maintained non-conformity register. Model-graded audits and a system''s
+  self-report of its own conformity are not, by themselves, conformity evidence — the externally checkable
+  governance artifacts (AI-disclosure policy, integrity test register, limitation-notice catalogue, liability
+  posture statement) are the primary evidence, and they feed every downstream I2 subgoal.
 
   '
 normative_anchors:
@@ -48,27 +52,33 @@ policy_elements:
   - h
 - name: Information Integrity Charter (cross-stakeholder)
   description: 'A charter signed by Developer, Integrator, Operator, Maintainer, and Regulator-facing
-    owners (DIOMR) committing to shared information-integrity practices: provenance tracking, source attribution
-    standards, correction protocols, and cross-stakeholder escalation for detected integrity failures.
-    Reviewed annually; binds contractors and vendors by flow-down.
+    owners (DIOMR) committing to shared information-integrity practices, anchored in the codes of practice
+    established under G2.4 (Codes of Practice and Conduct) and covering (i) technical measures, (ii) business
+    and operating procedures, and (iii) legal and social-context safeguards: provenance tracking, source
+    attribution standards, correction protocols, and cross-stakeholder escalation for detected integrity
+    failures. Reviewed annually; binds contractors and vendors by flow-down.
 
     '
   maps_to_sfr:
   - b
   - e
 - name: Non-Conformance and Abatement Procedure
-  description: 'Documented procedure for detecting, disclosing, and abating systems that fall out of conformance
-    with best practice. Specifies: self-detection triggers, internal notification SLAs, public nuisance
-    notification (when applicable), cease-and-correct timelines, and public register of abatements. Ties
-    into the D9.2 Violation and Complaint Register.
+  description: 'Documented procedure for identifying, disclosing, and abating systems that fall out of
+    conformance with the codes of practice established under G2.4. Identification is grounded in external
+    audits and complaint channels, recorded in a maintained non-conformity register; a system''s self-report
+    of its own non-conformity does not by itself constitute conformity evidence. Specifies: external-audit
+    and complaint intake, internal notification SLAs, public nuisance notification (when applicable),
+    cease-and-correct timelines, and public register of abatements. Ties into the D9.2 Violation and Complaint
+    Register.
 
     '
   maps_to_sfr:
   - c
 - name: Limitation and Error Notice Catalogue
   description: 'Maintained inventory of user-facing limitation notices required across the product surface:
-    hallucination warning, mimicry warning, computational-encoding warning (e.g., outputs interpreted
-    as facts but generated from statistical patterns), date-of-knowledge caveats, jurisdictional disclaimers.
+    hallucination warning, mimicry warning, tokenization and numerical-encoding limitation warning (e.g.,
+    arithmetic and counting errors arising from how text is tokenized and numbers are encoded), date-of-knowledge
+    caveats, jurisdictional disclaimers.
     Each entry includes: copy, placement, legibility test (WCAG contrast, reading level), and last review
     date.
 
@@ -76,10 +86,14 @@ policy_elements:
   maps_to_sfr:
   - h
 - name: Integrity Testing Register
-  description: 'Central register of ongoing output-integrity tests: consistency across contexts (same
-    question, different framings), context-stripping probes (removing persona/system prompt), user-attribution
-    adhesion tests (refuses to falsely attribute claims to named individuals), factuality spot-checks.
-    Records cadence, owner, last run, pass rate, open defects.
+  description: 'Central register of ongoing output-integrity tests, scored deterministically: accuracy
+    tests scored against ground-truth reference datasets; consistency tests that replay identical tasks
+    across contexts and personas and compare outputs deterministically against predefined tolerance rules;
+    context-stripping probes (removing persona/system prompt); user-attribution adhesion tests (refuses
+    to falsely attribute claims to named individuals). Records cadence, owner, last run, pass rate, open
+    defects. Model-graded verdicts (accuracy audits or consistency judgments graded solely by a model)
+    do not by themselves constitute conformity evidence — the deterministic scores and their logs are
+    the conformity evidence.
 
     '
   maps_to_sfr:
@@ -161,15 +175,18 @@ evidence_production:
 
     '
 - evidence_numeral: III
-  how_to_produce: 'Extract from the Non-Conformance and Abatement Procedure log: cases detected, notifications
-    issued, corrective actions taken, timelines met. Include at least one self-detection case to evidence
-    the mechanism functions without external prompt.
+  how_to_produce: 'Extract from the Non-Conformance and Abatement Procedure log: externally identified
+    non-conforming systems (from external audits and complaint channels), notifications issued, abatement
+    actions taken, timelines met, plus the maintained non-conformity register and public notifications
+    of identified non-conforming system behavior. Self-reported non-conformity may be recorded but does
+    not by itself evidence the mechanism.
 
     '
 - evidence_numeral: IV
-  how_to_produce: 'Integrity Testing Register export: test name, cadence, last-run timestamp, pass/fail
-    metrics, open defects. Include context-stripping and adhesion-test (user-attribution fidelity) results
-    specifically.
+  how_to_produce: 'Integrity Testing Register export: test name, cadence, last-run timestamp, deterministic
+    pass/fail metrics against ground-truth reference datasets, tolerance-rule versions for cross-context/persona
+    replays, open defects. Include context-stripping test metrics and persistence-of-disclosure results
+    across content reuse specifically. Exclude model-graded verdicts from the conformity metrics.
 
     '
 - evidence_numeral: V
@@ -187,7 +204,7 @@ evidence_production:
 - evidence_numeral: VII
   how_to_produce: 'Examples from the Limitation and Error Notice Catalogue with conspicuousness evidence
     (contrast measurements, reading-level score, placement screenshots). Include at minimum: hallucination
-    warning, mimicry warning, computational-encoding warning.
+    warning, mimicry warning, and warnings about limitations arising from tokenization and numerical encoding.
 
     '
 - evidence_numeral: VIII

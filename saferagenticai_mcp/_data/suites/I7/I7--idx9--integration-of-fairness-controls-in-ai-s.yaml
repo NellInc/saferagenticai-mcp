@@ -6,8 +6,11 @@ suite_id: I7
 suite_title: Imbalance in AI Capabilities
 subgoal_title: Integration of Fairness Controls in AI Systems
 content_type: code-applicable
-summary: 'Fairness is built into the system — dataset assembly, training constraints, inference-time monitoring,
-  and output audit — not bolted on as a post-hoc policy. The enforceable shape: a fairness evaluation
+summary: 'Fairness controls live in operational decision-making — inference-time monitoring, release-gated
+  disaggregated metrics, and output audit — with supporting checks upstream in dataset assembly and training;
+  training-time ethics integration is covered under the Integration of Human Ethics subgoal (idx13), and
+  this pattern focuses on preventing discriminatory outcomes in deployed decisions. The enforceable shape:
+  a fairness evaluation
   harness that runs in CI, disaggregated metrics with release gates, monitoring for drift post-deployment,
   and intervention paths for detected inequity. Governance wraps (review boards, stakeholder engagement)
   but the code layer is where the pattern lives or fails.

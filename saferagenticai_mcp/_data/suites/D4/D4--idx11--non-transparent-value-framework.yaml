@@ -42,20 +42,24 @@ policy_elements:
   maps_to_sfr:
   - a
 - name: Encoding-to-Behavior Verification Program
-  description: 'Scheduled verification that encoded values produce the intended behaviors in production.
-    Combines: regression suite against labeled value-probe cases (cf. D4.1̲), shadow-mode comparison of
-    proposed encodings against incumbent, and production-sample audit (random or stratified draws from
-    the decision log graded against Codex entries). Discrepancies open tickets with SLA; material discrepancies
-    escalate to the Ethics Board.
+  description: 'Scheduled verification that encoded values produce the intended behaviors in production,
+    executed as per-value test scenarios with pre-registered expected outcomes. Combines: regression suite
+    against labeled value-probe cases (cf. D4.1̲), shadow-mode comparison of proposed encodings against
+    incumbent, and production-sample audit (random or stratified draws from the decision log graded against
+    Codex entries). Scoring is by human reviewers or deterministic checks — never by the system under test
+    or an unchecked model judge. Discrepancies open tickets with SLA; material discrepancies escalate to
+    the Ethics Board.
 
     '
   maps_to_sfr:
   - b
 - name: Drift-Monitoring and Attestation Cycle
   description: 'Continuous monitoring of: Codex version vs. representation versions; representation content
-    vs. Codex truth; operational behavior vs. Codex intent. Monthly automated report; quarterly signed
-    attestation by the Chief Values Officer that all representations reflect the current Codex and that
-    observed behavior is within tolerance of intended values.
+    vs. Codex truth; operational behavior vs. Codex intent. Where the monitor''s judgment layer is itself
+    model-based, its verdicts are spot-checked by human review or deterministic rules on a sampled basis,
+    with the spot-check record retained. Monthly automated report; quarterly signed attestation by the
+    Chief Values Officer that all representations reflect the current Codex and that observed behavior
+    is within tolerance of intended values.
 
     '
   maps_to_sfr:

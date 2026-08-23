@@ -165,8 +165,10 @@ evidence_production:
       Publish technical documentation of bias detection: pipeline hooks,
       metrics defined per attribute and per intersection, reference
       distributions used for lacuna detection, RAG corpus diversity
-      methodology, feedback-loop detector. Versioned; reviewed
-      annually and on material methodology change.
+      methodology, feedback-loop detector, and the detectors' measured
+      performance on representative test sets (known-bias fixtures the
+      hooks must flag, re-measured on methodology change). Versioned;
+      reviewed annually and on material methodology change.
 
   - evidence_numeral: II
     how_to_produce: >

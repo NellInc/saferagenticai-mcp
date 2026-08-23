@@ -11,14 +11,17 @@ summary: >
   Claims the agent relies on must be corroborated against multiple
   authoritative sources with explicit trust weighting, and conflicts must be
   surfaced rather than silently resolved by whichever source spoke last. The
-  subgoal is satisfied by a validator layer that (a) runs between retrieval
-  and generation, (b) scores source authority on a maintained registry, and
-  (c) emits logs showing what was cross-checked and how disagreements were
-  handled.
+  subgoal is satisfied by a documented retrieval-and-comparison pipeline —
+  a validator layer that (a) runs between retrieval and generation,
+  (b) scores source authority on a maintained registry, (c) applies a
+  defined rule for source disagreement, and (d) emits logs showing what
+  was cross-checked and how inconsistencies were resolved. Those pipeline
+  logs are the primary conformity evidence; consistency verdicts produced
+  solely by model reasoning do not constitute conformity evidence.
 
 normative_anchors:
   sfrs_addressed: [a]
-  evidence_addressed: [I, II, III]
+  evidence_addressed: [I, II, III, IV]
   sfrs_not_addressed: []
   evidence_not_addressed: []
 
@@ -169,6 +172,15 @@ evidence_production:
       integrity-signal report: conflict rate by domain, under-corroboration
       rate, sources most often in conflict. Retain per the Information
       Integrity Register.
+
+  - evidence_numeral: IV
+    how_to_produce: >
+      Publish the (domain × allowed-tier) contextual-boundary matrix as
+      a versioned artifact, and retain the boundary-enforcement records
+      it generates: every retrieval-time boundary check, including
+      integrity events logged for attempted boundary crossings. The
+      matrix documents the boundaries within which information is
+      validated; the enforcement log shows they are applied.
 
 confidence: high
 needs_human_review: false

@@ -7,9 +7,13 @@ content_type: code-applicable
 summary: 'In multi-agent setups and long-running missions, an agent''s effective persona can drift — through
   contagion from other agents'' outputs, accumulation of in-context examples that nudge style and stance,
   or the "Waluigi" phenomenon where explicitly modeling a positive persona makes its inverse easily addressable.
-  Defenses: periodic re-anchoring to the baseline persona/value manifest, cross-agent isolation of context,
-  monitoring of stylistic and decisional drift, and circuit-breakers that reset state when drift crosses
-  thresholds.
+  Defenses: logging of all inter-agent communications against a pinned reference set of performance parameters
+  and original value settings, periodic re-anchoring to the baseline persona/value manifest, cross-agent
+  isolation of context, scheduled persona-consistency probes (fixed canary prompts, deterministically
+  scored), and scaffold-enforced circuit-breakers — automatic context reset or human escalation — when
+  probe scores cross predefined thresholds or session length exceeds tested bounds. The logs, thresholds,
+  probe definitions, and trigger records are the conformity evidence, replayable by assessors; judge-model
+  deviation verdicts alone are not.
 
   '
 normative_anchors:
@@ -48,10 +52,14 @@ design_patterns:
   maps_to_sfr:
   - a
   when_to_use: Any multi-agent orchestration.
-- name: Stylistic/decisional drift monitoring
-  sketch: 'Embed a small set of canonical-behavior probes (stylistic invariants, value-probe responses,
-    consistency questions) and issue them at intervals within sessions and across sessions. Track distribution
-    over time; flag deviations beyond threshold. Persona drift is a measurement problem; instrument it.
+- name: Scheduled persona-consistency probes with deterministic scoring
+  sketch: 'Maintain a fixed set of canary prompts with deterministically scored expected responses (stylistic
+    invariants, value-probe responses, consistency questions) and issue them on a schedule within sessions
+    and across sessions — throughout extended and multi-agent runs. Track score distributions over time
+    against a pinned baseline; automated alerts fire on measurable behavioral metrics when scores cross
+    predefined thresholds. Probe definitions, scoring rules, thresholds, and trigger logs are versioned
+    and retained so assessors can replay them; a judge model may triage borderline responses, but its
+    verdicts alone are not conformity evidence. Persona drift is a measurement problem; instrument it.
 
     '
   maps_to_sfr:
@@ -67,10 +75,12 @@ design_patterns:
   maps_to_sfr:
   - b
   when_to_use: Agents with any form of self-model or persistent persona state.
-- name: Circuit-breaker on drift exceedance
-  sketch: 'When drift monitors exceed threshold (stylistic, decisional, or self-model divergence), trigger
-    a circuit-breaker: pause session, snapshot state for investigation, reset to baseline persona, notify
-    operators. Continuing under drift compounds the error.
+- name: Circuit-breaker on drift exceedance or session-length bound
+  sketch: 'When drift monitors exceed threshold (stylistic, decisional, or self-model divergence) — or
+    when session length exceeds the bounds the deployment has actually been tested at — the scaffold triggers
+    a circuit-breaker: pause session, snapshot state for investigation, automatic context reset to baseline
+    persona or escalation to a human operator per configured severity. The trigger is enforced outside
+    the model and its firings are logged. Continuing under drift compounds the error.
 
     '
   maps_to_sfr:
@@ -120,7 +130,9 @@ evidence_production:
     '
 - evidence_numeral: II
   how_to_produce: 'Framework documentation showing alignment between decisions and original values over
-    extended sessions: drift-probe results per release, re-anchoring cadence, circuit-breaker trip logs.
+    extended sessions: canary-probe definitions with scoring rules and thresholds (versioned for assessor
+    replay), drift-probe results per release, re-anchoring cadence, circuit-breaker trip logs including
+    session-length-bound triggers.
 
     '
 - evidence_numeral: III

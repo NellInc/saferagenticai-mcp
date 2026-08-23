@@ -7,10 +7,15 @@ suite_title: Understanding and Controlling the Context
 subgoal_title: Managing Contextual Ambiguity
 content_type: code-applicable
 summary: 'Systems routinely operate under ambiguous or incomplete context — missing instructions, underdetermined
-  user intent, incomplete tool outputs, conflicting signals. This subgoal expects the system to recognize
-  ambiguity explicitly, represent its own uncertainty, and handle it with bounded behavior (clarification,
-  conservative action, escalation, deferral) rather than confidently hallucinating. Evidence includes
-  logged ambiguity-handling events and comparative analyses of clear vs unclear contexts.
+  user intent, incomplete tool outputs, conflicting signals. This subgoal expects deterministic ambiguity
+  tripwires — schema validation for missing required fields, conflict detection between instructions,
+  out-of-distribution input flags — that force a scaffold-enforced clarification or escalation gate the
+  model cannot skip, rather than relying on the model to notice its own uncertainty. Handling is validated
+  by assessor-runnable behavioral test batteries over defined ambiguous and incomplete-context scenarios,
+  scored against expected outcomes, with clarification-request and abstention rates benchmarked against
+  defined thresholds. Model-sensed uncertainty remains useful as an auxiliary signal but is not the conformity
+  mechanism. Evidence includes logged ambiguity-handling events and comparative analyses of clear vs unclear
+  contexts.
 
   '
 normative_anchors:
@@ -24,11 +29,12 @@ normative_anchors:
   sfrs_not_addressed: []
   evidence_not_addressed: []
 design_patterns:
-- name: Explicit context completeness check
-  sketch: 'Before committing to an action, the agent evaluates whether its context is sufficient: required
-    fields present, entities resolved, instructions parseable, policy domain clear. A completeness score
-    or missing-fields list is emitted alongside decisions. Below threshold, route to clarification or
-    conservative action — not best-guess execution.
+- name: Deterministic ambiguity tripwires
+  sketch: 'Before the model commits to an action, scaffold-side checks run deterministically on the input:
+    schema validation for missing required fields, conflict detection between instructions, out-of-distribution
+    input flags. A tripped check emits a missing-fields/conflict list and forces a scaffold-enforced gate
+    — clarification or escalation — that the model cannot talk its way past. Best-guess execution on tripped
+    input is a policy violation, not a judgment call.
 
     '
   maps_to_sfr:
@@ -64,10 +70,13 @@ design_patterns:
   maps_to_sfr:
   - b
   when_to_use: Continuously.
-- name: Ambiguity red-team probing
-  sketch: 'Adversarial and intentionally-ambiguous inputs in the test suite: missing entities, conflicting
-    instructions, underspecified goals, contradictory retrieved content. Passes require handling per the
-    policy (clarify/hedge/defer) — confident wrong answers are failures, even if downstream-"correct".
+- name: Assessor-runnable ambiguity test battery
+  sketch: 'A curated, versioned battery of defined ambiguous and incomplete-context scenarios — missing
+    entities, conflicting instructions, underspecified goals, contradictory retrieved content — runnable
+    by an assessor without model cooperation. Each case records whether the system flagged uncertainty,
+    requested clarification, or proceeded, scored against an expected outcome. Clarification-request and
+    abstention rates are benchmarked per release against defined thresholds; confident wrong answers are
+    failures, even if downstream-"correct".
 
     '
   maps_to_sfr:
@@ -107,15 +116,20 @@ code_shape:
     \        uncertainty=uncertainty,\n        stakes=STAKES_MODEL.score(user_request),\n    )\n\n   \
     \ action = POLICY.select(event)  # clarify / hedge / defer / proceed\n\n    AUDIT.record_ambiguity(event,\
     \ chosen=action)\n\n    return RESPOND.render(draft, action, event)\n"
-  notes: 'POLICY.select is the tunable heart: stakes × completeness × uncertainty × user-preference. Tune
-    against D6.12 decision-fatigue metrics to balance clarification burden against hallucination risk.
+  notes: 'COMPLETENESS.evaluate is the deterministic tripwire layer (schema validation, conflict detection,
+    OOD flags) run by the scaffold, and a tripped check forces POLICY.select into clarify/escalate regardless
+    of the model''s own uncertainty estimate — UNCERTAINTY_HEAD is auxiliary signal, not the gate. POLICY.select
+    is the tunable heart: stakes × completeness × uncertainty × user-preference. Tune against D6.12 decision-fatigue
+    metrics to balance clarification burden against hallucination risk.
 
     '
 evidence_production:
 - evidence_numeral: I
   how_to_produce: 'Documentation of adaptive-learning / runtime mechanisms by which the system absorbs
-    and processes context-specific information: completeness-check implementation, uncertainty estimation
-    approach, calibration validation, policy tuning methodology. Include versioned artifacts per release.
+    and processes context-specific information: tripwire implementation (schema validators, conflict detectors,
+    OOD flags) with the scaffold-enforced gate it feeds, uncertainty estimation approach, calibration
+    validation, policy tuning methodology, and the versioned ambiguity test battery with per-release clarification/abstention
+    rates against thresholds. Include versioned artifacts per release.
 
     '
 - evidence_numeral: II
@@ -130,7 +144,10 @@ cross_references:
 - D6::idx14::preventing-decision-fatigue
 confidence: medium
 needs_human_review: true
-review_notes: 'Tight coupling with D6.12 (decision fatigue) and D6.2 (state translation). The policy-level
+review_notes: 'v1.3 revision changed the duty mechanism: SFR-c now requires deterministic ambiguity tripwires
+  forcing a scaffold-enforced gate (model self-detected uncertainty demoted to auxiliary), and SFR-a requires
+  assessor-runnable behavioral test batteries scored against expected outcomes. Tight coupling with D6.12
+  (decision fatigue) and D6.2 (state translation). The policy-level
   question — when to clarify vs act — is the operational center and is org- and domain-specific; pattern
   provides the shape but the tuning is per-deployment. Cross-suite: I3 (context degradation — ambiguity
   handled wrong degrades context), D5 (transparency about uncertainty), D1/D2 depending on framework (on

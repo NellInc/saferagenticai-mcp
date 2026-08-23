@@ -63,7 +63,9 @@ policy_elements:
   - d
 - name: Service Level Declaration
   description: 'Public, versioned SLA-equivalent: uptime, rate-limit postures, degradation modes, outage
-    communication commitments. Sets expectations consistent with the Restriction Inventory.
+    communication commitments. Sets expectations consistent with the Restriction Inventory. Kept current
+    during operation, with a named notification window: affected operators are notified of material changes
+    to limitations or service levels within a defined period, and the notifications are logged.
 
     '
   maps_to_sfr:

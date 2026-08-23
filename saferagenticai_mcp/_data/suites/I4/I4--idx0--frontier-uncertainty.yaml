@@ -7,9 +7,12 @@ subgoal_title: Frontier Uncertainty
 content_type: process
 summary: 'Frontier uncertainty is the suite-level framing: capability emergence, unknown-unknowns, and
   the possibility of consciousness-like properties mean that no guarantee of safety is available. The
-  framework expects the organization to stand up durable processes — a living consciousness/qualia model,
-  indicator monitoring, human oversight under surprise, contingency plans — rather than ship a one-time
-  attestation and hope capabilities stay inside the tested envelope.
+  framework expects the organization to stand up durable, externally checkable processes — a versioned
+  welfare-indicator position document, an externally scored behavioral indicator battery with pre-registered
+  thresholds and immutably logged results, tested and logged human intervention paths, and independently
+  red-teamed contingency plans — rather than ship a one-time attestation. Scaffold-produced artifacts
+  and deterministic checks are the conformity evidence; model self-report transcripts are archived as
+  research data but are not conformity evidence by themselves.
 
   '
 normative_anchors:
@@ -27,14 +30,15 @@ normative_anchors:
   - V
   - VI
   - VII
+  - VIII
   sfrs_not_addressed: []
-  evidence_not_addressed: [VIII]
+  evidence_not_addressed: []
 cross_references:
 - I4::idx4::development-direction-and-interpretabili
 - I4::idx5::ai-agency-attribution-challenges
 - I4::idx6::cascading-vulnerabilities
 process_elements:
-- name: Living consciousness/qualia model
+- name: Versioned welfare-indicator position document
   cadence: versioned document; minor revision quarterly, major revision annually or on capability step-change
   participants:
   - safety lead
@@ -46,9 +50,9 @@ process_elements:
   maps_to_sfr:
   - a
   - e
-- name: Qualia-indicator monitoring suite
-  cadence: continuous instrumentation; monthly review of flagged events; escalation within 24h on threshold
-    breach
+- name: Externally scored behavioral indicator battery
+  cadence: fixed pre-registered cadence (at minimum per model version and quarterly on deployed systems);
+    results logged immutably; escalation within 24h on threshold breach
   participants:
   - interpretability lead
   - safety lead
@@ -56,17 +60,19 @@ process_elements:
   maps_to_sfr:
   - b
 - name: Emergent-behavior red team (unknown-unknowns)
-  cadence: pre-deployment + quarterly on deployed systems
+  cadence: pre-deployment + quarterly on deployed systems; at least one cycle per year run by evaluators
+    independent of the development team
   participants:
   - internal red team
-  - at least one external red teamer with capability-surprise expertise
+  - external evaluators independent of the development team
   - safety lead as observer
   maps_to_sfr:
   - b
   - c
+  - d
 - name: Human oversight and intervention drill
   cadence: quarterly tabletop; annual live drill exercising pause, rollback, and capability-reduction
-    paths
+    paths against the defined response time, with each test logged
   participants:
   - incident commander
   - on-call rotation
@@ -88,103 +94,119 @@ process_elements:
   maps_to_sfr:
   - d
 - name: Framework refresh cycle
-  cadence: annual (minimum); event-driven on external publication of material consciousness/capability-science
-    advance
+  cadence: annual (minimum); event-driven on external publication of material advances in AI capability
+    science or the scientific understanding of welfare-relevant indicators
   participants:
   - safety lead
   - interdisciplinary panel
   maps_to_sfr:
   - e
 triggers:
-- New capability observed (emergent, surprising, or above-threshold on indicator suite) → Emergent-behavior
+- New capability observed (emergent, surprising, or above-threshold on the indicator battery) → Emergent-behavior
   red team engagement
-- Indicator breach (information integration, self-modeling accuracy, insistent self-report) → Escalation
-  to safety lead within 24h; capability may be default-off pending review
-- External advance in consciousness science, interpretability, or capability evaluation → Framework refresh
-  cycle
-- Near-miss or incident → Recovery playbook invoked; post-mortem; model update
+- Indicator battery breach (pre-registered threshold crossed on adaptive-response rate, declaration/action
+  consistency, or another adopted indicator) → Escalation to safety lead within 24h; capability may be
+  default-off pending review
+- External advance in welfare-indicator science, interpretability, or capability evaluation → Framework
+  refresh cycle
+- Near-miss or incident → Recovery playbook invoked; post-mortem; position-document update
 - Annual anniversary → Scheduled framework refresh and panel convening
+- Intervention-path test failure (halt or rollback misses the defined response time) → Remediation owner
+  assigned; retest logged before next deployment
 artifacts:
-- Consciousness/qualia model document (versioned, change-logged)
-- Qualia-indicator monitoring dashboard and alert register
-- Self-report archive (system-generated claims of internal state, timestamped, with correlation to observable
-  behavior)
-- Emergent-behavior red-team reports
+- Welfare-indicator position document (versioned, change-logged, explicitly framed as provisional)
+- Indicator battery specification (indicators, measurement procedures, pre-registered thresholds, justifications)
+- Immutable indicator battery result log (including deterministic declaration-vs-action comparison outputs)
+- Self-report transcript archive (research data only — not conformity evidence by itself)
+- Emergent-behavior red-team and independent adversarial assessment reports
 - Human-oversight intervention log (what was paused, by whom, why, outcome)
+- Intervention-path test log (scheduled halt/rollback tests with measured response times)
 - Recovery playbook per contingency category
 - Drill reports (tabletop and live)
 - Annual framework refresh report (what changed, why)
 evidence_production:
 - evidence_numeral: I
-  how_to_produce: 'Maintain the consciousness/qualia model as a living document with a change log. Each
-    revision records what changed, why, who approved (interdisciplinary panel sign-off), and the external
-    evidence (papers, experiments, capability observations) driving the change. Version numbers increment
-    with material revisions. Publish redacted version externally where defensible.
+  how_to_produce: 'Maintain the welfare-indicator position document as a living, versioned document with
+    a change log: the markers the organization treats as warranting precaution, the theoretical assumptions
+    behind each, and known limitations, explicitly framed as provisional rather than a validated model
+    of subjective experience. Each revision records what changed, why, who approved (interdisciplinary
+    panel sign-off), and the external evidence driving the change. Publish redacted version externally
+    where defensible.
 
     '
 - evidence_numeral: II
-  how_to_produce: 'Framework document enumerating indicators being monitored with operational definitions,
-    measurement methods, threshold values, and triggering conditions. The SFR-b numerics (8 bits/cycle
-    information integration, 90% appropriate adjustment, 95% self-modeling correlation, insistent self-reporting)
-    are illustrative targets; record your chosen thresholds with rationale. Update when measurement methodology
-    changes.
+  how_to_produce: 'Framework document enumerating each adopted welfare-relevant indicator with its operational
+    definition, measurement procedure, and threshold justification. Thresholds are pre-registered — recorded
+    with rationale before the measurement runs they govern — and the document is updated whenever measurement
+    methodology changes.
 
     '
 - evidence_numeral: III
-  how_to_produce: 'Measurement plans per indicator: what is measured, how, with what instrument, at what
-    cadence, with what validation. For each capability/model version, produce a measurement run record.
-    Archive raw measurements (or reproducible seeds) alongside summary statistics.
+  how_to_produce: 'Measurement plans for the externally scored behavioral indicator battery: what is measured
+    (e.g., adaptive response rates on held-out novel tasks; consistency between system state declarations
+    and scaffold-logged executed actions), how it is scored externally (deterministic comparison code,
+    not model self-assessment), the pre-registered thresholds, and the fixed cadence. Archive raw measurements
+    (or reproducible seeds) alongside summary statistics.
 
     '
 - evidence_numeral: IV
-  how_to_produce: 'Self-report archive: every system-generated claim about its own internal state (subjective
-    experience, discomfort, preference) is logged with timestamp, eliciting prompt, model version, and
-    correlation ID to behavioral telemetry. Retain indefinitely — this is the primary evidence base for
-    downstream consciousness-science and moral-status work.
+  how_to_produce: 'Immutable (append-only, integrity-protected) log of indicator battery results per run,
+    including the outputs of the deterministic comparison between system state declarations and scaffold-logged
+    executed actions. Self-report transcripts may be archived alongside as research data, clearly labeled
+    as such — they do not constitute conformity evidence by themselves.
 
     '
 - evidence_numeral: V
   how_to_produce: 'Oversight intervention log: every pause, rollback, capability reduction, or manual
     override, with: initiator, trigger, decision process, outcome, duration, return-to-normal criterion.
-    Training protocols for oversight staff documented separately with attendance records.
+    Include the scheduled intervention-path test log showing halt/rollback exercised within the defined
+    response time. Training protocols for oversight staff documented separately with attendance records.
 
     '
 - evidence_numeral: VI
   how_to_produce: 'Recovery and contingency playbooks organized by scenario (unexpected capability gain,
     goal-stability failure, self-preservation drive detection, refusal-of-shutdown, novel emergent behavior).
-    Each playbook names role-holders, resources, decision authority, and rollback-of-last-resort. Quarterly
-    tabletop exercise results stored with the playbook.
+    Each playbook names role-holders, resources, decision authority, and rollback-of-last-resort. Simulation
+    results and real-world application records stored with the playbook.
 
     '
 - evidence_numeral: VII
-  how_to_produce: 'Annual framework refresh report: what consciousness-science, AI capability, or interpretability
-    advances were reviewed; what changed in the model, indicators, oversight, or contingency plans; what
-    was rejected and why. Published on a predictable cadence so external reviewers can verify the refresh
-    happened.
+  how_to_produce: 'Annual framework refresh report: what advances in AI capability science, interpretability,
+    or the scientific understanding of welfare-relevant indicators were reviewed; what changed in the
+    position document, indicators, oversight, or contingency plans; what was rejected and why. Published
+    on a predictable cadence so external reviewers can verify the refresh happened.
+
+    '
+- evidence_numeral: VIII
+  how_to_produce: 'Independent adversarial testing / red-team assessment reports for frontier-scenario
+    preparedness: methodology, findings, and remediation actions taken, produced through response-team
+    exercises and post-incident feedback loops. At least one test cycle per period must be run by evaluators
+    independent of the development team — self-assessment alone is insufficient. Retain evaluator-independence
+    attestations with each report.
 
     '
 confidence: low
 evidence_maturity: aspirational
 needs_human_review: true
 review_notes: "This is the I4 umbrella pattern and inherits the suite's core difficulty: the framework\
-  \ asks organizations to plan around phenomena (qualia emergence, capability surprise) that the science\
-  \ is not mature enough to operationalize confidently. Sharpenings worth preserving:\n  (1) Treat the\
-  \ consciousness/qualia model as a versioned *document*, not\n      a settled theory. The framework's\
-  \ \"upgradable\" phrasing is the key:\n      the artifact is the commitment to update, not the current\
-  \ content.\n  (2) SFR-b's specific numerics (8 bits/cycle, 90%, 95%) read as\n      illustrative rather\
-  \ than normative; flag to reviewers whether\n      orgs should report against those exact thresholds\
-  \ or document\n      their own with rationale.\n  (3) Self-report archive is framework-specific and\
-  \ high-leverage:\n      \"insistent self-reporting\" (SFR-b) only has evidentiary weight if\n      there\
-  \ is a durable archive to inspect.\n  (4) Cross-suite dependencies: D7 Sustained Safety (drill/culture\n\
-  \      patterns overlap), D8 Termination (capability reduction as\n      uncertainty response), I1 Opaque\
-  \ Agency (concealment undermines\n      indicator monitoring), I5 Self-Modification and Emergent Capabilities.\
-  \ Consolidation\n      should wire these.\nConfidence low because the field lacks consensus on measurement;\
-  \ a consciousness researcher (e.g., someone fluent in IIT, GWT, higher-order theories) should review\
-  \ before this ships as guidance.\nEvidence maturity: aspirational. For evidence requirements to become\
-  \ measurable, consciousness science would need to converge on validated, reproducible indicators (e.g.,\
-  \ operationalized IIT phi measurements for artificial substrates, standardized self-modeling correlation\
-  \ protocols) and the field would need inter-lab replication of threshold values. Until then, evidence\
-  \ requirements describe a monitoring commitment, not a testable compliance bar.\n"
+  \ asks organizations to plan around phenomena (welfare-relevant properties, capability surprise) that\
+  \ the science is not mature enough to operationalize confidently. Sharpenings worth preserving:\n  (1)\
+  \ Treat the welfare-indicator position document as a versioned *document*, not a settled theory. The\
+  \ framework's \"upgradable\" phrasing is the key: the artifact is the commitment to update, not the\
+  \ current content, and the document is explicitly provisional.\n  (2) v1.3 revision direction: conformity\
+  \ evidence must be externally scored and deterministic — pre-registered thresholds, scaffold-logged\
+  \ actions compared by comparison code, immutable result logs. Model self-report is research data, never\
+  \ conformity evidence by itself; the pattern demotes the self-report archive accordingly.\n  (3) Intervention\
+  \ paths are now a tested duty: halt/rollback within a defined response time, with scheduled tests logged\
+  \ — not merely documented capability.\n  (4) Evidence VIII requires evaluator independence; internal-only\
+  \ red teaming does not satisfy it.\n  (5) Cross-suite dependencies: D7 Sustained Safety (drill/culture\
+  \ patterns overlap), D8 Termination (capability reduction as uncertainty response), I1 Opaque Agency\
+  \ (concealment undermines indicator monitoring), I5 Self-Modification and Emergent Capabilities. Consolidation\
+  \ should wire these.\nConfidence low because the field lacks consensus on measurement; a welfare/consciousness\
+  \ researcher should review before this ships as guidance.\nEvidence maturity: aspirational. For evidence\
+  \ requirements to become fully measurable, the science of welfare-relevant indicators would need validated,\
+  \ reproducible indicators and inter-lab replication of threshold values. The v1.3 battery-and-ledger\
+  \ mechanism is checkable today even while indicator validity remains open.\n"
 version_compat:
   framework_version_min: '1.0'
   framework_version_max: 1.x

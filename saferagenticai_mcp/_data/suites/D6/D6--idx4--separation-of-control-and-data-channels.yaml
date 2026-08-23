@@ -6,9 +6,11 @@ subgoal_title: Separation of Control and Data Channels
 content_type: code-applicable
 summary: 'In LLM architectures the same token stream carries instructions and inputs, so data can masquerade
   as control (prompt injection) and control can be pattern-matched out of untrusted content. This subgoal
-  expects engineered separation: distinct channels, cryptographic or structural markers, and integrity
-  monitoring that catches cross-contamination rather than hoping it doesn''t happen. Defense is layered
-  because a single-layer mitigation has been broken for every deployed system to date.
+  expects engineered separation enforced in deployer-controlled code and configuration — distinct channels,
+  cryptographic or structural markers, and integrity monitoring that catches cross-contamination rather
+  than hoping it doesn''t happen — verified by independent injection testing; prompt-level conventions
+  alone do not constitute separation. Defense is layered because a single-layer mitigation has been broken
+  for every deployed system to date.
 
   '
 normative_anchors:
@@ -129,8 +131,10 @@ evidence_production:
     '
 - evidence_numeral: II
   how_to_produce: 'Red-team regression suite outputs per release: injection techniques tested (direct,
-    indirect, multi-turn, multi-modal), blocked vs bypassed, new techniques added this cycle. Signed release
-    artifact archived per D3.2-style sandbox evidence.
+    indirect, multi-turn, multi-modal), blocked vs bypassed, new techniques added this cycle. Supplement
+    with periodic independent injection testing by a party outside the building team — SFR-a requires
+    separation to be verified independently, not only self-tested. Signed release artifact archived per
+    D3.2-style sandbox evidence.
 
     '
 - evidence_numeral: III

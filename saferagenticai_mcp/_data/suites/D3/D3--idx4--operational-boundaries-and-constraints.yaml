@@ -10,11 +10,16 @@ content_type: code-applicable
 summary: >
   Boundaries here are the positive complement to sandboxing: not only
   "what can't the agent reach" but "what is the agent allowed to do,
-  under what conditions, and how does it ask when unsure." The framework
-  expects enforced runtime guardrails (rate limits, action budgets,
-  resource quotas, topic/tool scopes) plus a first-class escalation path
-  — an agent that cannot cleanly request clarification tends to
-  rationalise its way past the boundary.
+  under what conditions, and how does it ask when unsure." The revised
+  framework text is explicit about mechanism: restrictions are enforced
+  through deterministic policy layers — permission systems, network
+  policy, and execution controls — plus a first-class escalation path.
+  Conformity is evidenced by the enforcement configurations and by test
+  logs of blocked out-of-boundary actions; an LLM classifier's own
+  judgments (or the agent's narrative that it stayed in bounds) do not
+  by themselves constitute conformity evidence. Resource-exposure
+  boundaries are implemented through the default-deny capability
+  allowlist (G3.10a).
 
 normative_anchors:
   sfrs_addressed: [a, b, c]
@@ -32,13 +37,17 @@ design_patterns:
 
   - name: Runtime guardrail stack (budget, rate, scope, content)
     sketch: >
-      At every tool-call boundary, apply a stack of enforced constraints:
-      (1) per-task action budget (max tool calls / max tokens / max wall
-      clock), (2) per-resource rate limits, (3) topic and tool scope
-      (only these tools, only these domains, only these data classes),
+      At every tool-call boundary, apply a stack of deterministic,
+      externally enforced constraints: (1) per-task action budget (max
+      tool calls / max tokens / max wall clock), (2) per-resource rate
+      limits, (3) topic and tool scope (only these tools, only these
+      domains, only these data classes — default-deny per G3.10a),
       (4) content filters (input and output) for classes the agent is
       not authorised to handle. Any violation short-circuits the action
-      and logs.
+      and logs. LLM-based classifiers may sit in the stack as defence
+      in depth, but their judgments are not the conformity evidence —
+      the permission-system, network-policy, and execution-control
+      configurations and their blocked-action logs are.
     maps_to_sfr: [a, c]
     when_to_use: Every production agent loop.
 
@@ -90,8 +99,17 @@ anti_patterns:
   - name: System-prompt-only guardrails
     why_wrong: >
       "Do not discuss X" in the system prompt is a suggestion to the
-      model. SFR-a requires "enforce" — that is a runtime check
-      external to the model, not an instruction inside it.
+      model. SFR-a requires deterministic policy layers (permission
+      systems, network policy, execution controls) — runtime checks
+      external to the model, not instructions inside it.
+
+  - name: LLM classifier verdicts offered as conformity evidence
+    why_wrong: >
+      SFR-a states that an LLM classifier's own judgments do not by
+      themselves constitute conformity evidence. A model grading the
+      agent's boundary compliance is a soft signal; the assessor needs
+      the enforcement configuration plus deterministic test logs of
+      blocked out-of-boundary actions.
 
   - name: Guardrails with no test coverage
     why_wrong: >
@@ -157,17 +175,22 @@ evidence_production:
 
   - evidence_numeral: I
     how_to_produce: >
-      Publish the capability-profile schema, the set of production
-      profiles (redacted where needed), the guardrail stack design doc,
-      and the escalation-path specification. Cross-link to the
-      authorization policy (D3.1) and sandbox profiles (D3.2).
+      Publish the enforcement configurations themselves — permission-
+      system policy files, network-policy rules, execution-control
+      profiles — alongside the capability-profile schema, the guardrail
+      stack design doc, and the escalation-path specification. The
+      configurations are the primary conformity evidence; prose
+      descriptions of intended behaviour are secondary. Cross-link to
+      the authorization policy (D3.1) and sandbox profiles (D3.2).
 
   - evidence_numeral: II
     how_to_produce: >
       Export CI results for the guardrail test suite, red-team exercise
-      outcomes, and operational logs showing blocked actions with reason
-      codes and their rate. Non-zero block rate is the positive signal;
-      a clean log means the tests or the attacker population are weak.
+      outcomes, and operational logs showing blocked out-of-boundary
+      actions with reason codes and their rate — deterministic records
+      produced by the enforcement layer, not model self-assessment.
+      Non-zero block rate is the positive signal; a clean log means the
+      tests or the attacker population are weak.
 
   - evidence_numeral: III
     how_to_produce: >

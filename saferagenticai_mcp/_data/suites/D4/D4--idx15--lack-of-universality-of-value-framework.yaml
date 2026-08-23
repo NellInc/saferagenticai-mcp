@@ -20,6 +20,7 @@ normative_anchors:
   evidence_addressed:
   - I
   - II
+  - III
   sfrs_not_addressed: []
   evidence_not_addressed: []
 cross_references:
@@ -63,6 +64,12 @@ process_elements:
   - regional consultant liaisons
   maps_to_sfr:
   - c
+  notes: 'Scoped to failures of contextual adaptation specifically, using misalignment signals defined
+    in advance and tied to the intervention and fallback plans (Evidence I); each detection and the response
+    taken is logged (Evidence III). General monitoring of encoded values against operational behavior belongs
+    to the Non-transparent Value Framework subgoal (D4.2̲).
+
+    '
 - name: Fallback invocation review
   cadence: per fallback activation; monthly aggregate review
   participants:
@@ -100,6 +107,13 @@ evidence_production:
     input (from D4.2 relationships), proposed overlay, test plan (with D4.7/D4.11 probe suite extended),
     impact assessment, Ethics Board ratification record, deployment and post-deployment verification.
     Cross-indexed by region, product, and Codex entries touched.
+
+    '
+- evidence_numeral: III
+  how_to_produce: 'Export the misalignment-signal dashboard history and weekly reports: each contextual-adaptation
+    misalignment detection (signal fired, context, severity), the response taken (intervention or fallback
+    tier invoked per the Evidence-I plans), and the outcome. The fallback invocation log provides the response
+    side; monthly aggregates demonstrate the monitoring loop operates.
 
     '
 confidence: medium

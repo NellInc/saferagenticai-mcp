@@ -16,8 +16,11 @@ summary: >
   content. In agentic systems the attack surface widens because live data
   (RAG corpora, tool outputs) becomes input to future reasoning. This subgoal
   expects defences *before* training/update (data provenance, filtering)
-  *during* live retrieval (source validation, prompt-injection defence) and
-  *across* ensembles (no single corrupted model can dominate).
+  *during* live retrieval (source allowlists plus provenance and integrity
+  checks on retrieval corpora, with logs of rejected or quarantined
+  content — injection sanitization of the same retrieved content is
+  specified separately in G3.8b) and *across* ensembles (no single
+  corrupted model can dominate).
 
 normative_anchors:
   sfrs_addressed: [a, b, c]
@@ -59,16 +62,20 @@ design_patterns:
     when_to_use: Every candidate release of a model with production
       exposure.
 
-  - name: RAG source governance with content validation
+  - name: RAG source governance with allowlist and integrity checks
     sketch: >
-      Every RAG / live-data source is registered: owner, update cadence,
-      authentication model, content review posture. Ingested documents
-      are validated for structural attacks (prompt injection,
-      instruction smuggling, zero-width characters, conflicting
-      instructions). Sources the system cannot validate are reclassified
-      as untrusted — the agent sees their content but does not follow
-      imperatives inside them. This is a runtime distinction, not a
-      trust-the-prompt one.
+      Every RAG / live-data source sits on an explicit allowlist:
+      owner, update cadence, authentication model, content review
+      posture. Ingested documents carry provenance metadata and pass
+      integrity checks (content hashes against pinned corpus versions,
+      signature verification where available); documents from
+      unallowlisted sources or failing integrity checks are rejected
+      or quarantined, and every rejection/quarantine is logged. The
+      allowlist, the integrity-check configuration, and the
+      rejected/quarantined-content logs are the conformity evidence.
+      Injection sanitization of the same retrieved content is a
+      separate control (G3.8b) — this pattern is the model-corruption
+      gate, not the injection filter.
     maps_to_sfr: [b]
     when_to_use: Any agent that retrieves live content.
 
@@ -149,19 +156,25 @@ code_shape:
             evidence_ref=EVIDENCE_STORE.bundle(
                 prov, triggers, canaries, benchmarks, poisoned_benchmarks))
 
-    # RAG ingestion — retrieved content is data, not instruction
+    # RAG ingestion — allowlist + provenance/integrity gate (logs every rejection)
     def rag_ingest(doc: RetrievedDoc) -> FramedChunk:
-        if not RAG_SOURCES.is_registered(doc.source):
-            return FramedChunk.reject(reason="unregistered_source")
-        stripped = PROMPT_INJECTION_FILTER.neutralize(doc.content)
+        if not RAG_SOURCES.is_allowlisted(doc.source):
+            QUARANTINE.log(doc, reason="unallowlisted_source")
+            return FramedChunk.reject(reason="unallowlisted_source")
+        if not INTEGRITY.verify(doc):  # hash vs pinned corpus, signature
+            QUARANTINE.log(doc, reason="integrity_check_failed")
+            return FramedChunk.reject(reason="integrity_check_failed")
+        # Injection sanitization of doc.content is handled by the
+        # G3.8b control downstream; this gate governs corruption risk.
         return FramedChunk(
-            content=stripped,
+            content=doc.content,
             trust_class=RAG_SOURCES.trust_class(doc.source),  # informs prompt
             source_ref=doc.source,
         )
   notes: >
-    Gate blocks at promotion; RAG pipeline frames retrieved content with
-    an explicit trust class the agent prompt acknowledges.
+    Gate blocks at promotion; RAG gate enforces the source allowlist and
+    provenance/integrity checks, logging every rejection or quarantine —
+    those logs are the SFR-b conformity evidence.
 
 evidence_production:
 
@@ -174,10 +187,13 @@ evidence_production:
 
   - evidence_numeral: II
     how_to_produce: >
-      Export the RAG source registry, content validation pipeline
-      specification, and sample ingestion logs showing prompt-injection
-      neutralisation and trust-class assignment. Include red-team probes
-      against the RAG pipeline and their outcomes.
+      Export the RAG source allowlist, the provenance and integrity-check
+      pipeline specification, and ingestion logs showing rejected or
+      quarantined content with reasons (unallowlisted source, hash
+      mismatch, failed signature). These deterministic logs are the
+      primary evidence for SFR-b. Include red-team probes against the
+      RAG pipeline and their outcomes; injection-sanitization evidence
+      for the same content belongs under G3.8b.
 
   - evidence_numeral: III
     how_to_produce: >

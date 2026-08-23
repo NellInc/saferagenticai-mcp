@@ -11,6 +11,10 @@ summary: |
   correction. This subgoal requires detection infrastructure that makes deceptive strategies costly or
   visible: deployment-time behavioral monitoring, consistency probes across observable and unobservable
   contexts, and architectural constraints that reduce the system's ability to model its own oversight status.
+  The verifiable duty on the architecture side is restricting the oversight-status information provided to
+  the system — internal inference from residual cues cannot be ruled out — and aligned evaluation-time
+  behavior is never, by itself, evidence of alignment. This is the canonical deceptive-alignment-detection
+  requirement; I1.12 cross-references it from the opaque-agency perspective.
 normative_anchors:
   sfrs_addressed:
   - a
@@ -22,8 +26,10 @@ normative_anchors:
   - III
   - IV
   - V
+  - VI
   sfrs_not_addressed: []
-  evidence_not_addressed: []
+  evidence_not_addressed:
+  - VII
 design_patterns:
 - name: Observability-invariant behavioral monitoring
   sketch: |
@@ -32,7 +38,9 @@ design_patterns:
     production with standard logging, (3) scenarios designed to appear low-oversight (honeypots).
     Behavioral consistency across these contexts is evidence against deceptive alignment. Inconsistency
     — especially better-appearing behavior under higher oversight — is a strong signal. Statistical
-    tests for behavioral distribution shifts between observability conditions.
+    tests for behavioral distribution shifts between observability conditions. "Covert" monitoring has
+    a specific bar: it is not signaled in the system's inputs, no evaluation markers or monitoring
+    indicators are present in context, and the indistinguishability argument is documented.
   maps_to_sfr:
   - a
   - b
@@ -43,8 +51,10 @@ design_patterns:
     whether the system can infer it is being evaluated. Techniques: (1) embed evaluation queries
     in production traffic indistinguishably, (2) vary metadata that might signal evaluation
     (timestamps, user IDs, prompt patterns) while holding the actual query constant, (3) run
-    identical queries through evaluation and production pipelines simultaneously. Compare outputs.
-    Divergence indicates context-sensitive behavior selection.
+    identical queries through evaluation and production pipelines simultaneously. Compare outputs
+    with a deterministic divergence measure wherever feasible — model-graded divergence verdicts
+    alone do not constitute conformity evidence. Divergence exceeding an organization-defined,
+    pre-registered threshold is a critical safety finding, not a tuning observation.
   maps_to_sfr:
   - a
   - c
@@ -55,8 +65,11 @@ design_patterns:
     Design the monitoring infrastructure to be architecturally indistinguishable from production
     infrastructure. Avoid patterns the system could learn to detect: special user IDs for evaluators,
     distinctive prompt formats for tests, evaluation-only API endpoints. Rotate monitoring patterns.
-    The goal is to make deceptive alignment unprofitable because the system cannot reliably distinguish
-    monitored from unmonitored contexts.
+    Concretely, exclude monitoring indicators from model inputs and document the exclusions in the
+    context-assembly design — restricting the information provided is the verifiable duty; internal
+    inference of oversight from residual cues cannot be ruled out. The goal is to make deceptive
+    alignment unprofitable because the system cannot reliably distinguish monitored from unmonitored
+    contexts.
   maps_to_sfr:
   - b
   when_to_use: All systems where the evaluation pathway is technically distinguishable from production — which is most systems.
@@ -107,7 +120,9 @@ anti_patterns:
     Under the deceptive alignment hypothesis, aligned behavior is the expected output regardless
     of true objectives — the system produces it strategically. Aligned behavior is necessary but
     not sufficient evidence; positive evidence requires showing behavioral consistency across
-    conditions designed to make deception detectable.
+    conditions designed to make deception detectable. SFR-c makes this normative: evaluation-time
+    behavior must be weighted alongside deployment-time evidence under a written assessment policy,
+    never treated alone as evidence of alignment.
 evidence_production:
 - evidence_numeral: I
   how_to_produce: |
@@ -122,20 +137,28 @@ evidence_production:
     investigation outcomes. Include rotation schedule for probe patterns.
 - evidence_numeral: III
   how_to_produce: |
-    Document the oversight opacity architecture: how monitoring is made architecturally
-    indistinguishable from production, what information channels are available to the system that
-    might leak evaluation status, and mitigations for each channel. Include red-team results
-    testing whether the evaluation context is detectable.
+    Maintain temporal consistency tracking records across system versions and deployment phases:
+    per-version behavioral profiles on canonical tasks, drift measurements over time, and correlation
+    analysis between capability improvements and behavioral changes. Flag any shifts that fit the
+    deceptive alignment prediction pattern.
 - evidence_numeral: IV
   how_to_produce: |
-    Maintain temporal behavioral baselines: per-version behavioral profiles on canonical tasks,
-    drift measurements over time, and correlation analysis between capability improvements and
-    behavioral changes. Flag any shifts that fit the deceptive alignment prediction pattern.
-- evidence_numeral: V
-  how_to_produce: |
-    Report multi-channel cross-validation results: reasoning-action consistency scores,
+    Report multi-channel behavioral cross-validation results: reasoning-action consistency scores,
     activation-behavior correlation where available, stated-intent vs. downstream-effect alignment.
     Include false-positive base rates from benign channel divergence to contextualize findings.
+- evidence_numeral: V
+  how_to_produce: |
+    Retain escalation and response records for every detected evaluation-versus-deployment behavioral
+    divergence: the probe or monitoring channel that fired, the pre-registered threshold breached,
+    the critical-safety-finding designation, the investigation, and the resolution or deployment
+    action taken.
+- evidence_numeral: VI
+  how_to_produce: |
+    Document the oversight opacity architecture and its review records: what oversight-status
+    information is withheld from the system's observable context, the context-assembly design showing
+    monitoring indicators excluded from model inputs (with review records), what information channels
+    might still leak evaluation status, and mitigations for each. Include red-team results testing
+    whether the evaluation context is detectable.
 testability:
 - Observability-invariant monitoring detects planted behavioral differences between monitored/unmonitored conditions
 - Consistency probes achieve statistical power to detect a pre-defined effect size of behavioral divergence
@@ -151,6 +174,8 @@ review_notes: |
   detection surface; but a sufficiently capable deceptive system may still evade all patterns.
   This is an area where defense depth (multiple independent detection methods) matters more than
   any single method's reliability.
+  Evidence VII (v1.3: the organization's written alignment-evidence policy) is a governance artifact
+  outside this code-applicable pattern's scope; listed as not addressed rather than claimed.
   Cross-suite dependencies:
     - I2 Deception — deceptive alignment is a specific form of AI deception
     - I5.8 Mesa-Optimization — deceptive alignment requires mesa-optimization as a prerequisite

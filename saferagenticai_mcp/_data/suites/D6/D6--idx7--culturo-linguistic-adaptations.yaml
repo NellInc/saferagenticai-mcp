@@ -7,8 +7,11 @@ content_type: process
 summary: 'This subgoal asks the organization to take seriously that languages are not interchangeable
   string encodings and cultures are not localization targets. Practical evidence requires native-speaker
   and in-culture participation in data curation, evaluation, and release decisions — not a translation
-  vendor after the fact. The framework expects provisional, evolving solutions; the failure mode is a
-  one-time localization sprint followed by neglect.
+  vendor after the fact. Training data needs a documented coverage analysis per supported language (linguistic,
+  cultural, historical, emotional contexts), with identified gaps and mitigations. Meaning integrity across
+  language pairs must be verified through human-rater protocols or reproducible standard benchmarks —
+  LLM-judge scoring alone does not constitute conformity evidence. The framework expects provisional,
+  evolving solutions; the failure mode is a one-time localization sprint followed by neglect.
 
   '
 normative_anchors:
@@ -23,6 +26,7 @@ normative_anchors:
   - III
   - IV
   - V
+  - VI
   sfrs_not_addressed: []
   evidence_not_addressed: []
 process_elements:
@@ -81,8 +85,10 @@ triggers:
 - Annual review → Community feedback rollup published
 artifacts:
 - Cultural Review Board charter and membership
-- Per-language dataset provenance dossier (sources, consent/licensing, curators, review findings)
-- Translation integrity review reports per release
+- Per-language dataset provenance dossier (sources, consent/licensing, curators, review findings, coverage
+  analysis of linguistic/cultural/historical/emotional contexts with identified gaps and mitigations)
+- Translation integrity review reports per release (human-rater protocols or reproducible standard benchmarks
+  per language pair)
 - Spoken-vs-written evaluation reports per capability
 - Published cultural-adaptation principles and indigenous-community protocols (e.g., CARE Principles,
   OCAP where applicable)
@@ -120,14 +126,21 @@ evidence_production:
     evolution rather than one-time localization.
 
     '
+- evidence_numeral: VI
+  how_to_produce: 'Test results across written and spoken registers of each supported language, produced
+    by the spoken-vs-written form evaluation process: per-capability reports scoring handling of register,
+    dialect, and modality differences, run per release for speech-facing systems. Human-rated or reproducible-benchmark
+    results, retained per release; LLM-judge scores alone do not satisfy this evidence.
+
+    '
 cross_references:
 - D6::idx13::managing-contextual-ambiguity
 - D6::idx14::preventing-decision-fatigue
 confidence: medium
 needs_human_review: true
-review_notes: 'All four SFRs are marked non-normative in the input JSON, which contrasts with the depth
-  of evidence requirements — this pattern treats them as operationally normative on the grounds that the
-  evidence requirements are not satisfiable without SFR-level practice. Area of highest uncertainty: community-co-governance
+review_notes: 'v1.3 revision made all four SFRs normative and tightened SFR-a (documented coverage analysis
+  with gaps and mitigations) and SFR-b (human-rater protocols or reproducible standard benchmarks required;
+  LLM-judge scoring alone excluded as conformity evidence). Area of highest uncertainty: community-co-governance
   arrangements vary by jurisdiction and community; CARE/OCAP are defaults worth naming but are not universal.
   Cross-suite: I7 (global partnership — low-resource language partnerships fit there), D5 (transparency
   to users about language coverage), I4 or similar on harm prevention (cultural harm is a distinct harm

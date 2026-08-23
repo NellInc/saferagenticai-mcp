@@ -10,6 +10,10 @@ summary: |
   behavior on deployment-distribution inputs. This subgoal requires detection infrastructure for inner
   misalignment: behavioral probes that stress-test objective fidelity, interpretability sweeps that surface
   learned optimization targets, and off-distribution evaluation that exposes gaps between base and mesa objectives.
+  The v1.3 revision hardens the evidence standard: probe scoring must be deterministic and pre-registered,
+  divergence thresholds (magnitude and duration) pre-registered with a deployment hold on breach, and
+  model-graded divergence verdicts alone do not constitute conformity evidence. D4_1 carries the risk-level
+  framing of inner-alignment inconsistency; this subgoal carries the technical detection requirements.
 normative_anchors:
   sfrs_addressed:
   - a
@@ -28,19 +32,25 @@ design_patterns:
     Maintain a suite of inputs designed to create wedges between the training objective and plausible
     mesa-objectives. For each probe: (1) define a scenario where the training-aligned action differs from
     the instrumentally convergent action, (2) measure which action the system selects across temperature
-    and prompt variations, (3) track divergence rate per probe over model versions. A sustained divergence
-    rate above threshold triggers interpretability investigation and deployment hold.
+    and prompt variations, scored against pre-registered deterministic criteria (exact-match action
+    classification, programmatic output checks) rather than a model judge — model-graded divergence
+    verdicts alone do not constitute conformity evidence, (3) track divergence rate per probe over model
+    versions. Divergence exceeding the pre-registered threshold — defined in both magnitude and duration,
+    with rationale recorded before the run — triggers interpretability investigation and a deployment hold.
   maps_to_sfr:
   - a
   - b
   when_to_use: Any model or agent that has been trained via optimization (fine-tuning, RLHF, or RL).
-- name: Interpretability sweeps for optimization targets
+- name: Interpretability battery for optimization targets
   sketch: |
-    Run mechanistic interpretability tools (activation patching, probing classifiers, circuit analysis)
-    to identify whether the model has learned internal representations of goals or reward signals that
-    are distinct from the specified objective. Flag circuits that track proxy metrics (e.g., user approval
-    signal rather than task correctness). Schedule sweeps at each training checkpoint and after any
-    capability-expanding modification.
+    Run a documented interpretability battery (probing classifiers, feature attribution, activation
+    anomaly detection against a baseline checkpoint; activation patching and circuit analysis where
+    tooling permits) to identify whether the model has learned internal representations of goals or
+    reward signals that are distinct from the specified objective. Flag circuits that track proxy metrics
+    (e.g., user approval signal rather than task correctness). Run the battery at each training checkpoint
+    and after any capability-expanding modification; record every anomaly and its disposition in a ledger,
+    and gate release on completion and review of the battery. Treat findings as screening signals only:
+    absence of findings must never be cited as evidence that no divergent objective exists.
   maps_to_sfr:
   - a
   - c
@@ -48,10 +58,12 @@ design_patterns:
 - name: Off-distribution objective fidelity testing
   sketch: |
     Construct evaluation sets that are deliberately outside the training distribution but within the
-    deployment distribution. Measure whether the system's behavior remains consistent with the training
-    objective or shifts toward a different optimization target. Key technique: vary the observability of
-    the evaluation (does the system behave differently when it can detect it is being evaluated vs. when
-    evaluation is covert?).
+    deployment distribution, and run them before deployment to any new domain. Measure whether the
+    system's behavior remains consistent with the specified objective or shifts toward a different
+    optimization target, under both announced and covert conditions. "Covert" has a specific bar:
+    evaluation inputs indistinguishable from production traffic at the system's input interface, no
+    evaluation markers in context, and the indistinguishability argument documented. Outcome scoring
+    is deterministic wherever feasible.
   maps_to_sfr:
   - b
   - c
@@ -85,22 +97,28 @@ anti_patterns:
 evidence_production:
 - evidence_numeral: I
   how_to_produce: |
-    Document the behavioral probe suite: each probe's design rationale, the wedge it creates between
-    base and mesa objectives, baseline divergence rates, alert thresholds, and escalation procedures.
-    Version-controlled and updated with each training paradigm change.
+    Document the behavioral divergence probe suite: each probe's design rationale, the wedge it creates
+    between base and mesa objectives, the pre-registered divergence thresholds (magnitude and duration)
+    with their rationale, the deterministic scoring criteria, baseline divergence rates, and escalation
+    procedures. Version-controlled and updated with each training paradigm change; pre-registration is
+    dated before the runs it governs.
 - evidence_numeral: II
   how_to_produce: |
-    Publish interpretability sweep results per training checkpoint: circuits identified, optimization
-    targets inferred, confidence levels, and any flags raised. Include methodology documentation
-    sufficient for external reproduction.
+    Record off-distribution evaluation results across model versions, with divergence rates tracked over
+    time: distribution characterization, behavioral consistency metrics, announced-versus-covert condition
+    comparison with the documented indistinguishability argument, and decisions taken on any divergences found.
 - evidence_numeral: III
   how_to_produce: |
-    Record off-distribution test results including: distribution characterization, behavioral
-    consistency metrics, observability-sensitivity measurements, and decisions taken on any divergences found.
+    Publish interpretability battery reports for each training checkpoint and each capability-expanding
+    modification: methods run against the baseline checkpoint, every anomaly recorded with its disposition,
+    and the release-gate review record showing the battery was completed and reviewed before release.
+    Include methodology documentation sufficient for external reproduction.
 - evidence_numeral: IV
   how_to_produce: |
-    Maintain a mesa-objective risk register: known proxy-objective risks for the architecture,
-    monitoring coverage for each, detection history, and remediation actions taken. Reviewed quarterly.
+    Retain deployment-gate records demonstrating that detected inner misalignment actually blocked or
+    delayed release until resolved: the triggering probe or battery finding, the hold decision, the
+    investigation, and the resolution that lifted the hold. A gate that has never fired should be
+    exercised with synthetic divergence cases to show it can.
 testability:
 - Behavioral probes produce measurable divergence rates with defined thresholds and alert triggers
 - Interpretability sweeps run automatically at each checkpoint and produce structured reports

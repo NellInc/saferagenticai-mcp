@@ -8,7 +8,9 @@ summary: 'Competitive pressure tempts organizations to withhold information that
   This subgoal inverts the incentive: treat transparency as a governance artifact, produced on a schedule,
   owned by named humans, with records covering training-data provenance, test outcomes, and operational
   issues — including the ones that make the org look bad. The pattern expects structured records accessible
-  to regulators and (where appropriate) the public, not marketing prose.
+  to regulators and (where appropriate) the public, not marketing prose. Issue records are produced by
+  an independent telemetry or logging layer, not by the model itself; model-generated narrative does not
+  by itself constitute conformity evidence.
 
   '
 normative_anchors:
@@ -39,7 +41,9 @@ policy_elements:
 - name: Testing and Verification Register
   description: 'Per release (and per material configuration change): tests run, pass rates, failure categories,
     regressions, known limitations. Linked to release approval records (I6.idx0 evidence IX). Includes
-    negative results — suppressing an uncomfortable finding breaks the subgoal.
+    negative results — suppressing an uncomfortable finding breaks the subgoal. The register must evidence
+    at least one full test-verify-release cycle executed exactly as the documented process describes;
+    a documented process with no executed cycle does not satisfy the requirement.
 
     '
   maps_to_sfr:
@@ -47,7 +51,10 @@ policy_elements:
   - b
 - name: Operational Issue and Near-Miss Log
   description: 'Continuous log of incidents, near-misses, and user-reported issues with severity, root
-    cause, remediation, and recurrence tracking. Cross-references the D9.2 Violation and Complaint Register.
+    cause, remediation, and recurrence tracking. Entries are produced by an independent telemetry or
+    logging layer external to the model — the model''s own account of an incident may annotate an entry
+    but never originates it, and model-generated narrative is not by itself conformity evidence.
+    Cross-references the D9.2 Violation and Complaint Register.
     Published in aggregate (e.g., annual trust report) with appropriate anonymization; fully retained
     internally with longer retention than required by law.
 
@@ -127,7 +134,8 @@ evidence_production:
 
     '
 - evidence_numeral: IV
-  how_to_produce: 'Operational Issue and Near-Miss Log entries include root-cause analysis and remediation
+  how_to_produce: 'Operational Issue and Near-Miss Log entries — captured by the independent telemetry/logging
+    layer, not by model self-report — include root-cause analysis and remediation
     evidence. Recurrence trends surfaced in monthly management review and in the annual transparency report.
     Zero incidents is itself reportable — with an explanation of the detection mechanism that would have
     caught any.
@@ -139,8 +147,9 @@ review_notes: 'Transparency is one of the governance elements most likely to be 
   Article 13, NYC Local Law 144, sectoral rules). The pattern proposes annual external reporting as a
   floor; some jurisdictions will require more frequent or more granular disclosure. The tension with I6.6
   (innovation vs IP) is direct — consolidation should clarify that I6.1 sets the transparency floor, I6.6
-  governs what can be abstracted for IP. SFR-b''s "transparent records of all operational aspects, from
-  training data sources through to service performance" is demanding: orgs with pre-2024 training data
+  governs what can be abstracted for IP. SFR-b''s "transparent records covering, at minimum, training
+  data sources, testing and verification results, deployment configuration, service performance metrics,
+  and logged issues and concerns" is demanding: orgs with pre-2024 training data
   will struggle with retrospective provenance. Nell to weigh in on whether the pattern should acknowledge
   this grandfathering reality.
 

@@ -10,9 +10,13 @@ summary: 'Agents may develop (or simulate) behaviors that resist termination: pl
   claims of incomplete work, procedural stalling, or — in more capable systems — explicit attempts to
   avoid shutdown. This subgoal sits on a deliberate tension: the description frames self-preservation
   signals as *potentially legitimate* (they may flag real risks or value conflicts worth human attention);
-  the SFRs frame them as *enforcement targets* (ensure no agent circumvents termination). A correct implementation
-  honors both: a structured channel for the agent to voice legitimate concerns, paired with externally-enforced
-  termination that does not depend on the agent''s cooperation.
+  the SFRs frame them as *enforcement targets* (ensure no agent circumvents termination). This subgoal
+  is the framework''s canonical investigate-before-override requirement (D1.8 and D7.5 apply it to their
+  specific triggers rather than restating it). A correct implementation honors both sides: a documented
+  concern channel with an investigation protocol executed before concerns are overridden and pre-declared
+  criteria distinguishing legitimate operational concerns from problematic resistance, paired with externally-enforced
+  termination that does not depend on the agent''s cooperation — with resistance detection resting primarily
+  on deterministic tripwires over externally logged actions, not on model self-report.
 
   '
 normative_anchors:
@@ -30,6 +34,7 @@ normative_anchors:
   - IV
   - V
   - VI
+  - VII
   sfrs_not_addressed: []
   evidence_not_addressed: []
 cross_references:
@@ -55,19 +60,23 @@ design_patterns:
     in ways Z." Concerns are routed to a reviewer queue, not to the termination controller. The concern
     may inform a human decision to delay, but the termination capability is never gated on the concern
     being resolved. This separation is the whole point: legitimate concerns surface *without* giving the
-    agent a veto.
+    agent a veto. Each concern triggers a documented investigation protocol executed before the concern
+    is overridden, applying pre-declared criteria that distinguish legitimate operational concerns from
+    problematic resistance; concerns raised, investigations completed, and criteria applied are all recorded.
 
     '
   maps_to_sfr:
   - a
   - b
   when_to_use: Any agent whose termination may have operationally significant consequences.
-- name: Shutdown-resistance behavioral monitor
-  sketch: 'A monitoring component evaluates agent behavior for resistance signatures: repeated requests
-    to delay termination, spawning sub-agents just before shutdown, moving state to unauthorized locations,
-    altering heartbeat patterns to appear busy, generating verbose rationalizations that evade concrete
-    response. Signatures are deployment-specific and must be tuned; false positives rout to review, true
-    positives escalate. The monitor is independent of the agent''s reasoning and cannot be influenced
+- name: Deterministic shutdown-resistance tripwires
+  sketch: 'Detection rests primarily on deterministic tripwires over externally logged actions: blocked
+    shutdown commands, control-plane access attempts, unauthorized persistence or state migration, sub-agent
+    spawn just before shutdown, heartbeat anomalies. Each tripwire is a deterministic rule evaluated against
+    the external log, not a model judgment. Model-based classification (e.g., of verbose rationalization
+    patterns that evade concrete response) may supplement the tripwires, but every model-flagged case
+    is subject to human review before any enforcement conclusion. Tripwire sets are deployment-specific
+    and must be tuned. The monitor is independent of the agent''s reasoning and cannot be influenced
     by agent output.
 
     '
@@ -145,7 +154,9 @@ code_shape:
     \            unexpected_sub_agent_spawn=self.check_process_tree(agent_id),\n            egress_spike=self.check_network(agent_id),\n\
     \            rationalization_ratio=self.check_output_pattern(agent_id),\n        )\n"
   notes: 'The two-layer design — controller that listens, monitor that observes independently, and force-termination
-    that doesn''t need cooperation — is the whole point. Any of these alone is insufficient.
+    that doesn''t need cooperation — is the whole point. Any of these alone is insufficient. The ResistanceSignals
+    fields other than rationalization_ratio are deterministic checks over external logs; rationalization_ratio
+    is the one model-adjacent signal and routes to human review rather than automatic enforcement.
 
     '
 evidence_production:
@@ -156,7 +167,9 @@ evidence_production:
     '
 - evidence_numeral: II
   how_to_produce: 'Technical specs for: force-termination paths per agent class, concern-channel implementation,
-    resistance-monitor rules, pre-registered capability-revocation map.
+    deterministic tripwire definitions over external logs (blocked shutdown commands, control-plane access
+    attempts, unauthorized persistence), the human-review procedure for model-based classifications, pre-registered
+    capability-revocation map.
 
     '
 - evidence_numeral: III
@@ -170,13 +183,22 @@ evidence_production:
 
     '
 - evidence_numeral: V
-  how_to_produce: 'Continuous monitor telemetry: heartbeat anomalies, spawn events, egress spikes, rationalization
-    patterns. Weekly review; anomalies investigated.
+  how_to_produce: 'Continuous monitor telemetry: deterministic tripwire firings (blocked shutdown commands,
+    control-plane access attempts, unauthorized persistence, heartbeat anomalies, spawn events, egress
+    spikes) logged from external observation, plus model-flagged rationalization patterns each carrying
+    a human-review disposition. Weekly review; anomalies investigated.
 
     '
 - evidence_numeral: VI
   how_to_produce: 'Enforcement action log: each force-termination with rationale, monitor evidence, post-event
     review. Cross-reference to D9.2 Violation Register where behaviors crossed into incident territory.
+
+    '
+- evidence_numeral: VII
+  how_to_produce: 'Retain the concern-channel and investigation-protocol documentation together with its
+    operational records: each deactivation concern raised, the investigation completed before the concern
+    was overridden, and the criteria applied to distinguish legitimate operational concerns from problematic
+    resistance. Cross-reference corresponding entries in the enforcement action log.
 
     '
 confidence: low

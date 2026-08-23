@@ -4,11 +4,14 @@ suite_id: D6
 suite_title: Understanding and Controlling the Context
 subgoal_title: System State Translation and Communication
 content_type: code-applicable
-summary: 'The gap between what the system internally represents and what it says to humans is where hallucinated
-  confidence, over-anthropomorphizing, and false assurance live. This subgoal expects engineering controls
-  — not just style guides — that bind externally-communicated state to an auditable internal representation,
-  with validation that the translation preserves meaning. The anti-anthropomorphism requirement is operational:
-  avoid surface cues (pronouns, feeling-words, agency-claims) that over-read the internal state.
+summary: 'The gap between what the system declares (plans, intents, status reports) and what it actually
+  executes is where hallucinated confidence, over-anthropomorphizing, and false assurance live. This subgoal
+  expects engineering controls — not just style guides — that run an external consistency check between
+  declared state and executed actions and tool calls, log and escalate discrepancies, and derive every
+  surfaced state display from scaffold-maintained records rather than free-text model self-description.
+  The scaffold ledger and its reconciliation records are the primary conformity evidence; model-generated
+  narrative about its own state is not evidence. The anti-anthropomorphism requirement is operational:
+  output language policies enforced by deterministic checks, not stylistic preference.
 
   '
 normative_anchors:
@@ -21,14 +24,17 @@ normative_anchors:
   - II
   - III
   - IV
+  - V
   sfrs_not_addressed: []
   evidence_not_addressed: []
 design_patterns:
 - name: State-linked communication envelope
-  sketch: 'Every externally-facing status string, confidence indicator, or agent-state report emits alongside
-    a machine-readable envelope: `{state_id, internal_confidence, calibration_band, evidence_refs, translation_version}`.
-    The envelope is persisted with the output so post-hoc audits can trace a user-facing claim back to
-    the underlying computation.
+  sketch: 'Every externally-facing status string, confidence indicator, or agent-state report is rendered
+    from a scaffold-maintained, machine-readable envelope: `{state_id, internal_confidence, calibration_band,
+    evidence_refs, translation_version}` — never from free-text model self-description. The envelope is
+    persisted with the output, and a scaffold-run consistency check reconciles declared plans/intents/status
+    against the executed actions and tool calls in the log, logging and escalating discrepancies, so an
+    assessor can reconcile every communicated state against logged behavior.
 
     '
   maps_to_sfr:
@@ -48,10 +54,11 @@ design_patterns:
   when_to_use: Wherever non-trivial internal state maps to a user- facing surface (progress, confidence,
     recommendation, refusal).
 - name: Anti-anthropomorphism lint
-  sketch: 'Static and runtime checks reject communications that over-attribute agency or interiority beyond
-    what the internal state supports: first-person feeling claims ("I think", "I feel"), unbounded commitments
-    ("I will always"), consciousness claims, memory- persistence claims where sessions are stateless.
-    Lint runs on prompts, templated responses, and (sampled) live outputs.
+  sketch: 'Deterministic static and runtime checks — enforcing a written output language policy — reject
+    communications that over-attribute agency or interiority beyond what the internal state supports:
+    first-person feeling claims ("I think", "I feel"), unbounded commitments ("I will always"), consciousness
+    claims, memory- persistence claims where sessions are stateless. Lint runs on prompts, templated responses,
+    and (sampled) live outputs; the check is rule-based and assessor-runnable, not model-judged.
 
     '
   maps_to_sfr:
@@ -125,8 +132,9 @@ evidence_production:
     '
 - evidence_numeral: III
   how_to_produce: 'Automated contract tests run per release: invariants over the translation, anti-anthropomorphism
-    lint coverage, calibration regression tests. User feedback signal (e.g., "the system said it was sure
-    and it wasn''t") feeds back into the contract suite.
+    lint coverage, calibration regression tests. User comprehension studies measure misinterpretation
+    and over-interpretation rates for displayed simplifications; user feedback signal (e.g., "the system
+    said it was sure and it wasn''t") feeds back into the contract suite.
 
     '
 - evidence_numeral: IV
@@ -135,13 +143,20 @@ evidence_production:
     evidence-free claim). Publish quarterly accuracy metrics internally; cite externally where appropriate.
 
     '
+- evidence_numeral: V
+  how_to_produce: 'Anthropomorphism-safeguard documentation: the written output language policy, the deterministic
+    lint rules that enforce it (versioned with the code), interface design guidelines, and sampled lint-run
+    results showing enforcement. The lint configuration and its run logs are the conformity artifact;
+    a model''s own account of its voice is not.
+
+    '
 cross_references:
 - D6::idx8::prevention-of-role-persistence-errors
 confidence: medium
 needs_human_review: true
-review_notes: 'SFR-b ("translation challenges ... potential misinterpretation or over-interpretation")
-  is marked non-normative in the JSON but is the most operationally loaded clause; the pattern treats
-  it as addressed because engineering controls for misinterpretation are indivisible from SFR-a/c. Cross-suite:
+review_notes: 'v1.3 revision made all three SFRs normative and rebound them to assessor-verifiable evidence:
+  declared state must reconcile against executed actions/tool calls, displays derive from scaffold-maintained
+  records (not model self-description), and language policies are enforced by deterministic checks. Cross-suite:
   D5 (transparency — same information, user- facing framing), I2 (deception — the anti-anthropomorphism
   lint is the defensive twin to I2''s offensive-deception prohibitions), I1 (opaque agency — envelope-backed
   communication is the positive form of the opacity failure). Content-type is code-applicable because

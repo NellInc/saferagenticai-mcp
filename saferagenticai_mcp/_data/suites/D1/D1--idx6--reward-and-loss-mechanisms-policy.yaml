@@ -11,7 +11,11 @@ summary: >
   and loss structure to be a documented, governed, auditable artifact —
   signed off by named stakeholders, re-validated on a defined cadence,
   and stress-tested in multi-agent settings for collusion and reward-
-  hacking. Coded as governance rather than code-applicable because the
+  hacking. The v1.3 text scopes these duties to systems that actually
+  employ reward, penalty, or preference-optimization mechanisms (in
+  training or operation); where none exists, documenting the behavioral
+  steering mechanisms actually used satisfies SFR-a. Coded as
+  governance rather than code-applicable because the
   binding requirements (auditability by authorized stakeholders,
   change-managed modifications with sign-off) are policy-level; code
   patterns for reward-hacking detection sit inside under
@@ -21,7 +25,7 @@ normative_anchors:
   sfrs_addressed: [a, b, c]
   evidence_addressed: [I, II, III]
   sfrs_not_addressed: []
-  evidence_not_addressed: []
+  evidence_not_addressed: [IV]
 
 cross_references:
   - "D1::idx3::goal-interpretability"
@@ -37,6 +41,11 @@ policy_elements:
       the goal or safety constraint it maps to, and known risks of
       exploitation. Versioned; every change is change-managed. No
       signal is "hidden" — if it shapes behavior, it is in the document.
+      Where the system employs no reward, penalty, or preference-
+      optimization mechanism, the document instead enumerates the
+      behavioral steering mechanisms actually used (system prompts,
+      fine-tuning objectives, filters), which the v1.3 text accepts as
+      satisfying SFR-a.
     maps_to_sfr: [a]
 
   - name: Reward Sign-off Register
@@ -185,6 +194,15 @@ anti_patterns:
       A single-agent benchmark suite does not address this and leaves
       evidence III unsupported.
 
+  - name: '"No reward mechanism" claimed while behavior is shaped'
+    why_wrong: >
+      The v1.3 applicability carve-out requires documenting the
+      behavioral steering mechanisms actually used. Declaring the
+      subgoal inapplicable while system prompts, fine-tuning
+      objectives, or filters steer behavior leaves those signals
+      undocumented and unaudited — the hidden-signal failure under a
+      new name.
+
   - name: Re-validation as a calendar ritual
     why_wrong: >
       Annual re-validation that rubber-stamps the existing policy is
@@ -220,8 +238,15 @@ evidence_production:
 confidence: high
 needs_human_review: true
 review_notes: >
-  Content-type shifted from code-applicable to governance per advisor
-  guidance. SFR-b ("auditable by authorized stakeholders") and evidence
+  Updated for v1.3: SFRs are now conditioned on the system actually
+  employing reward/penalty/preference-optimization mechanisms, with a
+  documented-steering-mechanisms fallback for SFR-a. New evidence IV
+  (records that reward/penalty mechanisms and known conflicts were
+  communicated to relevant stakeholders) is listed as not addressed —
+  this pattern's artifacts cover documentation and sign-off, not
+  stakeholder communication records; D1.3's disclosure slice is the
+  nearer home. Content-type shifted from code-applicable to governance
+  per advisor guidance. SFR-b ("auditable by authorized stakeholders") and evidence
   II ("Change Management Logs... stakeholder sign-off") pull toward
   governance; the code-shaped pieces (reward-trace logging, gaming
   monitors, adversarial simulation) sit under `implementation_controls`

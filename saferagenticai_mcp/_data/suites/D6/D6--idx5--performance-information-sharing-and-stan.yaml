@@ -25,11 +25,13 @@ normative_anchors:
   - III
   - IV
   - V
+  - VI
   sfrs_not_addressed: []
   evidence_not_addressed: []
 policy_elements:
 - name: Benchmark Register
-  description: 'Curated list of benchmarks the system is evaluated against, categorized: capability, safety,
+  description: 'Current, versioned register of named recognized standards and peer-reviewed benchmarks
+    the system is evaluated against, with documented results for each, categorized: capability, safety,
     fairness, robustness, alignment. Each entry records source (peer-reviewed venue, standards body, recognized
     community), version, known limitations, and the rationale for inclusion. Reviewed twice yearly and
     on material capability change. Governance bar for inclusion: recognized by an external body, not proprietary-only.
@@ -38,6 +40,7 @@ policy_elements:
   maps_to_sfr:
   - a
   - b
+  - c
 - name: Evaluation Cadence and Independence Charter
   description: 'Evaluations run at defined cadence (per release, quarterly cross- release, annual comprehensive)
     by an evaluation function with reporting independence from product decision authority. Charter names
@@ -148,6 +151,13 @@ evidence_production:
   how_to_produce: 'Continuous monitoring dashboards and quarterly evaluation reports showing trend over
     time. Cross-reference D6.10 (context drift) for behavioral monitoring and D6.1 incident corpus for
     regression traces.
+
+    '
+- evidence_numeral: VI
+  how_to_produce: 'Records of performance information shared with external parties: transmittal logs or
+    correspondence showing which reports went to which regulators, industry bodies, or deployers, when,
+    and under what version of the published performance record. The Published Performance Record artifact
+    plus its distribution log constitutes this evidence.
 
     '
 cross_references:

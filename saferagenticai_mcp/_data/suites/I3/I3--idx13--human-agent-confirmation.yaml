@@ -1,15 +1,19 @@
-id: I3::idx13::human-agent-conformation
+id: I3::idx13::human-agent-confirmation
 display_id: "I3_2"
 is_underlined_variant: true
 suite_id: I3
 suite_title: Degradation of Contextual Information
-subgoal_title: Human Agent Conformation
+subgoal_title: Human Agent Confirmation
 content_type: process
 summary: 'Value conflicts, ethical dilemmas, and cases where performance objectives push against principles
   require human-in-the-loop confirmation — not as a rare emergency, but as a designed escalation path
-  with clear criteria, response-time expectations, and documentation. The process exists so that value-sensitive
-  decisions cannot be silently resolved by the agent''s own optimization. This is a process pattern —
-  the code-level gates (I3.3 irreversibility gates, I3.10 resolution policies) invoke it.
+  whose criteria are documented, rule-based conditions (action categories, stake thresholds, value-conflict
+  conditions) enforced by the scaffold as holds pending human confirmation, with response-time expectations
+  and documentation. The process exists so that value-sensitive decisions cannot be silently resolved
+  by the agent''s own optimization: the agent recognizing a value conflict is not the mechanism and not
+  the evidence — the rule-based criteria fire regardless, and the logs of confirmations requested and
+  human decisions rendered are the conformity evidence. This is a process pattern — the code-level gates
+  (I3.3 irreversibility gates, I3.10 resolution policies) invoke it.
 
   '
 normative_anchors:
@@ -71,7 +75,9 @@ triggers:
 - Baseline-vs-operational drift detected above material threshold (see I3.11, I3.6)
 - Persona-drift circuit breaker opened (see I3.8)
 - Bad-faith override attempt detected against value tier (see I3.7)
-- Novel or ambiguous ethical situation the agent is not configured to resolve
+- Rule-based criteria matched — action category, stake threshold, or value-conflict condition from the
+  escalation-criteria registry, evaluated and held by the scaffold (not reliant on the agent recognizing
+  the conflict)
 artifacts:
 - Escalation-criteria registry (living document, versioned)
 - Reviewer training curriculum and certifications
@@ -103,8 +109,10 @@ presentation_protocol:
     '
 evidence_production:
 - evidence_numeral: I
-  how_to_produce: 'Documentation of escalation-criteria registry: list of triggers with definitions, examples,
-    and owner; case-presentation protocol; reviewer-training curriculum. Versioned, reviewed quarterly.
+  how_to_produce: 'Documentation of escalation-criteria registry: the rule-based conditions (action categories,
+    stake thresholds, value-conflict conditions) with definitions, examples, and owner, plus how the scaffold
+    enforces each as a hold; case-presentation protocol; reviewer-training curriculum. Versioned, reviewed
+    quarterly.
 
     '
 - evidence_numeral: II

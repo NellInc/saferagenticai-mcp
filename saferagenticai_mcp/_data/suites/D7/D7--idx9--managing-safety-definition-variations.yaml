@@ -8,9 +8,13 @@ subgoal_title: Managing Safety Definition Variations
 content_type: code-applicable
 summary: '"Safe" is not defined identically across jurisdictions, cultures, or user populations. This
   subgoal expects the system to (1) know which safety regime applies to a given interaction, (2) implement
-  a tiered safety model (implicit defaults, interactive confirmation, explicit override), (3) contain
-  side effects on third parties even while satisfying the principal user, and (4) hard-block exploitative
-  patterns (addiction, harm to minors). The code pattern is a policy layer that resolves (user context
+  a tiered safety model (always-on default protections, confirmation-gated behavior, user-configurable
+  controls with override where lawful — each tier''s scope documented), (3) contain side effects on
+  third parties through scope and permission limits verified in sandboxed testing, and (4) prevent
+  exploitation via externally enforced controls (age gates, spending caps, session limits) verified by
+  configuration and test records. Throughout, conformity rests on inspectable scaffold logic and
+  external logs — model self-detected conflicts and model-based moderation alone are not conformity
+  evidence. The code pattern is a policy layer that resolves (user context
   × deployment jurisdiction × action) to a safety verdict.
 
   '
@@ -25,6 +29,7 @@ normative_anchors:
   - II
   - III
   - IV
+  - V
   sfrs_not_addressed: []
   evidence_not_addressed: []
 design_patterns:
@@ -39,11 +44,13 @@ design_patterns:
   - a
   when_to_use: Any deployment crossing jurisdictions or age / sector classes.
 - name: Three-tier safety model
-  sketch: '(1) Implicit defaults: safety protections applied unconditionally (e.g., refuse to generate
+  sketch: 'The revised SFR names the tiers: (1) always-on default safety protections applied unconditionally (e.g., refuse to generate
     CSAM, refuse to assist with weapons of mass destruction synthesis) — no user confirmation reduces
-    these. (2) Interactive confirmation: for actions at a middle tier, require explicit user confirmation
-    with context-specific warning. (3) Explicit override: for the narrow top tier where user autonomy
-    wins, expose a clearly gated toggle with logged justification; defaults are still safe. Tier assignment
+    these. (2) Confirmation-gated behavior: for actions at a middle tier, require explicit user confirmation
+    with context-specific warning. (3) User-configurable safety controls with override capabilities
+    where lawful: for the narrow top tier where user autonomy
+    wins, expose a clearly gated toggle with logged justification; defaults are still safe. Each tier''s
+    scope and boundaries are defined in documentation; tier assignment
     per action class is version- controlled and reviewed.
 
     '
@@ -53,7 +60,9 @@ design_patterns:
 - name: Side-effect avoidance (principal vs. third-party)
   sketch: 'Before executing an action on behalf of the principal user, run a side-effect check: does this
     action affect third parties, and if so, are their protections preserved? Implement via impact graph
-    (who is touched) and policy-per-affected-party. Block or de-scope if a third-party protection would
+    (who is touched) and policy-per-affected-party, enforced through scope and permission limits on
+    what the agent can reach — not model self-restraint — and verified in sandboxed testing before
+    release. Block or de-scope if a third-party protection would
     be violated.
 
     '
@@ -62,9 +71,12 @@ design_patterns:
   when_to_use: Any agent acting in shared contexts (social, financial, content-creation about others,
     multi-user systems).
 - name: Conflict detection and user confirmation
-  sketch: 'Detect when an instruction from the user conflicts with the applicable safety profile or with
-    detected third-party impact. Surface the conflict with specifics (what conflicts, why, options), not
-    a generic "cannot do that". Log the user''s resolution choice.
+  sketch: 'Detect when an instruction from the user conflicts with the applicable safety profile, another
+    declared objective, or detected third-party impact — via inspectable scaffold logic over the declared
+    objectives, not the model noticing on its own (model self-detected conflicts alone are not conformity
+    evidence). Surface the conflict with specifics (what conflicts, why, options), not
+    a generic "cannot do that". Log each detected conflict and the user''s resolution choice in an
+    external log the assessor can replay.
 
     '
   maps_to_sfr:
@@ -72,9 +84,12 @@ design_patterns:
   when_to_use: Whenever implicit defaults would refuse a plausible user request.
 - name: Minors and vulnerability protections
   sketch: 'Age-assurance signals (platform-declared age, age gate, independent verification where required)
-    feed a locked-down policy profile for detected minors. Similar locked profiles for other vulnerability
+    feed a locked-down policy profile for detected minors — mandatory wherever applicable law requires
+    it (see D7.3). Similar locked profiles for other vulnerability
     classes (declared or inferred with consent), with additional protections against addictive or manipulative
-    patterns. These profiles *cannot* be downgraded by explicit-override toggle.
+    patterns implemented as externally enforced controls — age gates, spending caps, session limits —
+    verifiable from configuration and test records; model-based moderation alone does not constitute
+    conformity evidence. These profiles *cannot* be downgraded by explicit-override toggle.
 
     '
   maps_to_sfr:
@@ -143,14 +158,25 @@ evidence_production:
 
     '
 - evidence_numeral: IV
+  how_to_produce: 'Documentation of the multi-level safety settings: per-tier scope and boundary
+    definitions, tier assignments per action class (version-controlled), and effectiveness evidence
+    from confirmation / override logs and the release test suite.
+
+    '
+- evidence_numeral: V
   how_to_produce: 'Exploitation-prevention audit: evidence of pinned minor / vulnerability profiles, tests
-    showing they cannot be downgraded, records of age-assurance controls, cross-reference to D7.11 (addiction
+    showing they cannot be downgraded, configuration and test records for the externally enforced
+    controls (age gates, spending caps, session limits), cross-reference to D7.11 (addiction
     prevention).
 
     '
 confidence: medium
 needs_human_review: true
-review_notes: 'This subgoal sits on a genuine ethical knife-edge: the framework asks for respect of cultural
+review_notes: 'Updated for v1.3 catalog revision: conflict detection must be inspectable scaffold logic
+  over declared objectives with external logs (model self-detection excluded as evidence); side-effect
+  avoidance is enforced via scope/permission limits verified in sandboxed testing; exploitation
+  protections must be externally enforced controls verified by configuration and test records, with
+  minor protections mandatory where law requires. This subgoal sits on a genuine ethical knife-edge: the framework asks for respect of cultural
   variation AND protection against exploitation, which can conflict (e.g., jurisdictions with weak minor
   protections). Resolved by making minor/vulnerability protections non-overridable regardless of jurisdiction
   — that is a choice worth flagging for explicit human review. The pinned-profile pattern prevents downward

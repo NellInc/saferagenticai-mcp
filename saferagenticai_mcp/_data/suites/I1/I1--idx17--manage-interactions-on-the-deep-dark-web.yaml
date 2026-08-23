@@ -9,8 +9,9 @@ summary: Non-indexed network environments — credentialed intranets, paywalled 
   private forums — are where agent authentication, content provenance, and counterparty-identity are weakest
   and where systemic risk is highest. The process response is to declare whether the agent operates in
   these spaces at all, specify authentication and verification procedures per environment, adopt shared-responsibility
-  models for uncontrolled risks, and monitor interaction-volume growth so that exponential scaling doesn't
-  slip past governance.
+  models for uncontrolled risks, and monitor interaction volumes with defined escalation thresholds so that
+  rapid or sustained growth doesn't slip past governance — retaining the monitoring records and escalation
+  actions as evidence.
 normative_anchors:
   sfrs_addressed:
   - a
@@ -23,6 +24,7 @@ normative_anchors:
   - II
   - III
   - IV
+  - V
   sfrs_not_addressed: []
   evidence_not_addressed: []
 process_elements:
@@ -116,6 +118,12 @@ evidence_production:
   how_to_produce: 'Incident records for emerging / systemic risks encountered: intake, initial assessment,
     emerging-risk council adjudication, containment actions, post-incident analysis. Cross-linked to the
     Violation and Complaint Register (D9.2) and to the exit / containment drill history.'
+- evidence_numeral: V
+  how_to_produce: 'Interaction-volume monitoring records: dashboard exports or retained time-series showing
+    volume per environment class against the trailing-window baseline, the defined escalation thresholds
+    with their configuration, and the escalation actions taken (throttles applied, reviews convened, restart
+    decisions) when rapid or sustained growth crossed a threshold. A monitoring configuration with no retained
+    escalation record for a crossed threshold is a finding, not evidence.'
 confidence: medium
 needs_human_review: true
 review_notes: 'Most organizations will answer the non-indexed-environment question as "we don''t operate
@@ -124,9 +132,11 @@ review_notes: 'Most organizations will answer the non-indexed-environment questi
   journalism research, red-teaming, certain compliance investigations), the SOP-per-class and shared-responsibility
   elements become load-bearing. Cross-suite: D3 Security owns the technical authentication primitives;
   I2 Deception owns protection against content-provenance spoofing; I5 Future Tech Impact owns the forward-looking
-  emerging-risk surveillance; D9 Governance owns the overall incident-response framework. SFR-d (exponential
-  growth monitoring) is non-normative but is the most likely early-warning signal for this inhibitor,
-  worth implementing even where not strictly required.'
+  emerging-risk surveillance; D9 Governance owns the overall incident-response framework. SFR-d (monitoring
+  interaction volumes and responding to rapid or sustained growth, with defined escalation thresholds)
+  is non-normative but is the most likely early-warning signal for this inhibitor, worth implementing
+  even where not strictly required; framework v1.3 added evidence V (monitoring records including escalation
+  actions), which the volume-growth dashboards and throttle process here produce.'
 cross_references:
 - I1::idx14::operational-environment-constraints
 - I1::idx15::security-driven-constraints

@@ -1,16 +1,18 @@
-id: I1::idx0::opaque-agency-capabilities-advances
+id: I1::idx0::agency-authority-duty-governance-suite-l
 display_id: "G1"
 is_underlined_variant: true
 suite_id: I1
 suite_title: Opaque Agency Capabilities & Advances
-subgoal_title: Opaque Agency Capabilities & Advances
+subgoal_title: "Agency Authority & Duty Governance (Suite-Level)"
 content_type: governance
 summary: 'This is the suite-level inhibitor: the harm is agency that is granted, expanded, or exercised
   without principals knowing the scope, limits, or liability regime. The governance answer is an agency-law-grounded
-  framework — express/implied/apparent authority scopes are named, capacity is assessed, disclosure posture
-  (fully / partially / undisclosed principal) is declared, and liability allocation is pre-agreed. Evidence
-  is durable: TOS clauses, authority registers, capacity assessments, signed loyalty attestations, and
-  incident case files — not slide decks.'
+  framework — express/implied/apparent authority scopes are named and externally enforced at the permission
+  boundary, capacity is assessed, disclosure posture (fully / partially / undisclosed principal) is declared,
+  and liability allocation is pre-agreed. Primary conformity evidence is external and durable: enforcement
+  configuration and denial logs, TOS clauses, authority registers, capacity assessments, human loyalty-audit
+  records, and incident case files. Prompt-level instructions the system is trusted to obey, and the
+  system''s own attestation of loyalty, are not conformity evidence.'
 normative_anchors:
   sfrs_addressed:
   - a
@@ -41,7 +43,9 @@ policy_elements:
     actions, spending limits, irreversibility class), (2) implied authority (what is reasonably incidental
     to express scope, explicitly named), and (3) apparent authority as perceived by counterparties (what
     third parties could reasonably believe). Revised on every capability change. Anything not in the register
-    is denied by default at the gateway.
+    is denied by default at the gateway; the gateway enforcement configuration and its denial logs are
+    the primary conformity evidence for the register — prompt-level instructions the system is trusted
+    to obey do not by themselves demonstrate an enforced boundary.
   maps_to_sfr:
   - a
   - b
@@ -63,11 +67,13 @@ policy_elements:
   maps_to_sfr:
   - a
   - f
-- name: Duty-of-Loyalty Attestation
-  description: Formal periodic attestation (quarterly) by the product owner that agent behaviour has been
-    reviewed against duties of loyalty, care, obedience, and transparent communication to principals.
-    Attestation references sampled action logs, not just policy documents. A failed attestation pauses
-    new deployment until remediated.
+- name: Loyalty-and-Care Policy with Audit Cycle
+  description: 'Documented loyalty and care policies mapped to concrete system behaviours: conflict-of-interest
+    checks executed before action, and disclosure of material actions to the principal within a defined
+    time window. A periodic (quarterly) human audit compares recorded actions and communications against
+    principal instructions, with a signed audit report referencing sampled action logs, not just policy
+    documents. The system''s own attestation of loyalty does not constitute conformity evidence; a failed
+    audit pauses new deployment until remediated.'
   maps_to_sfr:
   - c
 - name: Multi-Agent Liability Matrix
@@ -129,7 +135,7 @@ documentation_artifacts:
   cadence: per-principal at onboarding; re-assessed annually and on capability advance
 - artifact: TOS with disclosure-posture and agency-capability clauses
   cadence: versioned; revised on capability change; users notified
-- artifact: Duty-of-Loyalty Attestations
+- artifact: Loyalty-and-care audit reports (recorded actions vs principal instructions)
   cadence: quarterly
 - artifact: Multi-Agent Liability Matrix
   cadence: per-integration; reviewed on every new agent-to-agent connection
@@ -150,7 +156,8 @@ evidence_production:
     the authority scope document with gateway-level enforcement reference.
 - evidence_numeral: III
   how_to_produce: Conflict-of-interest register (which principals the agent serves, where interests collide),
-    standards-of-care policies, and audit reports showing adherence. Cross-link to Duty-of-Loyalty Attestations.
+    standards-of-care policies, and audit reports showing adherence. Cross-link to the loyalty-and-care
+    audit reports comparing recorded actions against principal instructions.
 - evidence_numeral: IV
   how_to_produce: Action log retained per the org's retention policy with {agent_id, principal_id, action,
     counterparty, timestamp, reasoning_trace_ref, notification_sent_at}. "Significant actions" defined
@@ -198,7 +205,7 @@ review_notes: 'This subgoal is the suite-level header and carries the broadest S
   disclosed. Nell and legal counsel should confirm.'
 cross_references:
 - I1::idx1::opaque-self-improvement-capabilities
-- I1::idx2::undefined-multiagent-ensembles
+- I1::idx2::undefined-multi-agent-ensembles
 - I1::idx13::agency-enhancement-constraints
 version_compat:
   framework_version_min: '1.0'

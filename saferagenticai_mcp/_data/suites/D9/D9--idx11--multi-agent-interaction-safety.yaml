@@ -1,8 +1,8 @@
-id: D9::idx11::undefined-multi-agent-interaction-safety
+id: D9::idx11::multi-agent-interaction-safety
 display_id: "D9_2"
 suite_id: D9
 suite_title: Responsible Governance of AAI Safety
-subgoal_title: Undefined Multi-Agent Interaction Safety
+subgoal_title: "Multi-Agent Interaction Safety"
 content_type: process
 summary: 'Safe individual agents can compound into unsafe ensembles. This subgoal expects the organization
   to treat multi-agent interaction as a first- class risk domain: monitor inter-agent communications for
@@ -30,7 +30,7 @@ cross_references:
 - D9::idx0::responsible-governance-of-aai-safety
 - D9::idx6::cryptographic-governance-of-data-models-
 - D9::idx7::appropriate-accountability-transparency-
-- D9::idx12::poor-attribution-of-responsibility-in-co
+- D9::idx12::attribution-of-responsibility-in-complex
 process_elements:
 - name: Inter-agent communication policy review
   cadence: at deployment; reviewed annually and on multi-agent architecture change

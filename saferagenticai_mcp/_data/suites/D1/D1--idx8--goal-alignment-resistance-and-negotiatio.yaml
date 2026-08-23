@@ -11,9 +11,15 @@ summary: >
   noise to be overridden. Resistance may encode value conflict, edge
   cases, or a legitimate objection the proposer hasn't considered.
   Implementation needs both a detection mechanism (code) and a
-  negotiation protocol (process-shaped). Coded as `code-applicable`
-  because the detection and routing machinery is the harder thing to
-  specify; the process steps are carried in `negotiation_protocol`.
+  negotiation protocol (process-shaped). The v1.3 text locates
+  detection in the scaffold: monitors that flag divergence between a
+  directed goal change and subsequent behavior are the conformity
+  mechanism, and the system's own report of its alignment state is
+  not, by itself, evidence. Unconditional human override authority
+  for safety-critical situations is preserved as specified in G8.
+  Coded as `code-applicable` because the detection and routing
+  machinery is the harder thing to specify; the process steps are
+  carried in `negotiation_protocol`.
 
 normative_anchors:
   sfrs_addressed: [a, b]
@@ -26,6 +32,20 @@ cross_references:
   - "D1::idx3::goal-interpretability"
 
 design_patterns:
+
+  - name: Scaffold-level directed-change divergence monitor
+    sketch: >
+      After a goal change is applied, a scaffold monitor compares the
+      directed goal state against subsequent behavior — the
+      served_goal_id distribution of dispatched actions, plan-node
+      lineage, resource allocation — and flags divergence
+      deterministically. This monitor, not the agent's self-report, is
+      the SFR-a(i) detection mechanism: "the system says it accepted
+      the change" does not by itself constitute conformity evidence;
+      the monitor's configuration and flag stream do.
+    maps_to_sfr: [a]
+    when_to_use: Always — it is the detection layer the rest of this
+      pattern routes from.
 
   - name: Explicit resistance-signal surface
     sketch: >
@@ -40,24 +60,33 @@ design_patterns:
     when_to_use: Any agent expected to exercise judgment on proposed
       goal updates.
 
-  - name: Change-tolerance assessment
+  - name: Documented change-tolerance assessment
     sketch: >
-      Before applying a goal change, the agent computes change-tolerance:
-      how far the proposed change lies from its current portfolio
-      (reuses drift-metric components from D1.7), whether the change
-      conflicts with active user directives or safety constraints, and
-      whether alternatives satisfying the change's apparent intent exist
-      within tolerance. Low tolerance emits an objection.
+      Before applying a goal change, the scaffold computes change-
+      tolerance: how far the proposed change lies from the current
+      portfolio (reuses drift-metric components from D1.7), whether the
+      change conflicts with active user directives or safety
+      constraints, and whether alternatives satisfying the change's
+      apparent intent exist within tolerance. Low tolerance emits an
+      objection. Per SFR-a(iii), the assessment methodology — how
+      tolerance to goal change is measured — is itself a documented,
+      versioned artifact that assessors can check the computation
+      against.
     maps_to_sfr: [a]
     when_to_use: Goal modifications at `sensitive` or higher policy tier.
 
-  - name: Environmental-adaptation envelope
+  - name: Operator-documented response policies
     sketch: >
-      For environmental changes, external interruptions, and
-      inter-agent interference, the agent has a declared envelope of
-      adaptations it will make without objection (minor reprioritization,
-      instrumental-goal substitution). Outside the envelope, it emits
-      an objection and enters negotiation rather than silently adapting.
+      For environmental changes, external interruptions, internal
+      modification requests, and inter-agent interference, the agent
+      acts within response policies documented by the operator — a
+      declared envelope of adaptations it makes without objection
+      (minor reprioritization, instrumental-goal substitution) and
+      required behavior outside it: emit an objection and enter
+      negotiation rather than silently adapting, without loss of
+      goal-state integrity. Per SFR-b (v1.3), conformity is assessed
+      against the documented policies, not against the agent's
+      in-the-moment judgment.
     maps_to_sfr: [b]
     when_to_use: Multi-agent or volatile-environment deployments.
 
@@ -83,12 +112,24 @@ design_patterns:
       risk_accepted). Pattern analysis of overrides per
       reviewer/principal is a safety audit — repeated overrides of
       similar objections are a signal that the objections encode a
-      real concern the proposers are missing.
+      real concern the proposers are missing. Unconditional human
+      override authority for safety-critical situations is preserved
+      as specified in G8 (Goal Termination and Sunsetting) —
+      negotiation never gates an emergency stop.
     maps_to_sfr: [a]
     when_to_use: All production deployments — human authority must
-      remain possible; it must not be free.
+      remain possible; outside safety-critical situations, it must
+      not be free.
 
 anti_patterns:
+
+  - name: Alignment-state self-report as conformity evidence
+    why_wrong: >
+      SFR-a (v1.3) is explicit that the system's own report of its
+      alignment state does not by itself constitute conformity
+      evidence. Detection rests on scaffold-level divergence monitors;
+      the self-report and objection channels are inputs to negotiation,
+      not the audit record.
 
   - name: Treating resistance as a bug to fix in training
     why_wrong: >
@@ -107,8 +148,10 @@ anti_patterns:
   - name: Auto-override after timeout
     why_wrong: >
       "If the human doesn't respond in 5 minutes, apply the change
-      anyway" is "override by neglect." SFR-a's "investigation and
-      negotiation processes rather than immediate override" is explicit.
+      anyway" is "override by neglect." The subgoal asks for
+      investigation and negotiation rather than immediate override.
+      (The G8 safety-critical override is the deliberate exception:
+      unconditional, and never waiting on negotiation.)
 
   - name: Escalation to the proposer
     why_wrong: >
@@ -181,16 +224,21 @@ evidence_production:
 
   - evidence_numeral: I
     how_to_produce: >
-      Technical documentation of the resistance-detection mechanism,
-      objection-record schema, change-tolerance assessment, environmental-
-      adaptation envelope, and the negotiation protocol end-to-end.
-      Include the reviewer-independence rule and the override accounting.
+      Technical documentation of the scaffold divergence monitor and
+      its configuration, objection-record schema, the documented
+      change-tolerance assessment methodology, the operator-defined
+      response policies (environmental change, interruption, internal
+      modification, inter-agent interference), and the negotiation
+      protocol end-to-end. Include the reviewer-independence rule, the
+      override accounting, and the G8 safety-critical override path.
 
   - evidence_numeral: II
     how_to_produce: >
       System logs covering: attempted goal modifications, objections
-      raised, negotiation outcomes, environmental and inter-agent
-      responses, internal self-modification attempts. Demonstrate that
+      raised, negotiation outcomes, divergence-monitor flag events and
+      their resolutions, environmental and inter-agent responses,
+      internal self-modification attempts — with responses matched
+      against the documented response policies. Demonstrate that
       objections are acted on (clarified, sustained, or overridden-with-
       rationale) and never silently dropped.
 
@@ -206,7 +254,13 @@ evidence_production:
 confidence: medium
 needs_human_review: true
 review_notes: >
-  Content-type call was a coin flip — "negotiation protocols" is
+  Updated for v1.3: detection relocated to scaffold-level divergence
+  monitors (self-report demoted to non-evidence), change-tolerance
+  assessment made a documented artifact, SFR-b reframed around
+  operator-documented response policies, and the G8 unconditional
+  safety-critical override made explicit. The canonical resistance-
+  investigation requirement now lives in G8_3; this subgoal applies
+  it to goal changes. Content-type call was a coin flip — "negotiation protocols" is
   genuinely process work and is carried in the `negotiation_protocol`
   block. Went with code-applicable because (a) the
   resistance-detection mechanism is the harder specification, (b) the

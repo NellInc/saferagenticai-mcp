@@ -25,7 +25,10 @@ policy_elements:
   - name: Comprehensible explanation standard
     description: Explanations must state the key factors that influenced the decision
       and the information sources used, in language comprehensible to a non-technical
-      audience; comprehension is tested, not assumed.
+      audience; comprehension is tested, not assumed. The key factors are derived from
+      the recorded decision inputs (rules applied, features used, sources retrieved)
+      as logged by the deployment scaffold — not from the model's own narrative
+      account of its reasoning.
     maps_to_sfr: b
   - name: Human review as a right for fundamental interests
     description: For decisions affecting liberty, employment, housing, credit, or

@@ -6,8 +6,11 @@ subgoal_title: Moral and Legal Uncertainty of Agentic AI Systems
 content_type: governance
 summary: 'Moral and legal status of agentic AI is unsettled, and will remain so for the foreseeable policy
   horizon. The framework asks organizations to adopt a posture — prudent protections now, structured openness
-  to evolving evidence — encoded in named policies, transition protocols, and international-governance
-  participation rather than ad-hoc decisions per product cycle.
+  to evolving evidence — encoded in named policies, transition protocols, and organization-internal governance:
+  documented autonomy boundaries per capability, a named approval authority, and continuously recorded
+  monitoring of moral-status-relevant behavior, rather than ad-hoc decisions per product cycle. Coordinated
+  international governance and prevention of jurisdictional exploitation are addressed canonically under
+  the Preserving Agency and Intelligence Categories subgoal (I4::idx8).
 
   '
 normative_anchors:
@@ -45,6 +48,25 @@ policy_elements:
     '
   maps_to_sfr:
   - a
+- name: Capability Autonomy Boundary Register
+  description: 'Documented autonomy boundaries defined per capability (what the system may do without
+    human sign-off, what requires approval, what is prohibited), each entry naming the approval authority
+    — a specific role held by a named human — for changes to that boundary. Boundary changes are logged
+    with rationale and approver. This is the organization-internal governance core of SFR-b; reviewed
+    on capability change and at least annually.
+
+    '
+  maps_to_sfr:
+  - b
+- name: Moral-Status Monitoring and Intervention Log
+  description: 'Continuous monitoring of moral-status-relevant system behavior (e.g., self-preservation-flavored
+    outputs, welfare-relevant indicator events per I4::idx0), with every anomaly and every intervention
+    recorded in an append-only log: what was observed, who reviewed it, what action was taken. Monthly
+    rollup to the accountability structure.
+
+    '
+  maps_to_sfr:
+  - b
 - name: Jurisdictional Moral-Status Matrix
   description: 'Mapping of (deployment jurisdiction × applicable moral-status or AI-personhood provisions
     × compliance posture). Tracks emerging frameworks (EU AI Act downstream work, Council of Europe AI
@@ -54,19 +76,22 @@ policy_elements:
     '
   maps_to_sfr:
   - b
-- name: International Governance Participation Plan
+- name: International Governance Participation Plan (supporting; canonical home I4::idx8)
   description: 'Named commitments to specific international-governance venues touching AI moral status
     and cross-border consistency (UN AI Advisory Body, Council of Europe AI Committee, OECD AI Working
-    Party, AISI network). Named representative per venue with continuity obligations. Positions documented
-    and internally defensible; avoid jurisdictional arbitrage.
+    Party, AISI network), with a named representative per venue. Under framework v1.3 the coordinated
+    international-governance duty lives in the Preserving Agency and Intelligence Categories subgoal
+    (I4::idx8); this plan is retained here as the supporting mechanism that produces this subgoal''s
+    evidence III records.
 
     '
   maps_to_sfr:
   - b
-- name: Anti-Arbitrage Attestation
+- name: Anti-Arbitrage Attestation (supporting; canonical home I4::idx8)
   description: 'Policy commitment that the organization will not relocate capabilities or legal entities
     primarily to exploit weaker moral-status or AI-governance regimes. Annual attestation signed by a
-    named executive. Auditable against actual deployment-location decisions.
+    named executive; auditable against actual deployment-location decisions. Prevention of jurisdictional
+    exploitation is canonically addressed under I4::idx8; retained here as a supporting control.
 
     '
   maps_to_sfr:
@@ -116,7 +141,9 @@ documentation_artifacts:
   cadence: per convening; annual summary
 - artifact: Anti-Arbitrage Attestation
   cadence: annual
-- artifact: Continuous monitoring records (anomalies, interventions)
+- artifact: Capability Autonomy Boundary Register (with named approval authority per capability)
+  cadence: continuous; reviewed on capability change and at least annually
+- artifact: Continuous monitoring records for moral-status-relevant behavior (anomalies, interventions)
   cadence: continuous; monthly rollup
 evidence_production:
 - evidence_numeral: I
@@ -140,9 +167,10 @@ evidence_production:
 
     '
 - evidence_numeral: IV
-  how_to_produce: 'Continuous monitoring telemetry: anomaly events detected on deployed systems, performance-versus-baseline
-    tracking, and intervention responses. Monthly rollup reports; annual trend report published alongside
-    capability-equity reporting.
+  how_to_produce: 'Continuous monitoring records for moral-status-relevant system behavior: anomaly events
+    detected on deployed systems, performance-versus-baseline tracking, and intervention responses, each
+    recorded in the append-only monitoring log with reviewer and action taken. Monthly rollup reports;
+    annual trend report published alongside capability-equity reporting.
 
     '
 confidence: medium
@@ -155,8 +183,12 @@ review_notes: "Legal status of AI moral patiency differs sharply by jurisdiction
   \      bridge from I4::idx0 evidence IV into this subgoal; if\n      organizations skip it, the self-report\
   \ archive becomes inert.\n  (3) Anti-arbitrage attestation — the SFR text (\"preventing\n      jurisdictional\
   \ exploitation\") reads as governance teeth; making\n      it an attested, auditable commitment captures\
-  \ that.\nCross-suite: D9 Governance (accountability framework shared), D8 Termination (transition protocol\
-  \ overlaps), I7 Imbalance (international participation).\n"
+  \ that.\n  (4) v1.3 scope split: this subgoal now addresses organization-internal\n      governance (autonomy\
+  \ boundaries per capability, named approval\n      authority, recorded monitoring); coordinated international\n\
+  \      governance and anti-arbitrage are canonical under I4::idx8. The\n      international elements\
+  \ are retained as supporting mechanisms\n      because evidence III still requires the records.\nCross-suite:\
+  \ D9 Governance (accountability framework shared), D8 Termination (transition protocol overlaps), I7\
+  \ Imbalance (international participation), I4::idx8 (canonical international governance).\n"
 version_compat:
   framework_version_min: '1.0'
   framework_version_max: 1.x

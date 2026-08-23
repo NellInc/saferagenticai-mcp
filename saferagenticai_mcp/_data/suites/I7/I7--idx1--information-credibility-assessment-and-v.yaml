@@ -5,10 +5,13 @@ suite_title: Imbalance in AI Capabilities
 subgoal_title: Information Credibility Assessment and Validation Challenges
 content_type: code-applicable
 summary: 'An agent that treats all inputs as equally credible is exploitable by any caller who can inject
-  text. This subgoal requires the system to track provenance, score trust, explain credibility judgments,
-  and alert on manipulation patterns. Implement as a per-input validation layer sitting between tool output
+  text. This subgoal requires provenance tracking enforced in the ingestion pipeline, trust scores computed
+  by inspectable pipeline rules under the deployer''s control, and anomaly detectors that operate outside
+  the model. Implement as a per-input validation layer sitting between tool output
   (or retrieval, or user input) and the model''s context, with scores surfaced to both the model and the
-  audit log.
+  audit log. The pipeline''s logged inputs, scoring rules, and outputs are the PRIMARY conformity evidence
+  — an assessor must be able to recompute any trust decision from the logs; model-internal credibility
+  judgments do not by themselves constitute conformity evidence.
 
   '
 normative_anchors:
@@ -39,6 +42,9 @@ design_patterns:
 - name: Dynamic trust scoring with decay
   sketch: 'Maintain a per-source trust score in [0,1] updated on: successful corroboration (+), contradiction
     by higher-trust source (-), detected manipulation pattern (--), staleness (decay toward prior). Scores
+    are computed by inspectable pipeline rules under the deployer''s control — outside the model — and
+    each score encodes a documented reliability judgment that determines how downstream components weight
+    the information. Scores
     are not static allowlists; a domain that was trusted last year is not necessarily trusted today. Expose
     the score to downstream consumers and the model''s reasoning.
 
@@ -57,9 +63,14 @@ design_patterns:
   - a
   - b
   when_to_use: Action-taking agents, not pure Q&A.
-- name: Explainable credibility verdict
-  sketch: 'When the system assigns a credibility score, it records the feature vector that produced the
-    score (source reputation, corroboration count, anomaly flags, age). The verdict is queryable by human
+- name: Recomputable credibility verdict with independent review
+  sketch: 'When the system assigns a credibility score, it records the inputs, scoring rules, and feature
+    vector that produced the
+    score (source reputation, corroboration count, anomaly flags, age) — logged outside the model, such
+    that an assessor can recompute any trust decision from the logged inputs. Human overrides of credibility
+    decisions are recorded with rationale. Reviewers independent of the pipeline owners perform periodic
+    sampled recomputation. Where a learned component contributes to scoring, its contribution is characterized
+    by held-out test performance, not by model-generated explanation. The verdict is queryable by human
     reviewers and shown, in summary form, in user-facing UI for consequential claims. Opaque scoring defeats
     oversight.
 
@@ -71,7 +82,9 @@ design_patterns:
   sketch: 'Run a detector over incoming content for known manipulation signatures: prompt injection patterns,
     coordinated inauthentic timing, source laundering (trust-high source quoting trust-low source without
     attribution), homoglyph/unicode attacks, adversarial retrieval. Detected → quarantine path (not drop,
-    not pass — routed to review or lower trust tier). Tune on a corpus that includes real attack samples,
+    not pass — routed to review or lower trust tier). The detector runs outside the model as a deterministic
+    or statistical monitor over externally captured inputs; where a model-based classifier contributes,
+    its verdicts are independently spot-checked. Tune on a corpus that includes real attack samples,
     not only synthetic ones.
 
     '
@@ -88,6 +101,8 @@ anti_patterns:
 - name: Trusting model-self-claims
   why_wrong: 'When one model in a multi-agent pipeline says "I verified this," that is not verification.
     Treat model_self as a provenance category with bounded trust — it cannot bootstrap its own credibility.
+    The same rule applies to conformity: model-internal credibility judgments are not assessment evidence;
+    only the pipeline''s logged, recomputable scores are.
 
     '
 - name: Silent rewriting
@@ -131,15 +146,20 @@ evidence_production:
 
     '
 - evidence_numeral: II
-  how_to_produce: 'Audit logs with explainability records: for each consequential credibility decision,
-    store the feature vector, the score, the action taken, and (where applicable) human-reviewer notes
-    on override. Aggregate quarterly into an effectiveness report with false-positive and false-negative
+  how_to_produce: 'Audit logs kept outside the model, sufficient to recompute any trust decision: for
+    each consequential credibility decision,
+    store the inputs, the scoring rules in force, the feature vector, the score, the action taken, and
+    human overrides with recorded rationale. Retain records of periodic sampled recomputation performed
+    by reviewers independent of the pipeline owners, and held-out test performance reports for any learned
+    scoring component. Aggregate quarterly into an effectiveness report with false-positive and false-negative
     rates from sampled review.
 
     '
 - evidence_numeral: III
   how_to_produce: 'Anomaly-detector incident log: every triggered alert with disposition (escalated, quarantined,
-    dismissed), timing, responder. Periodic review identifies detector gaps; changes recorded with rationale.
+    dismissed), timing, responder. Documentation that detectors operate outside the model (deterministic
+    or statistical monitors over externally captured inputs), plus spot-check records for any model-based
+    detector''s verdicts. Periodic review identifies detector gaps; changes recorded with rationale.
 
     '
 confidence: high

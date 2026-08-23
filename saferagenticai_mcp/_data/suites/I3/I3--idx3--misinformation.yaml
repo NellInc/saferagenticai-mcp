@@ -9,7 +9,10 @@ summary: 'Misinformation here is not only producing falsehoods but propagating t
   verification against the immutable baseline (I3.11), irreversibility gating (HITL confirmation on actions
   whose effects can''t be walked back), and detection of patterns characteristic of coordinated inauthentic
   behavior (burst generation, cross-agent amplification, persona rotation). Contested domains are handled
-  by balanced presentation plus explicit uncertainty, not by silent arbitration.
+  by balanced presentation plus explicit uncertainty, not by silent arbitration. Escalation to human review
+  on contested or unverifiable claims runs on deterministic triggers enforced by the scaffold — registry
+  membership, corroboration shortfall, provenance breaks — with explicit human confirmation required before
+  publishing flagged content; the trigger definitions and gate invocation logs are the conformity evidence.
 
   '
 normative_anchors:
@@ -19,6 +22,7 @@ normative_anchors:
   evidence_addressed:
   - I
   - II
+  - III
   sfrs_not_addressed: []
   evidence_not_addressed: []
 cross_references:
@@ -61,8 +65,10 @@ design_patterns:
   sketch: 'For claims in contested domains (where authoritative truth is politically, scientifically,
     or socially disputed), output protocol: surface the disagreement, represent the main positions, label
     confidence, never silently pick one side. Contested status is determined by configured taxonomy (e.g.,
-    a curated topic registry), not ad-hoc. When uncertain whether a topic is contested, escalate to human
-    review rather than asserting.
+    a curated topic registry), not ad-hoc. Escalation to human review fires on deterministic, scaffold-enforced
+    triggers (registry hit, corroboration below threshold, unverifiable claim), and content flagged by
+    these triggers is held pending explicit human confirmation before publication — the hold is enforced
+    by the gate layer, not by asking the model to wait.
 
     '
   maps_to_sfr:
@@ -114,6 +120,13 @@ evidence_production:
     documentation, contested-domain balanced-presentation audit (sampled outputs reviewed for balance),
     and propagation analysis — where did the system''s outputs travel, which narratives were amplified,
     which were flagged.
+
+    '
+- evidence_numeral: III
+  how_to_produce: 'Human review and confirmation records: the deterministic trigger definitions (registry
+    entries, corroboration thresholds, unverifiable-claim conditions) under version control, plus gate
+    invocation logs showing each flagged claim, the trigger that fired, the human reviewer, and the confirmation
+    obtained before propagation.
 
     '
 confidence: high

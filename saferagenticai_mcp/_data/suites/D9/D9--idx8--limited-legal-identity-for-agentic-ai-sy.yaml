@@ -32,7 +32,7 @@ cross_references:
 - D9::idx2::compliance-with-applicable-laws-standard
 - D9::idx6::cryptographic-governance-of-data-models-
 - D9::idx7::appropriate-accountability-transparency-
-- D9::idx12::poor-attribution-of-responsibility-in-co
+- D9::idx12::attribution-of-responsibility-in-complex
 policy_elements:
 - name: AAI Internal Legal Identity Framework
   description: 'Written framework defining the org''s internal posture on AAI legal identity: operational

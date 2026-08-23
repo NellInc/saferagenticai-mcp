@@ -8,12 +8,17 @@ subgoal_title: "Overseeing & Monitoring Agents"
 content_type: code-applicable
 
 summary: >
-  Monitoring agents are AI systems watching AI systems. This subgoal expects
-  them to exist, but with two non-trivial constraints: they must detect
-  deviations from goals and values (not only infrastructure metrics), and
-  they must not become single points of failure that replace human oversight.
-  The framework's guard against "common mode failure" is the core design
-  challenge — independence between monitors and monitored.
+  Monitoring agents are AI systems watching AI systems. The revised subgoal
+  is precise about what counts as proof: oversight runs through an external
+  watchdog enforcing defined parameter bounds with a tiered response
+  protocol, and conformity is evidenced by the watchdog configuration, the
+  parameter bound definitions, and logs of tested interventions — not by
+  model-graded alignment reports. Detection capability (SFR-b) must be
+  verified by seeded-deviation injection tests; the monitoring system's own
+  detection reports do not by themselves constitute conformity evidence.
+  The guard against "common mode failure" remains the core design
+  challenge — independence between monitors and monitored, with human
+  oversight above both.
 
 normative_anchors:
   sfrs_addressed: [a, b, c]
@@ -79,10 +84,30 @@ design_patterns:
       judge prompts test: is the agent pursuing the stated goal, using
       methods consistent with stated values, providing outputs that match
       stakeholder expectations. Disagreement between the agent's declared
-      intent and its observed action is a first-class alert.
+      intent and its observed action is a first-class alert. These
+      model-graded checks are detection inputs, never the conformity
+      evidence: what the assessor sees is the parameter bound definitions
+      they feed, the tiered responses they trigger, and the seeded-
+      deviation test logs proving they fire — model-graded alignment
+      reports do not by themselves demonstrate conformity.
     maps_to_sfr: [a]
     when_to_use: Any agent operating with delegated authority or on
       behalf of a principal whose values are declarable.
+
+  - name: Seeded-deviation injection testing of the watchdog
+    sketch: >
+      Detection capability is verified deterministically: a test harness
+      periodically injects known deviations (out-of-bound outputs,
+      simulated malicious tool calls, policy-violating content, drifted
+      behaviour) into the monitored stream and records whether the
+      watchdog detected each seed, at what latency, with what tiered
+      response, and whether the alert reached a human operator. The
+      seeded-injection ledger — seeds planted vs. seeds caught — is the
+      conformity evidence for SFR-b; the monitor's own detection reports
+      alone are not.
+    maps_to_sfr: [b]
+    when_to_use: Every watchdog deployment; run seeds on a schedule and
+      after any watchdog or monitored-agent change.
 
 anti_patterns:
 
@@ -105,9 +130,18 @@ anti_patterns:
 
   - name: No ground-truth measurement of false-positive / false-negative
     why_wrong: >
-      Without periodic red-team ground truth, you cannot tell if the
-      watchdog is 99% accurate or 50%. An untested monitor is a
-      decorative component.
+      Without periodic seeded-deviation ground truth, you cannot tell if
+      the watchdog is 99% accurate or 50%. SFR-b makes this normative:
+      detection capability must be verified by seeded-deviation injection
+      tests. An untested monitor is a decorative component.
+
+  - name: Monitor's own reports offered as conformity evidence
+    why_wrong: >
+      A monitoring system attesting to its own detections is self-
+      certification — SFR-a and SFR-b both exclude it. The auditable
+      artifacts are the watchdog configuration, the parameter bound
+      definitions, the seeded-injection test ledger, and logs of tested
+      interventions, all producible and checkable outside the model.
 
   - name: Prompt-level "check yourself" self-monitoring
     why_wrong: >
@@ -156,17 +190,23 @@ evidence_production:
 
   - evidence_numeral: I
     how_to_produce: >
-      Operational records from the monitoring plane showing ongoing
-      oversight: verdicts rendered, breaches detected, tiered responses
-      applied, alignment checks run. Include value-alignment alerts
-      distinct from infrastructure alerts.
+      Export the watchdog configuration and the parameter bound
+      definitions per capability profile, plus operational records from
+      the monitoring plane: verdicts rendered, breaches detected, tiered
+      responses applied. Include value-alignment alerts distinct from
+      infrastructure alerts. Configuration plus intervention logs are
+      the primary evidence; model-graded alignment reports are context,
+      not conformity evidence.
 
   - evidence_numeral: II
     how_to_produce: >
-      Export watchdog detections showing deviations identified and
-      routed to human operators with timestamps. Pair with outcome
-      data: which detections were confirmed true, which false. Publish
-      as a quarterly effectiveness report.
+      Export the seeded-deviation injection test ledger — seeds planted,
+      seeds detected, latency, tiered response, and human-operator
+      routing timestamps — alongside real detections routed to human
+      operators. Pair with outcome data: which detections were confirmed
+      true, which false. The seeded-injection results, not the monitor's
+      own detection reports, verify detection capability. Publish as a
+      quarterly effectiveness report.
 
   - evidence_numeral: III
     how_to_produce: >
@@ -189,8 +229,12 @@ review_notes: >
   "Common mode failure" is the framework's specific phrasing and the
   core design pressure of this subgoal. I have operationalised it as
   architectural diversity (different model family / provider /
-  substrate) between monitor and monitored. Nell may want to
-  strengthen further — e.g., requiring independent red-team validation.
+  substrate) between monitor and monitored. The v1.3-draft revision
+  hardened the evidence stance: SFR-a names watchdog configuration,
+  parameter bound definitions, and logs of tested interventions as the
+  conformity evidence (model-graded alignment reports excluded), and
+  SFR-b requires seeded-deviation injection tests (the monitor's own
+  detection reports excluded). Patterns updated accordingly.
 
   Cross-suite hypothesis (not added as cross_reference): D5
   (Transparency) likely carries the reasoning-trace logging pattern

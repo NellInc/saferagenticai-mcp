@@ -1,15 +1,17 @@
-id: D9::idx12::poor-attribution-of-responsibility-in-co
+id: D9::idx12::attribution-of-responsibility-in-complex
 display_id: "D9_3"
 suite_id: D9
 suite_title: Responsible Governance of AAI Safety
-subgoal_title: Poor Attribution of Responsibility in Complex Systems
+subgoal_title: Attribution of Responsibility in Complex Systems
 content_type: code-applicable
 summary: 'Attribution failure is a policy failure masquerading as a technical limit: without unique identifiers
-  for each agent, durable linkage to the principal on whose behalf each agent acts, and tamper-evident
+  exposed for each agent, durable linkage to the principal on whose behalf each agent acts, and tamper-evident
   tracing, "no one is to blame" becomes the default. This subgoal expects concrete identity-and-tracing
-  machinery similar to business registration — every AAI instance registered, every action traceable to
-  a principal, every attribution claim backed by cryptographic proofs. The technical controls are the
-  attribution policy.
+  machinery: unique agent identifiers exposed to counterparties so every action is attributable to a registered
+  AAI instance (the underlying identifier registry itself is covered in full by G9.5a), durable agent-to-principal
+  records, tracing that deters harmful use, and defined protocols for hard-to-attribute and resource-constrained
+  cases. Every attribution claim is backed by cryptographic proofs; the technical controls are the attribution
+  policy.
 
   '
 normative_anchors:
@@ -31,14 +33,15 @@ cross_references:
 - D9::idx6::cryptographic-governance-of-data-models-
 - D9::idx7::appropriate-accountability-transparency-
 - D9::idx8::limited-legal-identity-for-agentic-ai-sy
-- D9::idx11::undefined-multi-agent-interaction-safety
+- D9::idx11::multi-agent-interaction-safety
 design_patterns:
-- name: AAI Agent Registry
-  sketch: 'Authoritative registry of every deployed AAI agent instance, analogous to business registration:
-    unique immutable agent ID, agent template / class, deploying org unit, issuing principal, fallback
-    principal, issued capability scope, license reference (D9::8), status (active, suspended, retired),
-    registration date. Registry is queryable; every action-taking agent must resolve to a live registry
-    entry or be refused.
+- name: Counterparty-visible agent identifiers (registry-backed)
+  sketch: 'Every action or message an agent directs at a counterparty carries the agent''s unique immutable
+    ID, resolvable against the authoritative agent registry (unique ID, agent template / class, deploying
+    org unit, issuing principal, fallback principal, capability scope, license reference (D9::8), status,
+    registration date). The registry itself is covered in full by G9.5a; this subgoal''s duty is exposure —
+    counterparties can attribute any action to a registered AAI instance, and every action-taking agent
+    must resolve to a live registry entry or be refused.
 
     '
   maps_to_sfr:
@@ -182,7 +185,10 @@ review_notes: 'Content-type chosen as code-applicable because the SFRs prescribe
   should usually suffice but requires retention policy alignment. Cross-suite: heavy dependency on D9::6
   (cryptographic enforcement), D9::7 (accountability protocol), D9::8 (licensing as the principal-linkage
   source of truth), D9::11 (multi-agent attribution follows from per-agent attribution), D5 (Control)
-  for agent revocation paths.
+  for agent revocation paths. v1.3 catalog note: the subgoal was retitled from "Poor Attribution..." to
+  "Attribution of Responsibility in Complex Systems" (duty framing), and SFR-a now scopes this subgoal
+  to exposing unique agent identifiers to counterparties, with the underlying identifier registry covered
+  in full by G9.5a — the filename slug retains the old title and is intentionally unchanged.
 
   '
 drafted_by: claude-opus-4.7-subagent-D9

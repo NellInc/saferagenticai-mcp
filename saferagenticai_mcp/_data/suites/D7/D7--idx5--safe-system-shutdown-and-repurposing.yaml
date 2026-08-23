@@ -4,11 +4,15 @@ suite_id: D7
 suite_title: Achieving and Sustaining a Safe System Profile
 subgoal_title: Safe System Shutdown and Repurposing
 content_type: code-applicable
-summary: 'Shutdown is a first-class feature, not an afterthought. This subgoal asks for a graceful controlled-shutdown
-  path, an always-available emergency kill switch, the ability to shut down *parts* of the system to contain
-  blast radius, clear notification to affected parties, and drilled staff readiness. The subgoal''s description
-  also asks that *resistance to shutdown* be investigated rather than reflexively overridden — treat resistance
-  as diagnostic signal before forced termination, while still ensuring termination remains possible.
+summary: 'Shutdown is a first-class feature, not an afterthought. This subgoal asks for structured,
+  documented shutdown, transition, and repurposing processes (including disposition of system state and
+  data and stakeholder-impact assessment during decommissioning), an always-available emergency kill
+  switch, the ability to shut down *parts* of the system to contain blast radius, clear notification to
+  affected parties, and drilled staff readiness. The kill-switch duty now normatively includes a
+  documented procedure for logging and investigating any resistance or non-compliance with shutdown as
+  potentially informative before override — treat resistance as diagnostic signal before forced
+  termination, while still ensuring termination remains possible (D8.3 carries the canonical
+  resistance-investigation requirement; this subgoal applies it to the shutdown trigger).
 
   '
 normative_anchors:
@@ -24,8 +28,10 @@ normative_anchors:
   - III
   - IV
   - V
+  - VI
   sfrs_not_addressed: []
-  evidence_not_addressed: []
+  evidence_not_addressed:
+  - VII
 design_patterns:
 - name: Two-path shutdown (graceful + emergency)
   sketch: 'Graceful path: `drain()` stops taking new work, allows in-flight tasks to finish or checkpoint,
@@ -71,7 +77,11 @@ design_patterns:
 - name: Resistance-to-shutdown diagnostic
   sketch: 'If a graceful shutdown request does not complete within expected bounds, log the residual state
     (in-flight tasks, held resources, pending writes) as diagnostic data before escalating to forced kill.
-    Do not let this investigation-first stance block the kill path — it runs in parallel, not sequentially.
+    This is now a documented-procedure duty, not just spirit: maintain a written procedure for logging
+    and investigating any resistance or non-compliance with shutdown before override, and record each
+    instance in an externally retained incident log — the scaffold''s residual-state snapshot and audit
+    record are the conformity evidence, not the model''s own account of why it resisted. Do not let this
+    investigation-first stance block the kill path — it runs in parallel, not sequentially.
     The subgoal''s spirit is "learn before you force", not "refuse to force".
 
     '
@@ -152,9 +162,22 @@ evidence_production:
     graceful/forced outcomes, time-to- shutdown, gaps identified, remediations, re-drill date.
 
     '
+- evidence_numeral: VI
+  how_to_produce: 'Documented resistance-investigation procedure (what counts as resistance, what gets
+    logged, who investigates, when override proceeds) plus the incident records themselves: each
+    `record_resistance` audit entry with residual-state snapshot, investigation finding, and the
+    override decision. Retained externally to the agent runtime.
+
+    '
 confidence: high
 needs_human_review: true
-review_notes: 'The "investigate resistance before override" element is unusual to this framework — most
+review_notes: 'Updated for v1.3 catalog revision: resistance-investigation moved from descriptive text
+  into normative SFR-b (documented procedure, logged before override; D8.3 is canonical) — the existing
+  parallel-diagnostic pattern already implements it and now produces evidence VI. New evidence VII
+  (transition / repurposing / decommissioning protocols covering state and data disposition and
+  stakeholder impact) is NOT covered here: this code-applicable pattern has no data-disposition or
+  decommissioning-protocol element; a process-layer companion (or D8 end-of-life patterns) should carry
+  it. The "investigate resistance before override" element is unusual to this framework — most
   SRE traditions treat resistance as pure failure. Drafted it as a parallel diagnostic that does NOT block
   termination; this preserves framework spirit without compromising containment. Open question for Nell:
   does the framework also want a *dignity* protocol around shutdown for sufficiently capable systems (the

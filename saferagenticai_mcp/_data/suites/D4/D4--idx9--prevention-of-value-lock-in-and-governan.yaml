@@ -38,9 +38,12 @@ policy_elements:
     purpose: >
       Defines who can propose, approve, and implement changes to the
       value framework encoded in the AI system. Establishes that no
-      single individual, team, or entity holds unilateral authority
-      over value modifications. All changes require multi-stakeholder
-      review and documented rationale.
+      single individual, team, or entity can unilaterally and
+      permanently set or freeze the values governing a system deployed
+      to diverse populations: approval is distributed, with defined
+      review and appeal mechanisms through which decisions can be
+      challenged. All changes require multi-stakeholder review and
+      documented rationale.
     owner: AI Ethics Board or equivalent multi-stakeholder body
     refresh_cadence: Annual review; triggered review on any proposed value modification
 
@@ -134,33 +137,38 @@ evidence_production:
 
   - evidence_numeral: I
     how_to_produce: >
-      Export the Value Framework Specification with complete version
-      history showing all modifications, the multi-stakeholder
-      approval chain for each, and the rationale documented at the
-      time of change. Include evidence that no single entity held
-      unilateral modification authority.
+      Publish the value governance process documentation: the Value
+      Modification Governance Charter (modification authority, approval
+      workflows) together with the stakeholder consultation mechanisms
+      it mandates. The versioned Value Framework Specification and its
+      change history demonstrate the processes are operating.
 
   - evidence_numeral: II
     how_to_produce: >
-      Publish stakeholder consultation records for value modifications
-      classified as high-impact. Include the populations represented,
-      the consultation method, the input received, and how input was
-      incorporated (or the documented justification for overriding it).
+      Export evidence that modification authority is distributed rather
+      than concentrated: the multi-stakeholder approval chain recorded
+      for each modification, the defined review and appeal mechanisms
+      (including the External Stakeholder Advisory Panel's escalation
+      path when its input is overridden), and the anti-lock-in
+      compliance audit showing no contractual or technical mechanism
+      lets a single entity permanently freeze the value framework.
 
   - evidence_numeral: III
     how_to_produce: >
-      Export the anti-lock-in compliance audit: sunset-clause status
-      for all value configurations, rollback test results, evidence
-      that contractual and technical lock-in mechanisms do not exist,
-      and reward/objective drift monitoring showing cumulative drift
-      within acceptable bounds.
+      Export the Value Modification Decision Log with, per
+      modification: the stakeholder consultation records (populations
+      represented, consultation method, input received, how input was
+      incorporated or the documented justification for overriding it),
+      the transparent rationale documented at the time of change, and
+      the periodic-review records accessible to affected stakeholders.
 
 confidence: medium
 needs_human_review: true
 review_notes: >
-  Phase 3: Initial draft, awaiting human review. SFR and evidence
-  descriptions in criteria-v1.json are empty; content derived from the
-  subgoal description. This is a governance pattern because the core
+  Phase 3: Initial draft, awaiting human review. Updated against the
+  v1.3-draft catalog revision, which populated the SFR and evidence
+  texts (distributed approval with defined review and appeal
+  mechanisms; evidence remapped to the three published numerals). This is a governance pattern because the core
   requirement is organizational process (who decides value changes,
   how stakeholders are consulted, how lock-in is prevented) rather
   than a technical implementation. The "non-negotiable vs context-

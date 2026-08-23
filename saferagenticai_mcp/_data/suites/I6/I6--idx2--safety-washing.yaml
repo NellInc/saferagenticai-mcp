@@ -28,8 +28,9 @@ cross_references:
 - I6::idx9::market-driven-safety-validation-mechanis
 policy_elements:
 - name: Claims Register
-  description: 'Every public claim about safety, performance, compliance, or capability — on the website,
-    in marketing, in sales decks, in regulatory filings, in earnings calls — is logged with: the claim,
+  description: 'Every material public safety or performance claim — those made in product documentation,
+    safety cases, and marketing of safety properties, plus safety claims surfacing in sales decks, regulatory
+    filings, or earnings calls — is logged with: the claim,
     where it was made, when, who approved, the underlying evidence (link to tests, audits, certifications),
     and the claim''s expiry or review date. A marketing or sales team cannot publish a safety claim that
     is not in the register.
@@ -40,7 +41,8 @@ policy_elements:
   - b
 - name: Independent Verification Contract
   description: 'A recurring engagement with an external auditor (not the statutory financial auditor;
-    a firm with AI-safety competence) to verify a rotating sample of safety claims against underlying
+    a firm with AI-safety competence) to verify a rotating sample of material public safety and performance
+    claims against underlying
     evidence annually. Auditor selection rotates at least every five years to avoid capture. Findings
     surface to the board risk committee, not through management.
 
@@ -57,8 +59,10 @@ policy_elements:
   maps_to_sfr:
   - a
 - name: Financial Sustainability Disclosure
-  description: 'Three-year audited financial records retained and made available to regulators and certifiers
-    on request. The SFR ties financial health to credibility of safety commitments — a thinly capitalized
+  description: 'Audited financial records covering the organization''s full operating history, up to the
+    most recent three years of operations, retained and made available to regulators and certifiers
+    on request. The SFR ties financial health to credibility of safety commitments because financial fragility
+    heightens the incentive for safety washing — a thinly capitalized
     org cannot credibly commit to long-term safety practices. Disclose runway, burn rate, and any going-concern
     notes to relevant oversight bodies.
 
@@ -113,7 +117,7 @@ evidence_production:
 - evidence_numeral: I
   how_to_produce: 'Maintain operational handbooks (onboarding, decision authorities, escalation paths),
     safety compliance records (audit outputs, certification letters), and audited financials covering
-    a rolling three-year window. Index everything from the Claims Register so any claim can be traced
+    the full operating history up to the most recent three years. Index everything from the Claims Register so any claim can be traced
     to its underlying artifact.
 
     '
@@ -136,8 +140,8 @@ review_notes: "Safety washing is one of the more politically charged framework c
   \ will resist the overhead of a Claims Register. The mechanism is defensible (claims are a compliance\
   \ surface), but rollout requires leadership commitment that is exactly what the subgoal is defending\
   \ against. Structural tension:\n  (1) The \"financial sustainability\" tie-in (SFR-a) is unusual in\
-  \ AI\n      safety frameworks; it imports a standard due-diligence lens that\n      may not be the framework\
-  \ author's intent. Nell to confirm.\n  (2) The independent-auditor requirement is expensive for small\
+  \ AI\n      safety frameworks; v1.3 makes the rationale explicit — financial\n      fragility heightens the\
+  \ incentive for safety washing.\n  (2) The independent-auditor requirement is expensive for small\
   \ orgs;\n      pattern should perhaps scale — small orgs use certification-body\n      verification\
   \ rather than a bespoke audit contract. Flagged for\n      consolidation.\n  (3) Cross-suite D9 governance\
   \ is the natural home for a Claims\n      Register if framed more broadly; I6 owns it because the reason\n\

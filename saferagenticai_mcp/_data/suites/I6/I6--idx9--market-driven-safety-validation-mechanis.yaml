@@ -6,11 +6,13 @@ suite_id: I6
 suite_title: Competitive Pressures
 subgoal_title: Market-Driven Safety Validation Mechanisms
 content_type: ecosystem
-summary: 'Market-driven validation — trust-marks, safety certifications, user- facing credentials — only
-  produces safer systems if the signals are credible. This subgoal expects the organization to contribute
-  to building such schemes (not just consume them) and to achieve trust- marks whose standards are independently
-  set and whose maintenance is non-trivial. Trust-marks earned by self-attestation don''t count; certification
-  by bodies the org funds don''t count either.
+summary: 'Market-driven validation — consumer-visible trust marks, user-facing credentials, market-facing
+  validation processes — only produces safer systems if the signals are credible. This subgoal is scoped
+  to market-incentive mechanisms specifically; the canonical independent-verification requirements live
+  in D9.5. It recommends (advisory, not normative) that the organization contribute to building such schemes
+  (not just consume them) and achieve trust-marks whose standards are independently set and whose maintenance
+  is non-trivial. Trust-marks earned by self-attestation don''t count; certification by bodies the org
+  funds don''t count either.
 
   '
 normative_anchors:
@@ -114,7 +116,10 @@ review_notes: "Trust-marks are a crowded, fast-moving space. The pattern's endur
   \      are misused.\n  (3) D9 Compliance governs internal use of trust-mark records.\nNell to consider\
   \ whether the pattern should be more explicit about emerging regulatory trust-mark regimes (EU AI Act\
   \ CE marking for high-risk systems is a de facto trust-mark with regulatory teeth; the line between\
-  \ \"voluntary\" and \"regulatory\" trust-marks is blurring).\n"
+  \ \"voluntary\" and \"regulatory\" trust-marks is blurring).\nv1.3 note: both SFRs are non-normative\
+  \ (\"should\"), and the subgoal is explicitly scoped to market-incentive mechanisms — consumer-visible\
+  \ trust marks and market validation — with D9.5 holding the canonical independent-verification requirements.\
+  \ The pattern's mechanisms remain useful guidance but are advisory at the framework level.\n"
 version_compat:
   framework_version_min: '1.0'
   framework_version_max: 1.x

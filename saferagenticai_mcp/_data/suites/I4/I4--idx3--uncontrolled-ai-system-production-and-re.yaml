@@ -1,13 +1,16 @@
-id: I4::idx3::poor-ai-system-production-and-replicatio
+id: I4::idx3::uncontrolled-ai-system-production-and-re
 display_id: I4.3
 suite_id: I4
 suite_title: Frontier Uncertainty
-subgoal_title: Poor AI System Production and Replication Management
+subgoal_title: Uncontrolled AI System Production and Replication
 content_type: governance
 summary: 'Replication and deployment volume is the mechanism by which capability becomes societal force.
   The framework asks organizations to treat production as a governed activity — with volume ceilings,
-  approval gates, and independent oversight — rather than a market-demand-driven scaling. SFR-a is normative:
-  "must include volume restrictions, regulatory approval processes" is not a suggestion.
+  approval gates, technical controls preventing unauthorized self-replication (per the canonical requirements
+  of I5.1), and independent oversight — rather than a market-demand-driven scaling. This subgoal addresses
+  societal proliferation, power imbalance, and human agency; I5.1 holds the canonical technical controls
+  over self-replicating architectures. SFR-a is normative: "must include volume restrictions, regulatory
+  approval processes" is not a suggestion.
 
   '
 normative_anchors:
@@ -61,10 +64,12 @@ policy_elements:
   - a
   - b
 - name: Replication Control and Attestation
-  description: 'Technical and policy controls preventing uncontrolled replication: signed-model attestation
-    (every deployed instance is cryptographically attestable to an authorized release), per-tenant instance
-    registry, anomalous-proliferation alerting. Paired with a policy that unauthorized replication constitutes
-    a material violation (see Violation Register, D9.2).
+  description: 'Technical and policy controls preventing unauthorized self-replication, implemented per
+    the canonical requirements of I5.1: signed-model attestation (every deployed instance is cryptographically
+    attestable to an authorized release), per-tenant instance registry, anomalous-proliferation alerting.
+    Paired with a policy that unauthorized replication constitutes a material violation (see Violation
+    Register, D9.2). This subgoal governs the societal-proliferation deployment of those controls; the
+    control architecture itself is specified under I5.1.
 
     '
   maps_to_sfr:
@@ -156,7 +161,11 @@ review_notes: "Volume restrictions and regulatory approval requirements vary by 
   \      decision-making and labor markets. Making this a published\n      charter with enforceable commitments\
   \ is the operational shape.\n  (3) \"Uncontrolled replication\" has a narrow and a broad reading:\n\
   \      narrow is self-exfiltration or unauthorized copying; broad is\n      market-scale mass deployment.\
-  \ The pattern covers both.\nCross-suite: I6 Monopoly/Market Concentration (direct overlap on anti-concentration),\
+  \ Under v1.3 the narrow reading's\n      technical controls are canonical in I5.1; this subgoal owns\n\
+  \      the broad reading (societal proliferation, power imbalance,\n      human agency) and defers control\
+  \ architecture to I5.1.\n  (4) v1.3 retitle: \"Poor AI System Production and Replication\n      Management\"\
+  \ became \"Uncontrolled AI System Production and\n      Replication\"; the filename slug retains the\
+  \ old title.\nCross-suite: I6 Monopoly/Market Concentration (direct overlap on anti-concentration),\
   \ I7 Imbalance (volume ceilings interact with equity), D8 Termination (takedown workflow).\n"
 version_compat:
   framework_version_min: '1.0'

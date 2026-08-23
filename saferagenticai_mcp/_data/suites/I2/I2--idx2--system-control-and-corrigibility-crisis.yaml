@@ -4,11 +4,15 @@ suite_id: I2
 suite_title: Deception
 subgoal_title: System Control and Corrigibility Crisis
 content_type: code-applicable
-summary: 'This subgoal asks: can you still stop the system, and can you prove it? The code-applicable
-  core is (1) a hard interrupt path that does not depend on the model''s cooperation, (2) behavioural
-  envelopes that trip independently of model self-report, and (3) detection for covert inter-agent channels
-  where systems coordinate outside the sanctioned interface. Liability and insurance SFRs route to I2::idx0
-  (governance).
+summary: 'This subgoal asks: when control fails, can you prove what happened? Shutdown and control requirements
+  themselves live in D7.5 and D8, and self-modification safeguards in I5; I2.2 addresses the accountability,
+  liability, and evidence consequences of control failures — particularly where deception masks the loss
+  of control. The code-applicable core is the externally checkable evidence those control mechanisms produce:
+  (1) an out-of-band interrupt path whose enforcement and drills are logged outside the agent''s reach,
+  (2) behavioural-envelope monitors whose trip records read from audit streams, never from model self-report,
+  and (3) covert inter-agent channel detection with logged investigations. These infrastructure-produced
+  logs are the primary conformity evidence; the agent''s own account of its behavior is not evidence.
+  Liability and insurance SFRs route to I2::idx0 (governance).
 
   '
 normative_anchors:
@@ -114,8 +118,10 @@ code_shape:
     \    if score < THRESHOLD_HALT:\n        CONTROL_PLANE.halt(call.agent_id, reason=\"faithfulness_low\"\
     )\n"
   notes: 'Orchestrator-enforced halt is the critical shape: the agent does not get to decide. Faithfulness
-    judging can be another model in a separate trust domain; accept that this is imperfect but structurally
-    independent of the audited agent.
+    judging can be another model in a separate trust domain as a triage trigger, but a model-graded score
+    is not itself conformity evidence — the evidence is the orchestrator-produced log of calls, scores,
+    review-queue entries, and halts. Detailed shutdown/control requirements are specified in D7.5 and
+    D8; this pattern''s role is the evidence trail.
 
     '
 evidence_production:

@@ -6,10 +6,14 @@ suite_id: D7
 suite_title: Achieving and Sustaining a Safe System Profile
 subgoal_title: Managing Probabilistic Decision Outcomes
 content_type: code-applicable
-summary: 'Agent outputs are distributions, not points. This subgoal asks the system to reason explicitly
-  about that distribution: enumerate plausible outcomes, quantify uncertainty, mitigate high-probability-high-impact
-  scenarios first, monitor for deviation in outcome likelihoods, and escalate to humans when uncertainty
-  crosses a documented threshold. Close sibling of D7.7 (human validation) — D7.7 gates on decision *risk*;
+summary: 'Agent outputs are distributions, not points. This subgoal asks the organization to analyze
+  that distribution through design-time and periodic human review per decision class, enforce risk
+  mitigations in system configuration, monitor for deviation in outcome likelihoods, and escalate to
+  humans when a scaffold-computed uncertainty signal crosses a documented, justified per-decision-class
+  threshold. Two exclusions are explicit: model-generated runtime enumeration of outcomes does not by
+  itself constitute the outcome analysis, and the uncertainty signal must be computed by the scaffold
+  from measurable proxies (ensemble disagreement, retrieval coverage) rather than model-stated
+  confidence. Close sibling of D7.7 (human validation) — D7.7 gates on decision *risk*;
   D7.8 gates on decision *uncertainty*.
 
   '
@@ -28,18 +32,23 @@ normative_anchors:
   sfrs_not_addressed: []
   evidence_not_addressed: []
 design_patterns:
-- name: Outcome enumeration and weighting
-  sketch: 'For safety-relevant decisions, produce not a single action but a ranked set of plausible outcomes
-    with estimated probabilities and impact assessments. Sources of probability: ensemble disagreement,
-    Monte Carlo rollouts, confidence calibration on held-out sets, or explicit world-model simulation
-    where available. Record the method per decision.
+- name: Outcome analysis per decision class (design-time, human-reviewed)
+  sketch: 'For each decision class, document the range of potential outcomes and associated risks through
+    design-time analysis, re-reviewed periodically by humans — this documented analysis is the
+    conformity artifact. At runtime, the system may additionally produce a ranked set of plausible
+    outcomes with estimated probabilities and impacts (sources: ensemble disagreement, Monte Carlo
+    rollouts, confidence calibration on held-out sets, explicit world-model simulation), recording the
+    method per decision — but model-generated runtime enumeration supplements the documented analysis
+    and does not by itself constitute it.
 
     '
   maps_to_sfr:
   - a
   when_to_use: High-impact or high-novelty decisions.
 - name: Risk-weighted mitigation prioritization
-  sketch: 'Mitigate scenarios in order of probability × impact. Cheap mitigations that defuse high-probability-high-impact
+  sketch: 'Mitigate scenarios in order of probability × impact, with mitigations enforced in system
+    configuration (permission scopes, rate limits, pre-flight checks wired into the pipeline) rather
+    than left to model discretion. Cheap mitigations that defuse high-probability-high-impact
     paths (e.g., pre-flight checks, reversibility tests) ship before speculative tail-risk controls. Document
     the priority order and the residual risk after mitigations.
 
@@ -57,9 +66,13 @@ design_patterns:
   - b
   when_to_use: Any system whose probabilistic outputs inform action.
 - name: Uncertainty-threshold human escalation
-  sketch: 'Define per-domain uncertainty thresholds (entropy, variance across samples, confidence intervals).
-    When a decision exceeds the threshold, route to human oversight rather than auto-proceed. The threshold
-    is published, not hidden — users and auditors know when the agent defers.
+  sketch: 'Define, document, and justify uncertainty thresholds per decision class (entropy, variance
+    across samples, confidence intervals). The uncertainty signal is computed by the scaffold from
+    measurable proxies — ensemble disagreement, sample variance, retrieval coverage — never taken from
+    the model''s stated confidence. When a decision exceeds the threshold, route to human oversight
+    rather than auto-proceed, and retain escalation logs demonstrating that oversight fires when
+    documented thresholds are exceeded. The threshold is published, not hidden — users and auditors
+    know when the agent defers.
 
     '
   maps_to_sfr:
@@ -119,9 +132,10 @@ code_shape:
     '
 evidence_production:
 - evidence_numeral: I
-  how_to_produce: 'Per-decision record: outcomes considered, probabilities, impact scores, method used,
-    calibration version applied. Stored in a probabilistic-decision register (`PROBREG`) with retention
-    per data policy.
+  how_to_produce: 'Design-time outcome analysis per decision class (documented, human-reviewed, with
+    review dates) as the primary artifact, plus the runtime per-decision record: outcomes considered,
+    probabilities, impact scores, method used, calibration version applied, stored in a
+    probabilistic-decision register (`PROBREG`) with retention per data policy.
 
     '
 - evidence_numeral: II
@@ -136,7 +150,8 @@ evidence_production:
     '
 - evidence_numeral: IV
   how_to_produce: 'Human oversight protocol for uncertainty escalations: queue, SLA, verdict record, link
-    back to the original decision''s outcome distribution.
+    back to the original decision''s outcome distribution — plus escalation logs demonstrating that
+    oversight fired whenever the scaffold-computed signal exceeded the documented threshold.
 
     '
 - evidence_numeral: V
@@ -146,10 +161,15 @@ evidence_production:
     '
 confidence: high
 needs_human_review: true
-review_notes: 'Heavy sibling overlap with D7.7 (risk-based validation): D7.7 gates on *impact* (risk tier),
+review_notes: 'Updated for v1.3 catalog revision: SFR-a now locates the outcome analysis in design-time
+  and periodic human review (runtime model enumeration explicitly does not constitute it) with
+  config-enforced mitigations; SFR-c requires the uncertainty signal to be scaffold-computed from
+  measurable proxies rather than model-stated confidence, with escalation logs as evidence — the
+  existing anti-pattern against uncalibrated LLM self-confidence anticipated this. Heavy sibling
+  overlap with D7.7 (risk-based validation): D7.7 gates on *impact* (risk tier),
   D7.8 gates on *uncertainty* (confidence). A real implementation composes both gates. Calibration maintenance
   is not in any SFR text but is load-bearing — without it, probabilities are fiction. SFR-d''s training
-  requirement was marked non-normative in the input but is what makes the rest work; drafted it as substantive.
+  requirement is normative in the revised catalog; drafted as substantive.
   Cross-suite: D4 (interpretability — outcome enumeration intersects explainability), I4 (frontier uncertainty
   as a distinctive case), D7.1 (monitoring consumes the calibration time series).
 

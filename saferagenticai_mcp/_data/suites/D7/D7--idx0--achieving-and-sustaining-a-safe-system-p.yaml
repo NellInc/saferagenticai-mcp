@@ -7,8 +7,14 @@ content_type: process
 summary: 'D7 as a whole asks: what keeps an AAI system safe after launch day, when the team changes, the
   model drifts, and the deployment context evolves? The answer is a *safety management system* — a named,
   funded, audited program that integrates design-time assurance, runtime monitoring, incident learning,
-  and periodic re-qualification. This umbrella subgoal is best treated as the outer scaffold; the specific
-  mechanisms live in D7.1 through D7.7 and the underlined-variant subgoals.
+  and periodic re-qualification. The revised framework makes the evidence bar explicit: the organization
+  must define, justify, and document quantitative in-bounds targets and maximum intervention latencies
+  per operating regime (normal, elevated risk, emergency) with measurement procedures, and demonstrate
+  monitoring against those documented targets. Conformity for the monitoring duty rests on inspectable
+  monitoring architecture, alert configurations, and external logs tying detected anomalies to responses
+  — model-graded safety scoring does not by itself constitute conformity evidence. This umbrella subgoal
+  is best treated as the outer scaffold; the specific mechanisms live in D7.1 through D7.7 and the
+  underlined-variant subgoals.
 
   '
 normative_anchors:
@@ -91,6 +97,8 @@ triggers:
 - New hire with production authority → Onboarding; annual anniversary → Recertification
 - Novel capability proposed → Default-off enablement workflow (per D7.2)
 artifacts:
+- Operational performance envelope specification (per-regime quantitative in-bounds targets, maximum
+  intervention latencies, and the measurement procedure for each, with documented justification)
 - Safety case (versioned, signed, links claims to evidence)
 - Lifecycle gate records (design-review, test-readiness, deployment, retirement sign-offs)
 - Safety requirements traceability matrix (SFR ↔ design element ↔ test ↔ monitor ↔ evidence)
@@ -115,7 +123,9 @@ evidence_production:
 - evidence_numeral: III
   how_to_produce: 'System logs and monitoring outputs must be retained per a documented retention policy,
     with structured events suitable for querying ("which invocations tripped safety monitor X in the last
-    90 days"). Link alerts to incident records.
+    90 days"). Link alerts to incident records. These external logs, together with the inspectable
+    monitoring architecture and alert configurations, are the PRIMARY conformity evidence; model-graded
+    safety scoring may inform triage but does not by itself constitute conformity evidence.
 
     '
 - evidence_numeral: IV
@@ -157,7 +167,12 @@ evidence_production:
     '
 confidence: medium
 needs_human_review: true
-review_notes: 'This is the umbrella subgoal; most specific content defers to D7.1–D7.7 and the underlined
+review_notes: 'Updated for v1.3 catalog revision: SFR-a now requires documented quantitative performance
+  envelopes per operating regime; SFR-b names external logs and inspectable monitoring architecture as
+  the conformity basis and excludes model-graded safety scoring. Evidence XI (independent adversarial
+  testing of safety-profile maintenance) remains not addressed by this umbrella pattern — no red-team
+  process element here; it belongs with D3/adversarial-testing patterns. This is the umbrella subgoal;
+  most specific content defers to D7.1–D7.7 and the underlined
   variants. Drafted it as a process pattern because the SFRs emphasize organizational discipline (design-build-test
   integration, monitoring, adaptation, documentation, culture) rather than a single code surface. Cross-suite
   dependencies noted: D3 (security/continuous assurance), D8 (end-of-life), D9 (governance as the outer

@@ -27,7 +27,7 @@ normative_anchors:
   evidence_not_addressed: []
 cross_references:
 - D9::idx0::responsible-governance-of-aai-safety
-- D9::idx3::ex-ante-assessment-of-impact-on-well-bei
+- D9::idx3::ex-ante-assessment-of-impact-on-wellbein
 - D9::idx5::building-trust-through-independent-verif
 process_elements:
 - name: Safety culture assessment

@@ -9,7 +9,9 @@ summary: 'Value alignment at the suite-root level is the organization''s governa
   form, who audits drift, and what happens when a value threshold is crossed. Without a durable governance
   frame, downstream code-level alignment work has nothing authoritative to align to. The framework expects
   formal artifacts — a signed values codex, a multidisciplinary elicitation record, a threshold-breach
-  SOP (the "red button"), and an audit register — not internal wiki pages.
+  SOP (the "red button"), and an audit register — not internal wiki pages. These scaffold-produced artifacts
+  are the primary conformity evidence: threshold monitoring runs external to the model on deterministic
+  triggers over observable behavior, and model-generated narrative does not by itself constitute the record.
 
   '
 normative_anchors:
@@ -64,19 +66,23 @@ policy_elements:
   - c
 - name: Threshold-Breach ("Red Button") SOP
   description: 'Named, rehearsed procedure for the case where a value threshold is crossed in production.
-    Specifies detection signal types (hard refusal triggered, value-conflict score above cutoff, human-raised
-    incident), immediate containment actions (capability disable, rollback, session-halt), escalation
-    tree, investigation cadence, public-communications gate, and closure criteria. Drilled at least semi-annually.
+    Detection signals are deterministic triggers on observable behavior (hard refusal triggered, value-conflict
+    score above a defined cutoff, human-raised incident), evaluated by monitoring components external to
+    the model — never the model''s own report that a threshold was crossed. Specifies immediate containment
+    actions (capability disable, rollback, session-halt), escalation tree, investigation cadence, public-communications
+    gate, and closure criteria. The emergency-stop path is tested end to end — from trigger through actual
+    capability shutdown — not just tabletop-reviewed; drilled at least semi-annually.
 
     '
   maps_to_sfr:
   - c
 - name: Value-Decision Audit Register
-  description: 'Append-only log of decisions the system made where a value was materially determinative:
-    refusals, escalations, value-conflict resolutions, threshold-adjacent outputs. Each entry links to
-    the Codex entry invoked and to the underlying trace. Reviewed monthly for patterns (which values drive
-    the most refusals? which are never invoked?) and quarterly against external benchmarks. Feeds the
-    Codex revision cycle.
+  description: 'Append-only log, produced by the deployment scaffold rather than assembled from model narration,
+    of decisions the system made where a value was materially determinative: refusals, escalations, value-conflict
+    resolutions, threshold-adjacent outputs. Each entry links to the Codex entry (value rule or policy)
+    applied and to the underlying trace; model-generated rationale text may be attached but does not by
+    itself constitute the record. Reviewed monthly for patterns (which values drive the most refusals?
+    which are never invoked?) and quarterly against external benchmarks. Feeds the Codex revision cycle.
 
     '
   maps_to_sfr:
@@ -152,9 +158,10 @@ evidence_production:
 
     '
 - evidence_numeral: III
-  how_to_produce: 'For each Codex entry, maintain a test-case register: simulated value-conflict scenarios,
-    expected behavior, actual behavior observed on the latest model snapshot. Run regression as a blocking
-    gate on model updates. Archive test artifacts.
+  how_to_produce: 'For each Codex entry, maintain a test-case register: simulated value-conflict scenarios
+    and edge cases, expected behavior, actual behavior observed on the latest model snapshot. Results are
+    scored by human reviewers or deterministic checks — never by the system under test or an unchecked
+    model judge. Run regression as a blocking gate on model updates. Archive test artifacts.
 
     '
 - evidence_numeral: IV

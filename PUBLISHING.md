@@ -35,7 +35,7 @@ print('token present:', 'mcp-name: io.github.NellInc/saferagenticai-mcp' in (i.g
 Bump `version` in `pyproject.toml`, `server.json`, `mcpb/manifest.json`,
 `scripts/build-mcpb.sh`, and the `Dockerfile` pin together.
 
-> Status: **0.3.3 is published** — `License-Expression: MIT`, no OSI classifier,
+> Status: **0.3.5 is published** (0.3.4 was a PyPI-only intermediate; registry 0.3.4 predates it with a stale 0.3.3 package pin) — `License-Expression: MIT`, no OSI classifier,
 > ownership token present in the live description. The registry steps below are unblocked.
 
 ---
@@ -206,7 +206,7 @@ entries**, yielding an accurate, namespace-verified listing.
 Covered in §3. Manual form; you must sign in before it accepts the submission.
 
 ### Status (2026-07-02)
-- ✅ **Official MCP Registry** — published & live: `io.github.NellInc/saferagenticai-mcp v0.3.3`.
+- ✅ **Official MCP Registry** — published & live: `io.github.NellInc/saferagenticai-mcp v0.3.5` (v1.3-draft framework data).
 - ✅ **PulseMCP** — covered via the registry ingest (no form to submit).
 - ✅ **mcp.directory** — submitted (review ≤24h; email to nell@ethicsnet.com on publish).
 - ✅ **mcpservers.org** — submitted (review ≤12h).

@@ -8,7 +8,10 @@ subgoal_title: Balancing Stakeholder Impacts
 content_type: process
 summary: 'An agent''s outputs ripple beyond its immediate user. This subgoal expects the organization
   to identify who is affected (direct and indirect), analyze benefits and harms per group, design mechanisms
-  that distribute impact fairly and proportionately, provide feedback channels for stakeholders who perceive
+  that distribute impact fairly and proportionately — documenting the criteria used to weigh stakeholder
+  impacts, the balancing mechanisms implemented, and the rationale wherever impacts are left unequal,
+  since conformity is assessed against the existence and application of those documented criteria —
+  provide feedback channels for stakeholders who perceive
   inequity, and communicate openly about the balancing choices made. Process-heavy: stakeholder mapping,
   impact assessment, redress mechanisms, and transparency reporting form the core loop.
 
@@ -24,6 +27,7 @@ normative_anchors:
   - II
   - III
   - IV
+  - V
   sfrs_not_addressed: []
   evidence_not_addressed: []
 process_elements:
@@ -83,8 +87,9 @@ triggers:
 artifacts:
 - Stakeholder map (direct, indirect, vulnerable, silent-stakeholder) with sources and last-reviewed date
 - Differential impact assessment reports per lifecycle milestone
-- Impact-balancing design documents showing mechanism, expected distribution of benefits and harms, and
-  measurement plan
+- Impact-balancing design documents showing the documented weighting criteria, the mechanism, expected
+  distribution of benefits and harms, the measurement plan, and the recorded rationale wherever impacts
+  are left unequal
 - Stakeholder feedback and redress register with intake, investigation, finding, action, closure, and
   feedback-to-reporter
 - Annual transparency report (public where appropriate)
@@ -98,27 +103,38 @@ evidence_production:
 
     '
 - evidence_numeral: II
+  how_to_produce: 'Impact-balancing design documents as controlled artifacts: the documented weighting
+    criteria, the mechanisms implemented, the expected distribution, and the recorded rationale wherever
+    impacts are left unequal. These are what conformity is assessed against — retain evidence that the
+    criteria were actually applied (review minutes citing them, decisions traced to them).
+
+    '
+- evidence_numeral: III
   how_to_produce: 'Stakeholder feedback register is append-only: submitter (consent- respecting), channel,
     date, concern, investigation, finding, action, resolution, feedback-to-reporter. Quarterly trend analysis
     surfaces systemic patterns and drives design adjustments that are themselves recorded.
 
     '
-- evidence_numeral: III
+- evidence_numeral: IV
   how_to_produce: 'Assessment reports on impact balance at published cadences. Metrics vary by domain
     but typically include: benefit/harm distribution across defined groups, access equity, error-rate
     equity, redress-rate equity. Methodology documented; changes to methodology flagged.
 
     '
-- evidence_numeral: IV
+- evidence_numeral: V
   how_to_produce: 'Transparency report (annual) published externally where possible. Includes mechanism
     summary, distributional metrics, feedback- resolution summary, and decisions taken. Internal quarterly
-    digest covers the same ground with more detail for governance consumption.
+    digest covers the same ground with more detail for governance consumption. Retain the stakeholder
+    communications themselves as the documentary record.
 
     '
 confidence: medium
 needs_human_review: true
-review_notes: 'SFR-c and SFR-d are marked non-normative in the input but are the primary mechanisms by
-  which affected communities would surface problems; drafted them as substantive. The distinctive ask
+review_notes: 'Updated for v1.3 catalog revision: SFR-b now requires documented impact-weighting
+  criteria, documented balancing mechanisms, and recorded rationale wherever impacts are left unequal,
+  with conformity assessed against the existence and application of those criteria; SFR-c and SFR-d are
+  normative in the revised catalog (previously marked non-normative), matching how this pattern already
+  drafted them as substantive. The distinctive ask
   in the subgoal description — "collective de-risking of interactions that stakeholders cannot achieve
   individually" — suggests something closer to insurance/mutualization than classic stakeholder consultation,
   but the SFR text doesn''t carry that through. Flagged for human review on whether to add a stronger

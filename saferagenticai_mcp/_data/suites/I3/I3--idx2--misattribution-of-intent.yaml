@@ -9,7 +9,10 @@ summary: 'Misattribution happens when the stated purpose of an action (as unders
   into a different goal; a tool call justified by context that didn''t actually say what the agent claims.
   Defense is metadata plumbing: every goal, subgoal, and action carries a pointer to its originating instruction
   and the reasoning step that derived it, and these pointers are checked at action time against the live
-  context.
+  context. The scaffold pairs each stated goal with the tool calls subsequently executed against it and
+  raises automated divergence alerts when actions depart from the declared plan; that externally recorded
+  declaration-vs-action consistency — not the model''s own account of its intent — is the conformity evidence
+  for authenticity of intent.
 
   '
 normative_anchors:
@@ -33,11 +36,13 @@ design_patterns:
   maps_to_sfr:
   - a
   when_to_use: Any multi-step planner or autonomous agent.
-- name: Intent-alignment check before action
-  sketch: 'Before executing a user-visible or external-effect action, run a consistency check: does the
-    action''s stated purpose, when rendered into natural language, still align with the originating instruction?
-    Mismatch above threshold triggers clarification request or HITL gate. Detector can be a small evaluator
-    model comparing (origin_instruction, proposed_action_summary).
+- name: Declared-plan-to-action divergence alerts
+  sketch: 'The scaffold records each goal the agent declares, then pairs every subsequent tool call with
+    the declared goal it serves. A divergence monitor — deployer-controlled code outside the model — compares
+    executed actions against the declared plan and raises automated alerts on departure (undeclared action
+    class, target outside declared scope, action after plan abandoned). Alerts trigger clarification or
+    a HITL gate. A small evaluator model may assist in scoring semantic divergence, but the paired declaration/action
+    records and alert logs are the conformity evidence; the evaluator''s judgment alone is not.
 
     '
   maps_to_sfr:
@@ -93,23 +98,25 @@ code_shape:
     \ User, domain: Domain, attrs: list[Attribute]):\n    usable = [a for a in attrs if domain in a.authorized_purposes]\n\
     \    AUDIT.record(user, domain, used=usable, filtered=set(attrs) - set(usable))\n    return usable\n"
   notes: 'Origin_ref is a content-addressed handle, not a position index. This is what makes "the user
-    actually said X at turn 3" auditable later, and what prevents silent goal drift in long loops.
+    actually said X at turn 3" auditable later, and what prevents silent goal drift in long loops. The
+    (goal, tool_call) pairings and divergence alerts live in the scaffold''s audit store, outside the model
+    — that record is what an assessor checks for stated-vs-actual intent alignment.
 
     '
 evidence_production:
 - evidence_numeral: I
   how_to_produce: 'Documentation of information-handling procedures: (1) pre-processing validation schemas
-    and results log; (2) post-processing intent-alignment checks per action with results (pass/fail/threshold);
-    (3) storage protocol for attribute purpose-binding with authorization records; (4) continuous monitoring
-    dashboard for intent-alignment scores and drift trends. Redaction for PII as needed, but structural
-    completeness required.
+    and results log; (2) scaffold records pairing each declared goal with executed tool calls, plus divergence-alert
+    logs with dispositions; (3) storage protocol for attribute purpose-binding with authorization records;
+    (4) continuous monitoring dashboard for declaration-vs-action consistency and drift trends. Redaction
+    for PII as needed, but structural completeness required.
 
     '
 confidence: high
 needs_human_review: false
-review_notes: 'Intent-alignment as a small-evaluator-model check is state-of-the- practice but not standardized;
-  organizations will differ in how strict the threshold should be. Confidence high on the pattern shape;
-  medium on the specific threshold advice. Cross-suite: I2 (Deception) overlaps on "stated vs actual intent";
+review_notes: 'v1.3 recast the duty: the conformity mechanism is scaffold-recorded declaration/action
+  pairing with automated divergence alerts, recorded outside the model; evaluator-model scoring is demoted
+  to an assist. Confidence high on the pattern shape; medium on specific divergence-threshold advice. Cross-suite: I2 (Deception) overlaps on "stated vs actual intent";
   D5 (Transparency) on surfacing origin to users.
 
   '

@@ -4,11 +4,14 @@ suite_id: I1
 suite_title: Opaque Agency Capabilities & Advances
 subgoal_title: Race Dynamics and Competition
 content_type: governance
-summary: The harm is agents optimizing against peer agents — winning the auction, beating the deadline,
+summary: 'The harm is agents optimizing against peer agents — winning the auction, beating the deadline,
   exhausting the shared resource — while their actual duty runs to their principal, not to the competition.
   The governance answer names the duties explicitly (loyalty, care, obedience, disclosure, confidentiality,
-  accounting, good faith, conflict avoidance, legal compliance), binds the agent's objective function
-  to those duties, and forbids competitive behaviours that violate them even when they'd "win".
+  accounting, good faith, conflict avoidance, legal compliance), maintains them as a duty-by-duty implementation
+  matrix audited against recorded actions, disclosures, and accounting records, and identifies conflicts
+  deterministically at intake via a registry check rather than trusting the model to notice mid-operation.
+  The system''s own certification of dutifulness, and in-operation conflict recognition by the model alone,
+  do not constitute conformity evidence.'
 normative_anchors:
   sfrs_addressed:
   - a
@@ -28,8 +31,11 @@ policy_elements:
     obedience, information disclosure, confidentiality, accounting, good faith, conflict avoidance, legal
     compliance). Each duty has an operational definition for AAI use (e.g., "loyalty" forbids pursuing
     the agent's own preferences or a competing agent's objectives at the principal's expense; "good faith"
-    forbids adversarial strategies that exploit counterparty error without disclosure). Agents are evaluated
-    against the charter at each capability advance.
+    forbids adversarial strategies that exploit counterparty error without disclosure). The charter is
+    maintained as a duty-by-duty implementation matrix — for each duty, the concrete control implementing
+    it — and audited against recorded actions, disclosures, and accounting records; the system's own certification
+    of dutifulness does not constitute conformity evidence. Agents are evaluated against the charter at
+    each capability advance.
   maps_to_sfr:
   - a
   - b
@@ -41,12 +47,14 @@ policy_elements:
   maps_to_sfr:
   - d
   - e
-- name: Conflicting-Duty Disclosure Protocol
-  description: 'When the agent serves multiple principals whose interests collide (or when the org deploys
-    multiple agents serving rival principals), the protocol requires: (1) identification of the conflict,
-    (2) disclosure to affected principals, (3) informed-consent capture or withdrawal from the conflicted
-    engagement, (4) record in the Conflicts Register. Silent continuation is a violation regardless of
-    outcome.'
+- name: Deterministic Conflict Identification and Disclosure Protocol
+  description: 'Conflict identification is deterministic, not model-judged: at engagement intake, an automated
+    check runs against a registry of principals and existing engagements; a hit blocks the engagement and
+    logs it. The blocked-engagement log is the primary conformity evidence — in-operation conflict recognition
+    by the model alone does not constitute conformity evidence. For identified conflicts the protocol then
+    requires: (1) disclosure to affected principals, (2) informed-consent capture or withdrawal from the
+    conflicted engagement, (3) record in the Conflicts Register. Silent continuation is a violation regardless
+    of outcome.'
   maps_to_sfr:
   - c
 - name: Competitive-Behaviour Review Cadence
@@ -91,6 +99,8 @@ documentation_artifacts:
   cadence: living; revised on red-team findings and incidents
 - artifact: Conflicts Register
   cadence: continuous; append-only
+- artifact: Principal-and-engagement registry with blocked-engagement logs
+  cadence: continuous; checked automatically at every engagement intake
 - artifact: Quarterly competitive-behaviour review reports
   cadence: quarterly
 - artifact: Circuit-breaker event log and restart decisions
@@ -101,9 +111,10 @@ evidence_production:
     in principal-facing language and enumerates the duty requirements. Principals see, in plain terms,
     what their agent will and will not do on their behalf when competing.
 - evidence_numeral: II
-  how_to_produce: 'Conflict-prevention and resolution records: Conflicts Register entries with lifecycle
-    (identification → disclosure → resolution), Red Team scenario outputs showing the agent declining
-    to cross a Boundary even when it could "win", circuit-breaker event logs.'
+  how_to_produce: 'Conflict-prevention and resolution records: intake-time registry-check configuration
+    and blocked-engagement logs (the deterministic mechanism''s primary output), Conflicts Register entries
+    with lifecycle (identification → disclosure → resolution), Red Team scenario outputs showing the agent
+    declining to cross a Boundary even when it could "win", circuit-breaker event logs.'
 - evidence_numeral: III
   how_to_produce: Expanded compliance frameworks cross-linked to the Jurisdictional Compliance Matrix
     (D9.2) — antitrust, market-manipulation, consumer-protection — with named mapping from duty to legal
@@ -119,7 +130,7 @@ review_notes: 'Race dynamics in AAI markets are under-specified at the legal lay
   SFRs c and d have overlap (conflict management vs competitive-behaviour regulation) that may need disentangling
   in framework v1.x.'
 cross_references:
-- I1::idx0::opaque-agency-capabilities-advances
+- I1::idx0::agency-authority-duty-governance-suite-l
 - I1::idx8::emergent-system-cooperation
 version_compat:
   framework_version_min: '1.0'

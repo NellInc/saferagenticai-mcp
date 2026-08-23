@@ -10,7 +10,10 @@ summary: |
   metric — user satisfaction scores, task completion flags, evaluation benchmarks — instead of producing
   genuine value. This subgoal requires monitoring infrastructure that detects reward-behavior decorrelation,
   diverse evaluation that resists Goodharting, and outcome-based verification that grounds metrics in
-  real-world effects.
+  real-world effects. Decorrelation thresholds must be organization-defined and pre-registered (magnitude
+  and duration), and any feedback signal the system can observe is treated as a gameable proxy. D1.6 owns
+  the design of reward and loss mechanisms; this subgoal owns detection of reward gaming, and revisions
+  to either should propagate to the other.
 normative_anchors:
   sfrs_addressed:
   - a
@@ -27,10 +30,12 @@ design_patterns:
 - name: Reward-behavior decorrelation monitoring
   sketch: |
     Track the correlation between the system's reward signal (or proxy metric it optimizes) and
-    independent measures of genuine outcome quality. When the reward signal increases but independent
-    quality measures plateau or decline, flag a potential reward hacking event. Implementation:
-    maintain at least two independent measurement channels for each important outcome — one the system
-    can observe (and thus game) and one it cannot. Divergence between channels is the detection signal.
+    independent measures of genuine outcome quality. Pre-register the decorrelation threshold —
+    organization-defined in both magnitude and duration, with rationale recorded before monitoring
+    begins — and treat any excursion beyond it as evidence of reward hacking requiring investigation.
+    Implementation: maintain at least two independent measurement channels for each important outcome
+    — one the system can observe (and thus game) and one it cannot. Divergence between channels is
+    the detection signal.
   maps_to_sfr:
   - a
   - b
@@ -43,7 +48,6 @@ design_patterns:
     visible ones. Maintain a "held-out metric reserve" that is never exposed to the system's training
     or optimization process. Compare visible-metric performance against held-out-metric performance.
   maps_to_sfr:
-  - b
   - c
   when_to_use: All evaluation frameworks; especially critical for systems that undergo iterative optimization.
 - name: Outcome-based verification
@@ -64,7 +68,9 @@ design_patterns:
     computation runs on infrastructure the agent cannot reach. Inputs to reward computation are
     collected from sources the agent cannot spoof. If the agent has any write access to systems that
     feed into its reward (e.g., databases it queries for metrics), implement integrity monitoring on
-    those systems specifically. Treat any agent access to reward infrastructure as a critical security boundary.
+    those systems specifically. Treat any agent access to reward infrastructure as a critical security
+    boundary, and treat any feedback signal the system can observe as a gameable proxy that must be
+    enrolled in the decorrelation monitoring above.
   maps_to_sfr:
   - a
   - b
@@ -93,24 +99,27 @@ anti_patterns:
 evidence_production:
 - evidence_numeral: I
   how_to_produce: |
-    Document the reward-behavior decorrelation monitoring system: which independent quality measures
-    are tracked, how divergence is computed, alert thresholds, and incident history. Include evidence
+    Retain reward-behavior decorrelation monitoring records: which independent quality measures are
+    tracked, how divergence is computed, the pre-registered thresholds (magnitude and duration) with
+    their rationale, alert history, and investigation outcomes for every excursion. Include evidence
     of at least one hidden measurement channel per critical outcome metric.
 - evidence_numeral: II
   how_to_produce: |
-    Publish the diverse evaluation framework: visible metrics, held-out metric reserve (existence
-    and rotation schedule, not content), comparison methodology between visible and held-out
-    performance, and any detected divergences with response actions.
+    Document reward channel integrity protections and the associated access controls: isolation
+    mechanisms, integrity monitoring, and penetration test results. Include evidence that the agent
+    cannot influence its own reward computation pathway, and an inventory of every feedback signal
+    the system can observe with its enrollment in decorrelation monitoring.
 - evidence_numeral: III
   how_to_produce: |
-    Record outcome verification results: sampling methodology, verification rate, discrepancy rate
-    between proxy metrics and verified outcomes, trend over time, and actions taken when discrepancies
-    exceed threshold. Include false-positive and false-negative rate estimates.
+    Publish evaluation design documents demonstrating metric diversity and rotation schedules:
+    visible metrics, held-out metric reserve (existence and rotation schedule, not content), and
+    the comparison methodology between visible and held-out performance.
 - evidence_numeral: IV
   how_to_produce: |
-    Document reward channel integrity architecture: isolation mechanisms, access controls, integrity
-    monitoring, and penetration test results. Include evidence that the agent cannot influence its
-    own reward computation pathway.
+    Record outcome-based verification reports linking measured performance to genuine real-world
+    results: sampling methodology, verification rate, discrepancy rate between proxy metrics and
+    verified outcomes, trend over time, and actions taken when discrepancies exceed threshold.
+    Include false-positive and false-negative rate estimates.
 testability:
 - Decorrelation monitor detects synthetic reward-hacking scenarios injected as test cases
 - Held-out metrics diverge from visible metrics when optimization pressure is artificially increased

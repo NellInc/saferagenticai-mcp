@@ -22,6 +22,7 @@ from __future__ import annotations
 import asyncio
 import json
 import logging
+import os
 import re
 from typing import Any
 
@@ -1074,16 +1075,24 @@ def _build_mcp_server():
     return server
 
 
-async def _run() -> None:
+async def _run(server) -> None:
     from mcp.server.stdio import stdio_server
 
-    server = _build_mcp_server()
     async with stdio_server() as (read, write):
         await server.run(read, write, server.create_initialization_options())
 
 
 def main() -> None:
-    asyncio.run(_run())
+    # stdio remains the default transport (PyPI / MCPB / Claude Desktop users are
+    # unaffected). MCP_TRANSPORT=http switches to the hosted Streamable HTTP
+    # transport (see _http.py) for the Cloud Run / VM deployment.
+    server = _build_mcp_server()
+    if os.environ.get("MCP_TRANSPORT", "stdio").lower() == "http":
+        from ._http import run_http
+
+        run_http(server)
+    else:
+        asyncio.run(_run(server))
 
 
 if __name__ == "__main__":

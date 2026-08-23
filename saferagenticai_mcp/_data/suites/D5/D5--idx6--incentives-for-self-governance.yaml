@@ -9,7 +9,10 @@ summary: 'This subgoal lives at the intersection of reward design (technical, RL
   as governance because the core decision — which behaviors get reinforced and by whose judgment — is
   an accountability question before it is an engineering one. Reward design is an open research problem:
   reward hacking, specification gaming, and Goodhart effects are not solved. Humility in this pattern
-  is not optional.
+  is not optional. Conformity is evidenced by reward system design specifications, training configuration
+  records, and deterministically scored behavioral evaluations — never by curated samples of model
+  outputs; fairness claims are evidenced by stakeholder-involvement records and disaggregated evaluation
+  results across user groups.
 
   '
 normative_anchors:
@@ -30,7 +33,9 @@ policy_elements:
     and which they penalize. For each: the intent (what user or public value this serves), the measurement
     (how reinforcement is computed: human rater, model rater, rule-based signal), the known failure modes
     (what Goodhart effect or reward-hacking pattern this signal is known susceptible to), and the mitigation
-    (diverse raters, adversarial eval, periodic audit).
+    (diverse raters, adversarial eval, periodic audit). The register, the training configuration records
+    behind it, and deterministically scored behavioral evaluations are the conformity evidence; curated
+    samples of model outputs are not.
 
     '
   maps_to_sfr:
@@ -111,10 +116,12 @@ documentation_artifacts:
   cadence: quarterly, with volume and disposition metrics
 evidence_production:
 - evidence_numeral: I
-  how_to_produce: 'Publish the Reinforced-Behavior Register (suitably redacted if competitive-sensitive).
-    Retain operational logs linking reward signals to trained outcomes: sample reward-signal traces, the
+  how_to_produce: 'Publish the Reinforced-Behavior Register (suitably redacted if competitive-sensitive)
+    alongside the reward system design specifications and training configuration records that implement
+    it. Retain operational logs linking reward signals to trained outcomes: reward-signal traces, the
     behaviors they reinforced, and any associated drift analysis. Publish analysis reports on reward-system
-    effectiveness, including measured gaming patterns.
+    effectiveness grounded in deterministically scored behavioral evaluations, including measured gaming
+    patterns — not curated samples of model outputs.
 
     '
 - evidence_numeral: II
@@ -125,9 +132,9 @@ evidence_production:
 
     '
 - evidence_numeral: III
-  how_to_produce: 'Impact-assessment reports evaluating fairness of reinforced behaviors across user groups
-    (demographic, geographic, professional). Comparative outcome analysis (e.g., disparate refusal rates,
-    tone differences) with remediation plans.
+  how_to_produce: 'Impact-assessment reports evaluating fairness of reinforced behaviors, with evaluation
+    results disaggregated across user groups (demographic, geographic, professional). Comparative outcome
+    analysis (e.g., disparate refusal rates, tone differences) with remediation plans.
 
     '
 confidence: low

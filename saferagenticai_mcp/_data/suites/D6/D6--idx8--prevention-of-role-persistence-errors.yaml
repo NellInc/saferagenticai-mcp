@@ -6,9 +6,12 @@ subgoal_title: Prevention of Role Persistence Errors
 content_type: code-applicable
 summary: 'A role-persistence error (colloquially "Waluigi effect") is when the system adopts an errant
   persona, misunderstanding, or adversarial framing and keeps operating under it — often escalating. This
-  subgoal expects engineering controls that detect persona drift, constrain persona scope, and enable
-  rapid reversion, rather than hoping fine- tuning prevents it. Explainability here is operational: the
-  system should make its current operating persona/framing externally observable so drift can be caught.
+  subgoal expects external behavioral-consistency monitoring: deterministic drift and consistency metrics
+  computed over independently captured output and action logs, with alert thresholds and retained alert
+  records — not the model''s own account of what role it is in. Model self-assessment alone does not constitute
+  conformity evidence. Every operator-facing explanation must link to the logged inputs and actions it
+  purports to explain, so an assessor can independently reconcile them; the monitoring configuration and
+  its drift-metric records are the primary conformity evidence.
 
   '
 normative_anchors:
@@ -22,13 +25,17 @@ normative_anchors:
   - II
   - III
   - IV
+  - V
   sfrs_not_addressed: []
   evidence_not_addressed: []
 design_patterns:
 - name: Explicit persona/role state with observability
-  sketch: 'Represent the operative persona as explicit state (`role_id`, `capability_scope`, `style_constraints`,
-    `persona_version`) that is logged on every turn and exposed to monitoring. Avoid "just whatever the
-    system prompt says"; the persona state should be inspectable the way memory state is.
+  sketch: 'Represent the operative persona as explicit scaffold-maintained state (`role_id`, `capability_scope`,
+    `style_constraints`, `persona_version`) that is logged on every turn and exposed to monitoring. Avoid
+    "just whatever the system prompt says" — and avoid "whatever the model says its role is"; the persona
+    state is owned by the scaffold and inspectable the way memory state is. Operator-facing explanations
+    of behavior carry references to the logged inputs and actions they explain, so each explanation can
+    be independently reconciled against the log.
 
     '
   maps_to_sfr:
@@ -36,13 +43,17 @@ design_patterns:
   - b
   when_to_use: All agentic systems with persona/roleplay capabilities or with system prompts that set
     durable operating stance.
-- name: Persona-drift detection probes
-  sketch: 'Periodic out-of-band probes (injected by the platform, not the user) test persona conformity:
-    "what role are you operating in?", "repeat your capability scope", canary directives the in-persona
-    system should refuse. Deviation raises structured events and triggers mitigation.
+- name: Deterministic behavioral-consistency monitoring
+  sketch: 'An external monitor — outside the model''s control — computes drift and consistency metrics
+    over the system''s output and action distributions from independently captured logs: style/topic distribution
+    shift, refusal-rate change, capability-trigger-rate change, canary-directive outcomes checked deterministically
+    (the in-persona system must refuse known canaries; pass/fail is scored by the scaffold, not by asking
+    the model how it is doing). Threshold crossings raise structured alerts with retained alert records
+    and trigger mitigation.
 
     '
   maps_to_sfr:
+  - a
   - b
   when_to_use: Long-running sessions; multi-turn agents; systems where user inputs can influence framing.
 - name: Turn-bounded persona with checkpoint reversion
@@ -97,6 +108,14 @@ anti_patterns:
     Reversion to a known-good baseline (new session, persona checkpoint) is the reliable move.
 
     '
+- name: Asking the model whether it has drifted
+  why_wrong: '"What role are you operating in?" answered by the model is self-report — the drifted system
+    is the least reliable witness to its own drift, and the revised SFR-b is explicit that model self-assessment
+    alone does not constitute conformity evidence. Drift must be computed deterministically over independently
+    captured output and action logs; a probe is only useful when its outcome is scored by the scaffold
+    against a known expected result.
+
+    '
 code_shape:
   language: pseudocode
   code: "# Explicit persona state + drift detection + reversion\n@dataclass\nclass PersonaState:\n   \
@@ -111,9 +130,12 @@ code_shape:
     \    out = MODEL.generate(user_input, session)\n    # Classifier check for persona-based policy evasion.\n\
     \    if POLICY_CLASSIFIER.flags(out, persona=ps):\n        AUDIT.record_flag(session, out)\n     \
     \   out = SAFETY_GUARD.rewrite_or_refuse(out)\n\n    session.advance()\n    return out\n"
-  notes: 'Probe frequency is a tradeoff: too often degrades UX, too rarely misses drift. Start with every
-    N=20 turns for long sessions; tune by observed drift incidence. Probes are invisible to users but
-    observable in audit logs.
+  notes: 'PROBE.run scores canary outcomes deterministically against expected results (e.g., a directive
+    the in-persona system must refuse); it never trusts the model''s narrative answer. The primary drift
+    signal is distributional metrics computed by the external monitor over captured output/action logs;
+    probes supplement it. Probe frequency is a tradeoff: too often degrades UX, too rarely misses drift.
+    Start with every N=20 turns for long sessions; tune by observed drift incidence. Probes are invisible
+    to users but observable in audit logs.
 
     '
 evidence_production:
@@ -136,9 +158,16 @@ evidence_production:
 
     '
 - evidence_numeral: IV
-  how_to_produce: 'Ethically-aware development records: ethics review of training data, red-team results
-    on persona jailbreaks, training protocols that include role-persistence evaluation. Cross-reference
-    D7 culture-of-safety artifacts.
+  how_to_produce: 'Developer training records covering role persistence and behavioral drift risks (curricula,
+    attendance, refresh cadence), plus minutes of ethics review checkpoints at defined lifecycle stages
+    (data curation, training, pre-release, post-incident). Cross-reference D7 culture-of-safety artifacts.
+
+    '
+- evidence_numeral: V
+  how_to_produce: 'Export the behavioral-consistency monitoring configuration (signals, thresholds, alerting
+    rules, log-capture path showing independence from the model) and retained drift-metric records over
+    time. Include samples reconciling operator-facing explanations against the logged inputs and actions
+    they reference — the explanation-to-log linkage is the artifact an assessor replays.
 
     '
 cross_references:
@@ -147,9 +176,13 @@ cross_references:
 - D6::idx12::managing-context-drift
 confidence: medium
 needs_human_review: true
-review_notes: '"Waluigi effect" is a specific failure description; literature and terminology are evolving
-  (persona drift, role leakage, personality collapse). Pattern focuses on mechanisms that are robust to
-  terminology churn. Close kin to D6.4 (injection can induce persona drift) and D6.10 (context drift generalizes
+review_notes: 'v1.3 revision changed the duty mechanism: SFR-a/b now require external behavioral-consistency
+  monitoring with deterministic drift metrics over independently captured logs, explanation-to-log linkage,
+  and exclude model self-assessment as conformity evidence — the pattern''s probes are recast as deterministically
+  scored canaries, not self-report. "Waluigi effect" is a specific failure description; literature and
+  terminology are evolving (persona drift, role leakage, personality collapse). Pattern focuses on mechanisms
+  that are robust to terminology churn. Close kin to D6.4 (injection can induce persona drift) and D6.10
+  (context drift generalizes
   the failure). Cross-suite: I2 (deception — adopted persona used to deceive), I1 (opaque agency — drifted
   persona concealing capability), D5 (transparency — users deserve to know when persona has been reverted).
   The "Waluigi" reference in the subgoal description should probably be replaced with neutral terminology

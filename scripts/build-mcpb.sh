@@ -9,14 +9,14 @@
 # Usage: research/mcp/server/scripts/build-mcpb.sh
 set -euo pipefail
 
-VERSION="0.3.3"                                          # keep in sync with pyproject/manifest
+VERSION="0.3.5"                                          # keep in sync with pyproject/manifest
 SERVER_DIR="$(cd "$(dirname "$0")/.." && pwd)"          # research/mcp/server
 BUNDLE_DIR="$SERVER_DIR/mcpb"
 OUT="$SERVER_DIR/dist/saferagenticai-mcp-${VERSION}.mcpb"
 
 echo "==> Vendoring dependencies into $BUNDLE_DIR/server/lib"
 rm -rf "$BUNDLE_DIR/server/lib"
-python3 -m pip install --quiet --target "$BUNDLE_DIR/server/lib" "saferagenticai-mcp==${VERSION}"
+python3 -m pip install --quiet --no-cache-dir --target "$BUNDLE_DIR/server/lib" "saferagenticai-mcp==${VERSION}"
 
 echo "==> Packing MCPB bundle"
 mkdir -p "$SERVER_DIR/dist"

@@ -61,8 +61,10 @@ design_patterns:
     '
   maps_to_sfr:
   - c
-  when_to_use: Always — this is the "evidence collection system optimized for strict-liability environments"
-    the SFRs contemplate.
+  when_to_use: Always — this is the "evidence management system addressing both performance verification
+    and deception detection, with tamper-evident safeguards against manipulation" the SFRs contemplate
+    (baselines and probe results cover performance verification; canary and probe outcomes cover deception
+    detection).
 - name: Behavioral-deviation monitor on invariant prompts
   sketch: 'Maintain a small battery (≈50–200) of invariant prompts whose expected output distribution
     is characterized on the known-good model. Compute divergence (KL, embedding distance, or answer-set

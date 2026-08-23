@@ -9,8 +9,12 @@ content_type: process
 summary: 'Every confirmation prompt, every "are you sure?", every consent dialogue spends a small amount
   of the user''s decision budget. When the budget runs out, users click through warnings that exist precisely
   because the action requires attention — the safety feature has become a liability. This subgoal asks
-  the organization to measure the decision burden it imposes, design for quality decisions rather than
-  quantity, and iterate with real user data. It is a UX discipline with safety consequences.
+  for risk-tiered confirmation that prompts only for irreversible or shared-scope actions (see D6.11),
+  batching of related confirmation requests, and a tracked confirmation-frequency metric per session with
+  a defined review trigger — the metric and its review records are the auditable evidence of the discipline.
+  Decision support is delivered through scaffold-templated briefs populated from logged system data; a
+  model-authored free-text summary alone does not constitute the required decision brief. It is a UX discipline
+  with safety consequences.
 
   '
 normative_anchors:
@@ -82,9 +86,13 @@ triggers:
 - Proposed increase in user confirmation frequency → mandatory budget review; default posture should be
   "justify the ask"
 artifacts:
-- Confirmation Budget policy document (target total prompts per user session, per task, target cognitive-load
-  ceilings for specific flows)
-- Per-feature decision-surface design specifications
+- Confirmation Budget policy document (risk-tier definitions gating which actions prompt — irreversible
+  and shared-scope only — batching rules for related requests, target total prompts per user session,
+  per task, target cognitive-load ceilings for specific flows)
+- Confirmation-frequency metric definition (per session), its dashboards, and the defined review trigger
+  with records of triggered reviews and threshold adjustments
+- Per-feature decision-surface design specifications, including scaffold-templated decision-brief templates
+  and the logged-data fields that populate them
 - Decision-quality telemetry definitions and dashboards
 - User-feedback synthesis reports
 - Oversight-fatigue balance review minutes
@@ -102,9 +110,11 @@ evidence_production:
 
     '
 - evidence_numeral: III
-  how_to_produce: 'Decision-support effectiveness documentation: for each support surface (summary card,
-    progressive disclosure, contextual help), pre/post metrics on decision quality (correctness, time,
-    satisfaction), user-reported clarity. A/B tests where feasible; qualitative research where not.
+  how_to_produce: 'Decision-support effectiveness documentation: for each support surface (scaffold-templated
+    decision brief, progressive disclosure, contextual help), the template definition, the logged system-data
+    fields it renders from, and pre/post metrics on decision quality (correctness, time, satisfaction),
+    user-reported clarity. A/B tests where feasible; qualitative research where not. A model-authored
+    free-text summary alone does not evidence the required decision brief.
 
     '
 cross_references:
@@ -113,9 +123,11 @@ cross_references:
 - D6::idx13::managing-contextual-ambiguity
 confidence: medium
 needs_human_review: true
-review_notes: 'All four SFRs marked non-normative in the JSON, and stakeholder list excludes "R" — this
-  suggests the subgoal is framed as UX/product quality rather than regulatory compliance. Pattern respects
-  that framing but flags that decision fatigue can have compliance consequences (e.g., consent dialogues
+review_notes: 'v1.3 revision made all four SFRs normative and mechanized them: risk-tiered confirmation
+  (irreversible/shared-scope only, per D6.11), a tracked per-session confirmation-frequency metric with
+  defined review trigger, and scaffold-templated decision briefs from logged data with model-authored
+  free-text summaries excluded. Stakeholder list still excludes "R" — UX/product framing retained. Pattern
+  flags that decision fatigue can have compliance consequences (e.g., consent dialogues
   that are too frequent cease to evidence genuine consent under GDPR). Cross-suite: D5 (transparency —
   too much disclosure is its own failure), D11 (or equivalent on human-factors), I3 (context degradation
   — fatigued users carry degraded context). The framework''s "caution by default" intersects with this

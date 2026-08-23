@@ -43,8 +43,10 @@ policy_elements:
   description: 'Where the org is involved in any AWS development or deployment, binding requirement that
     every engagement decision involves meaningful human control — not human-on-the-loop as a review button
     but human-in-the-loop with sufficient situational context, time, and authority to refuse. Operational
-    definition: what "meaningful" requires (information provided, time allowed, training of the human
-    operator, authority not to engage).
+    definition per the framework: a tested, latency-verified capability for a human to veto or abort any
+    engagement within the operational decision timeline — with the information, time, training, and authority
+    that make the veto real. Conformity is demonstrated by drill records with measured veto/abort latency,
+    not by the protocol document alone.
 
     '
   maps_to_sfr:
@@ -133,7 +135,8 @@ evidence_production:
 - evidence_numeral: II
   how_to_produce: 'Control-system and refusal-evaluation reports: what refusal training tested, how the
     system performs on red-teamed weapons-repurposing prompts, vulnerabilities found and fixed, human-oversight
-    protocol documents with intervention capability specs.
+    protocol documents with intervention capability specs, and drill records showing tested, latency-verified
+    human veto/abort within the operational decision timeline.
 
     '
 - evidence_numeral: III

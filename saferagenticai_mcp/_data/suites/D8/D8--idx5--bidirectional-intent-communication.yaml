@@ -84,7 +84,9 @@ design_patterns:
   sketch: 'When agent and principal disagree (agent proposes refusal or alternative; principal insists),
     route to a declared dispute protocol: brief standoff with reasoning from both sides written to the
     audit log; escalation to a named human arbiter if not resolved. The arbiter''s decision is binding
-    and recorded. Pattern prevents both silent over-compliance and silent refusal.
+    and recorded. Escalation paths are enforced and logged by the orchestration scaffold — not left to
+    the agent''s discretion — and any AI-adjudicated resolution takes effect only after human sign-off
+    or deterministic checks confirm it. Pattern prevents both silent over-compliance and silent refusal.
 
     '
   maps_to_sfr:
@@ -96,7 +98,8 @@ design_patterns:
   sketch: 'A separate monitor watches the intent-communication stream for norm violations: attempted jailbreak,
     conflicting instruction injection, principal-impersonation, escalation patterns. Emits alerts independent
     of the agent''s own reasoning; authority to pause the interaction rests with the monitor/supervisor,
-    not the agent.
+    not the agent. Where the monitor uses model-based violation detection, its findings are backed by
+    deterministic checks or human review before enforcement action is taken.
 
     '
   maps_to_sfr:
@@ -162,12 +165,16 @@ evidence_production:
 - evidence_numeral: IV
   how_to_produce: 'Scenario-based validation: intent-translation accuracy on a diverse eval set, concern-surfacing
     precision/recall, dispute resolution fairness tests, hierarchy-enforcement tests under conflicting-principal
-    scenarios.
+    scenarios. Intent-translation reliability is scored against human-labeled or deterministic ground
+    truth, never by a model grading its own translations. Re-run the affected agent-interaction and conflict
+    scenarios after any material change to models, policies, or the agent population, recording results
+    before redeployment.
 
     '
 - evidence_numeral: V
   how_to_produce: 'Deployment verification: live sampling of intent echoes, typed concerns routed, disputes
-    opened/resolved. Weekly operational report; anomalies reviewed.
+    opened/resolved. Enforcement is evidenced by the deployed guardrail and permission configurations
+    plus blocked-action test results, not by model self-report. Weekly operational report; anomalies reviewed.
 
     '
 - evidence_numeral: VI

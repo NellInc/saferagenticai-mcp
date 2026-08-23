@@ -117,7 +117,7 @@ review_notes: '"Poor Mutual Agent Optimization" is broadly defined; this pattern
   so org variance is expected.'
 cross_references:
 - I1::idx1::opaque-self-improvement-capabilities
-- I1::idx2::undefined-multiagent-ensembles
+- I1::idx2::undefined-multi-agent-ensembles
 - I1::idx8::emergent-system-cooperation
 version_compat:
   framework_version_min: '1.0'

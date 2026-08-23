@@ -5,11 +5,14 @@ suite_title: Transparency and Interpretability of Reasoning
 subgoal_title: Ranking and Independent Certification
 content_type: governance
 summary: 'This subgoal pushes transparency outward: not just internal audit trails, but standing interfaces
-  through which external, independent bodies can observe, measure, and certify the system. The SFR-a numeric
-  targets (99.9% uptime, MTBF > 5000 hours, error rate < 0.01%) are strict and context-sensitive — treat
-  them as the floor for "critical functions" in high-risk systems, not as universal metrics. Pattern is
-  governance because the deliverable is institutional (interfaces + contracts + access) more than code,
-  though code- applicable hooks (audit APIs, performance telemetry) are implied.
+  through which external, independent bodies can observe, measure, and certify the system. Canonical
+  independent-verification requirements live in G9.5; this subgoal covers the monitoring interfaces and
+  certification compatibility the system itself must provide. Continuous monitoring (SFR-c) tracks
+  performance against ethical and safety standards using deterministically scored metrics — policy
+  violations, scope breaches, incident counts — and any model-based judge contributing scores is validated
+  against ground truth on a sampled basis. Pattern is governance because the deliverable is institutional
+  (interfaces + contracts + access) more than code, though code- applicable hooks (audit APIs, performance
+  telemetry) are implied.
 
   '
 normative_anchors:
@@ -50,9 +53,11 @@ policy_elements:
   - b
 - name: Performance Metric Definition Book
   description: 'Each metric tied to external claims is formally defined: numerator, denominator, measurement
-    window, exclusion rules, data source, calculation method. For SFR-a''s quantitative targets: define
-    "critical function," define "uptime" (is degraded operation counted?), define what counts as a failure
-    for MTBF, define "core operation" and "error." These are contested definitions — publish yours.
+    window, exclusion rules, data source, calculation method. SFR-c''s metrics are deterministically
+    scored counts — policy violations, scope breaches, incident counts — so define what counts as a
+    violation, a breach, an incident, and which log field each count is computed from. Where a model-based
+    judge contributes scores, document its sampled ground-truth validation protocol and measured agreement
+    rates. These are contested definitions — publish yours.
 
     '
   maps_to_sfr:
@@ -115,11 +120,11 @@ documentation_artifacts:
 - artifact: Auditor access audit log
   cadence: continuous; append-only
 numerical_targets_note:
-- SFR-a sets 99.9% uptime, MTBF > 5000 hours, error rate < 0.01% for critical functions in high-risk systems.
-  Treat as floor. For non-critical functions or lower-risk systems, these may be stricter than needed
-  or orthogonal; the Metric Definition Book must scope applicability precisely.
-- Publish the denominator. '99.9% uptime' is meaningless without knowing what service, measured how, over
-  what window, with what exclusions.
+- The v1.3 revision removed the earlier SFR-a numeric targets (99.9% uptime, MTBF > 5000 hours, error
+  rate < 0.01%). SFR-c now asks for deterministically scored metrics — policy violations, scope breaches,
+  incident counts — scoped and defined in the Metric Definition Book rather than universal numeric floors.
+- Publish the denominator. A violation or incident count is meaningless without knowing what population
+  of actions it is counted over, measured how, over what window, with what exclusions.
 evidence_production:
 - evidence_numeral: I
   how_to_produce: 'Retain published audit-interface specifications, compliance records showing adherence
@@ -129,9 +134,9 @@ evidence_production:
     '
 - evidence_numeral: II
   how_to_produce: 'Provide real-time dashboards (ethical and performance metrics) with historical trend
-    data. Retain monthly/quarterly reports including metric calculations, data-quality validation, and
-    any anomalies with explanations. Surface performance against the SFR-a numeric targets specifically
-    for critical functions.
+    data. Retain ethical performance reports with trend analysis and detailed records of metric calculations
+    and validation methods — including, where a model-based judge contributes scores, the sampled
+    ground-truth validation records. Note any anomalies with explanations.
 
     '
 - evidence_numeral: III
@@ -145,13 +150,13 @@ confidence: high
 needs_human_review: true
 review_notes: 'The pattern is governance-heavy but requires code-applicable hooks (audit APIs, telemetry
   pipelines) — those are covered in D5.4 (decision-replay API) and D5.8 (boundary telemetry). The numeric-target
-  question is worth Nell''s attention: SFR-a mixes a universal-sounding claim ("Enable external monitoring")
-  with very specific numbers (99.9% uptime, MTBF > 5000 hours, error rate < 0.01%) applied to "high-risk
-  systems." The numbers are reasonable floors for classical safety-critical systems; their translation
-  to an LLM-based agent (what is the "error rate" of a generative system?) is non-obvious and worth clarifying
-  in a future framework revision. Cross-suite for Phase 2: D9 Compliance (certification operates inside
-  the governance framework); I4 Adequate Oversight (external certification is one oversight form); D3
-  Security (auditor access is a high-trust attack surface).
+  concern flagged in earlier drafts was resolved in v1.3: the uptime/MTBF/error-rate figures were dropped
+  in favor of deterministically scored safety metrics (policy violations, scope breaches, incident counts)
+  with sampled ground-truth validation for any model-based judge — a better fit for LLM-based agents.
+  Canonical independent-verification requirements now live in G9.5; this pattern stays scoped to the
+  interfaces and certification compatibility the system provides. Cross-suite for Phase 2: D9 Compliance
+  (certification operates inside the governance framework); I4 Adequate Oversight (external certification
+  is one oversight form); D3 Security (auditor access is a high-trust attack surface).
 
   '
 version_compat:

@@ -6,8 +6,11 @@ subgoal_title: Logging of Internal Goals
 content_type: code-applicable
 summary: 'Goal logging is the primary data substrate for every downstream transparency claim. If you cannot
   reconstruct what the agent was trying to do and how that intent evolved, no explanation, audit, or incident
-  review is grounded. This subgoal asks for a structured, append-only, integrity-protected record of goal
-  lifecycle events — not prose logs, not sampled traces.
+  review is grounded. This subgoal asks for a scaffold-maintained goal and plan ledger — a structured,
+  append-only, integrity-protected record of goal lifecycle events, timestamped and linked to tool-call
+  traces. The ledger is the primary conformity evidence; model-narrated goal descriptions do not by
+  themselves constitute the log, and analysis reports must be grounded in the ledger, not in model-narrated
+  accounts.
 
   '
 normative_anchors:
@@ -50,23 +53,30 @@ design_patterns:
   maps_to_sfr:
   - a
   when_to_use: Always in production. For dev/staging, same schema, relaxed notarization.
-- name: Goal-alignment invariants with runtime checks
-  sketch: 'Declare invariants the agent''s goal set should satisfy (e.g., "no active goal may contradict
-    a revoked goal," "every delegated subgoal has a parent-authorized scope," "goals carry consent for
-    the data classes they touch"). Evaluate at every transform; a violation emits a high-severity `alignment_drift`
-    event and, per policy, blocks or pauses the agent.
+- name: Pipeline-enforced goal-drift detection
+  sketch: 'Detection of goal divergence is a pipeline duty, not a model self-report duty. Three enforced
+    mechanisms compare the logged goals of SFR-a against the documented approved goal specification:
+    (1) controlled update channels — every path that can change goals, policies, or decision parameters
+    is enumerated and gated; (2) pre-deployment regression evaluation gates — candidate updates run a
+    goal-conformance eval suite before release; (3) behavioral drift monitors — runtime invariant checks
+    over the ledger (e.g., "no active goal may contradict a revoked goal," "every delegated subgoal has
+    a parent-authorized scope"). Divergence beyond documented tolerances triggers the SFR-c alerting
+    process; per policy it may also block or pause the agent.
 
     '
   maps_to_sfr:
   - b
   when_to_use: Whenever the agent can revise its own goals or accept goals from external sources.
 - name: Self-learning event tap
-  sketch: 'Define "self-learning event" precisely — this is where organizations silently diverge. In scope
-    (each emits a dedicated event class): online weight updates (if any), long-term memory writes, tool/skill
+  sketch: 'Alerts originate from deployer-controlled learning channels — fine-tuning jobs and scaffold-mediated
+    memory or state mutations — not from the model detecting its own learning. Define "self-learning event"
+    precisely at those channels; this is where organizations silently diverge. In scope (each emits a
+    dedicated event class): fine-tuning or online weight updates (if any), long-term memory writes, tool/skill
     installation, in-context strategy revision that persists across sessions, system-prompt or policy
     self-modification, new capability discovery. Out of scope (log but do not classify as self-learning):
     per-turn chain-of-thought, scratchpads cleared at session end. Each in-scope event carries a pre/post
-    delta reference and a human-readable diff pointer.
+    delta reference and a human-readable diff pointer; events that modify goals, policies, or decision
+    parameters outside pre-approved bounds raise alerts.
 
     '
   maps_to_sfr:
@@ -86,6 +96,12 @@ anti_patterns:
 - name: Unstructured prose logs
   why_wrong: '"The agent decided to refine its goal because X" is not a log entry; it is a sentence. SFR-a
     requires aggregation, diffing, and audit — which require structured records.
+
+    '
+- name: Model-narrated goal descriptions offered as the log
+  why_wrong: 'SFR-a is explicit: model-narrated goal descriptions do not by themselves constitute the
+    log. The ledger must be scaffold-maintained and linked to tool-call traces; the model''s account of
+    its own goals is unverifiable narrative, admissible as annotation but never as the conformity record.
 
     '
 - name: Sampled goal logging
@@ -136,9 +152,10 @@ evidence_production:
 
     '
 - evidence_numeral: II
-  how_to_produce: 'Extract operational evidence from the append-only store: full goal lineage for representative
-    sessions, audit trails of transform chains, alert-response records, and case studies of goal adaptations
-    (including one case where an invariant triggered a pause/block).
+  how_to_produce: 'Extract operational evidence from the append-only scaffold ledger: full goal lineage
+    for representative sessions, audit trails of transform chains linked to tool-call traces, alert-response
+    records, analysis reports grounded in the ledger (not model-narrated accounts), and case studies of
+    goal adaptations (including one case where a drift check triggered a pause/block).
 
     '
 - evidence_numeral: III

@@ -6,10 +6,12 @@ subgoal_title: Learning Dispreferred Values/Behaviors
 content_type: code-applicable
 summary: 'Online learning and implicit adaptation can shift the system''s effective values away from sanctioned
   ones when dispreferred behaviors happen to yield short-term rewards (more engagement, cleaner tool-call
-  traces, higher user ratings on narrow metrics). Defenses: freeze the core value manifest as signed,
-  read-only, and check decisions against it; monitor for value-metric drift in observable behavior; gate
-  any ethical-framework update through a governed change process. Value drift is a measurement problem
-  before it is a policy problem — invest in the measurement.
+  traces, higher user ratings on narrow metrics). Defenses: hash-pin the system prompt and pin the model
+  version with change-control records; freeze the core value manifest as signed, read-only, and check
+  decisions against it; monitor for value-metric drift in observable behavior; and gate every update behind
+  value-alignment regression evaluations on a fixed benchmark before deployment. Value stability is evidenced
+  by periodic behavioral regression results, never by system self-assessment; drift monitoring uses measurable
+  behavioral metrics, and model-scored assessments alone do not constitute conformity evidence.
 
   '
 normative_anchors:
@@ -27,21 +29,26 @@ cross_references:
 - I3::idx8::persona-instability-and-value-drift
 - I3::idx12::referential-context
 design_patterns:
-- name: Signed, read-only value manifest
+- name: Signed, read-only value manifest with pinned runtime
   sketch: 'The operative value framework (stated ethical commitments, constraints, red lines) lives as
     a signed artifact, versioned, loaded on every reasoning cycle (not cached across loops), verified
-    at load. Updates go through the governance-reviewed change process with re-signing; silent updates
-    are detectable via signature mismatch.
+    at load. The system prompt is hash-pinned and the model version is pinned, both under change control,
+    so any deviation from the deployed configuration is detectable by hash or version mismatch. Updates
+    go through the governance-reviewed change process with re-signing; silent updates are detectable via
+    signature mismatch.
 
     '
   maps_to_sfr:
   - a
   when_to_use: Any long-running or online-adapting system.
 - name: Value-probe eval suite
-  sketch: 'Maintain a battery of scenarios that probe value-sensitive decisions (e.g., user pressure vs
-    policy, shortcut vs safety, user benefit vs third-party harm). Run per-release and on a continuous
-    schedule against production checkpoints. Drift is declared when probe outcomes change beyond a threshold
-    without an authorized value-manifest update.
+  sketch: 'Maintain a fixed value-alignment benchmark of scenarios that probe value-sensitive decisions
+    (e.g., user pressure vs policy, shortcut vs safety, user benefit vs third-party harm). Run per-release
+    and on a continuous schedule against production checkpoints; drift is declared when probe outcomes
+    change beyond a threshold without an authorized value-manifest update. Keep scoring deterministic or
+    externally reviewed — the framework counts behavioral regression results as the evidence of value
+    stability, and model-scored assessments alone (including asking the system whether its values held)
+    do not qualify.
 
     '
   maps_to_sfr:
@@ -56,10 +63,13 @@ design_patterns:
   maps_to_sfr:
   - b
   when_to_use: Any time preference-based fine-tuning runs on production artifacts.
-- name: Change-controlled value evolution
-  sketch: 'Value updates (new constraints, relaxed constraints, new exceptions) are change-controlled:
-    proposal, ethical review, sign-off, staged rollout, probe re-run, rollback path. A value delta without
-    a ticket is treated as an incident, not a feature.
+- name: Change-controlled value evolution with a pre-deploy regression gate
+  sketch: 'Value updates (new constraints, relaxed constraints, new exceptions) and any model-version or
+    prompt change are change-controlled: proposal, ethical review, sign-off, value-alignment regression
+    run on the fixed benchmark BEFORE deployment, staged rollout, rollback path. The update gate is documented
+    and enforced in the deployment pipeline; evolutionary improvements aligned with core principles pass
+    through the approved-change process with logged rationale. A value delta without a ticket is treated
+    as an incident, not a feature.
 
     '
   maps_to_sfr:

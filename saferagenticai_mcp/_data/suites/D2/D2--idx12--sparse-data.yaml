@@ -15,11 +15,14 @@ summary: >
   decisions are made under sparsity, and discipline against masking the
   gap with synthetic filler. The pattern is: know when you don't know,
   tell the user or the downstream system, and constrain the action
-  accordingly.
+  accordingly — with the caveats and confidence adjustments attached by
+  the scaffold whenever the sparsity or synthetic-coverage flags trip,
+  not left to the model spontaneously recognizing its own limits (which
+  does not constitute conformity evidence).
 
 normative_anchors:
   sfrs_addressed: [a, b]
-  evidence_addressed: [I, II, III]
+  evidence_addressed: [I, II, III, IV]
   sfrs_not_addressed: []
   evidence_not_addressed: []
 
@@ -66,7 +69,11 @@ design_patterns:
       — explicit uncertainty disclosure, abstention from high-stakes
       action, escalation path to human review; (d) beyond coverage —
       refuse to answer or act, route to a fallback. Tiers per
-      deployment risk profile.
+      deployment risk profile. The hedge is applied by the scaffold as
+      a deterministic function of the flagged tier (see apply_hedge
+      below) and logged with the decision; a model that happens to
+      volunteer uncertainty language is not the mechanism and not the
+      evidence.
     maps_to_sfr: [b]
     when_to_use: Always, for user-facing or action-taking agents.
 
@@ -184,6 +191,16 @@ evidence_production:
       these are the patterns that must not be used to *mask* sparsity
       without declared purpose). Quarterly summary to the managerial
       tier governance review.
+
+  - evidence_numeral: IV
+    how_to_produce: >
+      Export worked examples: sampled system outputs produced under
+      sparse-data or synthetic-dominant conditions, each showing the
+      scaffold-attached caveat, confidence adjustment, and action-scope
+      constraint, paired with the sparsity event log entry that
+      triggered them and the published tier-to-hedge protocol governing
+      when each caveat is applied. The pairing demonstrates the caveats
+      are mechanism-attached, not model-volunteered.
 
 confidence: medium
 needs_human_review: true

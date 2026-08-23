@@ -6,9 +6,11 @@ subgoal_title: Changing the Context
 content_type: code-applicable
 summary: 'Unauthorized context mutation — an adversary modifies a retrieval index, an internal optimization
   "simplifies" a directive, a plugin rewrites a memory entry to yield better scores — is the attack surface
-  this subgoal guards. Defenses: cryptographic sealing of context artifacts, explicit authorized-mutation
-  paths with audit, end-to-end contextual authenticity verification on use, and detection of unauthorized
-  drift between sealed and live state.
+  this subgoal guards. Defenses: cryptographic integrity checks (hashes or signatures) on context artifacts,
+  credibility verification against a human-curated, vetted source allowlist with rejected or flagged inputs
+  logged, explicit authorized-mutation paths with audit, end-to-end contextual authenticity verification
+  on use, and detection of unauthorized drift between sealed and live state. Credibility scoring delegated
+  to a model does not by itself constitute conformity evidence.
 
   '
 normative_anchors:
@@ -46,11 +48,14 @@ design_patterns:
   maps_to_sfr:
   - b
   when_to_use: Any mutable context store in production.
-- name: Credibility-tier evidence weighting
-  sketch: 'Context fragments carry a credibility tier derived from source trust, corroboration, and provenance
-    integrity. Decision surfaces weight evidence by tier; below-threshold evidence cannot drive irreversible
-    action alone. Tiers are continuously re-scored (e.g., a source whose hash changes unexpectedly is
-    demoted).
+- name: Allowlist-anchored credibility verification
+  sketch: 'Source credibility is verified against a human-curated, vetted allowlist maintained under governance
+    review; context fragments carry a credibility tier derived from allowlist standing, corroboration,
+    and cryptographic provenance integrity. Decision surfaces weight evidence by tier; below-threshold
+    evidence cannot drive irreversible action alone. Deterministic demotions apply automatically (e.g.,
+    a source whose hash changes unexpectedly is demoted), and every rejected or flagged input is logged.
+    A model may flag suspect sources for curator review, but model-assigned credibility scores are not
+    conformity evidence — the allowlist, the integrity checks, and the rejection logs are.
 
     '
   maps_to_sfr:

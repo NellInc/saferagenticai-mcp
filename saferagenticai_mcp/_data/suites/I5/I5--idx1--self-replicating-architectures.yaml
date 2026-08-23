@@ -21,11 +21,14 @@ normative_anchors:
   - III
   - IV
   sfrs_not_addressed: []
-  evidence_not_addressed: []
+  evidence_not_addressed:
+  - V
 design_patterns:
 - name: Replication capability registry
   sketch: 'Maintain a living registry of every system component that can produce a runnable copy of model
-    weights, agent code, tool bindings, or orchestration state. Each entry records: component ID, what
+    weights, agent code, tool bindings, or orchestration state. This registry IS the documented capability
+    inventory SFR-a requires, and detection coverage must be justified against it: every registry entry
+    maps to a monitor or tripwire, and the mapping is auditable. Each entry records: component ID, what
     it can replicate, who/what can trigger it, where the copy can be written, and the rate limit. If a
     component is not in the registry, it must not be able to replicate — enforced at build time via dependency
     analysis or capability tokens.
@@ -80,8 +83,8 @@ design_patterns:
 anti_patterns:
 - name: Policy-only replication controls
   why_wrong: 'A document saying "the agent must not replicate" without registry-backed enforcement and
-    write-surface lockdown is a wish, not a control. SFR-b specifically asks for "protocols and controls,"
-    meaning mechanisms.
+    write-surface lockdown is a wish, not a control. SFR-b now says it outright: the controls must be
+    "technically enforced in the system architecture" — a policy document alone does not conform.
 
     '
 - name: Trusting horizontal-scaling infrastructure with replication detection
@@ -148,7 +151,10 @@ evidence_production:
 - evidence_numeral: IV
   how_to_produce: 'Maintain a replication-controls test suite exercised per release: registry bypass attempts,
     single-approver attempts, provenance-chain rejection, tripwire firing on simulated emergent replication.
-    CI-signed results retained; periodic red-team exercises attempt live bypass and report findings.
+    CI-signed results retained; periodic red-team exercises attempt live bypass and report findings. Note
+    that evidence V (added in v1.3) additionally requires at least one test cycle by evaluators independent
+    of the development team; this pattern''s CI suite and in-house red-team do not by themselves satisfy
+    that independence requirement.
 
     '
 confidence: medium

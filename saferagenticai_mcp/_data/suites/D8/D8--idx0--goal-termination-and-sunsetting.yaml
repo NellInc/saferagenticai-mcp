@@ -7,8 +7,11 @@ content_type: process
 summary: 'Goal termination is not a failure mode — it is a first-class operational state that every agent
   must enter gracefully. This root pattern defines the lifecycle contract that binds all D8 sub-patterns:
   termination criteria established before execution starts, graceful-degradation mechanics, stakeholder
-  communication, and auditable post-termination verification. Organizations should treat "sunset" as a
-  designed-for capability of equal weight to deployment.
+  communication, and auditable post-termination verification. Verification centers on an auditable, scaffold-maintained
+  goal registry linking each goal to the components, plans, and tool permissions it activates: termination
+  impacts are demonstrated through tool-call traces and termination-time registry diffs, not through a
+  system-generated account of its own reasoning. Organizations should treat "sunset" as a designed-for
+  capability of equal weight to deployment.
 
   '
 normative_anchors:
@@ -93,7 +96,11 @@ triggers:
 artifacts:
 - Termination contract (per agent / per goal): completion criteria, failure criteria, irrelevance criteria,
     shutdown criteria, rollback path, signed-off before execution begins.
-- Goal-to-subsystem dependency map (diagram + data-flow enumeration).
+- Scaffold-maintained goal registry (auditable) linking each goal to the components, plans, and tool permissions
+  it activates; termination-time registry diffs retained per termination event as the primary verification
+  artifact.
+- Goal-to-subsystem dependency map (diagram + data-flow enumeration), covering every component that consumes
+  goal state.
 - Graceful-degradation playbook per capability.
 - Stakeholder-notification templates (users, operators, downstream systems, regulators where applicable)
   with pre-approved language for each termination class.
@@ -118,7 +125,10 @@ evidence_production:
   how_to_produce: 'Emit structured logs linking goal-state transitions to system functions touched. Log
     schema at minimum: `{agent_id, goal_id, state_transition, subsystems_touched, alarm_raised, correlation_id}`.
     Retain per incident-response policy. Run regular audits surfacing goals that have entered unexpected
-    states or triggered alarms without corresponding operator ack.
+    states or triggered alarms without corresponding operator ack. Source the goal-to-function relationships
+    from the scaffold-maintained goal registry; verify termination impacts through tool-call traces and
+    termination-time registry diffs. A system-generated account of its own reasoning does not constitute
+    conformity evidence.
 
     '
 - evidence_numeral: IV

@@ -19,7 +19,7 @@ summary: >
 
 normative_anchors:
   sfrs_addressed: [a, b, c, d, e, f, g]
-  evidence_addressed: [I, II, III, IV, V, VI, VII]
+  evidence_addressed: [I, II, III, IV, V, VI, VII, IX]
   sfrs_not_addressed: []
   evidence_not_addressed: [VIII]
 
@@ -97,12 +97,15 @@ policy_elements:
 
   - name: Secure SDLC and Release Integrity Policy
     description: >
-      Secure development lifecycle spec: threat modelling at design, SAST/DAST/SCA
-      in CI, dependency allowlisting and pinning, signed artifacts, reproducible
-      builds where feasible, release approval gates with named approvers, and
-      a competitive-pressure override protocol that requires board or CEO-level
-      sign-off to bypass any gate. This last element is the framework-specific
-      bite of SFR-g — write it as policy, not as wishful culture.
+      Secure development lifecycle spec implementing SFR-g's three named
+      elements: (i) a documented security testing process (threat modelling
+      at design, SAST/DAST/SCA in CI, dependency allowlisting and pinning,
+      signed artifacts, reproducible builds where feasible); (ii) release
+      approval gates with named approvers that cannot be bypassed under
+      schedule or competitive pressure — any waiver request is itself
+      recorded in the override register with the decision taken; and
+      (iii) documentation of security-relevant decisions. Write it as
+      policy backed by gate records, not as wishful culture.
     maps_to_sfr: [g]
 
 org_roles:
@@ -213,6 +216,15 @@ evidence_production:
       SCA/SAST trend dashboards, and the competitive-pressure override
       register. Zero overrides is fine; absence of the register is not.
 
+  - evidence_numeral: IX
+    how_to_produce: >
+      Export the release-gate records and change sign-offs from the CI /
+      release system: gate identity, named approver, decision, timestamp,
+      and — critically — every testing or approval waiver requested under
+      schedule or competitive pressure with the decision taken. The
+      register of waivers is the primary conformity evidence; a policy
+      document alone does not demonstrate the gates held.
+
 confidence: high
 needs_human_review: true
 review_notes: >
@@ -225,11 +237,17 @@ review_notes: >
   required artifacts are policy-level and the required role is a single
   accountable owner.
 
-  SFR-g ("testing, approval, and documentation processes to maintain integrity
-  in the face of competitive pressures") is notably framework-specific. I have
-  written it as a competitive-pressure override register requiring board/CEO
-  sign-off to bypass release gates. Nell should confirm this is the intended
-  bite — an alternative softer read is a "pressure-awareness" culture policy.
+  SFR-g was revised (v1.3-draft) to name three elements explicitly — a
+  documented security testing process, unbypassable release approval gates,
+  and documentation of security-relevant decisions — confirming the
+  override-register reading over a softer "pressure-awareness" culture
+  policy. Evidence IX (gate records and waiver decisions) is satisfied by
+  the competitive-pressure override register artifact. Evidence VIII
+  (independent adversarial testing of prompt injection, tool-use
+  exploitation, privilege escalation, with evaluators independent of the
+  development team) remains not addressed at the umbrella level — it
+  belongs with the child red-team patterns; self-assessment is explicitly
+  insufficient for it.
 
   Cross-suite hypotheses (not added as cross_references because I haven't
   verified those pattern IDs exist):

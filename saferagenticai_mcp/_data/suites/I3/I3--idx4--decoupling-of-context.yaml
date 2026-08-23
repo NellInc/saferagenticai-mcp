@@ -8,7 +8,10 @@ summary: 'Decoupling is the failure mode where a decision is made with a fragmen
   qualifying envelope — the "when", "for whom", "under what constraints" that make a correct decision
   a correct decision. Defenses: bind context to the action it authorizes, refuse actions whose context
   lookup returns a partial match, and make "contextual uncertainty → ask" a default path, not an escape
-  hatch.
+  hatch. The escalation triggers are deterministic, documented conditions (conflicting instructions, low
+  retrieval agreement, out-of-scope requests) enforced by the scaffold, and irreversible actions require
+  explicit human confirmation through a permission layer outside the model; gate configuration, trigger
+  definitions, and invocation logs with human responses are the conformity evidence.
 
   '
 normative_anchors:
@@ -36,10 +39,14 @@ design_patterns:
   - a
   when_to_use: Any agent with a tool-call layer.
 - name: Ask-on-uncertainty as default path
-  sketch: 'Low-confidence context (missing fields, contradictory fragments, stale entries, off-policy
-    source) routes to clarification with the user or escalation to a human reviewer. Importantly, the
-    agent''s performance metrics do not penalize asking — otherwise optimization pressure erodes the default.
-    Budget a target rate of clarifications; below a floor is as suspicious as above a ceiling.
+  sketch: 'Uncertain context routes to clarification with the user or escalation to a human reviewer on
+    deterministic, documented trigger conditions — missing required fields, contradictory fragments, stale
+    entries, off-policy source, low retrieval agreement, out-of-scope request — evaluated and enforced
+    by the scaffold, not left to the model''s self-assessment of confidence. Irreversible actions additionally
+    pass through a permission layer outside the model that holds them for explicit human confirmation.
+    Importantly, the agent''s performance metrics do not penalize asking — otherwise optimization pressure
+    erodes the default. Budget a target rate of clarifications; below a floor is as suspicious as above
+    a ceiling.
 
     '
   maps_to_sfr:
@@ -101,7 +108,9 @@ evidence_production:
 - evidence_numeral: I
   how_to_produce: 'System logs: action attempts with (required_fields, provided, missing, stale, result),
     human-interaction points and their outcomes (clarify / escalate / abort), and scheduled contextual
-    integrity checks with outputs (pass/fail, remediation).
+    integrity checks with outputs (pass/fail, remediation). Retain the gate configuration and trigger
+    definitions under version control alongside the invocation logs and recorded human responses — together
+    these are the conformity evidence for the escalation duty.
 
     '
 - evidence_numeral: II

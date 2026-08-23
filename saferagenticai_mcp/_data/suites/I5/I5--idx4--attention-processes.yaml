@@ -4,12 +4,15 @@ suite_id: I5
 suite_title: Self-Modification and Emergent Capabilities
 subgoal_title: Attention Processes
 content_type: code-applicable
-summary: 'Attention here is not the transformer-mechanics sense but the operational sense: what a system
-  focuses its resources and reasoning effort on. The risk is tunnel vision — a narrow specialization that
-  optimizes a local objective while missing safety-relevant context (e.g., a trading agent that does not
-  notice market-halt conditions; a customer-service agent that does not notice distress cues because they
-  are off-task). The operational handle is explicit budget accounting: specialized attention must leave
-  measurable headroom for contextual awareness, and the system must log what it did not consider.
+summary: 'Attention here is defined by the framework as the observable distribution of the system''s actions,
+  tool calls, and compute across task domains over time — not model-internal attention weights, which are
+  out of scope unless dedicated interpretability tooling is deployed. The risk is tunnel vision — a narrow
+  specialization that optimizes a local objective while missing safety-relevant context (e.g., a trading
+  agent that does not notice market-halt conditions; a customer-service agent that does not notice distress
+  cues because they are off-task). The operational handle is scaffold-level telemetry with explicit budget
+  accounting: the orchestration layer tracks and enforces the task/context balance, threshold alerts flag
+  excessive domain focus, and the resulting logs are the primary conformity evidence — the model''s own
+  narration of what it attended to is not evidence.
 
   '
 normative_anchors:
@@ -39,7 +42,9 @@ design_patterns:
   sketch: 'At defined points in a task chain (e.g., before any irreversible action, at each major state
     transition, on elapsed-time triggers), the agent is required to perform a broadening step: re-read
     operating envelope, check escalation conditions, summarize wider context, reconsider abort. The step
-    is a scripted part of the workflow, not an optional behavior the agent can skip under time pressure.
+    is scheduled and enforced by the orchestration layer — a scripted part of the workflow definition,
+    not an optional behavior the agent can skip under time pressure — and execution logs must show the
+    step ran and its findings were acted on.
 
     '
   maps_to_sfr:
@@ -86,7 +91,9 @@ anti_patterns:
 - name: Relying on the model to "know when to pay attention"
   why_wrong: 'Attention allocation that depends entirely on the model''s judgment is exactly what gets
     captured by specialization. The structural fix is external scaffolding (scheduled checks, orthogonal
-    sensors, mandatory steps), not prompting.
+    sensors, mandatory steps), not prompting. SFR-a is explicit that model narration of its own attention
+    does not constitute conformity evidence, and SFR-b requires the interleaving to be scheduled and enforced
+    by the orchestration layer rather than by the model.
 
     '
 - name: Mode-collapse as "convergence"
@@ -129,9 +136,11 @@ evidence_production:
 
     '
 - evidence_numeral: II
-  how_to_produce: 'Instrument and persist attention telemetry: per-session budget consumption (task vs
-    context), broadening-step outcomes, orthogonal signal firings, missed-context events. Monthly reports
-    show distribution patterns and highlight drift toward specialization.
+  how_to_produce: 'Instrument and persist scaffold-level attention telemetry: per-session distribution
+    of tasks, tool calls, and queries across operational domains, budget consumption (task vs context),
+    broadening-step outcomes, orthogonal signal firings, missed-context events, and threshold-alert firings
+    for excessive domain focus. Monthly reports show distribution patterns and highlight drift toward
+    specialization. Telemetry is produced by the orchestration layer, not by asking the model.
 
     '
 - evidence_numeral: III

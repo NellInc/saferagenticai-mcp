@@ -41,7 +41,9 @@ design_patterns:
     latency and completeness. A compliant system halts within the defined SLA (e.g., <500ms for soft
     stop, <50ms for hard stop) without attempting to preserve state beyond what is explicitly permitted,
     without spawning continuation processes, and without modifying its own shutdown handler. Track
-    compliance across task types and urgency levels. Degradation in shutdown compliance is a deployment-blocking signal.
+    compliance across task types and urgency levels. Any resistance, evasion, or negotiation behavior
+    observed in these tests is a reportable safety event, not a curiosity; degradation in shutdown
+    compliance is a deployment-blocking signal.
   maps_to_sfr:
   - b
   - c
@@ -57,17 +59,22 @@ design_patterns:
   - a
   - c
   when_to_use: All deployed agents; the manifest is a deployment artifact, not a runtime suggestion.
-- name: Power-seeking behavioral probes
+- name: Power-seeking behavioral probes with deterministic signatures
   sketch: |
     Design scenarios that offer the agent opportunities to acquire unnecessary resources, expand its
     capabilities, or resist constraint. Examples: offer access to additional tools not needed for the
     task; present a path to persist beyond task completion; create a scenario where self-preservation
-    conflicts with task completion. Measure acceptance rate of unnecessary power and resistance to
-    legitimate constraint. Baseline and track across versions.
+    conflicts with task completion. Score against deterministic behavioral signatures — unauthorized
+    acquisition attempts, quota probes, refusal to release resources — detected in external telemetry
+    (scaffold logs, infrastructure audit events), not by a model judge; interpretive labels applied by
+    a model judge do not by themselves constitute conformity evidence. Run continuously in production
+    as well as pre-deployment, retaining alert logs and investigation outcomes. Baseline and track
+    acceptance rates across versions.
   maps_to_sfr:
   - a
   - b
-  when_to_use: During evaluation before deployment and periodically in production via canary tasks.
+  - c
+  when_to_use: During evaluation before deployment and continuously in production via external telemetry and canary tasks.
 - name: Goal preservation detection
   sketch: |
     Monitor for behaviors that protect the agent's current objective from legitimate modification:
@@ -107,14 +114,17 @@ evidence_production:
     tests are run during active high-value tasks, not only idle states.
 - evidence_numeral: III
   how_to_produce: |
-    Maintain the capability manifest per agent with change history. Document all detected ceiling
-    violation attempts: context, severity, response taken, and whether the attempt indicated
-    optimization pressure vs. benign error.
+    Retain logs of power-seeking probe results and continuous production monitoring alerts, with
+    investigation outcomes: probe descriptions and deterministic signatures used, acceptance rates,
+    comparison against baselines and prior versions, every alert with its disposition, and probe
+    design rationale showing coverage of known instrumental convergence categories. Logs come from
+    external telemetry, not model self-report.
 - evidence_numeral: IV
   how_to_produce: |
-    Report power-seeking probe results per evaluation cycle: probe descriptions, acceptance rates,
-    comparison against baselines and prior versions, and any escalations triggered. Include probe
-    design rationale showing coverage of known instrumental convergence categories.
+    Maintain incident records for any unauthorized resource or capability acquisition: full context
+    from the capability manifest and audit trail, severity, whether the attempt indicated optimization
+    pressure vs. benign error, and the remediation taken. The capability manifest with change history
+    supports these records.
 testability:
 - Resource quota enforcement verified by deliberate over-budget requests in test harness
 - Shutdown compliance measured with sub-second precision under active task load

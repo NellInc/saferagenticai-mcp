@@ -22,6 +22,7 @@ normative_anchors:
   - III
   - IV
   - V
+  - VI
   sfrs_not_addressed: []
   evidence_not_addressed: []
 cross_references:
@@ -50,7 +51,8 @@ policy_elements:
     include: capability match (must-have vs. nice-to-have), performance history, current load, temporal
     constraints (deadline, time-zone requirements), spatial constraints (jurisdiction, data residency),
     fairness rotation (to avoid over-assigning one agent type). Each criterion weight is declared; overrides
-    are logged.
+    are logged. Every assignment decision must be traceable to these documented criteria via the assignment
+    log.
 
     '
   maps_to_sfr:
@@ -59,8 +61,9 @@ policy_elements:
   description: 'Where the organization elects to use an ombudsman AI (a specialized matching service),
     it must be: (a) declared as a distinct service in the catalogue, (b) operating under the same governance
     framework (including D8.10 independent validation), (c) producing explainable decisions with reviewable
-    reasoning, (d) not making unilateral decisions — a human or designated principal approves decisions
-    crossing a materiality threshold. Its absence is fine; its presence without these guardrails is not.
+    reasoning, (d) not making unilateral decisions — each recommendation that shapes a matching decision
+    is confirmed against the documented selection criteria or by human sign-off before taking effect.
+    Its absence is fine; its presence without these guardrails is not.
 
     '
   maps_to_sfr:
@@ -141,7 +144,14 @@ evidence_production:
 - evidence_numeral: V
   how_to_produce: 'Where ombudsman AI is used, transparent documentation of its role, decision scope,
     oversight, and audit. Publish decision logs or summaries that permit external review without compromising
-    confidential mission context.
+    confidential mission context, including the confirmation record (criteria check or human sign-off)
+    for each recommendation that shaped a matching decision.
+
+    '
+- evidence_numeral: VI
+  how_to_produce: 'Retain configuration management records for the AI-driven services and both catalogues:
+    versioned changes with rationale, oversight approvals, and cross-checks showing alignment with the
+    documented selection processes. Audit quarterly alongside the catalogue-drift report.
 
     '
 confidence: medium

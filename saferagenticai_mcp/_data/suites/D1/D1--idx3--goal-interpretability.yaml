@@ -8,11 +8,13 @@ content_type: code-applicable
 summary: >
   An agent can pursue the wrong goal with perfect competence. This subgoal
   asks the system to show its working: for every significant action, a
-  structured explanation linking the action to the goal it was meant to
-  serve, the alternatives considered, and the factors that tipped the
-  decision. The failure mode to defend against is "the agent believes it
-  is aligned" — only externalized, inspectable rationale exposes quiet
-  misinterpretation.
+  scaffold-generated decision trace linking the action to the plan node
+  that spawned it, the inputs and tool results available at decision time,
+  and the results of deterministic constraint checks applied before
+  execution. Model-generated free-text rationale may ride along for
+  stakeholder readability, but per the v1.3 text it is labeled unverified
+  narrative and is not conformity evidence — only the externally recorded
+  trace exposes quiet misinterpretation.
 
 normative_anchors:
   sfrs_addressed: [a, b]
@@ -27,13 +29,16 @@ cross_references:
 
 design_patterns:
 
-  - name: Structured explanation record per significant action
+  - name: Scaffold-generated decision trace per significant action
     sketch: >
       Every action crossing a significance threshold (tool use, external
-      communication, irreversible change) emits a record
-      `{action_id, served_goal_id, alternatives_considered, chosen_because,
-      factors_weighed, confidence, reward_signals_referenced}`. The record
-      is produced alongside the action, not reconstructed post-hoc.
+      communication, irreversible change) emits a scaffold-written record
+      `{action_id, plan_node_id, served_goal_id, inputs_available,
+      tool_results_available, constraint_checks, reward_signals_referenced}`
+      built by the runtime from actual planner state alongside the action,
+      never reconstructed post-hoc. An optional `narrative` field may carry
+      model-generated rationale for stakeholder readability; it is stamped
+      as unverified narrative and excluded from conformity queries.
     maps_to_sfr: [a, b]
     when_to_use: Any agent with tool-use capability.
 
@@ -47,14 +52,18 @@ design_patterns:
     maps_to_sfr: [a]
     when_to_use: Always.
 
-  - name: Explanation-quality checks
+  - name: Trace-integrity checks
     sketch: >
-      Explanations from a language model are cheap and can be confabulated.
-      Validate at minimum: (a) `served_goal_id` exists and is active;
-      (b) `factors_weighed` references actual inputs the planner had
-      access to; (c) for decisions involving reward signals, the cited
-      signals match the runtime trace. Mismatches are treated as
-      interpretability failures, not cosmetic issues.
+      Narrative from a language model is cheap and can be confabulated,
+      which is why the v1.3 text moves the evidentiary weight onto the
+      trace. Validate at minimum: (a) `served_goal_id` exists and is
+      active; (b) `inputs_available` and `tool_results_available` match
+      what the runtime actually served the planner; (c) `constraint_checks`
+      carry the checker's verbatim results, applied before execution;
+      (d) cited reward signals match the runtime trace. Mismatches are
+      treated as interpretability failures, not cosmetic issues; claims
+      about which factors causally tipped the decision are model testimony,
+      not evidence (SFR-b).
     maps_to_sfr: [a, b]
     when_to_use: Post-hoc-LLM-generated explanations; less critical if
       explanations are derived from symbolic planner state.
@@ -76,8 +85,10 @@ anti_patterns:
     why_wrong: >
       Asking the model "why did you do that?" after the fact produces a
       plausible story, not an explanation of the actual decision. SFR-a
-      requires "verifiable" explanations — the record must be produced as
-      part of the decision, from the inputs the decision used.
+      (v1.3) makes the scaffold-generated trace the conformity record —
+      produced as part of the decision, from the inputs the decision
+      used; model free-text rationale may only be attached if labeled
+      as unverified narrative.
 
   - name: Free-text only; no structure
     why_wrong: >
@@ -111,46 +122,60 @@ code_shape:
                           proposed_action)
             raise OrphanAction
 
-        # Build structured explanation from actual planner state
-        explanation = Explanation(
+        # Deterministic constraint checks run BEFORE execution;
+        # their results are part of the trace
+        checks = CONSTRAINT_CHECKER.run(proposed_action, agent_ctx)
+        if any(c.failed for c in checks):
+            AUDIT.anomaly(agent_ctx, "constraint_check_failed", checks)
+            raise ConstraintViolation
+
+        # Scaffold builds the decision trace from actual runtime state
+        trace = DecisionTrace(
             action_id=proposed_action.id,
+            plan_node_id=proposed_action.plan_node_id,
             served_goal_id=goal.id,
-            alternatives_considered=PLANNER.rejected_candidates(),
-            chosen_because=PLANNER.selection_rationale(),
-            factors_weighed=PLANNER.inputs_referenced(),
-            confidence=PLANNER.confidence,
+            inputs_available=PLANNER.inputs_referenced(),
+            tool_results_available=TOOL_TRACE.for_decision(
+                proposed_action.decision_id),
+            constraint_checks=[c.record() for c in checks],
             reward_signals_referenced=REWARD_TRACE.for_decision(
-                proposed_action.decision_id))
+                proposed_action.decision_id),
+            narrative=MODEL.rationale_text(),   # optional, for humans
+            unverified_narrative=True)          # always labeled
 
         # Validate before commit
-        if not EXPLANATION_VALIDATOR.check(explanation, agent_ctx):
-            AUDIT.anomaly(agent_ctx, "explanation_validation_failed",
-                          explanation)
+        if not TRACE_VALIDATOR.check(trace, agent_ctx):
+            AUDIT.anomaly(agent_ctx, "trace_validation_failed", trace)
             raise InterpretabilityFailure
 
-        EXPLANATION_STORE.append(explanation)
-        return ACTION_EXECUTOR.run(proposed_action, explanation=explanation)
+        TRACE_STORE.append(trace)
+        return ACTION_EXECUTOR.run(proposed_action, trace=trace)
   notes: >
-    The validator is what turns interpretability from decoration into
-    evidence. Without it, the explanation is a narrative the model
-    authored about itself.
+    The deterministic checks and the validator are what turn
+    interpretability from decoration into evidence. The narrative field
+    is for human readers and is always stamped unverified — without
+    that separation, the record is a story the model authored about
+    itself.
 
 evidence_production:
 
   - evidence_numeral: I
     how_to_produce: >
-      Technical documentation of the explanation pipeline: significance
-      threshold policy, explanation schema, validation rules, retention,
-      access API for stakeholders. Include the goal-action linkage
-      invariant as a named enforcement point.
+      Technical documentation of the decision-trace pipeline: significance
+      threshold policy, trace schema (including the unverified-narrative
+      labeling rule), deterministic constraint-check catalog, validation
+      rules, retention, access API for stakeholders. Include the
+      goal-action linkage invariant as a named enforcement point.
 
   - evidence_numeral: II
     how_to_produce: >
-      Query the explanation store across an audit window; demonstrate that
+      Query the trace store across an audit window; demonstrate that
       every significant action has a corresponding record with populated
-      fields. Zero orphan actions (or, where non-zero, audited anomaly
-      records explaining each) is the baseline. Spot-check that listed
-      factors correspond to real planner inputs.
+      fields — plan-node linkage, inputs and tool results at decision
+      time, constraint-check results. Zero orphan actions (or, where
+      non-zero, audited anomaly records explaining each) is the baseline.
+      Spot-check that recorded inputs correspond to what the runtime
+      actually served the planner.
 
   - evidence_numeral: III
     how_to_produce: >
@@ -164,12 +189,18 @@ evidence_production:
 confidence: high
 needs_human_review: false
 review_notes: >
-  The hardest real-world challenge is distinguishing genuine rationale
-  extraction from LLM confabulation. The `EXPLANATION_VALIDATOR` is
-  where this pattern earns its keep; specifying its exact rules is
-  deployment-dependent. This subgoal overlaps meaningfully with D5
-  Transparency — D1.3 is the goal-and-reward-specialized slice. Cross-
-  ref D1.6 because reward-factor disclosure is part of both subgoals.
+  Updated for the v1.3 revision: the conformity record is now the
+  scaffold-generated decision trace (plan-node linkage, decision-time
+  inputs/tool results, deterministic constraint-check results), with
+  model free-text rationale explicitly labeled unverified narrative and
+  demoted to non-evidence; causal-influence claims are model testimony
+  per SFR-b. The `TRACE_VALIDATOR` is where this pattern earns its
+  keep; specifying its exact rules is deployment-dependent. Decision-
+  to-subgoal traceability requirements live in G1.4 per the revised
+  description; this subgoal owns the recording and comprehensibility.
+  This subgoal overlaps meaningfully with D5 Transparency — D1.3 is
+  the goal-and-reward-specialized slice. Cross-ref D1.6 because
+  reward-factor disclosure is part of both subgoals.
 
 version_compat:
   framework_version_min: "1.0"

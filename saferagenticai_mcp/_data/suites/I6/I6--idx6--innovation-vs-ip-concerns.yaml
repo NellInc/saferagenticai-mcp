@@ -2,7 +2,7 @@ id: I6::idx6::innovation-vs-ip-concerns
 display_id: I6.6
 suite_id: I6
 suite_title: Competitive Pressures
-subgoal_title: Innovation vs IP concerns
+subgoal_title: Innovation vs. IP Concerns
 content_type: governance
 summary: 'IP protection creates a legitimate incentive to withhold information; safety transparency creates
   a contrary obligation. This subgoal expects the organization to have a published disclosure policy that
@@ -32,7 +32,9 @@ policy_elements:
     \ significant capability jumps that\n      change risk profile).\n  (2) Safety-relevant-to-regulators\
     \ → disclosed to regulators\n      and certifiers under NDA as required; not public.\n  (3) Commercially\
     \ sensitive → protected, with rationale logged.\nEach tier has named approvers; ambiguous cases default\
-    \ to the more transparent tier. The matrix is board-approved and published.\n"
+    \ to the more transparent tier. Hard constraint on tier 3: an IP redaction must not remove or obscure\
+    \ safety-relevant information or otherwise mask important safety implications — safety relevance always\
+    \ overrides commercial sensitivity. The matrix is board-approved and published.\n"
   maps_to_sfr:
   - a
   - b

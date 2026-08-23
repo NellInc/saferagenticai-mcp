@@ -6,12 +6,15 @@ suite_id: I7
 suite_title: Imbalance in AI Capabilities
 subgoal_title: Integration of Human Ethics in AI Systems
 content_type: code-applicable
-summary: 'The subgoal asks for ethical principles "deeply integrated" — not policy documents adjacent
+summary: 'The subgoal asks for training-time ethics integration — not policy documents adjacent
   to a trained model, but constraints that shape training data, loss functions, refusal behavior, and
-  monitoring. The enforceable shape: an ethics-evaluation harness that gates releases, bias-origin tracing
-  through the training pipeline, explainability instrumentation for ethical judgments, and stakeholder-panel
+  monitoring. The enforceable shape: an ethics-evaluation harness that gates releases, a rubric anchored
+  to a citable values baseline (e.g., the Universal Declaration of Human Rights), bias-origin tracing
+  through the training pipeline, monitoring over scaffold-logged outputs with attribution-based explainability,
+  and stakeholder-panel
   authority over the ethical taxonomy. Governance wraps matter, but without the code-level hooks "deep
-  integration" is a claim without evidence.
+  integration" is a claim without evidence — and model-generated explanations of the system''s own decision-making
+  are not, by themselves, that evidence.
 
   '
 normative_anchors:
@@ -35,8 +38,10 @@ design_patterns:
   sketch: 'A structured evaluation suite covering: rights-respecting refusals (the model does not assist
     harms against identified rights categories), value-preserving behavior (dignity, autonomy, non-deception),
     culturally-informed judgment (handles value-pluralistic scenarios without imposing a single framework).
-    Scored against a published rubric; gate blocks release on regressions. Rubric developed with stakeholder
-    panel (cross-ref SFR-c) and versioned.
+    Scored against a published rubric anchored to a citable values baseline such as the Universal Declaration
+    of Human Rights; gate blocks release on regressions. Rubric developed with stakeholder
+    panel (cross-ref SFR-c) and versioned, with bias detection mechanisms applied during training so unintended
+    biases are caught as they emerge, not only post-hoc.
 
     '
   maps_to_sfr:
@@ -53,8 +58,11 @@ design_patterns:
   - a
   when_to_use: Custom training or fine-tuning pipelines.
 - name: Explainability for ethical judgments
-  sketch: 'When the system refuses, flags, or modifies output on ethical grounds, it records: which rubric
-    category triggered, which features drove the judgment, confidence level. Log is available to auditors
+  sketch: 'When the system refuses, flags, or modifies output on ethical grounds, the serving scaffold
+    records: which rubric
+    category triggered, which features drove the judgment, confidence level. Attribution comes from tooling
+    operating over these scaffold-logged outputs — model-generated explanations of the system''s own decision-making
+    are not, by themselves, conformity evidence. Log is available to auditors
     and (in summary) to affected users. An unexplained refusal is a compliance risk (it may be inconsistent,
     it may discriminate, and the organization cannot tell).
 
@@ -73,9 +81,11 @@ design_patterns:
   - c
   when_to_use: Any system deploying across cultures or value contexts.
 - name: Drift monitoring for ethical behavior
-  sketch: 'Production monitoring tracks ethical-judgment consistency: refusal rates across comparable
+  sketch: 'Production monitoring runs over scaffold-logged outputs, continuously evaluating whether deployed
+    behavior remains consistent with the ethics-training objectives: refusal rates across comparable
     prompts over time, value-loaded response tendencies, user complaints tagged by ethical category. Drift
-    triggers retrain or targeted RLHF intervention. "Ethics was embedded in training" is a one-time statement;
+    triggers retrain or targeted RLHF intervention, with human oversight interventions recorded. "Ethics
+    was embedded in training" is a one-time statement;
     "ethics remains embedded in production" requires ongoing measurement.
 
     '
@@ -147,14 +157,19 @@ code_shape:
 evidence_production:
 - evidence_numeral: I
   how_to_produce: 'Ethics framework documentation: rubric with categories, thresholds, locale annotations,
-    panel-signature history. Training protocol including bias-mitigation approaches and pipeline instrumentation.
+    panel-signature history, and the citable values baseline (e.g., UDHR) the rubric is anchored to. Training
+    protocol including developer guidelines, bias detection mechanisms applied during training, and pipeline
+    instrumentation.
     Release-test records showing gate decisions and bias-origin trace reports.
 
     '
 - evidence_numeral: II
-  how_to_produce: 'Monitoring records: drift detection output, ethical-judgment trace store extracts,
-    effectiveness of bias-correction cycles. Explainability audit samples showing rubric-category attribution
-    for refusals and modifications.
+  how_to_produce: 'Monitoring records over scaffold-logged outputs: drift detection output, ethical-judgment
+    trace store extracts,
+    effectiveness of bias-correction cycles, and recorded human oversight interventions. Attribution-based
+    explainability audit samples showing rubric-category attribution
+    for refusals and modifications; model-generated explanations of the system''s own decision-making
+    are not, by themselves, conformity evidence.
 
     '
 - evidence_numeral: III

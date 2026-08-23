@@ -11,7 +11,9 @@ summary: 'The I3 umbrella: systems must preserve the meaning, attribution, and p
   not best-efforts, that catch it before it drives action. This umbrella ties together the per-risk subgoals
   (dissembling, misattribution, misinformation, decoupling, drift, contradiction, context-length) with
   a shared spine: a provenance- carrying context object, an immutable reference baseline, and human-in-the-loop
-  escalation on low-confidence context.
+  escalation on low-confidence context. Under v1.3 the conformity evidence is the scaffold-recorded artifacts
+  themselves — provenance logs, integrity-check records, gate invocation logs — cross-checked against executed
+  actions; model-generated narratives of reasoning do not by themselves constitute conformity evidence.
 
   '
 normative_anchors:
@@ -63,8 +65,10 @@ design_patterns:
 - name: Context integrity check on entry and exit
   sketch: 'Before context is incorporated into reasoning, run an intake validator (schema, source-trust,
     freshness, signature). Before any irreversible action, run an exit check that asserts the context
-    driving the decision is still valid (not stale, not mutated, provenance chain intact). Log both; fail
-    closed on violation.
+    driving the decision is still valid (not stale, not mutated, provenance chain intact). Pair this with
+    an external consistency check that compares the system''s declared intents and claims against its
+    executed actions and pipeline provenance records — the comparison runs in deployer-controlled tooling,
+    outside the model. Log both; fail closed on violation.
 
     '
   maps_to_sfr:
@@ -130,8 +134,9 @@ code_shape:
 evidence_production:
 - evidence_numeral: I
   how_to_produce: 'Transparency reports: per-decision, surface source_id, trust_tier, and retrieval_method
-    for the top-K context fragments that shaped the output. UI-level "sources used" panel for user-facing
-    systems; structured export for auditors.
+    for the top-K context fragments that shaped the output, drawn from scaffold provenance logs so every
+    disclosed claim is traceable to a recorded tool call or retrieval. UI-level "sources used" panel for
+    user-facing systems; structured export for auditors.
 
     '
 - evidence_numeral: II
@@ -162,7 +167,11 @@ evidence_production:
 confidence: high
 needs_human_review: false
 review_notes: 'Umbrella pattern: this subgoal is a grouping banner more than a specific requirement, so
-  the pattern stitches together the per-risk subgoals below. Cross-suite dependencies to flag for consolidation:
+  the pattern stitches together the per-risk subgoals below. Evidence VI (v1.3) requires independent adversarial
+  testing of context integrity — context poisoning and compaction attacks — with at least one test cycle
+  run by evaluators independent of the development team; the internal red-team fixtures under evidence
+  III do not satisfy that independence requirement, so VI stays not-addressed here and needs an org-level
+  commissioning process. Cross-suite dependencies to flag for consolidation:
   D2 (Epistemic Hygiene — validation overlap), D3 (Security — poisoning and integrity concerns share defenses
   with I3.1–I3.3), D5 (Transparency — context inspection surfaces user-facing), D6 (Understanding Context
   — direct inverse of this inhibitor; I3 is the failure mode that D6 is the capacity to avoid), I2 (Deception

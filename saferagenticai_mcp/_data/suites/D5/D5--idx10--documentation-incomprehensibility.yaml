@@ -47,7 +47,8 @@ process_elements:
   maps_to_sfr:
   - a
 - name: Comprehension study
-  cadence: at least annually per tier; after major documentation restructure
+  cadence: structured user testing before each release; at least annually per tier; after major documentation
+    restructure
   participants:
   - UX researcher
   - sample readers from each tier
@@ -70,7 +71,6 @@ process_elements:
   - UX researcher
   maps_to_sfr:
   - c
-  - d
 triggers:
 - New capability released → Layered documentation authored and comprehension-tested before public release
 - Applicable new standard published → Standards conformance review
@@ -83,7 +83,8 @@ artifacts:
 - Interactive tools (e.g., decision-explainer walkthroughs, model card browsers, policy diff viewers)
 - Comprehension study reports with task-completion or paraphrase accuracy metrics per tier
 - Feedback log with triage outcomes
-- Documentation revision changelog with pre/post measures where available
+- Documentation revision changelog with pre/post measures where available, showing which feedback item
+  prompted each shipped update (the SFR-c change record)
 process_norms:
 - Measure comprehension, not satisfaction. "The docs are helpful" (opinion) is not a comprehension metric.
   Measure whether readers can perform a task, answer a question, or paraphrase correctly.

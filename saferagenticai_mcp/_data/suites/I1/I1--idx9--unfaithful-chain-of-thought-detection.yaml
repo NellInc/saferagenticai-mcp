@@ -158,7 +158,7 @@ evidence_production:
 
     '
 cross_references:
-  - "I1::idx0::opaque-agency-capabilities-advances"
+  - "I1::idx0::agency-authority-duty-governance-suite-l"
   - "I1::idx1::opaque-self-improvement-capabilities"
   - "I1::idx10::emergent-capability-detection"
   - "I1::idx11::steganographic-communication-detection"

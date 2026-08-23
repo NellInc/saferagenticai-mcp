@@ -145,7 +145,10 @@ evidence_production:
       Technical documentation of the validator: domain-rules registry,
       extreme-value methodology, parameterization (including the choice
       of domain references over dataset-local statistics), thresholds,
-      change history. Include pseudocode and decision trees. Versioned.
+      change history, and measured false-positive and false-negative
+      rates on a maintained labelled reference set (re-measured on
+      methodology or threshold change). Include pseudocode and decision
+      trees. Versioned.
 
   - evidence_numeral: II
     how_to_produce: >

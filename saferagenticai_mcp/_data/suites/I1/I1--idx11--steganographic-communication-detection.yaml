@@ -163,7 +163,7 @@ evidence_production:
 
     '
 cross_references:
-  - "I1::idx0::opaque-agency-capabilities-advances"
+  - "I1::idx0::agency-authority-duty-governance-suite-l"
   - "I1::idx9::unfaithful-chain-of-thought-detection"
   - "I1::idx10::emergent-capability-detection"
   - "I1::idx12::deceptive-alignment-detection"

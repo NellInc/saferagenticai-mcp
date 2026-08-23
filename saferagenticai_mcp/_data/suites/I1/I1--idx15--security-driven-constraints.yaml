@@ -34,12 +34,14 @@ policy_elements:
   maps_to_sfr:
   - a
   - b
-- name: Five-Lens Security Review
-  description: 'Every material change to the agent''s security posture is reviewed through five lenses:
-    business (continuity, reputational exposure), operational (run-time feasibility), legal (regulatory
-    alignment, liability), technical (threat model, control effectiveness), social (stakeholder trust,
-    fairness of control burden). No lens may be skipped; dissent from any lens blocks the change pending
-    reconciliation.'
+- name: Control-Framework Mapping with Five-Lens Risk Analysis
+  description: 'Security measures are mapped to a recognized control framework (such as ISO/IEC 27001 or
+    NIST CSF), with the mapping document maintained as an auditable artifact, supplemented by a documented
+    analysis of the risks specific to agentic operation across five lenses: business (continuity, reputational
+    exposure), operational (run-time feasibility), legal (regulatory alignment, liability), technical (threat
+    model, control effectiveness), social (stakeholder trust, fairness of control burden). Every material
+    change to the agent''s security posture is reviewed through all five lenses; no lens may be skipped,
+    and dissent from any lens blocks the change pending reconciliation.'
   maps_to_sfr:
   - b
 - name: Cross-Border Security Posture Map
@@ -85,6 +87,8 @@ org_roles:
 documentation_artifacts:
 - artifact: Above-Floor Security Baseline (versioned)
   cadence: annual review; event-driven updates
+- artifact: Control-framework mapping document (ISO/IEC 27001 or NIST CSF)
+  cadence: annual review; updated on baseline change
 - artifact: Five-Lens Review outputs per material change
   cadence: per change
 - artifact: Cross-Border Security Posture Map
@@ -112,11 +116,11 @@ confidence: high
 needs_human_review: true
 review_notes: 'Security frameworks mature rapidly; this pattern names current standards (ISO/IEC 27001,
   SOC 2, ISO/IEC 42001) with the assumption they will be superseded. Reviewer should avoid hardcoding
-  to current-decade specifics. Cross-suite: D3 Security is the direct overlap — D3 owns technical security
-  controls; this subgoal owns the governance wrapper around "above minimum". The intended division: D3
-  answers "how do we encrypt, sandbox, authenticate"; I1::idx11 answers "how do we govern our security
-  posture so it exceeds the statutory floor deliberately rather than by accident". Nell and Ali should
-  confirm this division remains in v1.x. SFRs c and e are non-normative; orgs may lean lighter on certifications.'
+  to current-decade specifics. Cross-suite: framework v1.3 makes the division explicit — suite D3 owns
+  the comprehensive security control requirements; this subgoal covers only the security-driven constraints
+  that bound agency enhancement beyond regulatory minimums, and v1.3''s SFR b now names the control-framework
+  mapping (ISO 27001 / NIST CSF) plus the five-domain agentic-risk analysis this pattern implements. SFRs
+  c and e are non-normative; orgs may lean lighter on certifications.'
 cross_references:
 - I1::idx14::operational-environment-constraints
 - I1::idx16::development-legal-constraints

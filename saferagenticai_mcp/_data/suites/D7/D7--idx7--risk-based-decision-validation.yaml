@@ -4,11 +4,14 @@ suite_id: D7
 suite_title: Achieving and Sustaining a Safe System Profile
 subgoal_title: Risk-Based Decision Validation
 content_type: code-applicable
-summary: 'Not every agent decision warrants a human in the loop, but high-impact decisions must. This
+summary: 'Not every agent decision warrants a human in the loop, but high-impact decisions — those
+  meeting the organization''s documented decision-impact classification criteria — must. This
   subgoal expects a code-level gating mechanism: a risk-tier classifier attached to each candidate decision,
-  human-validation queues for the top tiers, retained reasoning chains, and deterministic fail-safe behaviour
-  when validation is unavailable or the decision looks anomalous. The key architectural pattern is "reasoning-preserving"
-  decisions that can be paused, reviewed, approved or rejected with context.
+  human-validation queues for the top tiers, a system-maintained decision ledger, and deterministic
+  fail-safe behaviour when validation is unavailable or the decision looks anomalous. The ledger links
+  each high-impact decision to its inputs, tool calls, and executed outcome; the model''s stated
+  rationale is recorded as one auditable field, checkable for consistency with logged actions, but does
+  not by itself constitute evidence of the actual decision basis.
 
   '
 normative_anchors:
@@ -29,7 +32,8 @@ design_patterns:
 - name: Decision risk classifier
   sketch: 'Every candidate decision is classified at emission time by a risk function f(decision, context)
     → {auto, validate, block}. Inputs: decision category, potential impact magnitude, reversibility, affected-party
-    count, novelty vs. prior-approved patterns. The classifier is code-reviewed and its thresholds versioned
+    count, novelty vs. prior-approved patterns. The classifier implements the organization''s documented
+    decision-impact classification criteria and thresholds; it is code-reviewed and its thresholds versioned
     alongside the product.
 
     '
@@ -37,11 +41,14 @@ design_patterns:
   - a
   - b
   when_to_use: Any agent capable of irreversible or high-magnitude action.
-- name: Reasoning-chain retention
-  sketch: 'When a decision is emitted for validation, persist the agent''s full reasoning chain (prompt,
-    tool calls, intermediate thoughts, evidence retrieved) alongside the decision. The validator sees
-    the reasoning, not just the conclusion. Retention window matches the incident-response window for
-    that domain (often 90+ days; longer for regulated domains).
+- name: Scaffold-maintained decision ledger
+  sketch: 'The scaffold — not the model — maintains a ledger entry per high-impact decision, linking the
+    decision to its inputs, tool calls, retrieved evidence, and executed outcome as logged by the
+    runtime. The model''s stated rationale is captured as one field in that entry, auditable for
+    consistency against the logged actions, but the ledger''s deterministic linkage is the PRIMARY
+    conformity evidence; the narrative alone is not evidence of the actual decision basis. The
+    validator sees the full ledger entry, not just the conclusion. Retention window matches the
+    incident-response window for that domain (often 90+ days; longer for regulated domains).
 
     '
   maps_to_sfr:
@@ -123,8 +130,9 @@ code_shape:
     '
 evidence_production:
 - evidence_numeral: I
-  how_to_produce: 'Reasoning-chain persistence layer with structured schema: decision ID, category, inputs,
-    tools invoked, intermediate reasoning, conclusion, context hash. Exportable per-decision. Retention
+  how_to_produce: 'Decision-ledger persistence layer with structured schema: decision ID, category, inputs,
+    tools invoked (as logged by the runtime), executed outcome, model-stated rationale (one field,
+    consistency-checkable against the logged actions), context hash. Exportable per-decision. Retention
     per data policy; access audited.
 
     '
@@ -151,7 +159,12 @@ evidence_production:
     '
 confidence: high
 needs_human_review: false
-review_notes: 'SFR-b in the input conflates two asks ("human validation for high-risk decisions" AND "fail-safe
+review_notes: 'Updated for v1.3 catalog revision: SFR-a now requires a system-maintained decision
+  ledger linking decisions to inputs, tool calls, and executed outcomes, with the model''s stated
+  rationale demoted to one auditable field rather than evidence of decision basis; SFR-b anchors
+  "high-impact" to the organization''s documented decision-impact classification. The persistence
+  pattern was reframed from "reasoning-chain retention" to a scaffold-maintained ledger accordingly.
+  SFR-b in the input conflates two asks ("human validation for high-risk decisions" AND "fail-safe
   default states for scenarios lacking human validation"); treated them as complementary halves of the
   same pattern. The anomaly-triggered up-tier is not explicit in any SFR but is load-bearing: static classifiers
   miss the novel. Cross-suite: D2 (safe-by-design — fail-safe defaults overlap), D7.1 (monitoring of validation-pipeline

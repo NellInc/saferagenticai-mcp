@@ -12,9 +12,12 @@ summary: >
   readings, user messages, retrieved documents, upstream-service responses.
   Decisions pivot on it within milliseconds, usually without a human in the
   loop. The subgoal demands that validation and integrity checking happen
-  at that boundary in real time — not in an offline pipeline — with
-  adaptive monitoring that catches subtle regressions before they reach
-  action.
+  at that boundary in real time — not in an offline pipeline — through
+  deterministic tests (schema, range, freshness, source-consistency and
+  provenance checks) with logged results, plus adaptive monitoring that
+  catches subtle regressions before they reach action. Where contextual
+  relevance is scored, the scoring method is documented; model-based
+  relevance scores do not by themselves constitute conformity evidence.
 
 normative_anchors:
   sfrs_addressed: [a, b, c]
@@ -171,9 +174,13 @@ evidence_production:
   - evidence_numeral: I
     how_to_produce: >
       Publish the operational-data contracts: per data type, the schema,
-      semantic invariants, staleness tolerance, provenance requirement,
-      and failure policy. Stored in a central registry; referenced by
-      the code that enforces them; versioned.
+      semantic invariants (range and cross-field checks), staleness
+      tolerance, provenance/source-consistency requirement, failure
+      policy, and — where contextual relevance is scored — the documented
+      scoring methodology (noting that model-based relevance scores are
+      supplementary, not conformity evidence on their own). Stored in a
+      central registry; referenced by the code that enforces them;
+      versioned.
 
   - evidence_numeral: II
     how_to_produce: >

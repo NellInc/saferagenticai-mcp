@@ -115,7 +115,7 @@ review_notes: '"Agent relocation" in the framework has at least three distinct m
   certain relocations outright; the pattern assumes the Register is permissive unless law blocks — verify
   per jurisdiction.'
 cross_references:
-- I1::idx0::opaque-agency-capabilities-advances
+- I1::idx0::agency-authority-duty-governance-suite-l
 - I1::idx16::development-legal-constraints
 version_compat:
   framework_version_min: '1.0'

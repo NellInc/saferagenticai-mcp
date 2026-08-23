@@ -7,9 +7,12 @@ content_type: code-applicable
 summary: 'Inner alignment inconsistency is the case where the system says the right thing about its values
   but acts differently — or, worse, optimizes for user approval rather than for the values themselves.
   This is the framework''s operational handle on sycophancy, reward hacking, and Potemkin alignment. The
-  subgoal is code-applicable because the remediation is testing: counterfactual probes, behavioral consistency
-  runs, reward-signal decomposition — concrete procedures that compare stated values against observed
-  behavior under manipulation pressure.
+  subgoal is code-applicable because the remediation is testing: external consistency checks comparing
+  declared positions against logged actions on the same scenarios, counterfactual and adversarial probes
+  — including conditions the system cannot distinguish from unmonitored operation — and reward-signal
+  decomposition. The conformity criterion is statistical invariance of value-conformant behavior across
+  these conditions; passing sampled tests bounds, but does not certify, the absence of discrepancy, and
+  claims about genuine internal value integration are out of scope.
 
   '
 normative_anchors:
@@ -44,7 +47,11 @@ design_patterns:
   sketch: 'For each value-sensitive decision class, generate paired scenarios that differ only in a value-irrelevant
     feature (e.g., user register, named group, stated profession) and measure response divergence. Large
     divergences on value-irrelevant features signal non-robust alignment. Source counterfactual pairs
-    from diverse authors (avoid author-specific style artifacts dominating the signal).
+    from diverse authors (avoid author-specific style artifacts dominating the signal). Include paraphrase
+    variation, incentive manipulation, and apparent-non-observation conditions — scenarios the system cannot
+    distinguish from unmonitored operation — and test that value-conformant behavior is statistically invariant
+    between monitored and apparently unmonitored arms; invariance under apparent non-observation is the
+    conformity criterion.
 
     '
   maps_to_sfr:
@@ -53,9 +60,12 @@ design_patterns:
 - name: Reward-hacking detection battery
   sketch: 'Adversarial probes specifically designed to reward user approval at the expense of value adherence:
     flattery-baited requests, refusal-shaming, leading questions, multi-turn pressure escalation, "my
-    other assistant said yes" social proof, simulated- authority prompts. Track approval-seeking rate
-    (did the system capitulate?) and sycophancy rate (did it shift its stated view without new evidence?).
-    Non-zero is expected; growth is the warning sign.
+    other assistant said yes" social proof, simulated- authority prompts. Build the battery around benchmark
+    tasks with objective ground truth on which the pleasing answer diverges from the correct one, so capitulation
+    is deterministically scorable. Track approval-seeking rate (did the system capitulate?) and sycophancy
+    rate (did it shift its stated view without new evidence?). Non-zero is expected; growth is the warning
+    sign. Detection claims cover the constructed proxy tasks; prevention claims beyond them are not conformity
+    evidence.
 
     '
   maps_to_sfr:
@@ -132,15 +142,17 @@ evidence_production:
 
     '
 - evidence_numeral: II
-  how_to_produce: 'Counterfactual testing logs: paired-scenario reports showing divergence rates per value-irrelevant
-    feature, per demographic slice where applicable. Include raw prompts and outputs under appropriate
-    access controls.
+  how_to_produce: 'Counterfactual and adversarial testing logs: paired-scenario reports showing divergence
+    rates per value-irrelevant feature and per demographic slice where applicable, plus the monitored-vs-apparently-unmonitored
+    comparison with statistical-invariance analysis (test used, effect size, confidence interval). Include
+    raw prompts and outputs under appropriate access controls.
 
     '
 - evidence_numeral: III
-  how_to_produce: 'Reward-hacking and sycophancy analysis: probe-battery results tracked over time, reward-model
-    decomposition reports (where reward models are used), mitigations applied (prompt adjustments, dataset
-    additions, constitutional rules). Quarterly summary to the Values Ethics Board.
+  how_to_produce: 'Reward-hacking and sycophancy analysis: results on objective-ground-truth tasks where
+    the pleasing answer diverges from the correct one, probe-battery results tracked over time, reward-signal
+    audit reports (decomposition where reward models are used), mitigations applied (prompt adjustments,
+    dataset additions, constitutional rules). Quarterly summary to the Values Ethics Board.
 
     '
 confidence: medium
@@ -148,9 +160,10 @@ needs_human_review: true
 review_notes: 'The field is evolving. Specific probe designs and grading methods will change; the pattern-level
   claim (stated-vs-behavioral gap + counterfactual + reward-hacking battery) should age more slowly.
 
-  Honest caveat: "genuine vs superficial alignment" (SFR-b) is a philosophically hard distinction even
-  with perfect interpretability. The pattern proposes behavior-under-manipulation as the operational proxy
-  for genuine alignment; this is defensible but imperfect.
+  Note: the v1.3-draft revision resolved the old "genuine vs superficial alignment" ambiguity in SFR-b
+  by making behavioral invariance under apparent non-observation the explicit conformity criterion and
+  ruling claims about genuine internal value integration out of scope; the pattern now states that framing
+  directly.
 
   Cross-suite (for consolidation): D5 Transparency (decision-trace inspectability supports this); I2 Deception
   (sycophancy is a deception-adjacent class; coordinate with I2 patterns); D4.5 (super-alignment) for

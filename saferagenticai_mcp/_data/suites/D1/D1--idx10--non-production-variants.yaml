@@ -83,10 +83,10 @@ design_patterns:
 
   - name: Source access controls matched to release authority
     sketch: >
-      Goal-decomposition source, reward-policy definitions, and
-      alignment-surface modules are access-controlled: read access
-      broad, write access scoped to release principals, fork and export
-      actions audited. Pre-receive hooks on alignment-critical paths
+      Goal-decomposition source, model weights, reward-policy
+      definitions, deployment pipelines, and alignment-surface modules
+      are access-controlled: read access scoped, write access scoped to
+      release principals, fork and export actions audited. Pre-receive hooks on alignment-critical paths
       block pushes from non-release principals. Complements signed
       builds by reducing the population that can attempt an
       unauthorized variant in the first place.
@@ -191,7 +191,10 @@ evidence_production:
       implementing the safeguards: build-signing toolchain, manifest
       schema, runtime verification module, capability-binding checks,
       pre-receive hooks on alignment-critical paths, attestation
-      registry service, and source-access control configuration.
+      registry service, and access-control configuration over model
+      weights, code, and deployment pipelines (per the revised
+      evidence I). Document the baseline safety measures applied to
+      non-production variants exposed to the public.
       Version-control these artifacts; export per-release bills of
       materials and signer authorization records as signed CI
       artifacts stored in an append-only audit archive.

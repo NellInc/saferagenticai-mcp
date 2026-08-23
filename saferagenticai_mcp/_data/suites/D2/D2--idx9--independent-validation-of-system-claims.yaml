@@ -38,8 +38,12 @@ process_elements:
       include type checkers, schema validators, linters, unit test
       suites, contract checkers, and format verifiers. The gate is
       enforced in the workflow pipeline; it cannot be bypassed by the
-      generating system.
-    maps_to_sfr: [a]
+      generating system, it blocks completion claims until verification
+      passes, its validation scope matches the generation scope (what
+      was generated is what gets validated — no validating a subset and
+      certifying the whole), and every validation failure is logged and
+      accessible for audit.
+    maps_to_sfr: [b]
 
   - name: Independent oracle comparison
     description: >
@@ -49,16 +53,22 @@ process_elements:
       a second model, a human reviewer, a reference dataset, or a
       domain-specific expert system. Disagreements are logged and
       escalated rather than silently resolved by the original system.
-    maps_to_sfr: [b]
+      This extends validation infrastructure to output modalities that
+      deterministic validators cannot cover alone.
+    maps_to_sfr: [c]
 
   - name: Self-assessment prohibition for completion status
     description: >
       The system's own claim that its output is "correct" or "done"
-      has zero evidentiary weight. Completion status is set exclusively
-      by external validators or human reviewers. Systems may report
-      their confidence level as a signal, but this signal does not
-      gate the workflow; only independent validation does.
-    maps_to_sfr: [a, c]
+      has zero evidentiary weight. The system reports task completion,
+      bug resolution, or code correctness as complete only after the
+      required deterministic external validation has passed; completion
+      status is set exclusively by external validators or human
+      reviewers. Systems may report their confidence level as a signal,
+      but this signal does not gate the workflow; only independent
+      validation does. This element governs reporting behavior; the
+      deterministic validation gate is the enforcing mechanism.
+    maps_to_sfr: [a]
 
   - name: Validation coverage tracking
     description: >
@@ -94,25 +104,36 @@ evidence_production:
 
   - evidence_numeral: II
     how_to_produce: >
-      Publish the validation coverage registry: a matrix of output
-      types against validator types, with coverage percentage and
-      identified gaps. Include trend data showing coverage improvement
-      over time.
+      Publish the validation gate architecture documentation: where in
+      the workflow pipeline each gate sits, how completion status is
+      set exclusively by validators or human reviewers, why the
+      generating system cannot bypass or overwrite gate verdicts, and
+      how validation scope is matched to generation scope. Include the
+      validation coverage registry — a matrix of output types against
+      validator types, with coverage percentage and identified gaps —
+      as the demonstration that no output modality routes around
+      independent verification.
 
   - evidence_numeral: III
     how_to_produce: >
-      Aggregate the disagreement log into a quarterly report: cases
-      where the system claimed correctness but independent validation
-      rejected the output. Categorize by root cause (hallucination,
-      specification misunderstanding, edge case, tooling gap) and
-      track resolution rates.
+      Run adversarial gate tests: deliberately seed incorrect outputs
+      (failing code, schema-violating artifacts, wrong answers with
+      confident self-assessment) and record that the gates caught each
+      error before it was reported as complete. Pair these test results
+      with the production disagreement log — cases where the system
+      claimed correctness but independent validation rejected the
+      output — aggregated quarterly and categorized by root cause
+      (hallucination, specification misunderstanding, edge case,
+      tooling gap) with resolution rates.
 
 confidence: medium
 needs_human_review: false
 review_notes: >
-  Phase 3: Initial draft, awaiting human review. SFR and evidence
-  descriptions in criteria-v1.json are empty; content derived from the
-  subgoal description. This pattern explicitly references the Geoffrey
+  Updated for the v1.3-draft catalog revision: SFR letters now carry
+  explicit texts (a reporting behavior / no self-certification, b the
+  enforcing gate with scope matching, c infrastructure covering all
+  output modalities with audited failure logs); maps_to_sfr remapped
+  accordingly. This pattern explicitly references the Geoffrey
   Pattern from the operational heuristics layer; consolidation should
   verify alignment. Content-type is process rather than code-applicable
   because the core requirement is organizational workflow (who

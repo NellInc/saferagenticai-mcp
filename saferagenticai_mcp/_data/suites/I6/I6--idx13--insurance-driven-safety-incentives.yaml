@@ -8,8 +8,10 @@ subgoal_title: Insurance-Driven Safety Incentives
 content_type: ecosystem
 summary: 'Insurance markets are a market-based filter on unsafe AI development: uninsurable practices
   become uneconomical. This subgoal expects the organization to actively engage with AI-coverage insurers
-  (not only passively purchase general liability), to share loss data into industry actuarial pools, and
-  to maintain internal risk management detailed enough to support underwriting. The pattern is ecosystem
+  (not only passively purchase general liability), to share loss data into industry actuarial pools, to
+  operate a documented "Safety First" decision rule — identified safety concerns block release regardless
+  of schedule or commercial pressure, with recorded instances of its application — and
+  to maintain internal risk management scoped to insurability and detailed enough to support underwriting. The pattern is ecosystem
   because its leverage is in insurance-market development, not in a single policy; internal risk-management
   is the substrate.
 
@@ -82,7 +84,11 @@ engagement_modes:
 evidence_production:
 - evidence_numeral: I
   how_to_produce: 'Maintain a compliance and licensing record including: regulatory filings, sector-specific
-    licenses, risk evaluations feeding underwriting, liability assessments and insurance coverage certificates.
+    licenses, risk evaluations feeding underwriting, liability assessments (proactively covering liabilities
+    that could affect coverage) and insurance coverage certificates. Include the documented "Safety First"
+    decision rule and its application log — recorded instances where an identified safety concern blocked
+    a release regardless of schedule or commercial pressure; the rule without recorded applications (or
+    an explanation of why none arose) is not evidence.
     Insurability gap analysis — if a capability is uninsurable, document why and what changes would make
     it insurable. Reviewed annually and on material change.
 

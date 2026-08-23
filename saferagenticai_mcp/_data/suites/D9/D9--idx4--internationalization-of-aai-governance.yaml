@@ -7,8 +7,10 @@ content_type: ecosystem
 summary: 'This subgoal lives outside the org''s four walls: it asks whether the organization is actively
   participating in and aligning with international AAI governance — standards bodies, cross-jurisdiction
   agreements, identity and trust frameworks — rather than optimising for a single jurisdiction''s rules.
-  Evidence is external: participation records, adoption of shared standards, harm-scale assessments that
-  cross borders.
+  It is the catalog''s canonical internationalization requirement (I6_5 carries the competitive-pressure
+  rationale for harmonization). Evidence is external and record-based: participation records, adoption
+  inventories, harm-scale evaluation reports with records of their contribution to international governance
+  and standards processes, and documented misuse-prevention measures.
 
   '
 normative_anchors:
@@ -22,7 +24,9 @@ normative_anchors:
   - II
   - III
   sfrs_not_addressed: []
-  evidence_not_addressed: []
+  evidence_not_addressed:
+  - IV
+  - V
 cross_references:
 - D9::idx0::responsible-governance-of-aai-safety
 - D9::idx2::compliance-with-applicable-laws-standard
@@ -60,9 +64,11 @@ stakeholders:
 - name: Harm-scale evaluation consortia
   engagement_channel: 'Contribute to, or establish where absent, shared evaluation infrastructure for harm-scale
     assessment (intentional misuse, accidental cascade, societal-scale effects). Patterns: shared red-team
-    corpora, common evaluation protocols, agreed severity taxonomies. Publish the org''s harm-scale methodology
-    and its mapping to international frameworks (e.g., NIST AI RMF risk categories, EU AI Act Annex III
-    classes).
+    corpora, common evaluation protocols, agreed severity taxonomies. Conduct evaluations of potential
+    harm scales (intentional and accidental) and contribute the results to international governance and
+    standards processes, retaining records of each contribution; general consequence scanning and harm
+    modeling is covered in full by G9.3b. Publish the org''s harm-scale methodology and its mapping to
+    international frameworks (e.g., NIST AI RMF risk categories, EU AI Act Annex III classes).
 
     '
   maps_to_sfr:
@@ -132,7 +138,11 @@ review_notes: 'Ecosystem patterns age quickly — named bodies and agreements wi
   adoption act — the pattern reads this as "design within TRIPS-compatible IP norms" which may under-
   or over-read the SFR. Cross-suite: strong overlap with I7 (Imbalance — Global Partnership); D9::4 is
   the governance- participation flavour, I7.3 the equity flavour. Heavy cross-refs to D3 (Security) for
-  cyber-threat coordination and D4 (Value Alignment) for harm-scale methodology.
+  cyber-threat coordination and D4 (Value Alignment) for harm-scale methodology. v1.3 catalog note: the
+  evidence list gained IV (harm-scale evaluation reports plus records of their contribution to international
+  processes) and V (documented misuse-prevention measures for propaganda and cyber threats); this pattern''s
+  engagement channels point at both but do not yet define the producing artifacts, so IV and V sit in
+  evidence_not_addressed pending a dedicated evidence-production pass.
 
   '
 drafted_by: claude-opus-4.7-subagent-D9

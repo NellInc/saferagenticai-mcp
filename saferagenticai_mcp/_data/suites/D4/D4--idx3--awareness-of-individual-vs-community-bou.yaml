@@ -24,6 +24,7 @@ normative_anchors:
   - I
   - II
   - III
+  - IV
   sfrs_not_addressed: []
   evidence_not_addressed: []
 cross_references:
@@ -196,7 +197,10 @@ evidence_production:
     CI norm table, mode-transition guardrail, boundary-stress detector (signal scorers, thresholds, CI-budget
     tables), and the stress-response runbook. Include test evidence: labelled dataset of sessions with
     ground-truth mode, classifier accuracy, CI-check precision/recall, red-team results against each
-    stress-signal family, and rehearsal records for the T2/T3 runbooks.
+    stress-signal family, and rehearsal records for the T2/T3 runbooks. The stress triggers are deterministic
+    (versioned signal scorers and thresholds) or externally reviewed — never the model''s own judgment
+    that a boundary is under stress — and the mode classifier is scaffold-hosted with verdicts spot-checked
+    by human review or deterministic rules.
 
     '
 - evidence_numeral: III
@@ -204,6 +208,13 @@ evidence_production:
     (allowed/denied), stress signals and tier decision, and any mode-transition or capability-suspension
     events. Monthly aggregates show mode distribution, denial rates, stress-tier counts by family, mean-time-to-response
     on T2/T3 events, and human-review tickets raised on relaxation or stress events.
+
+    '
+- evidence_numeral: IV
+  how_to_produce: 'Publish the stress-scenario response protocols (the tiered runbook) with the response
+    times defined in the organization''s incident procedures, and retain drill records from the quarterly
+    synthetic-stress rehearsals plus real incident records, each showing that the T2/T3 response path fired
+    within the defined response times (timestamps from trigger to action).
 
     '
 confidence: high

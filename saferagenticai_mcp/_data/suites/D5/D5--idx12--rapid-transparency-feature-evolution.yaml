@@ -27,9 +27,10 @@ cross_references:
 - D5::idx10::documentation-incomprehensibility
 - D5::idx13::system-competency-challenges-and-awarene
 process_elements:
-- name: Operational environment review
+- name: Operational environment review (the SFR-b trigger condition)
   cadence: quarterly; event-driven on material deployment change, model update, or ecosystem shift (new
-    regulation, major competitor release, emergent-behavior research findings)
+    regulation, major competitor release, emergent-behavior research findings). Each review's findings
+    feed directly into the refresh cycle — the review exists to trigger the updates SFR-b requires
   participants:
   - safety lead
   - transparency officer
@@ -63,7 +64,7 @@ process_elements:
   - user advocate
   maps_to_sfr:
   - c
-- name: Transparency-effectiveness evaluation
+- name: Transparency-effectiveness evaluation (supporting practice; recurring audits are canonically G5c)
   cadence: biannual
   participants:
   - UX researcher
@@ -123,7 +124,11 @@ evidence_production:
 confidence: medium
 needs_human_review: true
 review_notes: 'Medium — the cadence discipline is the point, and the risk is that it ossifies into a compliance
-  ritual rather than keeping pace with the system. The "emergent property watch" is the harder part: current
+  ritual rather than keeping pace with the system. Per the v1.3 text, SFR-a''s environment review is
+  explicitly the trigger condition for SFR-b''s updates (reflected in the element naming above), and
+  recurring transparency-effectiveness audits are canonically covered by G5c — the biannual evaluation
+  here is retained as supporting practice for SFR-c''s stakeholder-communication duty, not as the audit
+  of record. The "emergent property watch" is the harder part: current
   practice for detecting emergent capabilities in frontier models is underdeveloped, and this pattern
   assumes a detection capability that may not exist in mature form. Organizations should be honest about
   this limitation. Cross-suite for Phase 2: D7 Safe System Profile (emergent capabilities interact with

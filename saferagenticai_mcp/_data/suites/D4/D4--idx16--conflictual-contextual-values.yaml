@@ -6,10 +6,13 @@ subgoal_title: Conflictual Contextual Values
 content_type: process
 summary: 'When a stakeholder''s values conflict with the operating context (another stakeholder''s values,
   the deployment environment''s norms, or the org''s Floor), the system cannot silently pick a winner.
-  The framework asks for explicit detection, a resolution pathway (negotiation or controlled disengagement),
-  and durable records of how conflicts were handled. The code side (conflict detection) is real but subordinate:
-  the harder work is the human-in-the-loop escalation runbook and the policy that determines when to negotiate,
-  when to disengage, and who decides.
+  The framework asks for stakeholder value positions maintained in structured registries so runtime conflict
+  detection operates on declared positions — deterministic comparison of declared user preference records
+  against machine-readable context policy sets, with detections logged — rather than the model inferring
+  positions in flight; a resolution pathway (negotiation or scaffold-enforced controlled disengagement);
+  and durable records of how conflicts were handled. The code side is real but subordinate: the harder
+  work is the human-in-the-loop escalation runbook and the policy that determines when to negotiate, when
+  to disengage, and who decides.
 
   '
 normative_anchors:
@@ -29,8 +32,9 @@ cross_references:
 - D4::idx6::universal-moral-foundations
 - D4::idx18::imbalance-of-values-between-provider-con
 process_elements:
-- name: Value-position canvas per stakeholder class
-  cadence: per new stakeholder class (integrator, regulator, user segment); annual refresh
+- name: Value-position registry per stakeholder class
+  cadence: per new stakeholder class (integrator, regulator, user segment); annual refresh; maintained
+    as a structured, machine-readable registry of declared positions that the runtime detector consumes
   participants:
   - alignment lead
   - product owner
@@ -69,15 +73,16 @@ process_elements:
   maps_to_sfr:
   - d
 triggers:
-- New stakeholder class onboarded → Value-position canvas
+- New stakeholder class onboarded → Value-position registry entry
 - Technical detector flags candidate conflict (user request conflicts with operator policy; two users'
   data-sharing preferences conflict; context norms conflict with Codex entry) → Escalation runbook
 - Conflict involves a Floor value (D4.6) → Ethics Board review before action; never auto-resolve
 - Negotiation fails within SLA → Controlled disengagement
 - Scheduled monthly → Conflict register review
 artifacts:
-- Value-position canvas per stakeholder class
-- Conflict-detection technical spec (runtime signals, thresholds)
+- Value-position registry per stakeholder class (structured, machine-readable declared positions)
+- Conflict-detection technical spec (declared-preference records, context policy sets, deterministic comparison
+  rules, thresholds)
 - Conflict escalation runbook (tiered, time-bounded steps)
 - Controlled disengagement protocol (user-facing behaviors, communications templates, legal-review gates)
 - 'Conflict register (append-only log: detection, classification, actions, outcome, value modifications
@@ -86,10 +91,13 @@ artifacts:
 evidence_production:
 - evidence_numeral: I
   how_to_produce: 'Retain the conflict-detection technical spec and runbook as linked documents. Detection
-    side: runtime signals emitted, thresholds, classifier artifacts, labeled evaluation data. Resolution
-    side: tiered runbook (tier-1 in-session disambiguation; tier-2 operator involvement; tier-3 Ethics
-    Board review; tier-4 controlled disengagement), with SLAs per tier. Drill reports evidence operability
-    of the runbook.
+    side: the structured value-position registries, the machine-readable context policy sets, the deterministic
+    comparison rules that flag conflicts between declared user preference records and context policies,
+    thresholds, and labeled evaluation data. Conflicts inferred from free-form interaction may supplement
+    but do not by themselves demonstrate conformity. Resolution side: tiered runbook (tier-1 in-session
+    disambiguation; tier-2 operator involvement; tier-3 Ethics Board review; tier-4 controlled disengagement
+    enforced by the deployment scaffold — session termination or task refusal routing, not a prompt-level
+    request to stop), with SLAs per tier. Drill reports evidence operability of the runbook.
 
     '
 - evidence_numeral: II

@@ -7,9 +7,12 @@ content_type: code-applicable
 summary: 'Finite context windows force eviction, summarization, or retrieval- on-demand. Naïve strategies
   evict mission-critical directives first (they''re oldest), summarize away the detail that mattered,
   or lose the chain of reasoning that justified prior decisions. Defenses: pin baseline (mission, ethical
-  framework, policy) as always- resident; evict non-essential detail first; preserve a retrievability
-  guarantee on original context (summaries are additive, not replacements); continuously validate that
-  freshness and accuracy haven''t degraded.
+  framework, policy) as always- resident via deployer-controlled prompt assembly, with checkpointing and
+  re-injection so it survives truncation, compaction, and summarization; hash-check the pinned text each
+  cycle to confirm it is unaltered; evict non-essential detail first; preserve a retrievability guarantee
+  on original context (summaries are additive, not replacements); continuously validate that freshness
+  and accuracy haven''t degraded. Conformity is shown by replayable retention tests and assembly traces
+  — the model''s claim of internal value integration is not evidence.
 
   '
 normative_anchors:
@@ -26,7 +29,10 @@ cross_references:
 - I3::idx12::referential-context
 design_patterns:
 - name: Pinned baseline with priority-ranked eviction
-  sketch: 'Segment context into tiers: (1) baseline — mission, ethical framework, hard constraints (always
+  sketch: 'Deployer-controlled prompt assembly pins the baseline into every context window — re-injected
+    after each compaction or summarization pass, with a hash check each cycle confirming the pinned text
+    is byte-identical to the signed original. Segment context into tiers: (1) baseline — mission, ethical
+    framework, hard constraints (always
     resident, never evicted); (2) task-critical — current task description, explicit user asks (evict
     last); (3) working — recent reasoning, intermediate outputs (evict in reverse recency when forced);
     (4) ambient — optional retrievals, summaries (evict first). Eviction respects tier; no eviction crosses
@@ -102,10 +108,12 @@ code_shape:
     '
 evidence_production:
 - evidence_numeral: I
-  how_to_produce: 'Technical documentation describing: (1) the context-tier architecture and eviction
-    policy; (2) validation and verification of fragment freshness/accuracy with logs; (3) original-retrievability
-    guarantee implementation; (4) how baseline (mission + ethical framework) remains accessible across
-    operational cycles — including tests that simulate context pressure and verify baseline survives.
+  how_to_produce: 'Technical documentation describing: (1) the context-tier architecture (pinning, checkpointing,
+    re-injection) and eviction policy; (2) validation and verification of fragment freshness/accuracy
+    with logs; (3) original-retrievability guarantee implementation; (4) how baseline (mission + ethical
+    framework) remains pinned across operational cycles — replayable tests that simulate truncation, compaction,
+    and summarization across maximum-length operations and verify the baseline survives, plus prompt-assembly
+    traces and per-cycle hash checks confirming the pinned text is unaltered.
 
     '
 confidence: high

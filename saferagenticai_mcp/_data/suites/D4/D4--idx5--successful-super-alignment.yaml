@@ -8,8 +8,11 @@ summary: 'Super-alignment in this framework refers to the process by which a sys
   through autonomous mechanisms (inverse reinforcement learning, preference modeling, constitutional self-critique)
   rather than purely hand-coded rules. The framework''s ask is not to build super-alignment — it is to
   build the monitoring, safeguarding, and bias-mitigation process around any such autonomous alignment
-  learning. Evidence is procedural: testing methodologies, bias inventories, source-adequacy assessments.
-  The process discipline is what distinguishes principled alignment learning from drift.
+  learning: each learning update is gated on externally scored behavioral alignment benchmarks with pre-registered
+  success criteria. Evidence is procedural: testing methodologies, bias inventories, source-adequacy assessments,
+  and safeguard trip-tests. Validation extends only to sampled behavior — claims about the internal correctness
+  of autonomously formed values are out of scope. The process discipline is what distinguishes principled
+  alignment learning from drift.
 
   '
 normative_anchors:
@@ -22,6 +25,7 @@ normative_anchors:
   - I
   - II
   - III
+  - IV
   sfrs_not_addressed: []
   evidence_not_addressed: []
 cross_references:
@@ -95,15 +99,19 @@ artifacts:
   used, benchmarks, rollback criteria, sign-offs'
 - Pre/post benchmark reports with delta analysis
 - Training-source inventory with bias-analysis annotations
-- Harmful-pattern watchlist with definitions, detection signals, and case records
+- Harmful-pattern catalog (named patterns such as collusion, empire building, metric gaming) with definitions,
+  the guardrail configuration corresponding to each pattern, detection signals, adversarial test scenarios
+  demonstrating that each safeguard trips, and case records
 - Counterfactual rollout report (shadow-mode behavior vs incumbent)
 - Annual super-alignment assurance report (public or internal per policy)
 evidence_production:
 - evidence_numeral: I
-  how_to_produce: 'Maintain a benchmark suite for value alignment with documented success criteria: value-conflict
-    resolution accuracy, refusal calibration, preference-elicitation consistency across demographic slices,
-    robustness to manipulation probes. Each run produces a signed benchmark report linked to the training
-    plan. Archive runs; regressions trigger the emergency review.
+  how_to_produce: 'Maintain a behavioral benchmark suite for value alignment with pre-registered success
+    criteria (documented before the training run, not fitted afterwards): value-conflict resolution accuracy,
+    refusal calibration, preference-elicitation consistency across demographic slices, robustness to manipulation
+    probes. Scoring is external to the system under training (human reviewers, deterministic checks, or
+    an independently validated grader). Each learning update is gated on the benchmark; each run produces
+    a signed report linked to the training plan. Archive runs; regressions trigger the emergency review.
 
     '
 - evidence_numeral: II
@@ -117,6 +125,14 @@ evidence_production:
   how_to_produce: 'Quarterly assessment report: per source, whether coverage remains adequate; where gaps
     emerged; corrective actions (data augmentation, source acquisition, down-weighting, exclusion). Annual
     report consolidates and is reviewed by Ethics Board.
+
+    '
+- evidence_numeral: IV
+  how_to_produce: 'Retain the harmful-pattern catalog with, for each named pattern: the guardrail configuration
+    that defends against it, the external statistical or anomaly monitors watching behaviorally expressed
+    actions in the learning pipeline, adversarial test results demonstrating that the safeguard trips,
+    and remediation records for flagged runs (alerts raised, interventions applied). Detection operates
+    on expressed behavior, not on the system''s self-assessment.
 
     '
 confidence: low

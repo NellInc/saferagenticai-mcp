@@ -123,7 +123,7 @@ review_notes: 'This subgoal overlaps heavily with I1::idx1 (Self-Improvement) an
   Security provides the enforcement primitives; D4 Human Oversight owns the consent UX; D8 Termination
   owns the tightening/revocation direction.'
 cross_references:
-- I1::idx0::opaque-agency-capabilities-advances
+- I1::idx0::agency-authority-duty-governance-suite-l
 - I1::idx1::opaque-self-improvement-capabilities
 - I1::idx14::operational-environment-constraints
 version_compat:

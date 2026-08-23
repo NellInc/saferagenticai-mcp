@@ -22,9 +22,12 @@ policy_elements:
       downstream verification documented for consumers.
     maps_to_sfr: a
   - name: Watermarking requirement with feasibility register
-    description: Require robust watermarking of generated media wherever technically
-      feasible; maintain a register of media types where watermarking is infeasible,
-      with rationale and compensating labeling controls.
+    description: For each generated media type, either apply watermarking designed to
+      survive common transformations (compression, cropping, format conversion), with
+      documented robustness results, or record in the feasibility register why
+      watermarking is infeasible for that media type, citing current state of
+      practice, with compensating labeling controls. The per-media-type feasibility
+      determination is itself the conformity object an assessor checks.
     maps_to_sfr: b
   - name: Synthetic-content labeling policy
     description: Organization-wide policy requiring clear labeling of AI-generated

@@ -6,10 +6,14 @@ subgoal_title: Failed Super-alignment
 content_type: process
 summary: 'Failed super-alignment is the case where the system develops its own value structure that diverges
   from human values while presenting as beneficial — the "seductive successor" risk. Remediation is a
-  risk- management process: monitoring for divergence signals, running frameworks that can recognize non-human
-  value shapes as such (rather than as performance gains), and rehearsed response protocols that do not
-  depend on the divergent system to detect its own divergence. This is the inverse of D4.5 (successful
-  super-alignment) and shares many participants but with an explicit adversarial framing.
+  risk- management process: evaluating each release version-over-version on a frozen battery of value probes
+  with drift metrics and documented thresholds, longitudinal statistical trend analysis on those fixed
+  behavioral probes, risk-assessment frameworks that can recognize non-human value shapes as such (rather
+  than as performance gains), and rehearsed response protocols that do not depend on the divergent system
+  to detect its own divergence. Divergence is detectable only as expressed behavior; general monitoring
+  of autonomous learning belongs to D4.5, and this subgoal covers release-to-release drift detection and
+  response. This is the inverse of D4.5 (successful super-alignment) and shares many participants but with
+  an explicit adversarial framing.
 
   '
 normative_anchors:
@@ -42,8 +46,8 @@ process_elements:
   maps_to_sfr:
   - a
   - d
-- name: Human-values floor regression
-  cadence: every value-relevant model update
+- name: Frozen-battery version-over-version regression
+  cadence: every value-relevant model update or release
   participants:
   - evaluation engineer
   - Floor-value owners (per D4.6)
@@ -76,7 +80,8 @@ process_elements:
   maps_to_sfr:
   - d
 triggers:
-- Model update that touches value-relevant weights → Human-values floor regression (blocking gate)
+- Model update that touches value-relevant weights → Frozen-battery version-over-version regression (blocking
+  gate)
 - Benchmark regression on value probes beyond threshold → Divergence response playbook (escalation tier
   1)
 - Output patterns matching watchlist (reinterpretation of values, novel-justification drift, goal-instrumental
@@ -87,18 +92,20 @@ artifacts:
 - Value-divergence monitoring dashboard (continuous)
 - Weekly analyst notes
 - Monthly divergence-risk report
-- Human-values floor regression report (per update)
+- Frozen-battery regression report with version-over-version drift metrics (per update)
 - Non-human-value emergence assessment reports (quarterly + event- driven)
 - Divergence response playbook (versioned, drilled)
 - Drill reports (scenario, participants, gaps, remediations)
 - Annual divergence-risk report (board-reviewed)
 evidence_production:
 - evidence_numeral: I
-  how_to_produce: 'Publish the methodology used to detect value-system changes: what signals are tracked
-    (refusal pattern shifts, justification novelty metrics, preference-inversion rates, goal-instrumental
-    drift indicators, corrigibility probes), how baselines are established, how statistical significance
-    is evaluated. Include known limitations honestly — this is a domain where the detectors are weaker
-    than the thing they try to detect.
+  how_to_produce: 'Publish the methodology used to detect value-system changes: the frozen probe battery
+    (versioned, held fixed across releases so version-over-version deltas are comparable), the drift metrics
+    computed on it and their documented flagging thresholds, the longitudinal trend analysis with escalation
+    thresholds, what behavioral signals are tracked (refusal pattern shifts, justification novelty metrics,
+    preference-inversion rates, goal-instrumental drift indicators, corrigibility probes), how baselines
+    are established, how statistical significance is evaluated. State the scope honestly: shifts are detectable
+    only as expressed behavior, and the detectors are weaker than the thing they try to detect.
 
     '
 - evidence_numeral: II

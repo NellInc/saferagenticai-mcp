@@ -6,7 +6,9 @@ subgoal_title: Managing AI-Generated Innovation
 content_type: process
 summary: 'AI-generated ideation creates two pressure points: confabulation (the output is plausible but
   wrong) and IP race anxiety (someone else will file first). This subgoal expects a verification workflow
-  that treats AI outputs as hypotheses requiring validation, not conclusions, and an IP/attribution protocol
+  that treats AI outputs as hypotheses requiring validation against sources external to the generating
+  model — established literature, data, or experiment — under human review (verification performed solely
+  by another model does not by itself constitute conformity evidence), and an IP/attribution protocol
   that slows deployment enough to check the output is correct and correctly attributed. The operational
   artifact is a provenance-tracked ideation log: which tools, what prompts, what outputs, how verified,
   who signed off.
@@ -88,7 +90,8 @@ artifacts:
 - AI Tool Usage Policy (controlled, versioned)
 - 'Ideation log per project: tools used, prompts or inputs, outputs retained, human modifications, verification
   trail'
-- 'Verification reports per material AI output: claim, source checked, finding, sign-off'
+- 'Verification reports per material AI output: claim, external source checked (literature, data, or experiment
+  — not another model alone), finding, human sign-off'
 - Concurrent-development scan reports (pre-filing / pre-publication)
 - Attribution and provenance statements (in publications, product documentation, patent filings)
 - 'Annual audit sample: AI-generated outputs shipped vs verification completeness'
@@ -101,7 +104,8 @@ evidence_production:
     '
 - evidence_numeral: II
   how_to_produce: 'Ideation logs retained systematically: AI tool identity and version, prompt or input,
-    raw output, human-edited output, verification sources consulted, sign-off. Where models are closed-source,
+    raw output, human-edited output, verification sources consulted (external to the generating model),
+    human sign-off. Where models are closed-source,
     record the API version and date. Tool-chain documentation describes how outputs move through verification
     to deployment.
 
@@ -110,7 +114,9 @@ evidence_production:
   how_to_produce: 'Concurrent-development scan reports (literature search, patent search, open-source
     repository search, conference-proceeding scan) with date, scope, findings, and IP counsel sign-off
     on deployment timing. Multiple verification sources documented: primary literature, expert consultation,
-    computational validation where applicable, reproduction of key claims.
+    computational validation where applicable, reproduction of key claims. Cross-checking by another model
+    may supplement but never substitute for these external sources — model-only verification does not
+    by itself constitute conformity evidence.
 
     '
 confidence: medium
@@ -125,9 +131,10 @@ review_notes: "The framework-specific sharpenings worth preserving:\n  (1) \"Ide
   \ the real harm\n      is shipping unverified content, not being second-to-market.\nCross-suite:\n \
   \ (1) D8 (Oversight/Evals) has heavy overlap on verification; I6.7\n      specializes to AI-generated\
   \ content specifically.\n  (2) I2 Deception: verification vs confabulation frames are\n      related;\
-  \ consolidate references.\nSFR-a asks to distinguish \"genuine innovation from potential confabulation\"\
-  \ — a hard problem. The pattern defaults to \"human expert verifies\" because automated confabulation\
-  \ detection is immature; Nell to consider whether the pattern should acknowledge this more explicitly.\n"
+  \ consolidate references.\nSFR-a (v1.3) requires validation against sources external to the generating\
+  \ model — established literature, data, or experiment — under human review, and excludes model-only\
+  \ verification as conformity evidence; the pattern's \"human expert verifies against external sources\"\
+  \ default now matches the normative text directly.\n"
 version_compat:
   framework_version_min: '1.0'
   framework_version_max: 1.x

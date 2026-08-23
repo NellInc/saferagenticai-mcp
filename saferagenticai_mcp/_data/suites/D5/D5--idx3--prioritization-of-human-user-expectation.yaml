@@ -120,14 +120,13 @@ evidence_production:
 confidence: medium
 needs_human_review: true
 review_notes: 'Process content-type because the deliverable is a cadence + roles + studies, not a code
-  surface. The risk in this subgoal is the word "prioritize" — SFR-a says human user expectations take
-  priority over other considerations, which can read as absolute. In practice other considerations (safety,
-  legal, third-party rights) legitimately override user preference; the pattern above treats user expectation
-  as a high-weight input to prioritization, not a vetoing one. Nell may want to sharpen: is SFR-a claiming
-  user-expectation supremacy over e.g. safety? Pattern assumes not — expectations are prioritized within
-  the space of already-safe designs. Cross-suite for Phase 2: D8 Robust Human Oversight (user expectations
-  interact with operator expectations — may conflict); I5 Misuse (some user expectations should not be
-  prioritized, e.g. expectations of harmful content).
+  surface. The v1.3 revision resolved the earlier ambiguity in the word "prioritize": SFR-a now states
+  explicitly that user expectations take priority over commercial and operational convenience "subject
+  to applicable safety, legal, and ethical constraints" — exactly the reading this pattern assumed
+  (expectations prioritized within the space of already-safe designs, a high-weight input rather than
+  a veto). No sharpening question remains open. Cross-suite for Phase 2: D8 Robust Human Oversight (user
+  expectations interact with operator expectations — may conflict); I5 Misuse (some user expectations
+  should not be prioritized, e.g. expectations of harmful content).
 
   '
 version_compat:

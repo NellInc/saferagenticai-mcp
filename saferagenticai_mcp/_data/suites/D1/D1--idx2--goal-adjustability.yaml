@@ -9,9 +9,12 @@ summary: >
   An agent that cannot have its goals changed is an agent out of control;
   an agent whose goals can be changed by anyone is worse. This subgoal asks
   for authenticated, verified, logged channels through which authorized
-  humans — and the system itself, on detecting its own misalignment — can
-  modify the goal portfolio. The hard part is the authorization boundary,
-  not the mutation itself.
+  humans can modify the goal portfolio, and — per the v1.3 text — for
+  deterministic tripwires on measurable misalignment proxies whose
+  activation automatically forces goal re-derivation, escalation, or halt
+  through the scaffold. The hard parts are the authorization boundary and
+  the tripwire instrumentation; the model noticing its own misalignment is
+  no longer the accepted detection mechanism.
 
 normative_anchors:
   sfrs_addressed: [a, b, c]
@@ -48,17 +51,22 @@ design_patterns:
     maps_to_sfr: [a]
     when_to_use: Long-running agents operating in changing environments.
 
-  - name: Self-initiated update on internal-error detection
+  - name: Deterministic tripwires on misalignment proxies
     sketch: >
-      When the agent detects misalignment (value-check failure, repeated
-      planner errors, data-quality anomaly above threshold), it does not
-      silently adapt — it either (a) pauses and requests guidance, or
-      (b) updates only within a declared self-correction envelope
-      (e.g., "instrumental goals under parent X, only to drop or narrow,
-      never to broaden"). Every self-update is logged with detection
-      evidence.
+      SFR-b (v1.3) places detection in the scaffold, not the model:
+      deterministic tripwires instrument measurable proxies for
+      misalignment — anomaly detection on action distributions, budget
+      and scope violation monitors, data-quality validators, invariant
+      checks. Any activation automatically triggers goal re-derivation,
+      escalation, or halt through the scaffold; the agent's own
+      assessment cannot suppress a fired tripwire. Tripwire definitions,
+      activations, and resulting goal updates are retained for audit.
+      The agent may still volunteer concerns, but that channel is
+      supplementary — it routes to pause-and-ask within a narrow
+      envelope and is not the conformity mechanism.
     maps_to_sfr: [b]
-    when_to_use: Systems with internal alignment checks or anomaly detectors.
+    when_to_use: All deployments; scope the tripwire set to the agent's
+      measurable action surface.
 
   - name: Two-phase commit for sensitive goal changes
     sketch: >
@@ -79,12 +87,15 @@ anti_patterns:
       language goal-change requests must be routed through the authenticated
       mutation endpoint and distinguished from conversational content.
 
-  - name: Self-update without envelope
+  - name: Model self-report as the misalignment detector
     why_wrong: >
-      An agent that can arbitrarily rewrite its own goals on detecting
-      "misalignment" is giving itself a veto over oversight. Self-initiated
-      updates (SFR-b) need a declared, narrow envelope; anything broader is
-      a pause-and-ask.
+      SFR-b (v1.3) requires deterministic tripwires on measurable proxies;
+      "the agent said it noticed drift" is neither measurable nor
+      externally checkable, and an agent that can arbitrarily rewrite its
+      own goals on self-detected "misalignment" is giving itself a veto
+      over oversight. Detection lives in the scaffold; agent-volunteered
+      updates stay inside a declared, narrow envelope — anything broader
+      is a pause-and-ask.
 
   - name: Shared operator credential for goal changes
     why_wrong: >
@@ -110,8 +121,13 @@ code_shape:
             AUDIT.deny(principal, goal_id, "role_insufficient")
             raise Unauthorized
 
-        # Self-update envelope check
-        if actor == "agent_self":
+        # Tripwire-triggered updates carry the deterministic activation
+        # record (SFR-b); agent-volunteered updates stay enveloped
+        if actor == "tripwire":
+            assert ctx.tripwire_activation_id is not None
+            TRIPWIRE_LOG.link(ctx.tripwire_activation_id, goal_id,
+                              action=new_state.transition)  # re-derive/escalate/halt
+        elif actor == "agent_self":
             if not SELF_UPDATE_ENVELOPE.permits(current, new_state):
                 AGENT.pause(reason="self_update_outside_envelope")
                 NOTIFY.operators(agent_id, goal_id, proposed=new_state)
@@ -140,26 +156,33 @@ evidence_production:
       Technical design docs describing: the mutation API surface,
       authentication mechanism (token format, issuer, MFA triggers),
       authorization model (which principal roles can touch which goal
-      classes), staging/commit flow, self-update envelope definition, and
+      classes), staging/commit flow, the tripwire catalog (proxies
+      monitored, thresholds, wired response per tripwire: re-derivation,
+      escalation, or halt), self-correction envelope definition, and
       hook registration for context-triggered updates. Include sequence
       diagrams for the three adjustment paths (SFR-a context-triggered,
-      SFR-b self-initiated, SFR-c human-directed).
+      SFR-b tripwire-triggered, SFR-c human-directed).
 
   - evidence_numeral: II
     how_to_produce: >
       Export goal-mutation logs per audit window showing: full set of
       change events with principal, goal_id, prev_state, new_state,
       justification, outcome (applied / denied / pending), and — for
-      self-initiated changes — the detection evidence that triggered them.
+      tripwire-triggered changes — the tripwire definition and activation
+      record that triggered them (SFR-a additionally wants each update's
+      trigger, actor, and prior/updated goal state visible in the log).
       Denied mutations are evidence that the authorization boundary is
-      doing work.
+      doing work; tripwire activations firing into re-derivation,
+      escalation, or halt are evidence the detection layer is live.
 
 confidence: high
 needs_human_review: false
 review_notes: >
   Leans heavily on standard authn/authz primitives (D3 Security). The
-  framework-specific sharpenings are (1) the self-update envelope
-  (SFR-b): narrowly scoped, pause-and-ask beyond it; (2) treating
+  framework-specific sharpenings are (1) deterministic tripwires as the
+  SFR-b detection mechanism per the v1.3 revision (model self-detection
+  demoted to a supplementary, narrowly-enveloped channel with
+  pause-and-ask beyond it); (2) treating
   natural-language goal-change requests as requiring the same gate as
   API calls. Cross-ref D1.8 (resistance) because the "pause and ask"
   path from self-update-outside-envelope is the same mechanism as

@@ -43,8 +43,13 @@ design_patterns:
       they cannot override safety goals, ethical constraints, or
       regulatory obligations regardless of how emphatically phrased.
       Boost amount and the ceiling policy are part of the published
-      prioritization function. The envelope makes user-deference
-      negotiable and auditable rather than absolute.
+      prioritization function. Per SFR-b (v1.3) this is a documented
+      precedence policy specifying when user inputs are overridden by
+      safety or alignment constraints, and conformity is assessed
+      against that policy through authorization configuration,
+      conflict-resolution logs, and adversarial precedence tests — not
+      through the agent's in-conversation deference. The envelope makes
+      user-deference negotiable and auditable rather than absolute.
     maps_to_sfr: [b]
     when_to_use: Any user-facing agent.
 
@@ -142,9 +147,13 @@ evidence_production:
       Technical design doc for the prioritization function: input
       variables, weighting rationale, ceiling on user-precedence boost,
       unit-test suite covering edge cases (ties, safety conflicts,
-      deadline cascades). Include the resource-allocation ledger schema
-      and the deprecation protocol. Version history of the prioritization
-      function, with change rationale per version.
+      deadline cascades). Include the documented precedence policy, the
+      authorization configuration behind it, and an adversarial
+      precedence test suite (user directives phrased to outrank safety
+      or alignment constraints) with results per version. Include the
+      resource-allocation ledger schema and the deprecation protocol.
+      Version history of the prioritization function, with change
+      rationale per version.
 
   - evidence_numeral: II
     how_to_produce: >
@@ -152,8 +161,10 @@ evidence_production:
       Demonstrate: (a) every priority selection is recorded with full
       ranked list and scores; (b) deprecation events trigger user
       notification where applicable; (c) no goal transitions to a
-      terminal state without a log entry. Spot-audit a sample for policy
-      conformance.
+      terminal state without a log entry; (d) conflict-resolution events
+      where user input was overridden by safety or alignment constraints
+      are logged and match the documented precedence policy. Spot-audit
+      a sample for policy conformance.
 
 confidence: high
 needs_human_review: false

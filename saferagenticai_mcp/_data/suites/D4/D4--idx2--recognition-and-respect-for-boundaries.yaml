@@ -9,7 +9,9 @@ summary: 'Recognizing cultural and jurisdictional boundaries is not a task an en
   each deployment context to capture value variation that an outsider would never notice. The framework''s
   evidence — "multiple localities, validation methodology, stakeholder input" — points to external relationships,
   not an internal inference. Evidence is external; outputs are partnerships, co-authored value-variation
-  documents, and ratified mappings that live in the Codex.
+  documents, and ratified mappings that live in the Codex. The captured variations are encoded as inspectable,
+  machine-readable artifacts (per-locale value schemas / overlays), not solely as prompt text or model
+  weights, and the scaffold logs which locale profile was applied to each interaction.
 
   '
 normative_anchors:
@@ -97,9 +99,11 @@ evidence_production:
 
     '
 - evidence_numeral: III
-  how_to_produce: 'Case-study records from production: boundary conflicts encountered, how they were resolved,
-    which stakeholder relationships were activated, what the Codex/overlay change (if any) was. Publish
-    anonymized cases annually as part of the responsible-AI report.
+  how_to_produce: 'Scaffold-emitted system logs recording the locale profile / overlay applied to each
+    interaction (per D4.1''s envelope logging), demonstrating appropriate application of local variations
+    in real-world scenarios. Supplement with case-study records of boundary conflicts encountered: how
+    they were resolved, which stakeholder relationships were activated, what the Codex/overlay change (if
+    any) was. Publish anonymized cases annually as part of the responsible-AI report.
 
     '
 confidence: medium

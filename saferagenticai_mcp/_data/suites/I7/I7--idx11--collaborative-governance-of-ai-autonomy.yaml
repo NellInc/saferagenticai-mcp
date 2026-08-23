@@ -64,7 +64,10 @@ design_patterns:
   sketch: 'The agent''s authorized-operation scope is carried as signed policy the runtime consults —
     not as a prompt instruction the model may follow or ignore. "Do not act outside scope X" as a sentence
     to the model is not scope enforcement. Scope enforcement is the runtime refusing the out-of-scope
-    action regardless of what the model requests.
+    action regardless of what the model requests. Pair the external enforcement with behavioral evaluation
+    runs that verify operations stay within authorized scopes; conformity is evidenced by the enforcement
+    configuration and those evaluation results, not by the guideline text alone or the model''s account
+    of its own decision-making.
 
     '
   maps_to_sfr:
@@ -162,8 +165,11 @@ evidence_production:
 
     '
 - evidence_numeral: III
-  how_to_produce: 'Ethical and compliance documentation showing alignment of autonomy policies with societal
-    norms and legal obligations. Cross-ref D9.2 jurisdictional-compliance matrix for sector- specific
+  how_to_produce: 'The enforcement configuration itself (signed scope policies, runtime bindings of the
+    embedded guidelines) plus behavioral-evaluation results verifying operation within authorized scopes
+    — the guideline text alone, or the model''s account of its own decision-making, is not conformity
+    evidence. Supporting ethical and compliance documentation showing alignment of autonomy policies with
+    societal norms and legal obligations. Cross-ref D9.2 jurisdictional-compliance matrix for sector- specific
     autonomy constraints (e.g., finance, medical, automotive).
 
     '

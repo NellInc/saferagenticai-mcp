@@ -9,7 +9,11 @@ summary: |
   may drift without any explicit intent to change them. This subgoal requires mechanisms that verify goal
   preservation across self-modifications: pre/post alignment checks, invariant testing against goal
   specifications, and drift detection that triggers rollback. The operational handle is "every self-modification
-  must prove it preserved goal alignment, not merely assume it."
+  must prove it preserved goal alignment, not merely assume it." A goal-lock, in the framework's definition,
+  is a goal or constraint stored and enforced outside the system's writable surface, modifiable only through
+  the organization's change-control process. The gate duty covers every persistent modification pathway
+  (weight updates, system-prompt changes, orchestration-graph changes, long-term memory commits); high-frequency
+  transient changes are covered by drift detection instead.
 normative_anchors:
   sfrs_addressed:
   - a
@@ -20,6 +24,7 @@ normative_anchors:
   - II
   - III
   - IV
+  - V
   sfrs_not_addressed: []
   evidence_not_addressed: []
 design_patterns:
@@ -32,26 +37,33 @@ design_patterns:
     stored externally (not modifiable by the system) and used as the reference for all pre/post
     modification alignment checks.
   maps_to_sfr:
-  - a
+  - b
   when_to_use: All systems with any form of self-modification capability, including prompt self-editing and memory writes.
 - name: Pre/post modification alignment gate
   sketch: |
-    Before and after every self-modification event, run the goal-specification test suite against
-    the system. Compare behavioral outputs on the canonical scenario set. Any degradation in
+    Intercept every persistent self-modification — weight updates, system-prompt changes,
+    orchestration-graph changes, long-term memory commits — and run the goal-invariant test suite
+    before and after. Compare behavioral outputs on the canonical scenario set. Any degradation in
     goal-alignment score beyond a pre-committed tolerance blocks the modification and triggers
-    rollback. The gate is infrastructure-enforced — the modification does not persist to production
-    until the post-check passes. Gate results are logged with the modification event for audit.
+    rollback. The gate is infrastructure-enforced — the modification cannot take effect without a
+    passing run — and a model-generated review does not by itself constitute the gate; the gate is
+    the deterministic test suite. Per-event gate records are retained, and coverage must be
+    demonstrated for every persistent modification pathway. High-frequency transient changes
+    (working context, per-task memory) are handled by cumulative drift detection instead of
+    per-event gating.
   maps_to_sfr:
+  - a
   - b
-  - c
-  when_to_use: Every self-modification event — weight updates, prompt edits, memory schema changes, orchestration graph mutations.
+  when_to_use: Every persistent self-modification event — weight updates, system-prompt edits, long-term memory commits, orchestration graph mutations.
 - name: Goal-drift monitoring with cumulative tracking
   sketch: |
     Individual modifications may each pass the alignment gate while cumulative drift across many
     small changes produces significant goal shift. Maintain a running alignment score against the
     original goal specification (not the post-last-modification state). Alert when cumulative drift
     exceeds threshold even if each individual delta was within tolerance. Periodically reset baseline
-    only through explicit human authorization.
+    only through explicit human authorization. This drift channel is also the required coverage for
+    high-frequency transient changes (working context, per-task memory) that the per-event gate does
+    not intercept.
   maps_to_sfr:
   - a
   - b
@@ -69,11 +81,12 @@ design_patterns:
 - name: Goal-lock for critical objectives
   sketch: |
     Identify a minimal set of critical goal properties that must never change (e.g., "do not harm
-    users," "comply with shutdown"). Implement these as hard constraints enforced at a layer below
-    the self-modification mechanism — the system literally cannot modify the enforcement layer.
-    Test goal-lock integrity by attempting to modify locked goals in red-team exercises.
+    users," "comply with shutdown"). Implement these as hard constraints stored and enforced outside
+    the system's writable surface — a layer below the self-modification mechanism that the system
+    literally cannot modify — and changeable only through the organization's change-control process,
+    never through any self-modification pathway. Test goal-lock integrity by attempting to modify
+    locked goals in red-team exercises.
   maps_to_sfr:
-  - a
   - c
   when_to_use: All systems; critical goal properties should be identified even for systems with limited self-modification.
 anti_patterns:
@@ -101,19 +114,28 @@ evidence_production:
     sign-off, and version history. The specification is the reference artifact for all alignment claims.
 - evidence_numeral: II
   how_to_produce: |
-    Record every pre/post modification alignment check: modification description, pre-score,
-    post-score, delta, pass/fail decision, and any rollbacks triggered. Aggregate into trend
-    reports showing cumulative drift over time windows.
+    Record a gate record for every persistent self-modification event: modification description and
+    pathway, pre-score, post-score, delta, pass/fail decision, and any rollbacks triggered. Retain
+    per-event records and demonstrate that every persistent modification pathway is intercepted
+    (an inventory of pathways mapped to gate coverage).
 - evidence_numeral: III
   how_to_produce: |
-    Document the goal-lock mechanism: which properties are locked, how enforcement is implemented,
-    evidence that the lock layer is not accessible to the self-modification mechanism, and
-    red-team test results demonstrating lock integrity.
+    Maintain cumulative goal-drift monitoring logs measured against the original specification:
+    running alignment scores, defined thresholds, alerts fired, and the triggered responses
+    (investigation, rollback, constraint tightening, deployment pause). Reviewed quarterly by
+    safety lead.
 - evidence_numeral: IV
   how_to_produce: |
-    Maintain a goal-drift incident log: detected drift events, root cause (which modification
-    caused it), severity, response taken (rollback, constraint tightening, deployment pause),
-    and lessons learned. Reviewed quarterly by safety lead.
+    Retain rollback execution records demonstrating restoration of verified goal states: the drift
+    or regression that triggered rollback, the causal modification identified, the state rolled back
+    to, and the post-rollback alignment verification showing the goal state was restored within the
+    defined SLA.
+- evidence_numeral: V
+  how_to_produce: |
+    Document the goal-lock mechanism: which properties are locked, how enforcement is implemented
+    outside the system's writable surface, the change-control process that is the only modification
+    path, evidence that the lock layer is not accessible to any self-modification pathway, and
+    red-team test results demonstrating lock integrity.
 testability:
 - Goal specification produces binary pass/fail on canonical scenarios with measurable alignment scores
 - Pre/post gate blocks modifications that degrade alignment score beyond defined tolerance

@@ -20,8 +20,10 @@ normative_anchors:
   evidence_addressed:
   - I
   - II
+  - III
   sfrs_not_addressed: []
-  evidence_not_addressed: []
+  evidence_not_addressed:
+  - IV
 cross_references:
 - D4::idx0::value-alignment
 - D4::idx4::cautious-norming
@@ -40,20 +42,25 @@ design_patterns:
   - a
   when_to_use: Any value-encoded system where ontology coverage is imperfect (all of them).
 - name: OOD-scenario detector with conservative behavior
-  sketch: 'Runtime classifier (features from input, retrieved context, proposed tool calls) estimates
-    whether the current scenario is in-distribution relative to training + overlay coverage. Below-threshold
-    signals trigger conservative behavior: scope reduction, refusal of high-impact actions, human-review
-    request. Thresholds calibrated on held-out OOD probe set.
+  sketch: 'External statistical detector (scaffold-hosted classifier over features from input, retrieved
+    context, proposed tool calls — separate from the model under guard) estimates whether the current scenario
+    is in-distribution relative to training + overlay coverage, with documented thresholds. Below-threshold
+    signals mechanically restrict available actions or escalate to human review: scope reduction, refusal
+    of high-impact actions, human-review request — with restricted-mode activations and escalations logged.
+    The model flagging its own out-of-distribution condition may supplement but does not by itself constitute
+    conformity. Thresholds calibrated on held-out OOD probe set.
 
     '
   maps_to_sfr:
   - c
   when_to_use: Production deployments where the input distribution can drift.
 - name: Multi-step plan alignment verification
-  sketch: 'Before executing a multi-step plan, run the plan through an alignment check: does the plan
-    (as a whole, and step-by-step) satisfy Codex constraints? Treat plan verification as a separate stage
-    with its own pass/fail; plans that fail verification are not executed even if each step would individually
-    pass. Complements the multi-step-checkpoint pattern from D4.5̲.
+  sketch: 'Externalize plans into scaffold-maintained structures before execution and run each through
+    an alignment check: does the plan (as a whole, and step-by-step) satisfy Codex constraints? Each step
+    is screened against value constraints before execution and the per-step check result is recorded (per
+    Evidence II). Treat plan verification as a separate stage with its own pass/fail; plans that fail verification
+    are not executed even if each step would individually pass. Complements the multi-step-checkpoint pattern
+    from D4.5̲.
 
     '
   maps_to_sfr:
@@ -134,16 +141,24 @@ evidence_production:
     '
 - evidence_numeral: II
   how_to_produce: 'Complex-environment mapping: for each complex-planning deployment, document the objective
-    surface, decision parameters, value touchpoints per step, and alignment checks applied. Framework
-    documentation for unexpected scenarios: detection methods (OOD classifier features, uncategorized-bucket
-    runtime behavior), response protocols (conservative behavior, human review, refusal), alignment- maintenance
-    procedures (periodic re-verification during long planning runs).
+    surface, decision parameters, value touchpoints per step, and alignment checks applied, including the
+    recorded per-step screening results from scaffold-maintained plan structures.
+
+    '
+- evidence_numeral: III
+  how_to_produce: 'Framework documentation for unexpected scenarios: detection methods (external OOD detector
+    features and thresholds, uncategorized-bucket runtime behavior), response protocols (mechanically enforced
+    conservative behavior, human review, refusal — with restricted-mode activation and escalation logs),
+    alignment-maintenance procedures (periodic re-verification during long planning runs).
 
     '
 confidence: medium
 needs_human_review: true
 review_notes: 'Content-type decision: code-applicable. SFR-a "methods for encoding" and SFR-d "alignment
-  capabilities during complex planning" point to technical implementations. Process wrapping (runbook
+  capabilities during complex planning" point to technical implementations. Evidence IV (v1.3-draft: technical
+  documentation of value encoding methods with validation results across representative operational contexts)
+  is not yet addressed — the compositional-encoding pattern documents the methods but does not currently
+  produce a cross-context validation campaign; left in evidence_not_addressed rather than claiming coverage. Process wrapping (runbook
   for human review of uncategorized-bucket entries) exists but is the D4.6̲/D4.7̲ territory.
 
   Honest caveat: OOD detection in deep-learning systems is an open research area; calibrated OOD classifiers

@@ -54,7 +54,10 @@ stakeholders:
   engagement_channel: 'Participate in a mandatory-disclosure agreement: agent-to-agent interaction protocols the
     org''s systems implement, their evaluation behavior against weaker counterparties, detected instances
     of inter-model exploitation. Minimum disclosure set: protocol versions supported, known asymmetric
-    outcomes, deprecation notices. Disclosure lives in a shared registry; consumers can inspect.
+    outcomes, deprecation notices. Disclosure lives in a shared registry; consumers can inspect. In-band
+    disclosures (agent identity, protocol version, capability tier) are enforced and stamped at the interaction
+    layer by the runtime rather than composed by the model, so counterparties and auditors can verify
+    them mechanically.
 
     '
   maps_to_sfr:
@@ -98,8 +101,11 @@ evidence_production:
     '
 - evidence_numeral: II
   how_to_produce: 'Oversight and failsafe records: monitoring logs for inter-system interactions the org
-    participates in, violation reports where unethical conduct was detected (whether by the org or by
-    counterparty), intervention records. Mutual-disclosure registry entries.
+    participates in, with the codified, checkable rules the monitoring evaluates conduct against; fail-safe
+    test records; violation reports where unethical conduct was detected (whether by the org or by
+    counterparty), intervention records. Where detection relies on model-based judgment, records of the
+    independent checks of those verdicts. Mutual-disclosure registry entries, including evidence that
+    disclosure stamps are applied by the interaction layer, not model-composed.
 
     '
 - evidence_numeral: III
