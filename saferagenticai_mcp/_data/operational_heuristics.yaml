@@ -5,7 +5,8 @@ description: |
 
   These patterns emerged bottom-up from building, deploying, and operating
   AI agents (primarily Claude Code and Rewind). They complement the
-  framework's top-down normative patterns (in suites/) by documenting what
+  framework's top-down implementation patterns (in suites/), which are themselves
+  anchored to the normative catalog, by documenting what
   production experience actually taught about which safety properties are
   load-bearing.
 

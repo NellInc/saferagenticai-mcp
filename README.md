@@ -60,7 +60,7 @@ uv tool install saferagenticai-mcp
 pip install --user saferagenticai-mcp
 ```
 
-For audit-trail reproducibility, pin the version: `pipx install saferagenticai-mcp==0.3.3`.
+For audit-trail reproducibility, pin the version: `pipx install saferagenticai-mcp==0.3.6`.
 The package bundles `criteria-v1.json` + 238 pattern YAMLs + 4 exemplars
 + `operational_heuristics.yaml` inside `saferagenticai_mcp/_data/`, so a
 wheel install works without any repo checkout. (The 0.3.0 wheel predates the
@@ -126,7 +126,7 @@ first tool call from your assistant.
 
 ## Data sources
 
-- **Canonical framework**: `assessor/src/data/criteria-v1.json` (extracted from `framework.html`)
+- **Normative framework**: `framework/catalog/`, loaded through the generated `assessor/src/data/criteria-v1.json` projection
 - **Pattern layer**: `research/mcp/suites/<SUITE>/<pattern_id>.yaml` (238 files)
 - **Exemplars**: `research/mcp/exemplars/*.yaml` (fallback for four anchor subgoals)
 - **Operational heuristics**: `research/mcp/operational_heuristics.yaml` (14 heuristics)
@@ -147,7 +147,7 @@ print(f'{len(idx.subgoals)} subgoals, {sum(1 for s in idx.subgoals.values() if s
 
 - Canonical framework: follows `criteria-v1.json`'s `version` field.
 - Pattern layer: `v1-draft` while this directory is being populated; `v1` once reviewed.
-- Server: semantic versioning. Current release is **0.3.3** (full 238-pattern corpus + operational heuristics bundled; argument validation in dispatch; MIT license with bundled `LICENSE`, corrected package metadata, and MCP-registry ownership token). Pin explicitly for audit reproducibility.
+- Server: semantic versioning. Current release is **0.3.6** (framework `1.3-draft`, full 238-pattern corpus, and operational heuristics bundled). Pin explicitly for audit reproducibility.
 
 ## What's already built in
 
@@ -161,6 +161,17 @@ print(f'{len(idx.subgoals)} subgoals, {sum(1 for s in idx.subgoals.values() if s
 - Auth / remote transport (stdio only).
 - Embedding-based semantic search — the field-weighted keyword scoring is sufficient at 238 patterns; embeddings would be worth it at 10× this scale.
 - `mark_reviewed` write tool — deliberately not added. Phase 3 review edits go through the YAML directly (editor + git diff = auditable); the MCP stays read-only.
+
+The broader agent-native architecture proposes composite orientation, context-pack,
+workspace, planning, action, and verification operations. They are explicitly not
+part of the current `0.3.6` interface. See
+[`../../architecture/README.md`](../../architecture/README.md) for the target and
+compatibility plan.
+
+The authoritative catalog maps current MCP identifiers and slugs to permanent
+requirement IDs. Server `0.3.6` retains its twelve-tool interface, loads the
+generated packaged snapshot, validates `saai.catalog.v1`, and reports the shared
+snapshot hash.
 
 ## License
 

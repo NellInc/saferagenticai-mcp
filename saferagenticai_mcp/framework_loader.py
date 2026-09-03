@@ -20,6 +20,12 @@ import yaml
 
 _YamlLoader: type = getattr(yaml, "CSafeLoader", yaml.SafeLoader)
 
+CATALOG_CONTRACT_VERSION = "saai.catalog.v1"
+UNSUPPORTED_CATALOG_CONTRACT = (
+    "Unsupported framework catalog contract. Regenerate consumers with "
+    "`npm run generate:all`."
+)
+
 log = logging.getLogger("saferagenticai.framework_loader")
 log.addHandler(logging.NullHandler())
 
@@ -213,6 +219,8 @@ class Subgoal:
 @dataclass
 class FrameworkIndex:
     version: str
+    snapshot_hash: str
+    catalog_contract_version: str
     subgoals: dict[str, Subgoal]  # pattern_id -> Subgoal
     by_display_id: dict[str, list[str]]  # display_id -> [pattern_id]
     by_suite: dict[str, list[str]]  # suite_id -> [pattern_id]
@@ -222,6 +230,11 @@ class FrameworkIndex:
     loaded_at: float = 0.0
     # Reverse cross-reference graph: pattern_id -> list of pattern_ids that reference it.
     reverse_xrefs: dict[str, list[str]] = field(default_factory=dict)
+    # Lazily built by server._term_weights: pattern_id -> lowercased searchable
+    # text, and term -> document frequency. Caches for IDF term weighting; both
+    # stay empty until the first search and are discarded with the index.
+    search_corpus: dict[str, str] = field(default_factory=dict, repr=False)
+    search_df: dict[str, int] = field(default_factory=dict, repr=False)
 
     def get(self, key: str) -> Subgoal | None:
         """Resolve by pattern_id or display_id (returns first match for display_id)."""
@@ -312,6 +325,15 @@ def load_framework() -> FrameworkIndex:
         raise ValueError(
             f"criteria file is malformed JSON ({CRITERIA_PATH}): {e}"
         ) from e
+    metadata = criteria.get("_meta")
+    if (
+        not isinstance(metadata, dict)
+        or metadata.get("contract_version") != CATALOG_CONTRACT_VERSION
+        or metadata.get("authority") != "normative"
+        or not isinstance(metadata.get("snapshot_sha256"), str)
+        or re.fullmatch(r"[a-f0-9]{64}", metadata["snapshot_sha256"]) is None
+    ):
+        raise ValueError(UNSUPPORTED_CATALOG_CONTRACT)
     criteria_mtime = CRITERIA_PATH.stat().st_mtime
     pattern_by_id, validation_issues, suites_mtime = _load_pattern_yamls()
 
@@ -394,6 +416,8 @@ def load_framework() -> FrameworkIndex:
 
     idx = FrameworkIndex(
         version=criteria.get("version", "unknown"),
+        snapshot_hash=metadata["snapshot_sha256"],
+        catalog_contract_version=metadata["contract_version"],
         subgoals=subgoals,
         by_display_id=by_display_id,
         by_suite=by_suite,
@@ -592,8 +616,9 @@ def heuristic_to_dict(h: OperationalHeuristic) -> dict[str, Any]:
         "anti_patterns": h.anti_patterns,
         "discovery_narrative": h.discovery_narrative,
     }
-    if h.confidence:
-        out["confidence"] = h.confidence
-    if h.source:
-        out["source"] = h.source
+    # Always emit these, null when unset, so consumers can distinguish "not
+    # rated" from a missing key (the pattern layer's subgoal_to_dict does the
+    # same); 8 of the 14 heuristics carry no confidence value.
+    out["confidence"] = h.confidence or None
+    out["source"] = h.source or None
     return out

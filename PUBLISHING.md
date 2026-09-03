@@ -33,7 +33,12 @@ print('token present:', 'mcp-name: io.github.NellInc/saferagenticai-mcp' in (i.g
 ```
 
 Bump `version` in `pyproject.toml`, `server.json`, `mcpb/manifest.json`,
-`scripts/build-mcpb.sh`, and the `Dockerfile` pin together.
+`scripts/build-mcpb.sh`, the `Dockerfile` pin, and `_FALLBACK_VERSION` in
+`saferagenticai_mcp/__init__.py` together. (`__version__` itself is read from
+the installed distribution metadata and is what the MCP initialize handshake
+reports; `_FALLBACK_VERSION` only covers source checkouts, and
+`tests/test_unit_server.py::TestPackageVersion` fails if it drifts from
+`pyproject.toml`.)
 
 > Status: **0.3.5 is published** (0.3.4 was a PyPI-only intermediate; registry 0.3.4 predates it with a stale 0.3.3 package pin) — `License-Expression: MIT`, no OSI classifier,
 > ownership token present in the live description. The registry steps below are unblocked.

@@ -2,7 +2,7 @@
 # Sync runtime data (criteria + patterns + exemplars) into the package
 # under saferagenticai_mcp/_data/ so `python -m build` can bundle them.
 #
-# Run before every release:  ./scripts/sync-data.sh
+# The repository-level `npm run generate:all` invokes this before validation.
 #
 # Safe to run repeatedly — wipes and repopulates _data/ each time.
 

@@ -1,6 +1,6 @@
 [project]
 name = "saferagenticai-mcp"
-version = "0.3.5"
+version = "0.3.6"
 description = "MCP server exposing the SaferAgenticAI safety framework (canonical criteria + Implementation Patterns layer) to coding assistants."
 readme = "README.md"
 license = "MIT"
@@ -41,7 +41,10 @@ dependencies = [
 [project.optional-dependencies]
 # Only needed for the hosted Streamable HTTP transport (MCP_TRANSPORT=http).
 # stdio users (PyPI / MCPB / Claude Desktop) install nothing extra.
+# StreamableHTTPSessionManager (with stateless= / json_response=) landed in
+# mcp 1.8.0, so the HTTP transport needs a higher floor than the stdio path.
 http = [
+    "mcp>=1.8.0,<2",
     "uvicorn>=0.30",
     "starlette>=0.37",
 ]

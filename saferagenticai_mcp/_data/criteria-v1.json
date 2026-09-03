@@ -11,6 +11,13 @@
     "subgoals_with_sfrs": 238,
     "subgoals_with_evidence": 238
   },
+  "_meta": {
+    "contract_version": "saai.catalog.v1",
+    "catalog_version": "1.0.0",
+    "snapshot_sha256": "9476419f92b745579921e1208cdb1028125ba5bfaa1179fa85dad6400492f766",
+    "generated_from": "framework/catalog/",
+    "authority": "normative"
+  },
   "suites": [
     {
       "id": "D1",

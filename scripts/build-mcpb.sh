@@ -9,8 +9,19 @@
 # Usage: research/mcp/server/scripts/build-mcpb.sh
 set -euo pipefail
 
-VERSION="0.3.5"                                          # keep in sync with pyproject/manifest
 SERVER_DIR="$(cd "$(dirname "$0")/.." && pwd)"          # research/mcp/server
+# Single source of truth for the version: pyproject.toml. The MCPB manifest
+# must agree, and the bundle vendors THAT release from PyPI, so a code fix in
+# this tree only reaches the bundle after the matching version is published.
+VERSION="$(sed -n 's/^version = "\(.*\)"/\1/p' "$SERVER_DIR/pyproject.toml")"
+MANIFEST_VERSION="$(python3 -c 'import json,sys; print(json.load(open(sys.argv[1]))["version"])' "$SERVER_DIR/mcpb/manifest.json")"
+if [[ -z "$VERSION" ]]; then echo "could not read version from pyproject.toml" >&2; exit 1; fi
+if [[ "$VERSION" != "$MANIFEST_VERSION" ]]; then
+  echo "version drift: pyproject.toml=$VERSION mcpb/manifest.json=$MANIFEST_VERSION" >&2; exit 1
+fi
+if ! python3 -m pip index versions saferagenticai-mcp 2>/dev/null | grep -q "$VERSION"; then
+  echo "saferagenticai-mcp==$VERSION is not on PyPI yet; publish it first (the bundle vendors the PyPI release)" >&2; exit 1
+fi
 BUNDLE_DIR="$SERVER_DIR/mcpb"
 OUT="$SERVER_DIR/dist/saferagenticai-mcp-${VERSION}.mcpb"
 

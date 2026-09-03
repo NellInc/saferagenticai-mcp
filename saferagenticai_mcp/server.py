@@ -22,13 +22,12 @@ from __future__ import annotations
 import asyncio
 import json
 import logging
+import math
 import os
 import re
-from typing import Any
+from functools import lru_cache
 
-log = logging.getLogger("saferagenticai.server")
-log.addHandler(logging.NullHandler())
-
+from . import __version__
 from .framework_loader import (
     FrameworkIndex,
     HeuristicsIndex,
@@ -42,6 +41,9 @@ from .framework_loader import (
     subgoal_to_dict,
 )
 
+log = logging.getLogger("saferagenticai.server")
+log.addHandler(logging.NullHandler())
+
 _index: FrameworkIndex | None = None
 
 
@@ -53,9 +55,7 @@ def _get_index() -> FrameworkIndex:
     a pattern, call the MCP, see updated answer — no restart.
     """
     global _index
-    if _index is None:
-        _index = load_framework()
-    elif newer_source_exists(_index):
+    if _index is None or newer_source_exists(_index):
         _index = load_framework()
     return _index
 
@@ -66,9 +66,7 @@ _heuristics: HeuristicsIndex | None = None
 def _get_heuristics() -> HeuristicsIndex:
     """Return the cached heuristics index, hot-reloading if the source changed."""
     global _heuristics
-    if _heuristics is None:
-        _heuristics = load_heuristics()
-    elif newer_heuristics_exist(_heuristics):
+    if _heuristics is None or newer_heuristics_exist(_heuristics):
         _heuristics = load_heuristics()
     return _heuristics
 
@@ -81,6 +79,8 @@ def _get_heuristics() -> HeuristicsIndex:
 def _tool_list_suites(idx: FrameworkIndex) -> dict:
     return {
         "framework_version": idx.version,
+        "catalog_contract_version": idx.catalog_contract_version,
+        "snapshot_sha256": idx.snapshot_hash,
         "suite_count": len(idx.suites),
         "suites": sorted(idx.suites.values(), key=lambda s: s["id"]),
         "note": (
@@ -233,20 +233,71 @@ def _tool_list_requirements(idx: FrameworkIndex, **filters) -> dict:
     }
 
 
-def _count_occurrences(haystack: str, needles: list[str]) -> tuple[int, str]:
-    """Return (count_of_distinct_matching_terms, best snippet) for lowercase substring matches."""
+@lru_cache(maxsize=4096)
+def _term_regex(term: str) -> re.Pattern:
+    """Word-start-anchored matcher for a search term.
+
+    Anchoring at a word boundary (but not at the end) keeps morphological
+    matches -- "manage" still hits "management", "agent" still hits "agents"
+    and "agentic" -- while dropping the spurious mid-word substring hits that
+    plain `in` produced (e.g. "act" inside "contract").
+    """
+    return re.compile(r"\b" + re.escape(term))
+
+
+def _count_occurrences(
+    haystack: str, needles: list[str], weights: dict[str, float] | None = None
+) -> tuple[float, str]:
+    """Return (summed weight of distinct matching terms, best snippet).
+
+    Each distinct term that matches contributes its IDF weight from `weights`
+    (1.0 each when `weights` is None, i.e. the old distinct-term count).
+    """
     h = haystack.lower()
-    count = 0
+    score = 0.0
     snippet = ""
     for n in needles:
-        if n in h:
-            count += 1
+        m = _term_regex(n).search(h)
+        if m:
+            score += weights.get(n, 1.0) if weights else 1.0
             if not snippet:
-                i = h.find(n)
+                i = m.start()
                 start = max(0, i - 60)
                 end = min(len(haystack), i + 120)
                 snippet = haystack[start:end].strip()
-    return count, snippet
+    return score, snippet
+
+
+def _searchable_text(s: Subgoal) -> str:
+    """All text of a subgoal that search_patterns looks at, lowercased."""
+    parts = [s.title, s.description]
+    if s.pattern:
+        parts.append(str(s.pattern.get("summary", "")))
+        parts.append(_pattern_text(s.pattern))
+    parts.extend(str(sfr.get("text", "")) for sfr in s.sfrs)
+    return " ".join(parts).lower()
+
+
+def _term_weights(idx: FrameworkIndex, terms: list[str]) -> dict[str, float]:
+    """Smoothed IDF weight per term over the pattern corpus.
+
+    Without this, a term that occurs in nearly every pattern ("agent",
+    "safety", "system") contributes the same 10x title bonus as a term that
+    picks out one pattern ("sandboxing"), which is what let long, generically
+    titled v1.3 subgoals crowd the top of every result list.
+    """
+    if not idx.search_corpus:
+        idx.search_corpus = {pid: _searchable_text(s) for pid, s in idx.subgoals.items()}
+    n_docs = len(idx.search_corpus) or 1
+    weights: dict[str, float] = {}
+    for term in terms:
+        df = idx.search_df.get(term)
+        if df is None:
+            rx = _term_regex(term)
+            df = sum(1 for text in idx.search_corpus.values() if rx.search(text))
+            idx.search_df[term] = df
+        weights[term] = math.log((n_docs + 1) / (df + 1)) + 1.0
+    return weights
 
 
 FIELD_WEIGHTS = {
@@ -278,7 +329,11 @@ def _tool_search_patterns(
 ) -> dict:
     """Field-weighted keyword search.
 
-    Weights: title 10x, summary 4x, SFR text 3x, description 2x, pattern body 1x.
+    Field weights: title 10x, summary 4x, SFR text 3x, description 2x,
+    pattern body 1x. Each field contributes the summed IDF weight of the
+    distinct query terms it contains, so a rare term ("sandboxing") outranks a
+    ubiquitous one ("agent"). All of a subgoal's SFRs are scored as one field,
+    so a subgoal with thirty SFRs cannot outrank a better match with three.
     Returns the snippet from the highest-weighted field that matched,
     so callers see *why* the match was ranked high.
 
@@ -291,15 +346,16 @@ def _tool_search_patterns(
     terms = [t for t in re.split(r"\W+", query.lower()) if t]
     if not terms:
         return {"error": "empty query"}
+    weights = _term_weights(idx, terms)
 
-    scored: list[tuple[int, Subgoal, str, str]] = []
+    scored: list[tuple[float, Subgoal, str, str]] = []
     for s in idx.subgoals.values():
-        total = 0
+        total = 0.0
         best_snippet = ""
         best_field = ""
 
         # Title: heavy weight
-        c, snip = _count_occurrences(s.title, terms)
+        c, snip = _count_occurrences(s.title, terms, weights)
         if c:
             total += c * FIELD_WEIGHTS["title"]
             if snip and not best_snippet:
@@ -309,17 +365,17 @@ def _tool_search_patterns(
         # Summary (if patterned): weight 4
         if s.pattern:
             summary = str(s.pattern.get("summary", ""))
-            c, snip = _count_occurrences(summary, terms)
+            c, snip = _count_occurrences(summary, terms, weights)
             if c:
                 total += c * FIELD_WEIGHTS["summary"]
                 if snip and best_field in ("", "body"):
                     best_snippet = snip
                     best_field = "summary"
 
-        # SFR text: weight 3
-        for sfr in s.sfrs:
-            txt = sfr.get("text", "")
-            c, snip = _count_occurrences(txt, terms)
+        # SFR text: weight 3, scored as one field so SFR count is not a ranking signal
+        if s.sfrs:
+            sfr_text = " ".join(str(sfr.get("text", "")) for sfr in s.sfrs)
+            c, snip = _count_occurrences(sfr_text, terms, weights)
             if c:
                 total += c * FIELD_WEIGHTS["sfr"]
                 if snip and best_field in ("", "body", "description"):
@@ -327,7 +383,7 @@ def _tool_search_patterns(
                     best_field = "sfr"
 
         # Description: weight 2
-        c, snip = _count_occurrences(s.description, terms)
+        c, snip = _count_occurrences(s.description, terms, weights)
         if c:
             total += c * FIELD_WEIGHTS["description"]
             if snip and best_field in ("", "body"):
@@ -337,7 +393,7 @@ def _tool_search_patterns(
         # Pattern body (everything else): weight 1
         if s.pattern:
             body = _pattern_text(s.pattern)
-            c, snip = _count_occurrences(body, terms)
+            c, snip = _count_occurrences(body, terms, weights)
             if c:
                 total += c * FIELD_WEIGHTS["body"]
                 if snip and not best_snippet:
@@ -345,9 +401,9 @@ def _tool_search_patterns(
                     best_field = "body"
 
         if total > 0:
-            scored.append((total, s, best_snippet, best_field))
+            scored.append((round(total, 3), s, best_snippet, best_field))
 
-    scored.sort(key=lambda t: -t[0])
+    scored.sort(key=lambda t: (-t[0], t[1].pattern_id))
     top = scored[:limit]
     compact = verbosity == "compact"
     results = []
@@ -838,9 +894,12 @@ def dispatch(name: str, arguments: dict) -> dict:
 def _build_mcp_server():
     """Lazily import mcp so this module is usable for local testing without it."""
     from mcp.server import Server
-    from mcp.types import Tool, TextContent
+    from mcp.types import TextContent, Tool
 
-    server = Server("saferagenticai")
+    # Pass the version explicitly: without it the SDK reports its own version
+    # in the initialize handshake, so clients and registries record the mcp
+    # package version instead of this server's.
+    server = Server("saferagenticai", version=__version__)
 
     TOOLS = [
         Tool(
@@ -894,9 +953,11 @@ def _build_mcp_server():
         Tool(
             name="search_patterns",
             description=(
-                "Field-weighted keyword search across the framework. Substring "
-                "match on lowercased terms; field weights: title 10x, summary 4x, "
-                "SFR text 3x, description 2x, pattern body 1x. `matched_in` "
+                "Field-weighted keyword search across the framework. Terms match "
+                "at word starts on lowercased text and are IDF-weighted, so rare "
+                "terms outrank ubiquitous ones; field weights: title 10x, summary "
+                "4x, SFR text 3x (all of a subgoal's SFRs scored as one field), "
+                "description 2x, pattern body 1x. `matched_in` "
                 "reports the highest-weighted field that matched. No semantic / "
                 "embedding search — known limitation, see /mcp.html. "
                 "Use verbosity='compact' to drop snippets and confidence flags "
