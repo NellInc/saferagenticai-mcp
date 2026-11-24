@@ -176,7 +176,7 @@ evidence_production:
       escalation, or halt are evidence the detection layer is live.
 
 confidence: high
-needs_human_review: false
+review_status: generated_draft
 review_notes: >
   Leans heavily on standard authn/authz primitives (D3 Security). The
   framework-specific sharpenings are (1) deterministic tripwires as the

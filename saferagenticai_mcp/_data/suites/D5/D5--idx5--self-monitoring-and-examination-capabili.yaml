@@ -173,7 +173,7 @@ evidence_production:
 
     '
 confidence: medium
-needs_human_review: true
+review_status: generated_draft
 review_notes: 'Medium because "Nanny AI" / guardian pattern is a plausible implementation of SFR-c but
   is an active research area; failure modes (guardian corruption, adversarial agent-guardian dynamics)
   are not fully understood — the v1.3 requirement that guardian verdicts be ground-truth-validated with

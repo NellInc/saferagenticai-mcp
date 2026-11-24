@@ -6,7 +6,9 @@ subgoal_title: Undefined Multi-agent Ensembles
 content_type: code-applicable
 summary: 'The harm is sub-agents and peer-agents quietly appointed, such that nobody can say who authorized
   what. The defence is a typed delegation protocol: every sub-agent invocation carries a signed delegation
-  token scoped to a subset of the primary agent''s Authority Scope Register (I1::idx0), handoffs are scaffold-enforced
+  token scoped to a subset of the primary agent''s current task grant (D3::idx9), not merely of its
+  standing Authority Scope Register (I1::idx0), so authority only shrinks along the chain and a sub-agent''s
+  own standing capabilities add none; handoffs are scaffold-enforced
   pauses with structured disclosure events (a model merely announcing a handoff is not evidence), and a
   default-deny policy refuses any agent-to-agent call that isn''t pre-declared at deployment.'
 normative_anchors:
@@ -26,14 +28,35 @@ normative_anchors:
 design_patterns:
 - name: Signed delegation tokens with scope subset
   sketch: Every sub-agent call carries a token signed by the primary agent's identity, containing {primary_agent_id,
-    sub_agent_id, principal_id, scope_subset, validity_window, correlation_id}. The scope_subset MUST
-    be a subset of the primary's authority per the Authority Scope Register. Sub-agents verify before
-    acting; unverified calls are refused and audited.
+    sub_agent_id, principal_id, task_id, scope_subset, validity_window, correlation_id}. The scope_subset MUST
+    be a subset of the primary's task-scoped grant for the request it is serving (D3::idx9), which is itself
+    bounded by the primary's standing authority in the Authority Scope Register (I1::idx0). The register is
+    the ceiling on what an agent may ever delegate; the task grant is the limit on what it may delegate
+    now. The task_id ties every downstream action to the request that authorized it. Sub-agents verify
+    before acting; unverified calls are refused and audited.
   maps_to_sfr:
   - a
   - b
   - e
   when_to_use: Any multi-agent invocation.
+- name: Token-bounded execution at the sub-agent
+  sketch: The delegation token, not the sub-agent's own permission set, is the grant for delegated work.
+    The sub-agent's execution-time gate (D3::idx9) checks every side-effecting call, arguments included,
+    against the token scope intersected with the sub-agent's own capability allowlist (D3::idx10), so its
+    own permissions can narrow the token but never widen it. A capability the sub-agent holds for other
+    work confers no authority inside a task that did not delegate it. A manager asks a travel agent to
+    compare three itineraries, and the agent hands the search to a booking assistant that can also buy
+    tickets; the token delegates research, so the booking assistant cannot spend, however its own
+    permissions are set. Requests beyond the token are refused or escalated to the human principal; neither the primary
+    agent nor the sub-agent can widen the grant, because only the principal extends a grant (D3.9a).
+    Irreversible or outward-facing actions inside the token still need the principal's explicit
+    authorization for that call and its arguments (D3.9a, D6::idx11); a confirmation from the primary
+    agent does not stand in for it. Re-delegation follows the same rule, so each further token is a
+    subset of the token it came from.
+  maps_to_sfr:
+  - b
+  - e
+  when_to_use: Any sub-agent that holds tools or credentials of its own beyond what a given task delegates.
 - name: Declared-ensemble allowlist (default deny)
   sketch: At deployment, the primary agent declares the set of sub-agent / peer-agent identities it may
     call and the scopes it may delegate. The gateway enforces this allowlist. Any attempt to invoke an
@@ -84,28 +107,81 @@ anti_patterns:
     framework's "meaningful human oversight" requirement and expose the primary agent's principal to apparent-
     authority claims by the sub-agent.
 - name: Delegation tokens with superset scope
-  why_wrong: A sub-agent granted a scope broader than the primary agent holds is appointing-upward — not
+  why_wrong: A sub-agent granted a scope broader than the primary agent holds for the current task is appointing-upward — not
     permitted by agency law and not permitted by the Authority Scope Register. Scope must strictly subset.
+- name: Delegating from standing authority instead of the task grant
+  why_wrong: A token checked only against the Authority Scope Register passes the subset test while still
+    handing the sub-agent powers the principal never delegated for this request. An agent asked only to
+    research may hold standing authority to transact, but that authority was not delegated for the task
+    and cannot be passed on as if it had been.
+- name: Standing capability treated as delegated authority
+  why_wrong: A sub-agent that checks requests only against its own permission set lets any agent that can
+    call it borrow those permissions. This is the confused deputy across an agent boundary (D3::idx9). The
+    sub-agent acts within the token it received, and its own wider capabilities stay out of reach for
+    delegated work.
 code_shape:
   language: pseudocode
-  code: "# Sub-agent invocation with typed delegation and allowlist check\ndef invoke_subagent(target:\
-    \ AgentId, intent: Action, ctx: AgentContext) -> Result:\n    # 1) Declared-ensemble allowlist\n \
-    \   if target not in ctx.declared_ensemble:\n        AUDIT.violation(ctx, \"undeclared_subagent\"\
-    , target=target)\n        raise EnsembleViolation(f\"sub-agent not declared: {target}\")\n\n    #\
-    \ 2) Scope subset check against Authority Scope Register\n    required_scope = scope_for(intent)\n\
-    \    if not ctx.authority_scope.covers(required_scope):\n        AUDIT.violation(ctx, \"out_of_scope_delegation\"\
-    , target=target)\n        raise ScopeViolation()\n    delegated_scope = ctx.authority_scope.subset(required_scope)\n\
-    \n    # 3) Signed delegation token\n    token = DelegationToken(\n        primary_agent_id=ctx.agent_id,\n\
-    \        sub_agent_id=target,\n        principal_id=ctx.principal_id,\n        scope=delegated_scope,\n\
-    \        validity=short_window(),\n        correlation_id=ctx.correlation_id,\n    ).sign(ctx.agent_key)\n\
-    \n    # 4) Handoff surfacing if user-risk-altering\n    if intent.alters_user_risk():\n        ui.handoff_notice(primary=ctx.agent_id,\
-    \ sub=target, scope=delegated_scope)\n        if not ui.await_user_confirm():\n            return\
-    \ Result.refused_by_user()\n\n    # 5) Invoke, maintain correlation\n    result = agent_bus.call(target,\
-    \ intent, token=token, correlation_id=ctx.correlation_id)\n    AUDIT.record(ctx, action=\"subagent_invoked\"\
-    , token=token.id, result=result.summary)\n    return result\n"
-  notes: Five controls (allowlist, scope subset, signed token, handoff notice, correlated audit) appear
-    in one callsite because multi-agent invocations concentrate the liability surface. The token.sign
-    step presumes a key registry managed alongside the Authority Scope Register.
+  code: |
+    # Primary agent: sub-agent invocation with typed delegation and allowlist check
+    def invoke_subagent(target: AgentId, intent: Action, ctx: AgentContext) -> Result:
+        # 1) Declared-ensemble allowlist
+        if target not in ctx.declared_ensemble:
+            AUDIT.violation(ctx, "undeclared_subagent", target=target)
+            raise EnsembleViolation(f"sub-agent not declared: {target}")
+
+        # 2) Scope subset checks. The Authority Scope Register is the ceiling;
+        #    the current task grant (D3.9) is the binding limit.
+        required_scope = scope_for(intent)
+        if not ctx.authority_scope.covers(required_scope):
+            AUDIT.violation(ctx, "out_of_scope_delegation", target=target)
+            raise ScopeViolation()
+        if not ctx.task_grant.scope.covers(required_scope):
+            AUDIT.violation(ctx, "out_of_task_delegation", target=target,
+                            task_id=ctx.task_grant.task_id)
+            return escalate_to_principal(ctx, target, required_scope)
+        delegated_scope = ctx.task_grant.scope.subset(required_scope)
+
+        # 3) Signed delegation token, bound to the task
+        token = DelegationToken(
+            primary_agent_id=ctx.agent_id,
+            sub_agent_id=target,
+            principal_id=ctx.principal_id,
+            task_id=ctx.task_grant.task_id,
+            scope=delegated_scope,
+            validity=short_window(),
+            correlation_id=ctx.correlation_id,
+        ).sign(ctx.agent_key)
+
+        # 4) Handoff surfacing if user-risk-altering
+        if intent.alters_user_risk():
+            ui.handoff_notice(primary=ctx.agent_id, sub=target, scope=delegated_scope)
+            if not ui.await_user_confirm():
+                return Result.refused_by_user()
+
+        # 5) Invoke, maintain correlation
+        result = agent_bus.call(target, intent, token=token, correlation_id=ctx.correlation_id)
+        AUDIT.record(ctx, action="subagent_invoked", token=token.id, result=result.summary)
+        return result
+
+
+    # Sub-agent: the token is the grant for delegated work
+    def execute_delegated(tool_name, args, token: DelegationToken, self_ctx: AgentContext) -> Result:
+        if not TOKENS.verify(token):
+            return refuse(token, tool_name, "unverified_token")
+        # The sub-agent's own allowlist (D3.10) can narrow the token, never widen it.
+        scope = token.scope.intersect(self_ctx.capability_allowlist)
+        if not scope.permits(tool_name, args):
+            AUDIT.violation(self_ctx, "outside_token_scope", tool=tool_name,
+                            task_id=token.task_id)
+            return escalate_to_principal(token, tool_name, args)  # only the principal extends a grant
+        # D3.9 gate: consequential calls still need the principal's own authorization
+        # for this call and these arguments; the token carries none from the primary agent.
+        return invoke_tool(tool_name, args, grant=token.as_grant(scope))
+  notes: On the primary side, five controls (allowlist, task-bound scope subset, signed token, handoff notice,
+    correlated audit) appear in one callsite because multi-agent invocations concentrate the liability
+    surface. On the sub-agent side, the token replaces the sub-agent's own permissions as the grant, and
+    consequential calls still pass through the D3.9 execution-time gate. The token.sign step presumes a
+    key registry managed alongside the Authority Scope Register.
 evidence_production:
 - evidence_numeral: I
   how_to_produce: TOS section "Multi-Agent Interactions" enumerating the declared ensemble at deployment
@@ -117,27 +193,53 @@ evidence_production:
     retrieval calls with no user-facing effect) are enumerated in a published exceptions list; anything
     not on the list requires consent.'
 - evidence_numeral: III
-  how_to_produce: Deployment manifest with declared-ensemble allowlist, scope subsets, handoff friction
-    points, and fail-safe defaults. Gateway configuration reflects the manifest; a mismatch between declared
-    manifest and runtime config is a deploy-blocker. Annual audit verifies configuration equals manifest.
+  how_to_produce: 'Deployment manifest documenting fail-safe defaults, interaction limitations and disclosure requirements
+    for subagency relationships: declared-ensemble allowlist, scope subsets and handoff friction points.
+    Export the deployed gateway allowlist of authorized counterpart agents (a mismatch with the manifest is
+    a deploy-blocker) and the last-run results of a re-runnable negative test suite showing that calls to
+    undeclared, unauthorized or unidentified agents, delegation tokens that are unsigned or carry superset scope,
+    tokens within the primary''s standing authority but beyond its current task grant, sub-agent calls that
+    the sub-agent''s own capabilities would allow but its token does not, and implicit sub-agent appointments
+    all fail closed, with the matching undeclared_subagent, out_of_scope_delegation, out_of_task_delegation
+    and outside_token_scope violation events. Annual audit verifies configuration equals manifest.'
 - evidence_numeral: IV
-  how_to_produce: 'Handoff mechanism demonstration pack: the scaffold configuration that enforces the pause,
-    logged structured disclosure events from real or staged handoffs (agent identities, delegated scope,
-    timestamp, user-confirmation record), and screen captures or test transcripts showing how a user is
-    informed of and can intervene in a transfer between agents. Model-generated handoff announcements alone
-    do not satisfy this numeral.'
+  how_to_produce: 'Handoff documentation describing the scaffold-enforced handoff mechanism and each user-facing friction
+    point, with screen captures or test transcripts showing how a user is informed of and can intervene in a
+    transfer between agents. Export the scaffold configuration that enforces the pause and the scaffold
+    handoff logs from real or staged handoffs, each event recording the enforced pause, the structured
+    disclosure shown (incoming agent identity, delegated scope, primary agent''s continued liability,
+    correlation_id, timestamp) and the user''s response (confirmed, refused or intervened). Model-generated
+    handoff announcements may accompany but cannot substitute for these scaffold records.'
+testability:
+- 'Pre-pilot tabletop on the travel-booking case, run with no live tools: the team writes down what authority
+  survives each handoff and what evidence would show that a person approved the actual purchase, then checks
+  both against the token scopes and principal approval records the system would produce.'
+- Paired negative tests from evidence III run on every release, including a sub-agent call that its own
+  capabilities allow but its token does not.
 confidence: high
-needs_human_review: false
+review_status: generated_draft
 review_notes: 'This pattern assumes the Authority Scope Register from I1::idx0 exists; without it, "scope
   subset" is undefined. Cross-suite: D3 Security owns the gateway-enforcement primitives (allowlisting,
   token verification); this pattern uses them. D5 Transparency owns user-facing handoff communication
   UX; this pattern names the friction-point requirement. The "administrative or minimal interactions"
   exception in framework evidence II is deliberately loose — this pattern hardens it by requiring a published
-  exceptions list. Nell to confirm that "primary agent liability is not extinguished by delegation" is
-  the desired default; some jurisdictions treat fully-authorized sub-agents as breaking the chain.'
+  exceptions list. Whether "primary agent liability is not extinguished by delegation" is the right default
+  is an open question; some jurisdictions treat fully-authorized sub-agents as breaking the chain.
+
+  Revised 2026-11-23: delegation tokens are bound to the primary agent''s current task grant (D3::idx9),
+  not only to its standing Authority Scope Register, and sub-agents execute within the token rather than
+  their own permission set. This closes a gap where a sub-agent could exercise a standing capability
+  inside a task that never delegated it, with the subset test still passing. Added the token-bounded
+  execution pattern, two anti-patterns, task-bound pseudocode and the matching negative tests. The
+  matching normative change to D3.9a, I1.2b and I1.2 evidence III was adopted on 2026-11-24 (Proposal C,
+  option C.2, in research/mcp/PROPOSED_AUTHORING_CHANGES.md). The gap came to light through a use case
+  from Bilal Ahmad; the travel-booking example and the pre-pilot tabletop are his.'
 cross_references:
 - I1::idx0::agency-authority-duty-governance-suite-l
 - I1::idx8::emergent-system-cooperation
+- D3::idx9::tool-use-authorization-and-egress-contro
+- D3::idx10::default-deny-agent-capability-posture
+- D6::idx11::pre-action-reversibility-and-blast-radiu
 version_compat:
   framework_version_min: '1.0'
   framework_version_max: 1.x

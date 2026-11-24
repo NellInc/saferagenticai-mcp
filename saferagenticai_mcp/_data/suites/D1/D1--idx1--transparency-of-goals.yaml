@@ -148,7 +148,7 @@ evidence_production:
       signed batches) is strongly recommended for regulated deployments.
 
 confidence: high
-needs_human_review: false
+review_status: generated_draft
 review_notes: >
   Standard pattern — explicit goal state plus append-only event log is
   well-established. The SFR-specific sharpening is "instrumental goals

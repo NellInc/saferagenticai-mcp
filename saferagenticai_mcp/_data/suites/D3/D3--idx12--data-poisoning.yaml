@@ -156,17 +156,27 @@ evidence_production:
   - evidence_numeral: I
     how_to_produce: >
       Publish the data-sourcing policy, source allowlist (or its
-      governance process), the screening pipeline specification, and
-      the dataset catalog schema. Include a representative sample of
-      catalog entries (redacted as needed) showing the provenance and
-      hash chain.
+      governance process), the screening pipeline specification, and the
+      dataset catalog schema, with a representative sample of catalog
+      entries (redacted as needed) showing the provenance and hash
+      chain. Add results of seeded-poison tests at each phase:
+      deliberately manipulated samples introduced at collection (an
+      unallowlisted or unsigned source) and at preparation (adversarial
+      labels, backdoor triggers, benchmark leakage, near-duplicates),
+      with the ingestion gate's block records showing which planted
+      samples were flagged or blocked and which passed.
 
   - evidence_numeral: II
     how_to_produce: >
       Produce the data-assurance procedures document: provenance
       verification, integrity hashing, annotator trust model, screen
-      thresholds, verification procedures. Pair with screen-regression
-      results against the known-bad test fixture set.
+      thresholds, verification procedures. Export, for each dataset
+      version used in training, the catalog entry with its content hash
+      and the recorded outputs of the provenance-verification, integrity
+      and anomaly-screening checks run by the ingestion gate before use,
+      including blocked candidates with their structured reasons. Pair
+      with screen-regression results against the known-bad test fixture
+      set.
 
   - evidence_numeral: III
     how_to_produce: >
@@ -177,7 +187,7 @@ evidence_production:
       nothing has been detected (less reassuring).
 
 confidence: high
-needs_human_review: true
+review_status: generated_draft
 review_notes: >
   Display_id "D3.2" collides with non-underlined D3.2 Sandboxing
   (idx2); use full id to disambiguate.

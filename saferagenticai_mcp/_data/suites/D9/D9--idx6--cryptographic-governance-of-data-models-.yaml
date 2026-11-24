@@ -163,7 +163,7 @@ evidence_production:
     for agents / models / data, certificate lifecycle, and revocation procedures. Include periodic configuration
     audits — scheduled, with retained audit reports — verifying that the cryptographic controls remain
     deployed and effective across all system components (SFR-e; the deployment baseline is covered in
-    full by G9.6a). Reviewed annually and on cryptographic-standards updates (e.g., post-quantum transitions).
+    full by D9.6a). Reviewed annually and on cryptographic-standards updates (e.g., post-quantum transitions).
 
     '
 - evidence_numeral: II
@@ -185,7 +185,7 @@ evidence_production:
 
     '
 confidence: high
-needs_human_review: true
+review_status: generated_draft
 review_notes: 'Cryptographic machinery is well-established; the framework-specific work is in binding
   cryptography to governance concepts (agent-to- principal linkage, manifest bindings across model/data/policy,
   tamper-evident action logs the governance framework can audit). Confidence high on the pattern''s correctness;

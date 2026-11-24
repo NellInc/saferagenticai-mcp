@@ -139,10 +139,16 @@ evidence_production:
   - evidence_numeral: I
     how_to_produce: >
       Publish the Secure Operational Profile Specification and exemplar
-      profiles for each production agent (redacted for sensitive
-      capability detail where necessary). Include the lifecycle coverage
-      evidence: design, deployment, operation, maintenance, decommissioning
-      stages each addressed.
+      profiles for each production agent (redacted for sensitive capability
+      detail where necessary), with lifecycle coverage across design,
+      deployment, operation, maintenance and decommissioning. Export the
+      machine-readable profile configuration artifacts (the D3.10
+      configuration the runtime authorization policy of D3.1 loads) so an
+      assessor can inspect them. Add results of a re-runnable negative test
+      suite against the validating component: an agent presenting no valid
+      profile, or acting outside its declared capabilities, resources or
+      operating environment, is rejected, with the validator's rejection
+      log for each case.
 
   - evidence_numeral: II
     how_to_produce: >
@@ -160,20 +166,20 @@ evidence_production:
       stance. Version history documenting evolution.
 
 confidence: high
-needs_human_review: true
+review_status: generated_draft
 review_notes: >
   Content-type decision: governance over code-applicable. SFR-b ("adopt
-  global standards") is dominant; the deliverables (profile specification,
-  standards register, validation protocol) are policy-layer artifacts
-  whose code embodiment is downstream in D3.1 / D3.2. An argument
-  exists for code-applicable if the organisation treats "secure profile"
-  as a JSON schema — but the framework phrasing points at the governance
-  layer.
+  global standards") is dominant; the deliverables (profile
+  specification, standards register, validation protocol) are
+  policy-layer artifacts whose code embodiment is downstream in D3.1 /
+  D3.2. An argument exists for code-applicable if the organisation
+  treats "secure profile" as a JSON schema — but the framework phrasing
+  points at the governance layer.
 
   Specific standards named (W3C DID/VC, SPIFFE/SPIRE, ISO/IEC 42001,
   NIST AI RMF) are plausible defaults for 2026 but the landscape is
-  actively evolving. Nell and/or a standards-specialist reviewer should
-  verify currency; I7.3 exemplar flagged the same aging risk.
+  actively evolving. Implementers should check their currency; I7.3
+  exemplar flagged the same aging risk.
 
   Cross-suite hypothesis (not added as cross_reference): D9 (Governance)
   for the board-level standards stance, I7 (Capability Imbalance) for

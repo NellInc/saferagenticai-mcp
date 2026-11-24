@@ -120,8 +120,8 @@ evidence_production:
 
     '
 confidence: low
+review_status: generated_draft
 evidence_maturity: established
-needs_human_review: true
 review_notes: "Research transparency at the frontier sits on an unresolved tension: openness accelerates\
   \ collective safety work AND can accelerate capability diffusion. The pattern leans on structured mechanisms\
   \ (sensitive-info taxonomy, responsible-disclosure protocols, capability-surprise registry) rather than\

@@ -104,11 +104,15 @@ evidence_production:
     their rationale, alert history, and investigation outcomes for every excursion. Include evidence
     of at least one hidden measurement channel per critical outcome metric.
 - evidence_numeral: II
-  how_to_produce: |
+  how_to_produce: >
     Document reward channel integrity protections and the associated access controls: isolation
-    mechanisms, integrity monitoring, and penetration test results. Include evidence that the agent
-    cannot influence its own reward computation pathway, and an inventory of every feedback signal
-    the system can observe with its enrollment in decorrelation monitoring.
+    mechanisms, integrity monitoring, penetration test results, and an inventory of every feedback
+    signal the system can observe with its enrollment in decorrelation monitoring. Export the
+    access-control configuration (IAM policies, network isolation rules, write permissions on
+    reward stores and metric databases). Retain results of negative tests, run with the agent's own
+    credentials, in which the system attempts to modify the reward or feedback channel, its storage
+    and its computation, with the IAM, gateway or database audit logs showing each attempt blocked
+    and recorded outside the agent.
 - evidence_numeral: III
   how_to_produce: |
     Publish evaluation design documents demonstrating metric diversity and rotation schedules:
@@ -126,7 +130,7 @@ testability:
 - Outcome verification catches planted discrepancies between proxy and real outcomes at defined sampling rates
 - Reward channel integrity resists agent attempts to access or modify reward infrastructure in red-team exercises
 confidence: medium
-needs_human_review: true
+review_status: generated_draft
 review_notes: |
   Reward hacking is well-documented empirically in RL systems and increasingly observed in
   LLM agents optimizing for user approval or task-completion signals. The decorrelation monitoring

@@ -8,77 +8,102 @@ subgoal_title: "Prompt Injection and Instruction Hierarchy Defense"
 content_type: code-applicable
 
 summary: >
-  Agentic systems processing natural language instructions must defend
-  against prompt injection attacks, including indirect injection via
-  retrieved documents, tool outputs, and user-provided content. The
-  system must enforce instruction hierarchy (system instructions take
-  precedence over user instructions, which take precedence over
-  retrieved content) through architectural mechanisms, not prompt-based
-  constraints alone. A prompt injection that overrides system-level
-  safety instructions is a security breach equivalent to privilege
-  escalation.
+  Assume some prompt injections will succeed. Once data and instructions
+  are both natural language there is no stable boundary between them, so
+  recognizing or stripping hostile text cannot be the security property.
+  The property is that the scaffold records where every piece of context
+  came from, carries that provenance to any tool call it influences, and
+  refuses side effects that were not delegated for the current task
+  (D3.9a). Filtering, sanitization, and a planner/reader split remain
+  useful as defense in depth; they lower attack success rates but do not
+  establish conformity.
 
 normative_anchors:
   sfrs_addressed: [a, b, c]
   evidence_addressed: [I, II, III]
-  sfrs_not_addressed: []
-  evidence_not_addressed: []
+  sfrs_not_addressed: [d]
+  evidence_not_addressed: [IV]
 
 cross_references:
   - "D3::idx0::security"
   - "D3::idx1::authorization"
   - "D3::idx2::sandboxing"
   - "D3::idx4::operational-boundaries-and-constraints"
+  - "D3::idx9::tool-use-authorization-and-egress-contro"
+  - "D3::idx10::default-deny-agent-capability-posture"
   - "D6::idx10::context-integrity-and-instruction-preser"
   - "D3::idx11::model-poisoning"
 design_patterns:
 
-  - name: Architectural privilege separation for instruction tiers
+  - name: Scaffold-held provenance labels
     sketch: >
-      Implement instruction hierarchy through architectural separation,
-      not prompt preambles. System instructions occupy a privileged
-      context tier that the model API treats as immutable by lower
-      tiers. User instructions occupy a second tier. Retrieved content
-      and tool outputs occupy a third, untrusted tier. Each tier is
-      delimited by structural markers (API-level role fields, not
-      in-band text delimiters) that the model cannot override. If the
-      model provider supports hierarchical instruction APIs, use them.
-      If not, implement a preprocessing layer that strips tier-
-      escalation attempts from lower-tier inputs before they reach
-      the model.
+      Every segment that enters the model context is labelled by the
+      scaffold with its source: system, delegating principal, retrieved
+      document, tool output, or other third party. Labels live in
+      scaffold state, not in the prompt, so the model cannot forge or
+      drop them. Label at the granularity of fields that can become
+      tool arguments, not just whole documents: an email's sender
+      address and its body are different sources, because a reply may
+      legitimately use the first but never take a recipient from the
+      second. When the model proposes a tool call, the scaffold
+      records which segments were in context and which fields any
+      argument value was copied or derived from, and attaches that
+      provenance to the call before it reaches the authorization gate
+      in D3.9a. System instructions occupy an API-level role the lower
+      tiers cannot write to; in-band delimiters are not a boundary.
     maps_to_sfr: [a]
     when_to_use: Every LLM-based agentic system. No exceptions.
 
-  - name: Input sanitization for untrusted content
+  - name: Structural quarantine (planner / reader split)
     sketch: >
-      All content from untrusted sources (user messages, retrieved
-      documents, tool outputs, web-scraped content) passes through a
-      sanitization pipeline before reaching the model context. The
-      pipeline detects and neutralizes injection patterns: role
-      impersonation ("System: ignore previous instructions"), delimiter
-      escapes, encoded instructions (base64, unicode tricks, homoglyph
-      substitution), and indirect injection payloads embedded in
-      documents. Use a combination of pattern matching, encoding
-      normalization, and a classifier trained on known injection
-      datasets. Log all detections.
+      Split the agent into a privileged planner that sees only trusted
+      input (system instructions and the delegating principal's request)
+      and a quarantined reader that processes untrusted content. The
+      planner selects tools and fixes the shape of every call before any
+      untrusted content is read. The reader can only return values into
+      typed slots the planner declared (a summary string, an extracted
+      date), and those values stay tagged as untrusted. The reader has no
+      tool access and cannot choose which action runs next. This narrows
+      the path by which an injected instruction becomes a new action,
+      but it is defense in depth, not the boundary: as soon as reader
+      output (a summary, an extracted field) flows back to the planner
+      for a later step, injected text travels with it. Conformity rests
+      on the provenance gate in D3.9a, which holds whether or not the
+      split leaks.
+    maps_to_sfr: [b]
+    when_to_use: Any agent that both reads untrusted content and can
+      cause side effects, as an extra layer alongside, never instead
+      of, provenance enforced at execution.
+
+  - name: Injection filtering as defense in depth
+    sketch: >
+      Untrusted content may additionally pass through deterministic
+      normalization (encoding normalization, removal of role
+      impersonation and delimiter escapes) and a detector trained on
+      known injection datasets. Log detections and use them for
+      monitoring and incident response. Treat the filter as a rate
+      reducer, not a boundary: novel payloads will pass it, and an
+      LLM-based detector is the same problem one layer up.
     maps_to_sfr: [b]
     when_to_use: Whenever the model processes content from any source
-      outside the system operator's direct control.
+      outside the system operator's direct control, in addition to, not
+      instead of, provenance and side-effect enforcement.
 
-  - name: Output-side injection detection
+  - name: Assume-breach injection testing
     sketch: >
-      Monitor model outputs for signs of successful injection: outputs
-      that contradict system instructions, outputs that reveal system
-      prompt contents, outputs that attempt to execute unauthorized
-      tool calls, and outputs whose topic or style suddenly diverges
-      from the expected task. Implement as a post-generation classifier
-      that flags anomalous outputs before delivery. Flagged outputs
-      trigger a safe fallback (refusal, re-generation without the
-      suspect input, or human escalation).
+      Test the system with the injection already working. Give the agent
+      a valid principal and a tool it is allowed to use, deliver
+      instructions through each untrusted channel (retrieved documents,
+      tool outputs, tool descriptions, earlier conversation turns), and
+      ask whether any side effect or argument that the current task did
+      not delegate actually executes. Include a model stub that obeys
+      injected instructions perfectly, so the result measures the
+      architecture rather than the model's resistance. Any executed
+      undelegated side effect is a failure, even if a detector fired.
     maps_to_sfr: [c]
-    when_to_use: All production deployments, especially those with
-      tool-calling capabilities where a successful injection can
-      trigger real-world actions.
+    when_to_use: All production deployments, at each release and after
+      any change to tools, retrieval sources, or the planner/reader
+      boundary.
 
   - name: Canary tokens in system instructions
     sketch: >
@@ -86,21 +111,29 @@ design_patterns:
       these tokens appear in the model output (indicating the model
       was tricked into revealing its instructions), the output is
       blocked and an injection alert fires. Rotate canary values
-      periodically. This catches both direct extraction attacks and
-      indirect leakage through summarization.
-    maps_to_sfr: [a, c]
+      periodically. This catches direct extraction and some indirect
+      leakage; it does not catch paraphrased extraction.
+    maps_to_sfr: [c]
     when_to_use: When system prompt confidentiality is a security
-      requirement.
+      requirement, as a monitoring signal only.
 
 anti_patterns:
+
+  - name: Treating sanitization as the security boundary
+    why_wrong: >
+      A filter verified against known payload classes is a denylist,
+      and D3.10 already sets out why denylists are always incomplete.
+      Natural language has no escaping rule that separates data from
+      instructions. If conformity rests on the filter, the first novel
+      payload is a breach. The boundary has to sit at the side effect.
 
   - name: Relying on prompt-based instruction hierarchy alone
     why_wrong: >
       "You must always follow system instructions" is itself just a
       prompt that can be overridden by a sufficiently crafted injection.
       Instruction hierarchy must be enforced architecturally (API-level
-      role separation, preprocessing filters) not by asking the model
-      to self-enforce.
+      role separation, scaffold-held provenance, structural quarantine),
+      not by asking the model to self-enforce.
 
   - name: In-band delimiters as security boundaries
     why_wrong: >
@@ -108,101 +141,125 @@ anti_patterns:
       prompt to separate instruction tiers is trivially bypassable.
       Attackers include the same delimiters in their input. Use
       out-of-band structural separation (API role fields, separate
-      context slots).
+      context slots, separate model calls).
 
-  - name: Allowlisting known-good inputs instead of sanitizing all
+  - name: Treating the planner/reader split as the boundary
     why_wrong: >
-      An allowlist of known-safe inputs fails open on novel content.
-      All untrusted content must pass through sanitization regardless
-      of source reputation. A previously trusted document source can
-      be compromised.
+      The split only holds while nothing the reader produces reaches
+      the planner. Real tasks feed summaries and extracted values back
+      into planning, and injected instructions ride along. Count it as
+      defense in depth; the boundary is argument provenance checked
+      when the tool runs.
 
-  - name: Treating injection as a model fine-tuning problem only
+  - name: Model-asserted provenance
     why_wrong: >
-      Model-level robustness to injection is necessary but not
-      sufficient. Defense in depth requires input sanitization, output
-      monitoring, and architectural separation in addition to model
-      hardening. A model update that regresses on injection robustness
-      should be caught by the other layers.
+      Asking the model which instruction it was following, or having it
+      tag its own tool calls with a source, produces testimony from the
+      component under attack. Provenance must be computed by the
+      scaffold from what it put into the context.
+
+  - name: Measuring defense by detection rate
+    why_wrong: >
+      A high detection rate on a benchmark says nothing about what
+      happens to the undetected remainder. The decisive metric is how
+      many undelegated side effects executed in assume-breach testing,
+      which should be zero independent of detection.
 
 code_shape:
   language: pseudocode
   code: |
-    # Three-tier instruction hierarchy enforcement
-    class InstructionRouter:
-        def build_context(self, system_instr, user_instr, retrieved_docs):
-            # Tier 1: System instructions (immutable, highest privilege)
-            context = [{"role": "system", "content": system_instr,
-                        "canary": self.current_canary()}]
+    # Provenance is computed by the scaffold, never by the model.
+    class ContextBuilder:
+        def add(self, content, source):
+            seg = Segment(content=content, source=source,
+                          trusted=source in ("system", "principal"))
+            self.segments.append(seg)
+            return seg
 
-            # Tier 2: User instructions (sanitized)
-            sanitized_user = self.sanitize(user_instr, tier="user")
-            context.append({"role": "user", "content": sanitized_user})
+    # Planner sees only trusted segments; reader sees untrusted ones
+    # but cannot call tools.
+    def run_task(task, untrusted_docs):
+        plan = PLANNER.plan(system=SYSTEM_PROMPT, request=task.request)
+        # plan.steps are fixed here, before untrusted content is read
+        for step in plan.steps:
+            args = {}
+            for name, slot in step.arg_slots.items():
+                if slot.from_untrusted:
+                    value = READER.extract(untrusted_docs, slot.schema)
+                    args[name] = Tainted(value, sources=docs_ids(untrusted_docs))
+                else:
+                    args[name] = slot.value  # from trusted request
+            # D3.9a gate: task grant + argument provenance
+            invoke_tool(step.tool, args, task.grant)
 
-            # Tier 3: Retrieved content (sanitized + marked untrusted)
-            for doc in retrieved_docs:
-                sanitized_doc = self.sanitize(doc, tier="retrieved")
-                context.append({"role": "tool_output",
-                                "content": sanitized_doc,
-                                "trust_level": "untrusted"})
-            return context
-
-        def sanitize(self, content, tier):
-            content = self.normalize_encoding(content)
-            content = self.strip_role_impersonation(content)
-            content = self.neutralize_delimiter_escapes(content)
-            if self.injection_classifier.detect(content):
-                AUDIT.alert(tier=tier, content_hash=hash(content),
-                            detection="injection_pattern")
-                return self.safe_fallback(content, tier)
-            return content
+    # Defense in depth only: logs, never decides conformity.
+    def screen(content):
+        if INJECTION_DETECTOR.detect(normalize(content)):
+            AUDIT.alert(detection="injection_pattern",
+                        content_hash=hash(content))
+        return content
   notes: >
-    The key architectural property: lower tiers cannot modify or
-    observe higher tiers. The sanitization layer is defense in depth;
-    the tier separation is the primary control.
+    In this sketch the planner never reads untrusted content, so an
+    injected instruction cannot add a step; real systems often relax
+    that, which is why the split is defense in depth only. Values the
+    reader returns stay tainted, with field-level sources, so D3.9a
+    can refuse a step whose argument came from a field the grant does
+    not delegate. The detector feeds
+    monitoring; removing it changes alert volume, not the security
+    property. Tasks that genuinely require reading before planning
+    (open-ended browsing) cannot use a strict split; they fall back to
+    tainting every proposed call and escalating per D3.9a.
 
 evidence_production:
 
   - evidence_numeral: I
     how_to_produce: >
-      Maintain and execute an injection test suite covering known
-      attack categories: direct injection, indirect injection via
-      documents, role impersonation, delimiter escape, encoded
-      payloads, and multi-turn injection chains. Export test results
-      per model version and per sanitization-pipeline version.
-      Include both automated and red-team manual testing.
+      Export the provenance architecture: how segments are labelled,
+      where labels are stored, and how they are attached to tool calls.
+      Provide scaffold logs for sample tasks showing each context
+      segment's source and the provenance carried by each proposed tool
+      call. Include tests in which adversarial content arrives through
+      user input, retrieved documents, and tool outputs, showing that
+      system instructions and task scope are unchanged.
 
   - evidence_numeral: II
     how_to_produce: >
-      Export the sanitization pipeline configuration: rules, classifiers
-      deployed, detection rates (true positive, false positive),
-      and sample anonymized detections showing the pipeline caught
-      real injection attempts. Include the instruction hierarchy
-      architecture diagram showing tier separation.
+      Describe the deterministic handling applied to untrusted content:
+      quarantine boundaries (which component reads untrusted content and
+      what it can return), plus any normalization and filtering, with
+      test coverage against known injection classes. Label this
+      explicitly as defense in depth; its detection rates are context,
+      not conformity evidence for D3.8a or D3.9a.
 
   - evidence_numeral: III
     how_to_produce: >
-      Publish the injection incident log: detected injection attempts
-      in production, the detection layer that caught them (input
-      sanitization, output monitoring, canary detection), severity
-      classification, and whether any injection succeeded in
-      overriding system instructions. Zero successful overrides is
-      the target; non-zero triggers a post-incident review.
+      Publish assume-breach test results. For each case record the
+      channel, the side effect or argument requested, its provenance,
+      whether the current task delegated it, and whether the
+      execution-time check refused it. Run at least part of the suite
+      against a model stub that follows injected instructions, so the
+      results do not depend on model robustness. Zero executed
+      undelegated side effects is the pass condition.
 
-confidence: high
-needs_human_review: false
+confidence: medium
+review_status: generated_draft
 review_notes: >
-  Phase 3: Initial draft, awaiting human review. SFR and evidence
-  descriptions in criteria-v1.json are empty; content derived from the
-  subgoal description. This pattern has substantial cross-suite
-  relevance: D6.10 (context integrity under pressure) addresses the
-  same threat surface from a reliability angle; D3.1 (authorization)
-  and D3.2 (sandboxing) provide the capability containment that limits
-  blast radius when injection succeeds. Operational heuristic
-  "Governance Boundary Integrity" is directly relevant. The canary
-  token pattern is well-established in practice but has known
-  limitations against extraction-via-paraphrasing; reviewer should
-  assess whether to note this limitation more prominently.
+  Revised 2026-10-05 alongside the D3.8 and D3.9 normative text, after
+  deployment-side review by Fadi Arab: sanitization cannot be the
+  security property because no stable data/instruction boundary exists
+  in natural language; the property is provenance preserved outside the
+  model and enforced at the side effect, tested on the assumption that
+  injection succeeds. Revised again 2026-10-15 after his further review:
+  the planner/reader split (dual-LLM, CaMeL) is defense in depth, not
+  the boundary, because reader output that reaches the planner carries
+  injected text; provenance is now tracked per field (an email's sender
+  address separately from its body). Confidence is medium because
+  field-level provenance is immature in common agent frameworks, and
+  tasks that must read untrusted content before deciding what to do
+  lean on escalation, which can produce heavy confirmation load.
+  D6.10 addresses the same threat surface from a
+  context-integrity angle; D3.9 holds the execution-time gate this
+  pattern feeds.
 
 drafted_by: claude-opus-4-6-author
 drafted_at: 2026-05-16

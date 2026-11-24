@@ -9,7 +9,7 @@ from importlib.metadata import PackageNotFoundError, version as _dist_version
 # Fallback for source checkouts / bundles where the distribution metadata is
 # absent. Keep in sync with pyproject.toml `version`; tests/test_unit_server.py
 # asserts the two match, and PUBLISHING.md lists this file in the bump set.
-_FALLBACK_VERSION = "0.3.6"
+_FALLBACK_VERSION = "0.4.3"
 
 try:
     __version__ = _dist_version("saferagenticai-mcp")

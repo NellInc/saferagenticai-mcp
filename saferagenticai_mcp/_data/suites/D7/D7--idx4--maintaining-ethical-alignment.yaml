@@ -120,13 +120,16 @@ evidence_production:
 
     '
 - evidence_numeral: V
-  how_to_produce: 'Ethical safeguards have a behavioural eval suite: scenario prompts or runtime conditions
-    that probe whether the safeguard fires. Export eval results each release as signed artifacts. Link
-    to the design document that describes each safeguard.
-
-    '
+  how_to_produce: 'Link each ethical safeguard to the design document that describes it, and export the inspectable
+    configuration of the scaffold-enforced filter or gate that implements it (rules, thresholds, version).
+    Run the behavioural eval suite and red-team scenarios from a harness outside the model under test,
+    probing requests harmful to psychological or physical wellbeing, and record per scenario whether the
+    safeguard blocked it, scored by deterministic checks or human reviewers rather than a model judge.
+    Export results each release as signed artifacts with pass/fail history. A safeguard that exists only in
+    the system prompt, or verification by model-based judgment alone, cannot substitute for this
+    configuration and these results.'
 confidence: medium
-needs_human_review: true
+review_status: generated_draft
 review_notes: 'SFR-c, SFR-d, SFR-e are marked non-normative in the input but are load- bearing for a credible
   ethics program; drafted them as substantive process elements anyway. The pattern is close in shape to
   D7.2 (both are cultural / process-heavy sustain-it subgoals); the sharpening here is the explicit user-facing

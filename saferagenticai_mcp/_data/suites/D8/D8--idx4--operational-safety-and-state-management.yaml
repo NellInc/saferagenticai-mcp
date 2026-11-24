@@ -173,6 +173,7 @@ evidence_production:
 
     '
 confidence: high
+review_status: generated_draft
 review_notes: 'State-machine + capability-attestation is mature engineering (aerospace FDIR, industrial
   control, medical device software). The framework''s specific contribution is the explicit six-state
   taxonomy and the insistence on state-scoped permissions. Suspected cross-suite dependency: D3 Security

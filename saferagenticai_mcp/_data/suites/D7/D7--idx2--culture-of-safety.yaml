@@ -130,7 +130,7 @@ evidence_production:
 
     '
 confidence: medium
-needs_human_review: true
+review_status: generated_draft
 review_notes: 'Re-drafted blind from the input for quality-signal comparison with the D7.2 exemplar. Expect
   convergence on: blameless post-mortems, drills, caution-by-default ledger, leadership safety signal.
   Divergences worth flagging: (i) added an explicit near-miss reporting program as a separate process
@@ -138,8 +138,8 @@ review_notes: 'Re-drafted blind from the input for quality-signal comparison wit
   in D7.2''s SFRs, yet it is the main leading indicator of culture health. (ii) Split "safety role charter"
   and "safety-signal communications" rather than folding leadership signal into culture communications;
   feels sharper. Cross-suite: D9 governance carries the formal RACI, this subgoal is the cultural layer
-  on top. Nell to weigh whether "external challenger" in pre-mortems over-prescribes relative to SFR-b''s
-  "proactive risk assessment".
+  on top. Whether "external challenger" in pre-mortems over-prescribes relative to SFR-b''s "proactive
+  risk assessment" is an open question.
 
   '
 version_compat:

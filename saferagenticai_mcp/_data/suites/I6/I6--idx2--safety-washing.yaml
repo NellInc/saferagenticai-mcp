@@ -135,7 +135,7 @@ evidence_production:
 
     '
 confidence: high
-needs_human_review: true
+review_status: generated_draft
 review_notes: "Safety washing is one of the more politically charged framework concepts — organizations\
   \ will resist the overhead of a Claims Register. The mechanism is defensible (claims are a compliance\
   \ surface), but rollout requires leadership commitment that is exactly what the subgoal is defending\

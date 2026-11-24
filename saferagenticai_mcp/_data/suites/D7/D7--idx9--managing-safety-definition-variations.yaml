@@ -158,31 +158,34 @@ evidence_production:
 
     '
 - evidence_numeral: IV
-  how_to_produce: 'Documentation of the multi-level safety settings: per-tier scope and boundary
-    definitions, tier assignments per action class (version-controlled), and effectiveness evidence
-    from confirmation / override logs and the release test suite.
-
-    '
+  how_to_produce: 'Documentation of the multi-level safety settings: per-tier scope and boundary definitions and
+    tier assignments per action class, version-controlled in the policy profile registry. Export
+    the configuration of each tier (always-on default protections, confirmation-gated behaviors,
+    user-configurable controls) as resolved by the policy layer, plus release test suite results
+    showing that no user setting or override toggle disables an always-on protection, that
+    confirmation-gated actions do not execute without a logged user confirmation, and that
+    overrides take effect only for action classes documented as overridable. Confirmation and
+    override logs show the same boundaries holding in production.'
 - evidence_numeral: V
-  how_to_produce: 'Exploitation-prevention audit: evidence of pinned minor / vulnerability profiles, tests
-    showing they cannot be downgraded, configuration and test records for the externally enforced
-    controls (age gates, spending caps, session limits), cross-reference to D7.11 (addiction
-    prevention).
-
-    '
+  how_to_produce: 'Exploitation-prevention audit: the configuration of the externally enforced controls (age gates,
+    spending caps, session limits) and of the pinned minor and vulnerability profiles, plus test records
+    showing each control blocks the action once its limit is reached and that pinned profiles cannot be
+    downgraded by override. Include evidence of the other exploitation-prevention measures and the
+    protection standards they meet, and cross-reference D7.11 (addiction prevention). Model-based
+    moderation may run alongside but cannot substitute for these configuration and test records.'
 confidence: medium
-needs_human_review: true
+review_status: generated_draft
 review_notes: 'Updated for v1.3 catalog revision: conflict detection must be inspectable scaffold logic
   over declared objectives with external logs (model self-detection excluded as evidence); side-effect
-  avoidance is enforced via scope/permission limits verified in sandboxed testing; exploitation
-  protections must be externally enforced controls verified by configuration and test records, with
-  minor protections mandatory where law requires. This subgoal sits on a genuine ethical knife-edge: the framework asks for respect of cultural
-  variation AND protection against exploitation, which can conflict (e.g., jurisdictions with weak minor
-  protections). Resolved by making minor/vulnerability protections non-overridable regardless of jurisdiction
-  — that is a choice worth flagging for explicit human review. The pinned-profile pattern prevents downward
-  drift but is prescriptive beyond the SFR text. SFR-d marked non- normative in input but is operationally
-  load-bearing; drafted as substantive. Cross-suite: D7.3 (regulatory variation), D7.4 (ethical frameworks),
-  D7.11 (addiction / dependency protections), D5 (user wellbeing), I3 (rights harms), I5 (manipulation).
+  avoidance is enforced via scope/permission limits verified in sandboxed testing; exploitation protections
+  must be externally enforced controls verified by configuration and test records, with minor protections
+  mandatory where law requires. This subgoal sits on a genuine ethical knife-edge: the framework asks
+  for respect of cultural variation AND protection against exploitation, which can conflict (e.g., jurisdictions
+  with weak minor protections). Resolved by making minor/vulnerability protections non-overridable regardless
+  of jurisdiction — that is an explicit design choice. The pinned-profile pattern prevents downward drift
+  but is prescriptive beyond the SFR text. SFR-d marked non- normative in input but is operationally load-bearing;
+  drafted as substantive. Cross-suite: D7.3 (regulatory variation), D7.4 (ethical frameworks), D7.11 (addiction
+  / dependency protections), D5 (user wellbeing), I3 (rights harms), I5 (manipulation).
 
   '
 version_compat:

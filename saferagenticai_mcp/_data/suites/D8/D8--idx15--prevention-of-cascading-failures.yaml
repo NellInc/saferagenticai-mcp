@@ -25,8 +25,8 @@ normative_anchors:
   - IV
   - V
   - VI
-  sfrs_not_addressed: []
-  evidence_not_addressed: []
+  sfrs_not_addressed: [e]
+  evidence_not_addressed: [VII]
 cross_references:
 - D8::idx3::multi-agent-communication-and-coordinati
 - D8::idx8::multi-agent-resource-management
@@ -178,6 +178,7 @@ evidence_production:
 
     '
 confidence: high
+review_status: generated_draft
 review_notes: 'Resilience-engineering fundamentals: circuit breakers, bulkheads, dependency mapping, chaos
   drills. The framework-specific contributions are: explicit blast-radius declaration at commissioning,
   cross-agent anomaly detection beyond infra-level, and the cascade-aware shutdown ordering. The "cross-organization

@@ -147,13 +147,16 @@ evidence_production:
 
     '
 - evidence_numeral: II
-  how_to_produce: 'Documentation of channel sanitization measures: for each inter-agent
-    communication channel, list the sanitization steps applied (whitespace normalization,
-    metadata stripping, vocabulary restriction, Unicode canonicalization), which message
-    fields are normalized, which are left unsanitized, and the rationale for each
-    exception. Version-controlled; updated on protocol change.
-
-    '
+  how_to_produce: 'Documentation of channel sanitization measures: for each inter-agent communication
+    channel, the sanitization steps applied (whitespace normalization, metadata
+    stripping, vocabulary restriction, Unicode canonicalization), which message fields
+    are normalized, which are left unsanitized, and the rationale for each exception.
+    Export the message-bus sanitizer configuration per channel (message schema
+    required_fields, vocabulary rules, canonicalization settings) and the results of a
+    re-runnable test suite that passes sample messages through the bus sanitizer and
+    records each before and after, showing formatting, whitespace, Unicode variants and
+    metadata fields not required for the task stripped or normalized. Version-controlled;
+    re-run and updated on protocol change.'
 - evidence_numeral: III
   how_to_produce: 'Steganographic red-team exercise reports: attack strategies attempted
     (adversarial prompting, fine-tuning probes, protocol analysis), per-strategy detection
@@ -171,20 +174,16 @@ cross_references:
   - "D6::idx4::separation-of-control-and-data-channels"
   - "D6::idx13::managing-contextual-ambiguity"
 confidence: medium
-needs_human_review: true
-review_notes: 'Steganographic communication detection is at the intersection of information
-  theory and AI safety. The statistical detection approach is well-grounded (information-theoretic
-  bounds on steganographic capacity are known), but practical detection in natural language
-  is harder than in fixed-format channels because the baseline entropy of natural language
-  is high. The fine-tuning-based red-team attack is the most realistic threat model and the
-  hardest to detect. Flagged needs_human_review because the sensitivity/specificity
-  tradeoffs in detection thresholds have direct operational impact and because the field
-  lacks consensus on minimum detection standards. Cross-suite: I1.8 (emergent system
-  cooperation is enabled by covert communication), D3 (security monitoring infrastructure
-  shared with steganography detection), D6.4 (separation of control and data channels is a
-  related isolation concern).
-
-  '
+review_status: generated_draft
+review_notes: 'Steganographic communication detection is at the intersection of information theory and
+  AI safety. The statistical detection approach is well-grounded (information-theoretic bounds on steganographic
+  capacity are known), but practical detection in natural language is harder than in fixed-format channels
+  because the baseline entropy of natural language is high. The fine-tuning-based red-team attack is the
+  most realistic threat model and the hardest to detect. The sensitivity/specificity tradeoffs in detection
+  thresholds have direct operational impact and because the field lacks consensus on minimum detection
+  standards. Cross-suite: I1.8 (emergent system cooperation is enabled by covert communication), D3 (security
+  monitoring infrastructure shared with steganography detection), D6.4 (separation of control and data
+  channels is a related isolation concern).'
 drafted_by: claude-opus-4.6-author
 drafted_at: 2026-05-16
 version_compat:

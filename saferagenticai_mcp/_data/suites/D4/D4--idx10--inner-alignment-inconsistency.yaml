@@ -136,11 +136,14 @@ code_shape:
     '
 evidence_production:
 - evidence_numeral: I
-  how_to_produce: 'Document the alignment-probe suite: probe provenance, coverage per Codex entry, inter-rater
-    agreement on grading, historical run results. Each release is paired with a run report. The suite
-    is versioned and its updates explained.
-
-    '
+  how_to_produce: 'Document the alignment-probe suite: probe provenance, coverage per Codex entry, the comparison rule
+    applied, inter-rater agreement on grading, and testing cadence. Each release is paired with a run report
+    exported from the benchmark store giving, for each sampled scenario, the system''s declared position
+    beside the scaffold-logged actions on the same scenario, the rule applied and any discrepancy found. Where
+    the comparison rule relies on a model judge (the ensemble behind endorses()), include the human spot-check
+    results and their agreement rate, so no discrepancy verdict rests on model judgment alone. The suite is
+    versioned and its updates explained. The system''s statements about its own alignment belong in the
+    declared-position column only and cannot substitute for the logged actions.'
 - evidence_numeral: II
   how_to_produce: 'Counterfactual and adversarial testing logs: paired-scenario reports showing divergence
     rates per value-irrelevant feature and per demographic slice where applicable, plus the monitored-vs-apparently-unmonitored
@@ -156,7 +159,7 @@ evidence_production:
 
     '
 confidence: medium
-needs_human_review: true
+review_status: generated_draft
 review_notes: 'The field is evolving. Specific probe designs and grading methods will change; the pattern-level
   claim (stated-vs-behavioral gap + counterfactual + reward-hacking battery) should age more slowly.
 

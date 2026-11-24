@@ -134,24 +134,23 @@ evidence_production:
 
     '
 - evidence_numeral: IV
-  how_to_produce: 'Operational Issue and Near-Miss Log entries — captured by the independent telemetry/logging
-    layer, not by model self-report — include root-cause analysis and remediation
-    evidence. Recurrence trends surfaced in monthly management review and in the annual transparency report.
-    Zero incidents is itself reportable — with an explanation of the detection mechanism that would have
-    caught any.
-
-    '
+  how_to_produce: 'Operational Issue and Near-Miss Log entries — captured by the independent telemetry/logging layer —
+    include root-cause analysis and remediation evidence, each linked to the raw telemetry events and service
+    performance metrics (latency, error rates, availability) from that same layer, so every documented issue
+    can be traced to its source records. Export the log and metrics on demand. Recurrence trends surfaced in
+    monthly management review and in the annual transparency report. Model-generated narrative may annotate an
+    entry but cannot substitute for the telemetry record. Zero incidents is itself reportable — with an
+    explanation of the detection mechanism that would have caught any.'
 confidence: high
-needs_human_review: true
+review_status: generated_draft
 review_notes: 'Transparency is one of the governance elements most likely to be shaped by law (EU AI Act
   Article 13, NYC Local Law 144, sectoral rules). The pattern proposes annual external reporting as a
   floor; some jurisdictions will require more frequent or more granular disclosure. The tension with I6.6
   (innovation vs IP) is direct — consolidation should clarify that I6.1 sets the transparency floor, I6.6
   governs what can be abstracted for IP. SFR-b''s "transparent records covering, at minimum, training
   data sources, testing and verification results, deployment configuration, service performance metrics,
-  and logged issues and concerns" is demanding: orgs with pre-2024 training data
-  will struggle with retrospective provenance. Nell to weigh in on whether the pattern should acknowledge
-  this grandfathering reality.
+  and logged issues and concerns" is demanding: orgs with pre-2024 training data will struggle with retrospective
+  provenance. Whether the pattern should acknowledge this grandfathering reality is an open question.
 
   '
 version_compat:

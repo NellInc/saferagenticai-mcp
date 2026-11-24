@@ -125,11 +125,14 @@ evidence_production:
 - evidence_numeral: III
   how_to_produce: 'Integrity verification reports: scheduled audits for value degradation (probe drift,
     metric-pressure analysis, manifest integrity), audit trails confirming stability, and remediation
-    records when drift was detected.
-
-    '
+    records when drift was detected. Attach hash verification records for the pinned system prompt and
+    pinned model version (with value-manifest signature checks) from the loader, and the periodic and
+    pre-deployment regression results on the fixed value-alignment benchmark with their scoring rules,
+    each linked to the change-control ticket that approved or blocked the change. These come from the
+    deployment pipeline and eval harness; the system''s own assessment of whether its values held may
+    accompany but cannot substitute for them.'
 confidence: medium
-needs_human_review: true
+review_status: generated_draft
 review_notes: 'Value-drift measurement is a live research area; the pattern prescribes measurement discipline
   but the specific probes and thresholds are domain-dependent. Medium confidence. Cross-suite: D1 (Aligning
   with Human Values) is the positive counterpart; D7 (Safe System Profile) on continuous monitoring; I3.7

@@ -20,7 +20,7 @@ the next time the maintainer runs the release sync (`scripts/sync-to-public.sh`)
 ## Don't hand-edit generated content
 
 - `saferagenticai_mcp/_data/` — the framework corpus (238 implementation patterns,
-  14 operational heuristics, canonical criteria) is generated from the Safer Agentic
+  15 operational heuristics, canonical criteria) is generated from the Safer Agentic
   AI framework upstream. Editing the YAML here changes nothing durable.
 
 ## Where it's published
@@ -35,7 +35,7 @@ clone of this repo.
 
 ## Using the server
 
-See [`README.md`](README.md) for install/config and the 12 tools (`find_patterns_for_task`,
+See [`README.md`](README.md) for install/config and the 10 tools (`find_patterns_for_task`,
 `search_patterns`, `get_requirement`, …). More at <https://www.saferagenticai.org/mcp.html>.
 
 ---

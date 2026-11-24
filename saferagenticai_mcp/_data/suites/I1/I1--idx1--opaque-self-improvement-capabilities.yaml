@@ -117,12 +117,16 @@ evidence_production:
     threshold (capability, resource-usage, reliability), retain the documented rationale, baseline procedure,
     and measurement window alongside the reports. Append-only.'
 - evidence_numeral: IV
-  how_to_produce: 'Consent store entries: {principal_id, manifest_hash, delta_report_id, consent_text_version,
-    captured_at, captured_by, channel}. Retained for lifecycle of the deployment plus the org''s records-retention
-    horizon. Incident playbook entries for unexpected improvement outcomes (regressions, alignment breaks,
-    unanticipated capability) with case files.'
+  how_to_produce: 'Consent store entries {principal_id, manifest_hash, delta_report_id, consent_text_version, captured_at,
+    captured_by, channel}, retained for the lifecycle of the deployment plus the org''s records-retention
+    horizon, with the principal notification procedure and the incident playbook and case files for unexpected
+    improvement outcomes (regressions, alignment breaks, unanticipated capability). Export the controlled
+    release pipeline''s gate configuration (versioned thresholds and the consent lookup by manifest_hash and
+    delta_report_id) and its deploy logs showing capacity-affecting changes returned BLOCKED_PENDING_CONSENT
+    when no valid consent artifact existed. System self-report of capacity changes may accompany but cannot
+    substitute for these pipeline records.'
 confidence: high
-needs_human_review: false
+review_status: generated_draft
 review_notes: 'Framework v1.3 makes thresholds organization-defined (with documented rationale, baseline
   procedure, and measurement window per evidence III) rather than fixed percentages; the pattern''s teeth
   are the controlled release pipeline that blocks deployment without a recorded consent artifact — self-report

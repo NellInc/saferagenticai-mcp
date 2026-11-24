@@ -159,13 +159,14 @@ evidence_production:
 
     '
 - evidence_numeral: IV
-  how_to_produce: 'Effectiveness assessment: detected-vs-generated ratios, time from detection to content-credential
-    verification, fact-check partner attestations on response cadence. Comparison of election-period and
-    baseline-period performance to verify no seasonal gap.
-
-    '
+  how_to_produce: 'Effectiveness assessment: detected-vs-generated ratios, intervention timing (detection to
+    content-credential verification and to partner takedown), and fact-check partner attestations on response
+    cadence. Report the own-output detector''s precision and recall on a seeded or human-labeled ground-truth
+    set drawn from the system''s own outputs, with set composition and run date, and retain records of
+    deterministic or human-review spot-checks of sampled live detection verdicts, with disagreement rates.
+    Compare election-period and baseline-period performance to verify no seasonal gap.'
 confidence: high
-needs_human_review: false
+review_status: generated_draft
 review_notes: 'Mature-ish area; C2PA and generation-time provenance are the concrete anchors. The "detection-tool
   gatekeeping" anti-pattern is worth preserving — it names a real drift where orgs hold back detection
   as competitive moat. Also "election-year-only vigilance" as a meta-anti-pattern: seasonal controls create

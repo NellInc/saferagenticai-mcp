@@ -143,7 +143,7 @@ evidence_production:
 
     '
 confidence: high
-needs_human_review: false
+review_status: generated_draft
 review_notes: "SFR-c (contractual risk-management requirements with third parties) is genuinely governance\
   \ — sits better as a governance companion or folds into I2::idx0. Flagging in sfrs_not_addressed; evidence\
   \ III (contractual arrangements) likewise routes to governance. Phase 2 may want a thin companion governance\

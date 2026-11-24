@@ -116,6 +116,7 @@ evidence_production:
 
     '
 confidence: medium
+review_status: generated_draft
 review_notes: 'Independent validation is a well-understood governance pattern (the Three Lines of Defense
   model in risk management; independent safety assessors in aviation and nuclear). Applying it to AI termination
   specifically is framework-novel; most orgs today treat "we turned it off" as self-validating. The main

@@ -139,7 +139,7 @@ evidence_production:
 
     '
 confidence: high
-needs_human_review: false
+review_status: generated_draft
 review_notes: 'Display_id "D3.1" collides with the underlined-variant "D3.1 Model Poisoning" (idx8). Both
   are real subgoals; use the full `id` to disambiguate. The advisor flagged this for the suite.
 

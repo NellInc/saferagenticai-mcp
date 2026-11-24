@@ -202,7 +202,7 @@ evidence_production:
       artifacts that show input without decisions.
 
 confidence: high
-needs_human_review: false
+review_status: generated_draft
 review_notes: >
   High-confidence on the pipeline-wide framing and the RAG-specific
   treatment, which distinguishes this from generic ML-fairness guidance.

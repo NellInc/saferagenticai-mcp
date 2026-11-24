@@ -130,17 +130,19 @@ evidence_production:
 
     '
 - evidence_numeral: V
-  how_to_produce: 'Attribution-based explainability tooling operating on scaffold-captured decision traces
-    of inter-model decisions (e.g., when one model routes to another, the logged trace and derived rationale),
-    plus user guides and feedback records. Model-generated narratives of the system''s own reasoning are
-    not, by themselves, conformity evidence — the captured traces and the tooling''s outputs are.
-
-    '
+  how_to_produce: 'Documentation of the attribution-based explainability techniques in use, plus user guides and feedback
+    records. Attach sample attribution outputs computed by the explainability tooling over scaffold-captured
+    decision traces of inter-model decisions (e.g., when one model routes to another, the logged trace and the
+    tooling''s derived attribution), with trace IDs so an assessor can match each output to its trace.
+    Model-generated narratives of the system''s own reasoning may accompany these but are not, by themselves,
+    conformity evidence.'
 - evidence_numeral: VI
-  how_to_produce: 'Human-oversight protocols and intervention logs for multi-model products: who can pause
-    model-to-model transactions, under what triggers, with what audit trail.
-
-    '
+  how_to_produce: 'Human-oversight protocols for multi-model products: who can pause model-to-model transactions and
+    under what triggers. Retain the intervention logs written by the orchestration scaffold at the moment
+    of each intervention, recording the operator identity, the scaffold-captured decision trace affected,
+    and the action taken (pause, override, reroute, terminate), plus records of human participation in
+    addressing identified imbalances. The logs are scaffold-written at intervention time, not
+    reconstructed afterward from operator or model accounts.'
 - evidence_numeral: VII
   how_to_produce: 'Performance dashboards with per-model influence metrics (see stakeholder pattern 5).
     Archived weekly; anomalies written up.
@@ -181,15 +183,15 @@ evidence_production:
 
     '
 confidence: medium
-needs_human_review: true
+review_status: generated_draft
 review_notes: "Content-type pick tension: this is the suite umbrella and genuinely spans three content\
   \ types. SFR-a (transparent info-sharing AMONG PROVIDERS, coordinated releases) is ecosystem. SFRs b,\
   \ d, e, g are internal monitoring (code/process). SFR-a dominates the severity of the under-addressed\
   \ risk, so I picked ecosystem; a process-typed draft would be equally defensible. Phase 2 may want to\
   \ split this umbrella into distinct ecosystem + process patterns referenced from a thin index entry.\n\
   The \"30 days advance notice for capability-tier jumps\" is a concrete anchor but not a standard — Frontier\
-  \ Model Forum does not yet commit to this publicly. Treat as aspirational pattern; Nell/Ali should decide\
-  \ whether to soften to \"defined notice window in forum charter\" or hold the concrete number as a target.\n\
+  \ Model Forum does not yet commit to this publicly. Treat as aspirational pattern; whether to soften\
+  \ to \"defined notice window in forum charter\" or hold the concrete number as a target is an open question.\n\
   Cross-suite dependencies worth flagging for consolidation:\n  - I2 (Deception): inter-model manipulation\
   \ is this suite's framing of\n    the same adversarial surface. Link when I2 pattern_ids exist.\n  -\
   \ I4 (Frontier Uncertainty): capability-tier evals assume a shared\n    notion of \"tier\" that I4 problematizes.\n\

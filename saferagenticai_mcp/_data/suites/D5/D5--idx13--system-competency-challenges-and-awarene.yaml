@@ -136,11 +136,13 @@ code_shape:
     '
 evidence_production:
 - evidence_numeral: I
-  how_to_produce: 'Retain design specifications for limitation-detection features (OOD detectors, calibration
-    methods, uncertainty-typing logic). Limitation acknowledgment logs showing when and why the system
-    declined or escalated. Confidence-assessment mechanism documentation with calibration methodology.
-
-    '
+  how_to_produce: 'Retain design specifications for limitation-detection features (OOD detectors, calibration methods,
+    uncertainty-typing logic) and confidence-assessment mechanism documentation with calibration methodology.
+    Export the configured per-decision-class thresholds (min_confidence, max_ood_score, escalation_on) and
+    the scaffold enforcement logs from the decision gate showing each decision below threshold deferred or
+    escalated rather than executed, with the competency events emitted. Limitation acknowledgment logs (the
+    system''s own declines and statements of uncertainty) may accompany these but cannot substitute for the
+    enforcement logs.'
 - evidence_numeral: II
   how_to_produce: 'Retain testing reports of self-awareness capabilities, calibration-measurement results
     over time (ECE trend, per decision class), verification of assessment accuracy (predicted-vs-actual
@@ -156,7 +158,7 @@ evidence_production:
 
     '
 confidence: medium
-needs_human_review: true
+review_status: generated_draft
 review_notes: 'Medium because calibration for agentic LLM outputs is an area of active research — techniques
   proven on classification tasks (temperature scaling, conformal prediction, ensemble-based uncertainty)
   transfer imperfectly to free-form generation and multi-step reasoning. Conformal methods for language

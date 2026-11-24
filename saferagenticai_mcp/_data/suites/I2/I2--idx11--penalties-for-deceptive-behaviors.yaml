@@ -162,7 +162,7 @@ evidence_production:
 
     '
 confidence: medium
-needs_human_review: true
+review_status: generated_draft
 review_notes: "Governance patterns like this depend heavily on jurisdiction and organization scale. The\
   \ Penalty Framework Document is a reasonable default but counsel must shape it to applicable law (EU\
   \ AI Act, US state AI laws, sector regulators).\nTension worth flagging: blameless post-mortem culture\

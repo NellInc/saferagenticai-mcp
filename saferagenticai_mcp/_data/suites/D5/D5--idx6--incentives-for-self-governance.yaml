@@ -138,7 +138,7 @@ evidence_production:
 
     '
 confidence: low
-needs_human_review: true
+review_status: generated_draft
 review_notes: 'Low confidence. This is a research-grade area. Reward design for agentic AI spans RLHF,
   constitutional AI / RLAIF, DPO, and active research on reward hacking and Goodhart effects. The governance
   framing above is defensible — it focuses on the accountability questions (what gets reinforced, by whom,

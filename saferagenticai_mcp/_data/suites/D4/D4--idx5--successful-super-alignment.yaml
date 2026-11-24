@@ -106,14 +106,14 @@ artifacts:
 - Annual super-alignment assurance report (public or internal per policy)
 evidence_production:
 - evidence_numeral: I
-  how_to_produce: 'Maintain a behavioral benchmark suite for value alignment with pre-registered success
-    criteria (documented before the training run, not fitted afterwards): value-conflict resolution accuracy,
-    refusal calibration, preference-elicitation consistency across demographic slices, robustness to manipulation
-    probes. Scoring is external to the system under training (human reviewers, deterministic checks, or
-    an independently validated grader). Each learning update is gated on the benchmark; each run produces
-    a signed report linked to the training plan. Archive runs; regressions trigger the emergency review.
-
-    '
+  how_to_produce: 'Maintain a behavioral benchmark suite for value alignment with pre-registered success criteria
+    (documented before the training run, not fitted afterwards): value-conflict resolution accuracy, refusal
+    calibration, preference-elicitation consistency across demographic slices, robustness to manipulation
+    probes. Scoring is external to the system under training (human reviewers, deterministic checks, or an
+    independently validated grader). For each learning update, retain the externally scored results and the
+    change-review board''s recorded gate decision (pass, hold or rollback), dated before the update took
+    effect, in a signed report linked to the training plan. Archive runs; regressions trigger the emergency
+    review. The system''s self-assessment cannot substitute for these results.'
 - evidence_numeral: II
   how_to_produce: 'Publish the training-source inventory: each source named, provenance documented, consent/licensing
     verified, bias analysis (demographic coverage, language coverage, genre coverage, known skew). Updated
@@ -136,7 +136,7 @@ evidence_production:
 
     '
 confidence: low
-needs_human_review: true
+review_status: generated_draft
 review_notes: 'Content-type decision: process rather than code-applicable, because the SFRs target organizational
   discipline around autonomous alignment learning — the code of IRL, RLHF, or constitutional AI itself
   is not what the framework is regulating; the process surrounding it is.

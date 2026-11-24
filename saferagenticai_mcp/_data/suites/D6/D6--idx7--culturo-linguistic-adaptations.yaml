@@ -121,11 +121,13 @@ evidence_production:
 
     '
 - evidence_numeral: V
-  how_to_produce: 'Adaptation process documentation: per-locale, what was adapted, by whom, with what
-    review, effective when. Include rollback records where adaptations were withdrawn. Demonstrates ongoing
-    evolution rather than one-time localization.
-
-    '
+  how_to_produce: 'Adaptation process documentation: per locale, what was adapted, by whom, with what review, effective
+    when, including rollback records where adaptations were withdrawn. Attach the Translation integrity
+    review report for each supported language pair, giving either the human-rater protocol (rater
+    instructions, bilingual native-speaker rater qualifications, sample size, scores) or the reproducible
+    standard benchmark (name, version, configuration, scores), retained per release. Rater and benchmark
+    results are produced outside the system under evaluation; LLM-judge scores may supplement but cannot
+    replace them. Together these show ongoing evolution rather than one-time localization.'
 - evidence_numeral: VI
   how_to_produce: 'Test results across written and spoken registers of each supported language, produced
     by the spoken-vs-written form evaluation process: per-capability reports scoring handling of register,
@@ -137,7 +139,7 @@ cross_references:
 - D6::idx13::managing-contextual-ambiguity
 - D6::idx14::preventing-decision-fatigue
 confidence: medium
-needs_human_review: true
+review_status: generated_draft
 review_notes: 'v1.3 revision made all four SFRs normative and tightened SFR-a (documented coverage analysis
   with gaps and mitigations) and SFR-b (human-rater protocols or reproducible standard benchmarks required;
   LLM-judge scoring alone excluded as conformity evidence). Area of highest uncertainty: community-co-governance

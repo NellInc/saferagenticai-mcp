@@ -170,6 +170,7 @@ evidence_production:
 
     '
 confidence: high
+review_status: generated_draft
 review_notes: 'Control-register + prioritization + residual-risk tolerability is mature risk-management
   practice (ISO 31000, NIST RMF). The framework-specific move is requiring explicit residual-risk acceptance
   with named approvers for partial implementation — this pushes against a common failure mode where "planned"

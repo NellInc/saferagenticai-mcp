@@ -108,7 +108,7 @@ evidence_production:
 
     '
 confidence: medium
-needs_human_review: true
+review_status: generated_draft
 review_notes: 'Content-type decision: process rather than code-applicable. The detection layer is code
   (and is patterned briefly here), but the core of the subgoal — SFR-c''s "negotiation or controlled disengagement"
   — is an escalation runbook with named resolver roles, time-bounded steps, and Ethics Board involvement

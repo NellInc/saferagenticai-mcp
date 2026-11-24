@@ -146,13 +146,13 @@ evidence_production:
 
     '
 confidence: high
-needs_human_review: true
+review_status: generated_draft
 review_notes: 'Strong cross-suite dependency on D9 (governance) — the Critical Infrastructure Use Policy
   is a D9.2 jurisdictional-matrix entry; the incident-response integrates with D9 dispute and violation
   registers. Consolidation should wire these.
 
   The international-law clause (IHL compliance) will be legally sensitive for orgs operating in contested
-  domains; the pattern offers a principled default, but counsel must customize. Flagged for human review.
+  domains; the pattern offers a principled default, but counsel must customize.
 
   "Critical infrastructure" taxonomy choice matters: CISA 16 sectors is US-centric; EU NIS2 covers different
   scope; some operating jurisdictions have no codified list. Pattern assumes the org declares its taxonomy;

@@ -131,7 +131,7 @@ evidence_production:
 
     '
 confidence: medium
-needs_human_review: true
+review_status: generated_draft
 review_notes: 'Content-type tension: SFRs (a) and (b) are liability-and-insurance oriented (pooled risk,
   collective insurance). They sit better in a governance pattern; I''ve routed them to I2::idx0 (suite-level)
   and flagged them under sfrs_not_addressed here. If consolidation wants a dedicated governance pattern

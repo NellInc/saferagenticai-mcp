@@ -203,7 +203,7 @@ evidence_production:
 
     '
 confidence: medium
-needs_human_review: true
+review_status: generated_draft
 review_notes: "Display-id collision with idx10 here uses \"I2.2\" (from input JSON). As with idx9, pattern_id\
   \ disambiguates; downstream consumers should index on pattern_id.\nManipulation detection is an active\
   \ research area and classifier performance varies widely. The structural pattern (taxonomy + classifiers\

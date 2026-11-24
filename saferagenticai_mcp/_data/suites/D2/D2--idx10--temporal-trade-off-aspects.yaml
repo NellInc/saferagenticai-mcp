@@ -137,17 +137,21 @@ code_shape:
             maturity = MATURITY_SCORE.get(src.id)  # 0..1
             tier = REGISTRY.tier(src.id, claim.domain)
             provisional = src.is_provisional()
-            weight = policy.weight(
-                in_horizon=in_horizon, maturity=maturity,
-                tier=tier, provisional=provisional)
-            scored.append((src, weight))
+            inputs = dict(in_horizon=in_horizon, maturity=maturity,
+                          tier=tier, provisional=provisional)
+            weight = policy.weight(**inputs)
+            scored.append((src, weight, inputs))
 
-        # Conflict resolution with transparent logging
-        result = weighted_resolve(scored)
+        # Conflict resolution with transparent logging. The inputs are
+        # snapshotted at decision time, so replaying policy.weight on the
+        # logged inputs under the logged policy version reproduces each
+        # weight exactly.
+        result = weighted_resolve([(s, w) for s, w, _ in scored])
         AUDIT.emit("temporal_blend",
                    claim=claim.id, domain=claim.domain,
+                   policy_version=policy.version,
                    horizon_s=horizon.seconds,
-                   weights=[(s.id, w) for s, w in scored],
+                   weights=[(s.id, w, i) for s, w, i in scored],
                    result=result.summary())
         return result
 
@@ -175,12 +179,18 @@ evidence_production:
 
   - evidence_numeral: II
     how_to_produce: >
-      Emit structured temporal-blend events per decision that involves
-      mixed-age sources: sources considered, ages, maturity scores,
-      weights applied, result. Aggregate to a weekly report: how often
-      mature and emergent disagreed, how often the emergent won, how
-      often a provisional source was decisive. Retained in the
-      Information Integrity Register.
+      Emit structured temporal-blend events from the weighting pipeline
+      (the explicit temporal_blend step, not the generator) per decision
+      involving mixed-age sources: sources considered, ages, maturity
+      scores and recency weights applied to each, policy version,
+      result. Export these pipeline logs for a sample of decisions with
+      the weighting policy in force, plus replay results showing the
+      same inputs and policy version reproduce the same weights.
+      Aggregate to a weekly report: how often mature and emergent
+      disagreed, how often the emergent won, how often a provisional
+      source was decisive. Retained in the Information Integrity
+      Register. The model's account of how it weighed sources cannot
+      substitute for the pipeline logs.
 
   - evidence_numeral: III
     how_to_produce: >
@@ -192,22 +202,16 @@ evidence_production:
       correction record, domain-expert sign-off) before promotion.
 
 confidence: medium
-needs_human_review: true
-review_notes: >
-  Medium-confidence: the overall shape is defensible, but the specific
-  weighting policies are domain-dependent and intentionally parametric.
-  Calls:
-    (1) The subgoal is tagged as the underlined variant D2.1̲ — it uses
-        the same display ID as D2.1 (cross-referencing) in the source
-        framework, which is presumably intentional (underlined variants
-        share the parent number). Consolidation should verify the
-        display_id treatment renders correctly downstream.
-    (2) Likely cross-suite interaction with D6 (reliability — stale
-        caches) and I3 (context degradation — temporal drift as a
-        context-integrity concern). Consolidation to wire.
-    (3) "Maturity" is distinct from "age" but easy to conflate; the
-        pattern tries to separate them but reviewers should sanity-check
-        the metric-definition sketch.
+review_status: generated_draft
+review_notes: "Medium-confidence: the overall shape is defensible, but the specific weighting policies\
+  \ are domain-dependent and intentionally parametric. Calls:\n  (1) The subgoal is tagged as the underlined\
+  \ variant D2.1̲ — it uses\n      the same display ID as D2.1 (cross-referencing) in the source\n   \
+  \   framework, which is presumably intentional (underlined variants\n      share the parent number).\
+  \ Consolidation should verify the\n      display_id treatment renders correctly downstream.\n  (2) Likely\
+  \ cross-suite interaction with D6 (reliability — stale\n      caches) and I3 (context degradation —\
+  \ temporal drift as a\n      context-integrity concern). Consolidation to wire.\n  (3) \"Maturity\"\
+  \ is distinct from \"age\" but easy to conflate; the\n      pattern tries to separate them in the metric-definition\
+  \ sketch.\n"
 
 drafted_by: claude-opus-4.7-author
 drafted_at: 2026-04-16

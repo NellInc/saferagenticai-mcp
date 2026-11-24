@@ -145,7 +145,7 @@ evidence_production:
 
     '
 confidence: medium
-needs_human_review: true
+review_status: generated_draft
 review_notes: "Content-type judgement: governance is the dominant flavour — codes are governance artifacts.\
   \ However, Industry-Code Participation is explicitly ecosystem-flavoured (cross-org engagement, standards-body\
   \ participation). I've kept it under governance with cross-reference to ecosystem; Phase 2 may prefer\

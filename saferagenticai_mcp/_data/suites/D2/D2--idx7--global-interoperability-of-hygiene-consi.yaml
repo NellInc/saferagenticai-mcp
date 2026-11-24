@@ -123,24 +123,16 @@ evidence_production:
       NDA for qualified stakeholders.
 
 confidence: medium
-needs_human_review: true
-review_notes: >
-  Ecosystem patterns age quickly; the named standards and bodies are
-  current as of 2026-04-16 but will shift. Calls:
-    (1) The default stance here is "align with standards the org's
-        jurisdictions recognise." Larger labs are expected to
-        *contribute*, not only consume. The pattern names both but
-        leaves the balance to org capacity.
-    (2) "Cultural variance" is genuinely contested — orgs sometimes
-        use "local norms" to justify weaker protections for vulnerable
-        populations. The pattern should be read as *accommodating*
-        stricter local norms and *resisting* laxer ones, not averaging.
-        Nell/Ali should verify this framing matches intent; the
-        framework text is ambiguous here.
-    (3) Cross-suite: heavy overlap with D9.2 (compliance) and I7
-        (balanced global partnership). The D2.7 angle is specifically
-        *hygiene practice portability*; keep the framing narrow on
-        consolidation.
+review_status: generated_draft
+review_notes: "Ecosystem patterns age quickly; the named standards and bodies are current as of 2026-04-16\
+  \ but will shift. Calls:\n  (1) The default stance here is \"align with standards the org's\n      jurisdictions\
+  \ recognise.\" Larger labs are expected to\n      *contribute*, not only consume. The pattern names\
+  \ both but\n      leaves the balance to org capacity.\n  (2) \"Cultural variance\" is genuinely contested\
+  \ — orgs sometimes\n      use \"local norms\" to justify weaker protections for vulnerable\n      populations.\
+  \ The pattern should be read as *accommodating*\n      stricter local norms and *resisting* laxer ones,\
+  \ not averaging.\n      The framework text is ambiguous here.\n  (3) Cross-suite: heavy overlap with\
+  \ D9.2 (compliance) and I7\n      (balanced global partnership). The D2.7 angle is specifically\n  \
+  \    *hygiene practice portability*; keep the framing narrow on\n      consolidation.\n"
 
 drafted_by: claude-opus-4.7-author
 drafted_at: 2026-04-16

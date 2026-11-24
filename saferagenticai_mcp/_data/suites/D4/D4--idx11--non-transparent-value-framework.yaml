@@ -141,20 +141,22 @@ evidence_production:
 
     '
 - evidence_numeral: II
-  how_to_produce: 'Comparative analysis: for a sampled set of production decisions, show the Codex entry
-    invoked, the intended behavior per that entry, and the actual output. Aggregate match rate; investigate
-    mismatches. Publish the methodology and summary statistics; detailed cases retained under appropriate
-    controls.
-
-    '
+  how_to_produce: 'Comparative analysis: for a sampled set of production decisions, show the Codex entry invoked, the
+    intended behavior per that entry, and the actual output, drawn from logs written by the drift monitor
+    running outside the model rather than from model narration. Aggregate match rate; investigate
+    mismatches. Where the monitor''s judgment layer is model-based, export the record of human or
+    deterministic-rule spot-checks on a sampled set of its verdicts and the agreement rate found. Publish
+    the methodology and summary statistics; detailed cases retained under appropriate controls. The
+    system''s own account of its value conformance cannot substitute for these records.'
 - evidence_numeral: III
-  how_to_produce: 'Quarterly drift attestation signed by the Chief Values Officer, supported by the automated
-    drift report and the encoding-to-behavior verification run. Attestation is durable (dated, signed,
-    archived) and referenced in the annual responsible-AI report.
-
-    '
+  how_to_produce: 'Quarterly drift attestation signed by the Chief Values Officer, supported by the automated drift report
+    and the encoding-to-behavior verification run. Attach that run''s per-value test scenario results: for
+    each scenario, the pre-registered expected outcome (dated before the run), the observed system behavior,
+    and the score assigned by human reviewers or deterministic checks, never by the system under test or an
+    unchecked model judge, with reviewer or check version recorded. Attestation is durable (dated, signed,
+    archived) and referenced in the annual responsible-AI report.'
 confidence: high
-needs_human_review: false
+review_status: generated_draft
 review_notes: 'Content-type decision: governance rather than code-applicable. SFR-a explicitly names four
   stakeholder audiences; the subgoal is fundamentally about producing and maintaining multi-audience documentation
   artifacts with ownership and cadence. The code side (verification runs) belongs inside the governance
@@ -167,7 +169,7 @@ review_notes: 'Content-type decision: governance rather than code-applicable. SF
 
   Honest caveat: public value disclosure is in tension with commercial IP considerations. The framing
   here is that operative values should be public even when training data and internal architecture are
-  not. Nell and counsel should verify this posture matches SaferAgenticAI''s framework intent.
+  not. Whether this posture matches SaferAgenticAI''s framework intent is an open question.
 
   '
 version_compat:

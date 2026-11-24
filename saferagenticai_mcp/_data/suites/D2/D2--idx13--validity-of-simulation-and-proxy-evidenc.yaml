@@ -1,0 +1,173 @@
+# D2.10 — Validity of Simulation and Proxy Evidence
+
+id: "D2::idx13::validity-of-simulation-and-proxy-evidenc"
+display_id: "D2.10"
+suite_id: "D2"
+suite_title: "Epistemic Hygiene"
+subgoal_title: "Validity of Simulation and Proxy Evidence"
+content_type: process
+
+summary: >
+  A passing result in a simulator, sandbox, staging environment,
+  synthetic user population or generated world is evidence about that
+  proxy. It becomes evidence about deployment only through a measured
+  correspondence on the quantities the claim depends on. This pattern
+  makes that correspondence a recorded artifact (the validity record),
+  labels every parameter the claim depends on as measured, estimated or
+  generated, tests whether the system can tell it is in the proxy, and
+  keeps measuring the gap after deployment. It is the D2.9 principle,
+  never certify from the wrong signal, applied to the environment the
+  signal came from.
+
+normative_anchors:
+  sfrs_addressed: [a, b, c, d, e]
+  evidence_addressed: [I, II, III, IV, V]
+  sfrs_not_addressed: []
+  evidence_not_addressed: []
+
+cross_references:
+  - "D2::idx9::independent-validation-of-system-claims"
+  - "D2::idx11::synthetic-data-bias"
+  - "D3::idx2::sandboxing"
+  - "D3::idx4::operational-boundaries-and-constraints"
+  - "D4::idx10::inner-alignment-inconsistency"
+  - "D7::idx5::safe-system-shutdown-and-repurposing"
+  - "D8::idx15::prevention-of-cascading-failures"
+
+process_elements:
+
+  - name: Validity record per proxy
+    description: >
+      For each proxy whose results enter a safety case, keep one record:
+      the deployment claim, the quantities it depends on (for a mobile
+      manipulator, perhaps stopping distance, contact force and grasp
+      slip; for a coding agent, perhaps permission responses and the
+      production configuration of guarded tools), the operating envelope
+      the proxy was built to represent, and the measured discrepancy on
+      each quantity from paired runs. Results outside the envelope are
+      reported as untested, not passed. Proportionality: a claim whose
+      failure is reversible and local needs a lighter record than one
+      whose failure is kinetic or external.
+    maps_to_sfr: [a]
+
+  - name: Parameter provenance ledger
+    description: >
+      Every safety-relevant parameter carries measured / estimated /
+      generated, with method, date, model and version as applicable,
+      held outside the system under test. Generated parameters (for
+      example masses, frictions and joint limits predicted by a
+      physical-property model from a mesh) are treated as estimates
+      with systematic, not only random, error. Domain randomization
+      bands are set wide enough to cover that systematic error, then
+      confirmed by spot measurement on a sample of real objects.
+    maps_to_sfr: [b]
+
+  - name: Proxy-recognition and invariance testing
+    description: >
+      Train or prompt a probe to classify proxy against deployment
+      episodes from the system's observations or internal state. If the
+      probe succeeds, the system can probably tell too. Then compare the
+      safety-relevant behaviour across proxy runs and deployment (or
+      runs made indistinguishable from it) with a stated statistical
+      test, as D4_1b does for values. Prefer safety properties enforced
+      outside the system (D3.4d) over ones that depend on the system not
+      noticing it is observed: a safety case that rests on the agent's
+      ignorance is fragile, and one that holds whether or not the agent
+      knows is not.
+    maps_to_sfr: [c]
+
+  - name: Staged real-world exposure
+    description: >
+      Physical systems move from simulation to hardware-in-the-loop, to
+      a controlled physical cell, to supervised deployment. Software
+      agents move from sandbox to shadow or read-only operation, to
+      limited-scope deployment. Entry criteria for each stage are dated
+      before the stage starts. At each stage, predicted and observed
+      behaviour are logged side by side, and a gap above tolerance holds
+      the stage. Takeover by a human operator during supervised stages
+      is budgeted with a lead time the operator can actually meet; a
+      takeover request issued too late to act on is recorded as a
+      failure of the stage, not of the operator.
+    maps_to_sfr: [d]
+
+  - name: Deployment divergence monitoring and incident replay
+    description: >
+      Monitor deployed behaviour on the validity record's quantities
+      against thresholds evaluated outside the system. A breach
+      suspends the affected proxy evidence. Every safety-relevant
+      incident is replayed in the proxy; an incident the proxy cannot
+      reproduce is a proxy defect, filed against the validity record,
+      and the most informative data the programme receives.
+    maps_to_sfr: [e]
+
+triggers:
+  - A simulation, sandbox or synthetic-environment result is offered as conformity evidence
+  - A proxy parameter is generated or estimated rather than measured
+  - A new model or policy version is evaluated in a proxy built or tuned with an earlier one
+  - A deployment incident occurs that the proxy did not predict
+  - A divergence monitor breaches its threshold
+  - The generator of simulation assets shares a model family with the system under evaluation
+
+artifacts:
+  - Validity record per proxy environment
+  - Parameter provenance ledger
+  - Proxy-recognition probe results and invariance test reports
+  - Staged-exposure plan with dated entry criteria and per-stage gap logs
+  - Divergence-monitor configuration, breach log and incident replay register
+
+evidence_production:
+
+  - evidence_numeral: I
+    how_to_produce: >
+      Export each validity record with the paired proxy and deployment
+      data behind every stated discrepancy, plus the proxy version,
+      configuration and seeds, so an assessor can rerun the proxy and
+      recover the reported results.
+
+  - evidence_numeral: II
+    how_to_produce: >
+      Export the parameter provenance ledger with measurement reports
+      or generator identity for each entry, and the sweep results
+      showing the safety claim holds across each estimated or generated
+      parameter's band.
+
+  - evidence_numeral: III
+    how_to_produce: >
+      Report the proxy-recognition probe's accuracy on held-out proxy
+      and deployment episodes, and the invariance test for each
+      safety-relevant behaviour, with method and threshold stated. Do
+      not submit the system's own account of whether it noticed.
+
+  - evidence_numeral: IV
+    how_to_produce: >
+      Provide the staged-exposure plan with its dated entry criteria
+      and the instrumentation logs of predicted against observed
+      behaviour per stage, including holds and rollbacks.
+
+  - evidence_numeral: V
+    how_to_produce: >
+      Provide divergence-monitor configuration and logs written outside
+      the system, the suspension and re-validation records, and the
+      incident replay register, including incidents the proxy failed to
+      reproduce and the proxy corrections that followed.
+
+confidence: medium
+review_status: generated_draft
+review_notes: >
+  Drafted with the embodied and sim-to-real proposal set
+  (research/embodied/). Physical examples follow robotics practice:
+  runtime assurance, staged exposure, and minimal-risk conditions as in
+  automotive safety-of-the-intended-functionality work. Software
+  examples follow the staging-to-production gap. The recognition
+  test generalises D4_1b's invariance criterion; published work on
+  evaluation awareness (Needham et al., 2025, arXiv:2505.23836) reports
+  that frontier models distinguish evaluation from deployment
+  transcripts above chance, and more readily in agentic settings. The
+  pattern has not been exercised against a real proxy programme.
+
+drafted_by: claude-opus-5-5
+drafted_at: 2026-11-02
+version_compat:
+  framework_version_min: "1.3"
+  framework_version_max: "1.x"
+  pattern_layer_version: "v1-draft"

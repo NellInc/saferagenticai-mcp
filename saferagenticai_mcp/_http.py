@@ -9,6 +9,7 @@ deployments.
 Env:
   MCP_HTTP_HOST  (default 127.0.0.1)  — bind address; keep loopback behind a proxy
   MCP_HTTP_PORT  (default 8080)       — port the ASGI server listens on
+  MCP_DOMAIN_VERIFICATION_TOKEN      — optional public OpenAI domain challenge
 
 Extra deps (see the ``http`` optional-dependencies group): ``uvicorn``, ``starlette``.
 """
@@ -17,22 +18,29 @@ from __future__ import annotations
 
 import contextlib
 import os
+import re
 
 from mcp.server import Server
 from mcp.server.streamable_http_manager import StreamableHTTPSessionManager
 from starlette.applications import Starlette
-from starlette.responses import JSONResponse
+from starlette.responses import JSONResponse, PlainTextResponse
 from starlette.routing import Mount, Route
 from starlette.types import Receive, Scope, Send
 
 
-def build_http_app(server: Server) -> Starlette:
+def build_http_app(server: Server, *, domain_verification_token: str | None = None) -> Starlette:
     """Wrap a low-level MCP ``Server`` in a Starlette ASGI app over Streamable HTTP.
 
     Stateless mode (a fresh transport per request, no persisted sessions) avoids
     the idle-session / held-event-stream exhaustion class of DoS. ``debug=False``
     ensures Starlette never renders a stack trace to a client (CWE-209).
     """
+    if domain_verification_token is not None and (
+        not isinstance(domain_verification_token, str)
+        or re.fullmatch(r"[A-Za-z0-9_-]{32,256}", domain_verification_token) is None
+    ):
+        raise ValueError("Domain verification requires one 32..256-character public base64url token")
+
     manager = StreamableHTTPSessionManager(
         app=server,
         event_store=None,
@@ -62,6 +70,14 @@ def build_http_app(server: Server) -> Starlette:
     async def health(_request):
         return JSONResponse({"status": "ok"})
 
+    async def domain_challenge(_request):
+        # This public ownership proof is fixed at startup. Never echo request
+        # input or expose a file/configuration lookup through this route.
+        return PlainTextResponse(domain_verification_token, headers={
+            "Cache-Control": "no-store",
+            "X-Content-Type-Options": "nosniff",
+        })
+
     @contextlib.asynccontextmanager
     async def lifespan(_app: Starlette):
         # run() sets up the manager's task group; it must live for the app's
@@ -71,12 +87,12 @@ def build_http_app(server: Server) -> Starlette:
 
     # Mount at /mcp. A bare `/mcp` request 307-redirects to `/mcp/`; this is the
     # reference MCP behaviour and SDK/httpx clients follow it transparently.
+    routes = [Route("/health", health, methods=["GET"]), Mount("/mcp", app=handle_mcp)]
+    if domain_verification_token is not None:
+        routes.append(Route("/.well-known/openai-apps-challenge", domain_challenge, methods=["GET"]))
     return Starlette(
         debug=False,
-        routes=[
-            Route("/health", health, methods=["GET"]),
-            Mount("/mcp", app=handle_mcp),
-        ],
+        routes=routes,
         lifespan=lifespan,
     )
 
@@ -89,9 +105,10 @@ def run_http(server: Server) -> None:
     host = os.environ.get("MCP_HTTP_HOST", "127.0.0.1")
     port = int(os.environ.get("MCP_HTTP_PORT", "8080"))
     uvicorn.run(
-        build_http_app(server),
+        build_http_app(server, domain_verification_token=os.environ.get("MCP_DOMAIN_VERIFICATION_TOKEN")),
         host=host,
         port=port,
         log_level="info",
+        log_config=None,
         access_log=False,
     )

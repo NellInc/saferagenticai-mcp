@@ -104,16 +104,16 @@ evidence_production:
     Matrix versions. Audit artifact showing that every production agent's actual runtime location matches
     the Register, with discrepancies flagged as incidents.
 confidence: high
-needs_human_review: true
+review_status: generated_draft
 review_notes: '"Agent relocation" in the framework has at least three distinct meanings: (1) compute migration
   between cloud regions, (2) the agent operating on behalf of a principal in a new counterparty jurisdiction,
   (3) wholesale transfer of deployment to a new host organization. This pattern treats all three because
-  SFR-a''s "agency functions within documented principal expectations" language implies all three. Nell
-  and Ali should clarify scope in framework v1.x. Cross-suite: D9 Governance owns the Jurisdictional Compliance
-  Matrix (this pattern feeds it); I1::idx12 (Development Legal Constraints) handles the forward-looking
-  regulatory-landscape monitoring that drives JIA updates. Some jurisdictions (China, Russia) may prohibit
-  certain relocations outright; the pattern assumes the Register is permissive unless law blocks — verify
-  per jurisdiction.'
+  SFR-a''s "agency functions within documented principal expectations" language implies all three. Which
+  meanings the framework intends is an open scope question for v1.x. Cross-suite: D9 Governance owns the
+  Jurisdictional Compliance Matrix (this pattern feeds it); I1::idx12 (Development Legal Constraints)
+  handles the forward-looking regulatory-landscape monitoring that drives JIA updates. Some jurisdictions
+  (China, Russia) may prohibit certain relocations outright; the pattern assumes the Register is permissive
+  unless law blocks — verify per jurisdiction.'
 cross_references:
 - I1::idx0::agency-authority-duty-governance-suite-l
 - I1::idx16::development-legal-constraints

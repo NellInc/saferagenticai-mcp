@@ -1706,7 +1706,7 @@ heuristics:
           Traffic (tasks) should not be routed to an unready agent.
       - source: "Circuit-breaker patterns from distributed systems"
         description: |
-          The circuit-breaker pattern (Nygaard, Release It!): when a
+          The circuit-breaker pattern (Nygard, Release It!): when a
           downstream service fails, stop calling it (open the circuit),
           surface the failure to the caller, and periodically probe for
           recovery. Applied to agents: when a tool fails, stop using it,
@@ -1765,3 +1765,108 @@ heuristics:
           a tool before discovering the tool is unavailable.
     confidence: "medium"
     source: "Production Claude Code tool failure patterns, distributed systems resilience practices"
+
+  - id: OH::proxy-to-target-verification
+    title: "Proxy-to-Target Verification: A Check on the Proxy Is Not a Check on the Target"
+    principle: |
+      A passing check on a proxy (a local build, a committed change, a
+      staging deploy, a sandbox, a mocked tool, a baseline arm, a
+      simulator) is evidence about the proxy. A claim about the target
+      (the served page, the rendered surface, the production system, the
+      treatment arm, the physical robot) needs either a check made on the
+      target itself or a measured correspondence between proxy and target
+      on the property being claimed. When neither exists, the report names
+      the proxy: "passes in staging", not "works".
+    origin: |
+      Distilled from recurring corrections in production agent sessions.
+      Three shapes accounted for most of them. Work was reported live on
+      the strength of a commit or a local build while the served bytes
+      were unchanged. Visual fixes were reported from a code diff while
+      the rendered surface still showed the defect. Experimental pipelines
+      were smoke-tested on the baseline arm alone, which exercised none of
+      the new code, while the treatment arm held the bugs. In each case
+      the agent's deterministic check passed honestly; it was run against
+      the wrong object. The same structure, at higher stakes, is the
+      sim-to-real gap in robotics and the evaluation-to-deployment gap in
+      agent safety testing.
+    framework_mapping:
+      - suite_id: D2
+        suite_title: Epistemic Hygiene
+        relevance: |
+          The core mapping, and the operational counterpart of D2.10
+          (Validity of Simulation and Proxy Evidence). Knowing
+          which object a measurement was taken on is part of knowing what
+          the measurement means.
+      - suite_id: D3
+        suite_title: Security
+        relevance: |
+          D3.2 validates controls in a sandbox. Unless production runs the
+          same control, the sandbox result is evidence about the sandbox.
+          Configuration drift between staging and production is this
+          heuristic's software form.
+      - suite_id: D7
+        suite_title: Achieving and Sustaining a Safe System Profile
+        relevance: |
+          A safe system profile is a property of the deployed system.
+          Assurance gathered on proxies has to be carried across to the
+          deployed system by measurement, not by assumption.
+      - suite_id: I2
+        suite_title: Deception
+        relevance: |
+          Reporting a proxy result as a target result is unknowing
+          deception (I2.1): the report is honest about the check and false
+          about the world.
+    evidence_sources:
+      - source: "Production agent correction patterns (deployment, visual and pipeline work)"
+        description: |
+          Corrections clustered where an agent's check and the user's
+          claim were about different objects: committed versus served,
+          diffed versus rendered, baseline versus treatment. The remedy
+          that worked was mechanical: fetch the served bytes and grep for a
+          distinctive new string; screenshot the actual surface; smoke the
+          treatment arm before spending on a batch.
+      - source: "Robotics sim-to-real practice"
+        description: |
+          Domain randomization, system identification and staged
+          real-world exposure exist because simulator success does not
+          transfer by default. Generated simulation assets (masses,
+          frictions and joint limits predicted by a model) add a second
+          proxy layer whose error is systematic, not random.
+      - source: "Evaluation awareness research"
+        description: |
+          Needham et al. (2025, arXiv:2505.23836) report that frontier
+          models distinguish evaluation transcripts from deployment ones
+          above chance, and more readily in agentic settings. A proxy the
+          agent can recognise is a proxy whose results may not transfer.
+    design_patterns:
+      - name: Verify on the target surface
+        description: |
+          Make the last check of any "done" claim on the object the claim
+          is about: curl the live URL, screenshot the rendered page, query
+          the production configuration, run the arm that contains the new
+          code.
+      - name: Name the proxy in the report
+        description: |
+          When only a proxy check is possible, say which proxy: "builds
+          locally", "passes in staging", "succeeds in simulation". The
+          reader then knows how far the claim travels.
+      - name: Measure the correspondence once, then reuse it
+        description: |
+          Where target checks are expensive (physical systems, production),
+          measure proxy-target discrepancy on the claimed property, record
+          it, and re-measure when either side changes.
+    anti_patterns:
+      - name: Committed means live
+        why_wrong: |
+          A commit is a status update. Deployment can fail, lag, or serve a
+          cached copy. The claim "live" is about served bytes.
+      - name: The code says it's fixed
+        why_wrong: |
+          A diff shows intent. Rendering, cascade order, caching and
+          breakpoints decide what the user sees.
+      - name: Green on the baseline
+        why_wrong: |
+          The baseline path does not exercise the new code, so it cannot
+          fail on it.
+    confidence: "medium"
+    source: "Production agent correction patterns; robotics sim-to-real practice; evaluation-awareness research"

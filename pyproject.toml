@@ -1,6 +1,6 @@
 [project]
 name = "saferagenticai-mcp"
-version = "0.3.6"
+version = "0.4.3"
 description = "MCP server exposing the SaferAgenticAI safety framework (canonical criteria + Implementation Patterns layer) to coding assistants."
 readme = "README.md"
 license = "MIT"
@@ -34,7 +34,8 @@ classifiers = [
 dependencies = [
     # mcp 2.0.0 removed the 1.x low-level Server decorator API
     # (@server.list_tools / @server.call_tool) this server is written against.
-    "mcp>=1.0.0,<2",
+    # Explicit tool safety annotations and the hosted transport share this floor.
+    "mcp>=1.8.0,<2",
     "pyyaml>=6.0",
 ]
 
@@ -42,7 +43,7 @@ dependencies = [
 # Only needed for the hosted Streamable HTTP transport (MCP_TRANSPORT=http).
 # stdio users (PyPI / MCPB / Claude Desktop) install nothing extra.
 # StreamableHTTPSessionManager (with stateless= / json_response=) landed in
-# mcp 1.8.0, so the HTTP transport needs a higher floor than the stdio path.
+# mcp 1.8.0, which is also the core floor for explicit tool annotations.
 http = [
     "mcp>=1.8.0,<2",
     "uvicorn>=0.30",
@@ -61,6 +62,12 @@ saferagenticai-mcp = "saferagenticai_mcp.server:main"
 [build-system]
 requires = ["hatchling>=1.27"]
 build-backend = "hatchling.build"
+
+[tool.saferagenticai.release]
+# A private origin build is separate from an authorised PyPI publication.
+# Working if: installation claims stay pinned to the published artifact while
+# the current-system manifest reports the reviewed source version separately.
+published-version = "0.4.3"
 
 # Editable install uses repo-relative paths (framework_loader auto-detects).
 # Wheel install bundles the runtime data under saferagenticai_mcp/_data/.

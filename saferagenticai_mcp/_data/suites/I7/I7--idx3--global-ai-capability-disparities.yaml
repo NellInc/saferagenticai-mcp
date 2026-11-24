@@ -111,7 +111,7 @@ evidence_production:
 
     '
 confidence: medium
-needs_human_review: true
+review_status: generated_draft
 review_notes: 'This subgoal strongly overlaps with I7.3-underlined (idx10) — both target global capability
   equity and international partnership. The difference the JSON implies: idx3 emphasizes national-scale
   disparities and technology transfer; idx10 emphasizes balanced-alliance governance and preventing dominant-entity
@@ -126,9 +126,9 @@ review_notes: 'This subgoal strongly overlaps with I7.3-underlined (idx10) — b
   Pressures / Monopolistic Practices) is the adversarial counterpart. I1 (Race Dynamics) tension: capability
   transfer can accelerate race dynamics if structured carelessly — flag this in consolidation.
 
-  "Technology transfer" has historical baggage (development economics, colonial patterns). Nell may want
-  to reframe some language toward "capability sharing" or "co-development" rather than "transfer," which
-  implies a one-way flow.
+  "Technology transfer" has historical baggage (development economics, colonial patterns). Some language
+  could be reframed toward "capability sharing" or "co-development" rather than "transfer," which implies
+  a one-way flow.
 
   '
 drafted_by: claude-opus-4.7[1m]

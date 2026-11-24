@@ -108,7 +108,7 @@ evidence_production:
 
     '
 confidence: medium
-needs_human_review: true
+review_status: generated_draft
 review_notes: "Insurance-as-safety-filter is a framework-specific framing that is underdeveloped in practice:\
   \ AI-specific coverage is nascent, loss data is sparse, and insurers struggle to underwrite frontier\
   \ risk. The pattern's value is in getting orgs to engage with the developing market rather than in prescribing\
@@ -118,10 +118,8 @@ review_notes: "Insurance-as-safety-filter is a framework-specific framing that i
   \ owns regulatory filings broadly.\n  (2) D7.2 Culture of Safety overlaps on contingency drills and\n\
   \      incident response.\n  (3) I6.idx0 Override Register is a key underwriting input\n      (orgs\
   \ with many overrides are harder to underwrite).\n  (4) D5 Interpretability / D3 Security — insurers\
-  \ may require\n      technical safeguards documented there.\n\nAli (listed as collaborator) has insurance/risk\
-  \ background (flagged in repo history); his review of the insurer and broker enumeration is particularly\
-  \ valuable. Some named firms may lose or add AI offerings; pattern favours principles (AI-specialist\
-  \ engagement + loss data sharing) over enumeration.\n"
+  \ may require\n      technical safeguards documented there.\n\nSome named firms may lose or add AI offerings;\
+  \ pattern favours principles (AI-specialist engagement + loss data sharing) over enumeration.\n"
 version_compat:
   framework_version_min: '1.0'
   framework_version_max: 1.x

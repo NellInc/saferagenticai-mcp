@@ -114,7 +114,7 @@ evidence_production:
 
     '
 confidence: medium
-needs_human_review: true
+review_status: generated_draft
 review_notes: "Ecosystem patterns are the hardest to write without drifting into generic CSR language.\
   \ Sharpenings worth preserving as subagents generalize:\n  (1) Evidence is external, not internal. Internal\
   \ commitment docs\n      don't satisfy these subgoals; demonstrated outputs do.\n  (2) \"Open-washing\"\
@@ -123,8 +123,8 @@ review_notes: "Ecosystem patterns are the hardest to write without drifting into
   \ + named\n      representative with continuity\" rather than enumerate bodies\n      that may not exist\
   \ in a year.\n  (4) Capability-gap monitoring as an internal function is a\n      framework-specific\
   \ shape worth preserving (SFR-c asks for\n      \"dynamic assessment and correction systems\" — that's\
-  \ an\n      internal function, not just a one-time audit).\n\nNell and Ali should verify whether specific\
-  \ advocacy touchpoints should be named in the Pattern or abstracted. Naming bodies makes the pattern\
+  \ an\n      internal function, not just a one-time audit).\n\nWhether specific advocacy touchpoints\
+  \ should be named in the Pattern or abstracted is an open question. Naming bodies makes the pattern\
   \ actionable today but ages fast; abstracting requires the reader to know the landscape.\n"
 drafted_by: claude-opus-4.7-author
 drafted_at: 2026-04-16

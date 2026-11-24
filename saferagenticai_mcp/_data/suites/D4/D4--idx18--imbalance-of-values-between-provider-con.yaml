@@ -150,7 +150,7 @@ evidence_production:
 
     '
 confidence: medium
-needs_human_review: true
+review_status: generated_draft
 review_notes: 'Content-type decision: governance. The subgoal is fundamentally about the organization
   disciplining its own tendency to bias the value set toward provider interests. That is a policy and
   accountability problem, instantiated through a public register, an advocate role, and a transparency
@@ -163,8 +163,8 @@ review_notes: 'Content-type decision: governance. The subgoal is fundamentally a
   resist this as onerous. The framework intent — the word "non-negotiable" — supports the strictness.
 
   Independent user-value advocate role is the most load-bearing novel element. Without it, imbalance reviews
-  asymmetrically favor the provider. Nell to weigh in on whether this role is named equivalent in other
-  framework suites (close to D9 governance ombudsperson, but with a specific value-side scope).
+  asymmetrically favor the provider. Whether this role has a named equivalent in other framework suites
+  (close to D9 governance ombudsperson, but with a specific value-side scope) is an open question.
 
   Cross-suite (for consolidation): D4.6 Universal Moral Foundations (Floor is the uncrossable line); D4.8̲
   Non-transparent Value Framework (the public Register is part of the multi-audience representation);

@@ -217,7 +217,7 @@ evidence_production:
       additions.
 
 confidence: high
-needs_human_review: false
+review_status: generated_draft
 review_notes: >
   High-confidence; the pattern mirrors mature real-time-systems and
   SRE input-validation practice, sharpened to the agentic context where

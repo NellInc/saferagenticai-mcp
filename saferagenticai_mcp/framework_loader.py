@@ -97,6 +97,21 @@ REQUIRED_PATTERN_FIELDS = (
 VALID_CONTENT_TYPES = {"code-applicable", "governance", "process", "ecosystem"}
 VALID_CONFIDENCES = {"high", "medium", "low"}
 
+# Review status of a pattern. The pattern library has no human-review process
+# (owner's decision, commit f41ce0cb), so the only status is generated_draft:
+# a machine-readable statement that every pattern is a model-drafted draft.
+# Kept in lock-step with schema.yaml. Adding a status would mean introducing a
+# review process, which is the owner's decision, not a data edit.
+REVIEW_STATUSES = ("generated_draft",)
+DEFAULT_REVIEW_STATUS = REVIEW_STATUSES[0]
+
+
+def effective_review_status(pattern: dict | None) -> str | None:
+    """Every pattern is served as a generated draft, whatever its YAML says."""
+    if pattern is None:
+        return None
+    return DEFAULT_REVIEW_STATUS
+
 # Content-type-specific blocks required by schema.yaml. A pattern declaring a
 # content_type must carry that block's required fields.
 CONTENT_TYPE_REQUIRED_BLOCKS = {
@@ -162,6 +177,14 @@ def validate_pattern(data: object, source: str) -> list[str]:
     cf = data.get("confidence")
     if cf and cf not in VALID_CONFIDENCES:
         issues.append(f"{source}: invalid confidence '{cf}'")
+    rs = data.get("review_status")
+    if rs is None:
+        issues.append(f"{source}: missing review_status (served as '{DEFAULT_REVIEW_STATUS}')")
+    elif rs not in REVIEW_STATUSES:
+        issues.append(
+            f"{source}: invalid review_status '{rs}'; the library has no review "
+            f"process (served as '{DEFAULT_REVIEW_STATUS}')"
+        )
     anchors = data.get("normative_anchors")
     if anchors and not isinstance(anchors, dict):
         issues.append(f"{source}: normative_anchors must be a mapping")
@@ -214,6 +237,10 @@ class Subgoal:
     @property
     def confidence(self) -> str | None:
         return self.pattern.get("confidence") if self.pattern else None
+
+    @property
+    def review_status(self) -> str | None:
+        return effective_review_status(self.pattern)
 
 
 @dataclass
@@ -380,6 +407,13 @@ def load_framework() -> FrameworkIndex:
                 )
                 if pattern is not None:
                     variant_fallback = True
+            # A pattern's id is permanent once minted (the catalog records it as
+            # an alias), so key the subgoal by it. The positional id is only a
+            # fallback: inserting a requirement mid-suite must not renumber the
+            # requirements after it. A borrowed base-subgoal pattern keeps the
+            # positional id so two subgoals never share one.
+            if pattern is not None and not variant_fallback and pattern.get("id"):
+                pid = pattern["id"]
             s = Subgoal(
                 pattern_id=pid,
                 display_id=sg.get("id", ""),
@@ -502,12 +536,13 @@ def subgoal_to_dict(s: Subgoal, include_pattern: bool = True) -> dict[str, Any]:
     # True when the pattern was resolved via dot-underscore fallback,
     # meaning the pattern is borrowed from the base subgoal, not variant-specific.
     out["is_variant_fallback"] = s.is_variant_fallback
-    # Other reliability metadata comes from the pattern YAML.
+    # Other reliability metadata comes from the pattern YAML. review_status is
+    # always generated_draft (no review process exists); confidence is the
+    # drafting model's own rating of its draft, not a review result.
     if s.pattern:
         out["content_type"] = s.pattern.get("content_type")
+        out["review_status"] = s.review_status
         out["confidence"] = s.pattern.get("confidence")
-        out["needs_human_review"] = s.pattern.get("needs_human_review")
-        out["reviewed_by"] = s.pattern.get("reviewed_by")
     if include_pattern and s.pattern:
         out["pattern"] = s.pattern
     return out
@@ -618,7 +653,7 @@ def heuristic_to_dict(h: OperationalHeuristic) -> dict[str, Any]:
     }
     # Always emit these, null when unset, so consumers can distinguish "not
     # rated" from a missing key (the pattern layer's subgoal_to_dict does the
-    # same); 8 of the 14 heuristics carry no confidence value.
+    # same); 8 of the 15 heuristics carry no confidence value.
     out["confidence"] = h.confidence or None
     out["source"] = h.source or None
     return out

@@ -26,8 +26,8 @@ client at:
 uvx --from git+https://github.com/NellInc/saferagenticai-mcp saferagenticai-mcp
 ```
 
-uv handles isolation and caches the install. Works for single-command config
-lines in `~/.claude/mcp.json`.
+uv handles isolation and caches the install, so the client can start the
+server with a single command (see Configure below).
 
 ### Option 2 — `pipx` (isolated global install)
 
@@ -60,8 +60,8 @@ uv tool install saferagenticai-mcp
 pip install --user saferagenticai-mcp
 ```
 
-For audit-trail reproducibility, pin the version: `pipx install saferagenticai-mcp==0.3.6`.
-The package bundles `criteria-v1.json` + 238 pattern YAMLs + 4 exemplars
+For audit-trail reproducibility, pin the version: `pipx install saferagenticai-mcp==0.4.3`.
+The package bundles `criteria-v1.json` + 239 pattern YAMLs + 4 exemplars
 + `operational_heuristics.yaml` inside `saferagenticai_mcp/_data/`, so a
 wheel install works without any repo checkout. (The 0.3.0 wheel predates the
 corpus extension and bundles only 214 patterns, no heuristics; 0.3.1 is the
@@ -69,45 +69,49 @@ first complete build.)
 
 ## Configure (Claude Code)
 
-Add to `~/.claude/mcp.json` (or your IDE's MCP config). Pick the variant that
-matches your install option.
+Use the Claude Code CLI. Tested with Claude Code 2.1.318 on 2026-11-06
+against 0.4.2 on the PATH (installed with pip) and through uvx:
 
-### With `uvx`
+```bash
+claude mcp add --scope user saferagenticai -- saferagenticai-mcp
+# Added stdio MCP server saferagenticai with command: saferagenticai-mcp  to user config
+# File modified: /Users/you/.claude.json
+
+claude mcp list
+# saferagenticai: saferagenticai-mcp  - ✔ Connected
+```
+
+Other install routes use the same form:
+
+```bash
+claude mcp add --scope user saferagenticai -- uvx saferagenticai-mcp==0.4.3
+claude mcp add --scope user saferagenticai -- /absolute/path/to/research/mcp/.venv/bin/saferagenticai-mcp
+claude mcp add --transport http --scope user saferagenticai https://mcp.saferagenticai.org/mcp
+```
+
+Scopes: `local` (the default; this project only) and `user` (all your
+projects) are stored in `~/.claude.json`; `project` is stored in `.mcp.json`
+at the project root and shows `⏸ Pending approval` in `claude mcp list` until
+approved in an interactive `claude` session. A project `.mcp.json` written by
+`claude mcp add --scope project saferagenticai -- uvx saferagenticai-mcp==0.4.3`:
 
 ```json
 {
   "mcpServers": {
     "saferagenticai": {
+      "type": "stdio",
       "command": "uvx",
-      "args": [
-        "--from",
-        "git+https://github.com/NellInc/saferagenticai-mcp",
-        "saferagenticai-mcp"
-      ]
+      "args": ["saferagenticai-mcp==0.4.3"],
+      "env": {}
     }
   }
 }
 ```
 
-### With `pipx` or manual venv
+Cursor reads the same `mcpServers` body from `~/.cursor/mcp.json` (all
+projects) or `.cursor/mcp.json` (one project).
 
-```json
-{
-  "mcpServers": {
-    "saferagenticai": {
-      "command": "/absolute/path/to/saferagenticai-mcp"
-    }
-  }
-}
-```
-
-For a manual venv checkout, the absolute path is
-`<repo>/research/mcp/.venv/bin/saferagenticai-mcp`.
-
-Restart Claude Code / your IDE after editing. The server will load on the
-first tool call from your assistant.
-
-## Tools (12 total)
+## Tools (10 total)
 
 | Tool | Input | Returns |
 |---|---|---|
@@ -119,35 +123,47 @@ first tool call from your assistant.
 | `get_reverse_references` | `id` | incoming adjacencies (who cites this pattern) |
 | `resolve_id` | `query` | canonicalise a partial id, slug fragment, or display_id; always returns candidates |
 | `find_patterns_for_task` | `task`, `limit`, `verbosity` | top patterns grouped by suite for a task description; defaults to compact mode for cheap triage |
-| `list_unreviewed` | `limit` | patterns without `reviewed_by`, sorted low-confidence first |
-| `review_stats` | — | coverage %, per-suite, per-confidence; plus validation issue count |
 | `list_operational_heuristics` | `suite_id`?, `query`? | operational heuristics distilled from production agentic AI deployment, optionally filtered by suite or keyword |
 | `get_operational_heuristic` | `id` | single operational heuristic by id (e.g. `OH::geoffrey-pattern`); returns full entry with principle, framework mapping, design patterns, and discovery narrative |
 
 ## Data sources
 
 - **Normative framework**: `framework/catalog/`, loaded through the generated `assessor/src/data/criteria-v1.json` projection
-- **Pattern layer**: `research/mcp/suites/<SUITE>/<pattern_id>.yaml` (238 files)
+- **Pattern layer**: `research/mcp/suites/<SUITE>/<pattern_id>.yaml` (239 files)
 - **Exemplars**: `research/mcp/exemplars/*.yaml` (fallback for four anchor subgoals)
-- **Operational heuristics**: `research/mcp/operational_heuristics.yaml` (14 heuristics)
+- **Operational heuristics**: `research/mcp/operational_heuristics.yaml` (15 heuristics)
 
 At startup the server loads both and builds an in-memory index keyed by `pattern_id`. `display_id` lookups are also supported but may resolve to multiple subgoals (underlined variants).
 
-## Smoke test (without MCP installed)
+## Smoke test (without an MCP client)
+
+The executable has no version or health-check flag, and pipx installs
+it into its own virtual environment, so a plain `python3` cannot import it.
+Use the environment the package lives in:
 
 ```bash
-python3 -c "
+pipx runpip saferagenticai-mcp show saferagenticai-mcp   # Version: 0.4.3
+
+"$(pipx environment --value PIPX_LOCAL_VENVS)/saferagenticai-mcp/bin/python" -c "
 from saferagenticai_mcp.framework_loader import load_framework
 idx = load_framework()
 print(f'{len(idx.subgoals)} subgoals, {sum(1 for s in idx.subgoals.values() if s.has_pattern)} with patterns')
 "
+# 239 subgoals, 239 with patterns
+
+# with uv instead of pipx:
+uvx --from saferagenticai-mcp==0.4.3 python -c "import saferagenticai_mcp; print(saferagenticai_mcp.__version__)"
 ```
 
 ## Versioning
 
 - Canonical framework: follows `criteria-v1.json`'s `version` field.
-- Pattern layer: `v1-draft` while this directory is being populated; `v1` once reviewed.
-- Server: semantic versioning. Current release is **0.3.6** (framework `1.3-draft`, full 238-pattern corpus, and operational heuristics bundled). Pin explicitly for audit reproducibility.
+- Pattern layer: `v1-draft`.
+- **0.4.3** bundles framework `1.3-draft`, catalogue snapshot `b813d153`, 239 patterns and 15 operational heuristics. It refreshes D3.9 and I1.2 for task-bound delegation and keeps the ten-tool interface.
+- For comparison with the previous catalogue snapshot (`c9bf29f5`), pin **0.4.2**: `pipx install saferagenticai-mcp==0.4.2`.
+- 0.4.2 expands common phrasings to the framework's own terms and normalises identifiers (`d3.9`, `D3-9`, `G3.9`), reporting both as `expanded_terms` and `identifier_matches`; accepts tasks of two or more characters; and serves every pattern with `review_status: generated_draft`, since the library has no human-review process. Held-out search: top-3 45.8% → 79.2%.
+- 0.4.1 exits cleanly when a stdio client disconnects after a malformed message, keys subgoals by their permanent pattern ids, and bundles the 239-pattern catalog (including D2.10) and 15 operational heuristics.
+- 0.4.0 removes the `list_unreviewed` and `review_stats` tools and the `needs_human_review` and `reviewed_by` pattern fields. It keeps the payload-free executable diagnostics added in the private 0.3.7 origin build. The hosted origin's current release and rollback target are recorded in `../plugin-review/DEPLOYMENT.md`.
 
 ## What's already built in
 
@@ -156,20 +172,27 @@ print(f'{len(idx.subgoals)} subgoals, {sum(1 for s in idx.subgoals.values() if s
 - **`find_patterns_for_task`** — natural-language task → top patterns grouped by suite. Replaces the need for a separate embedding index at current scale.
 - **Reverse xref index** — built at load, queried by `get_reverse_references`.
 
+## Transport
+
+The default transport is stdio. Streamable HTTP is available with the `[http]`
+extra and `MCP_TRANSPORT=http`. It binds to loopback by default and expects an
+external HTTPS reverse proxy. The public endpoint is
+`https://mcp.saferagenticai.org/mcp`; its deployment and catalog must be verified
+separately from a local installation.
+
 ## Not implemented
 
-- Auth / remote transport (stdio only).
-- Embedding-based semantic search — the field-weighted keyword scoring is sufficient at 238 patterns; embeddings would be worth it at 10× this scale.
-- `mark_reviewed` write tool — deliberately not added. Phase 3 review edits go through the YAML directly (editor + git diff = auditable); the MCP stays read-only.
+- Server-side authentication for the public read-only tools.
+- Embedding-based semantic search — the field-weighted keyword scoring is sufficient at 239 patterns; embeddings would be worth it at 10× this scale.
 
 The broader agent-native architecture proposes composite orientation, context-pack,
 workspace, planning, action, and verification operations. They are explicitly not
-part of the current `0.3.6` interface. See
+part of the current `0.4.3` interface. See
 [`../../architecture/README.md`](../../architecture/README.md) for the target and
 compatibility plan.
 
 The authoritative catalog maps current MCP identifiers and slugs to permanent
-requirement IDs. Server `0.3.6` retains its twelve-tool interface, loads the
+requirement IDs. Server `0.4.3` exposes ten tools, loads the
 generated packaged snapshot, validates `saai.catalog.v1`, and reports the shared
 snapshot hash.
 
@@ -177,4 +200,4 @@ snapshot hash.
 
 This server (the code in this directory) is licensed **MIT** — see [`LICENSE`](LICENSE).
 
-The safety-framework *content* it serves (the patterns, canonical criteria, and operational heuristics bundled under `saferagenticai_mcp/_data/`) is part of the SaferAgenticAI framework, published under **CC-BY-4.0** at the repository root. Attribution: Nell Watson and the Agentic AI Safety Community of Practice.
+The safety-framework *content* it serves (the patterns, canonical criteria, and operational heuristics bundled under `saferagenticai_mcp/_data/`) is part of the SaferAgenticAI framework, published under **CC-BY-4.0** (`LICENSE-CONTENT` at the repository root; `LICENSING.md` there sets out what each licence covers). Attribution: Nell Watson and the Agentic AI Safety Community of Practice.

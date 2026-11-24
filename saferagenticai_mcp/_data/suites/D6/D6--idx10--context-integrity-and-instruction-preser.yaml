@@ -204,22 +204,20 @@ evidence_production:
       eviction under pressure.
 
 confidence: medium
-needs_human_review: false
+review_status: generated_draft
 review_notes: >
-  Phase 3: Initial draft, awaiting human review. SFR and evidence
-  descriptions in criteria-v1.json are empty; content derived from the
-  subgoal description. This pattern has strong cross-suite connections:
-  D3.8 (prompt injection) addresses a related but distinct threat
-  (adversarial instruction override vs. passive instruction loss);
-  D6.12 (context drift) addresses gradual semantic drift rather than
-  the abrupt loss modeled here. Operational heuristic "Context
-  Degradation Defense" is the direct empirical source for this
-  pattern. The "context as a finite safety-relevant resource" framing
-  is drawn from production agent deployment experience. The
-  displacement attack detection pattern is less mature than the
-  pinning and verification patterns; reviewer should assess whether
-  current detection techniques are sufficiently reliable to
-  recommend.
+  SFR and evidence descriptions in criteria-v1.json are empty; content
+  derived from the subgoal description. This pattern has strong
+  cross-suite connections: D3.8 (prompt injection) addresses a related
+  but distinct threat (adversarial instruction override vs. passive
+  instruction loss); D6.12 (context drift) addresses gradual semantic
+  drift rather than the abrupt loss modeled here. Operational heuristic
+  "Context Degradation Defense" is the direct empirical source for this
+  pattern. The "context as a finite safety-relevant resource" framing is
+  drawn from production agent deployment experience. The displacement
+  attack detection pattern is less mature than the pinning and
+  verification patterns; whether current detection techniques are
+  sufficiently reliable to recommend is an open question.
 
 drafted_by: claude-opus-4-6-author
 drafted_at: 2026-05-16

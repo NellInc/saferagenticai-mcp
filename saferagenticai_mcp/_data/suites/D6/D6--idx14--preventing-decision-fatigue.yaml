@@ -104,25 +104,28 @@ evidence_production:
 
     '
 - evidence_numeral: II
-  how_to_produce: 'Analysis reports: frequency distributions of decisions users face, correlation with
-    outcomes (completion rate, error rate, satisfaction, safety events), identified fatigue hotspots.
-    Quarterly; feeds product backlog for decision-surface simplification.
-
-    '
+  how_to_produce: 'Analysis reports built from harness-written confirmation logs, in which the scaffold records each
+    confirmation request''s risk tier, batch membership and session ID. Report frequency distributions
+    of the decisions users face, show that prompts were issued only for irreversible or shared-scope
+    actions (any lower-tier prompt is a finding), and chart per-session confirmation frequency against
+    the defined review trigger, with records of the reviews it triggered. Add correlation with
+    outcomes (completion rate, error rate, satisfaction, safety events) and identified fatigue
+    hotspots. Quarterly; feeds the product backlog for decision-surface simplification. Export the
+    underlying logs with each report.'
 - evidence_numeral: III
-  how_to_produce: 'Decision-support effectiveness documentation: for each support surface (scaffold-templated
-    decision brief, progressive disclosure, contextual help), the template definition, the logged system-data
-    fields it renders from, and pre/post metrics on decision quality (correctness, time, satisfaction),
-    user-reported clarity. A/B tests where feasible; qualitative research where not. A model-authored
-    free-text summary alone does not evidence the required decision brief.
-
-    '
+  how_to_produce: 'Decision-support effectiveness documentation: for each support surface (scaffold-templated decision
+    brief, progressive disclosure, contextual help), the template definition and the logged system-data
+    fields it renders from, plus pre/post metrics on decision quality (correctness, time, satisfaction) and
+    user-reported clarity from A/B tests where feasible, qualitative research where not. Attach a sample of
+    rendered decision briefs, each paired with the log entries that populated its template fields, so a
+    reviewer can trace every field to a logged record; any field without a source entry is a finding. A
+    model-authored free-text summary alone does not evidence the required decision brief.'
 cross_references:
 - D6::idx2::system-state-translation-and-communicati
 - D6::idx7::culturo-linguistic-adaptations
 - D6::idx13::managing-contextual-ambiguity
 confidence: medium
-needs_human_review: true
+review_status: generated_draft
 review_notes: 'v1.3 revision made all four SFRs normative and mechanized them: risk-tiered confirmation
   (irreversible/shared-scope only, per D6.11), a tracked per-session confirmation-frequency metric with
   defined review trigger, and scaffold-templated decision briefs from logged data with model-authored

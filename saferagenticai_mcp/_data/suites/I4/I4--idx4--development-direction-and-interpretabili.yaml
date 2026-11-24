@@ -92,13 +92,14 @@ artifacts:
 - User guides and documentation explaining system operation at an appropriate audience level
 evidence_production:
 - evidence_numeral: I
-  how_to_produce: 'Publish the Interpretability Capability Ledger: per capability / model component, what
-    interpretability techniques have been applied, what was explained, what remains opaque, confidence
-    estimate, residual risk. Validation records: reproducible interpretability experiments, cross-checks
-    (e.g., activation patching, causal interventions) with results. User guides at appropriate abstraction
-    — the developer, the auditor, the end-user each get a version fit for their role.
-
-    '
+  how_to_produce: 'Publish the Interpretability Capability Ledger: per capability / model component, techniques applied,
+    what was explained, what remains opaque, confidence estimate, residual risk. Validation records:
+    reproducible interpretability experiments and cross-checks (e.g., activation patching, causal
+    interventions) with results. User guides at appropriate abstraction for the developer, the auditor and
+    the end-user. From the explanation-fidelity audit, retain sample explanations each linked by trace ID
+    to the scaffold-logged provenance record (inputs, retrievals, tool calls, policy checks) for the
+    output it explains, with the auditor''s reconciliation result. The system''s own account of its
+    reasoning may accompany but cannot substitute for that provenance record.'
 - evidence_numeral: II
   how_to_produce: 'Adaptive governance records: decisions to pause, scope-reduce, default-off, or release
     based on interpretability state. Contingency plans per opaque-behavior category (e.g., emergent capability,
@@ -121,8 +122,8 @@ evidence_production:
 
     '
 confidence: low
+review_status: generated_draft
 evidence_maturity: emerging
-needs_human_review: true
 review_notes: "Mechanistic interpretability is an active research frontier; specific techniques recommended\
   \ will age fast. The pattern deliberately names techniques as illustrative (activation patching, causal\
   \ interventions) and focuses on the governance coupling rather than the method of the month. Sharpenings:\n\

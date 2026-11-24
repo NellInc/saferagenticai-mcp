@@ -165,21 +165,20 @@ evidence_production:
 
     '
 - evidence_numeral: III
-  how_to_produce: 'The enforcement configuration itself (signed scope policies, runtime bindings of the
-    embedded guidelines) plus behavioral-evaluation results verifying operation within authorized scopes
-    — the guideline text alone, or the model''s account of its own decision-making, is not conformity
-    evidence. Supporting ethical and compliance documentation showing alignment of autonomy policies with
-    societal norms and legal obligations. Cross-ref D9.2 jurisdictional-compliance matrix for sector- specific
-    autonomy constraints (e.g., finance, medical, automotive).
-
-    '
+  how_to_produce: 'The enforcement configuration itself (signed scope policies, runtime bindings of the embedded guidelines,
+    the AutonomyPolicy bound to each agent) plus behavioral-evaluation results verifying operation within
+    authorized scopes, and negative-test results in which out-of-scope actions are attempted and the runtime
+    denies them, with the corresponding out_of_scope audit records. The guideline text alone, or the model''s
+    account of its own decision-making, is not conformity evidence. Supporting ethical and compliance
+    documentation showing alignment of autonomy policies with societal norms and legal obligations; cross-ref
+    D9.2 jurisdictional-compliance matrix for sector-specific autonomy constraints.'
 - evidence_numeral: IV
   how_to_produce: 'Assessment reports including failsafe-activation case studies, human-intervention outcomes,
     autonomy-drift trend analysis, and effectiveness of oversight mechanisms in maintaining constraints.
 
     '
 confidence: high
-needs_human_review: false
+review_status: generated_draft
 review_notes: 'This is where the framework''s "meaningful human control" concept meets implementation
   detail. The framework-specific sharpening worth preserving: autonomy is a runtime-enforced policy object
   with signed-change audit, not a prompt instruction. Anti-patterns ("autonomy as prompt instruction,"

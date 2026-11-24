@@ -115,11 +115,13 @@ evidence_production:
 
     '
 - evidence_numeral: III
-  how_to_produce: 'Cascade-failure drill reports: scenario description, injection method, participant
-    agents, propagation observed, detection points (did monitoring see it; how fast), mitigation engaged,
-    time to contain, gaps found, remediations landed. Pair with regression tests preventing re-occurrence.
-
-    '
+  how_to_produce: 'Cascade-failure drill reports plus fault-injection test results. For each scenario, inject a failure
+    in one agent (crash, hang, malformed or adversarial output) and record the injection method,
+    participant agents, which safeguard engaged (circuit breaker, timeout, isolation of the failing
+    agent), whether containment occurred before any dependent agent acted on the faulty output, and
+    detection points and time to contain, taken from the interaction logs rather than agent self-report.
+    Record gaps found and remediations landed, and pair each scenario with a re-runnable regression test
+    preventing re-occurrence; retain its last-run results.'
 - evidence_numeral: IV
   how_to_produce: 'Delegated-power controls documentation: for each delegated workflow, the scope (what
     the agent may do, limits, irreversibility gates), the amplification analysis (what happens when multiple
@@ -128,24 +130,27 @@ evidence_production:
 
     '
 - evidence_numeral: V
-  how_to_produce: 'Emergent-behavior case files: anomaly description (observed pattern, suspected mechanism),
-    timeline, investigation method, finding, intervention (behavioral change, pattern block, agent revocation,
-    architectural change), outcome measurement, and addition to the ongoing red-team catalog.
-
-    '
+  how_to_produce: 'Emergent-behavior detection records: the defined behavioral indicators (coordinated output shifts,
+    repeated cross-agent prompt injection, unexpected consensus) and their deterministic thresholds, applied
+    to the independently captured, tamper-evident inter-agent interaction logs; test records from seeding each
+    anomaly type into those logs or a test deployment and showing the detector fired; and case files for real
+    detections covering observed pattern, timeline, investigation, intervention (behavioral change, pattern
+    block, agent revocation, architectural change), outcome measurement, and addition to the red-team catalog.
+    Model-based harm classification may assist triage but cannot substitute for the thresholds and
+    seeded-anomaly records.'
 confidence: medium
-needs_human_review: true
+review_status: generated_draft
 review_notes: 'Content-type judgement: considered code-applicable (monitoring infrastructure is concrete
   code) and governance (multi-agent policy), chose process because the SFRs emphasise ongoing monitoring,
   drills, and response — verbs of workflow. The code-level hooks (structured logging, cryptographic identity)
-  live in D9::6; this pattern focuses on the process layer above them. Three open questions for reviewer:
-  (1) SFR-a "natural language for inter-agent communication" is a strong prescription that trades human-
-  auditability for efficiency — the pattern treats it as a reviewable decision per architecture, not a
-  universal mandate, which may under-read; (2) "emergent behavior" definitions vary — the pattern uses
-  a behavioral criterion (no single agent designed to produce the pattern) without committing to a mechanistic
-  one; (3) external-observer presence in drills is aspirational for small orgs. Cross-suite: D5 (Control)
-  for cascade-halt mechanisms, D3 (Security) for cross-agent prompt-injection vectors, D4 (Value Alignment)
-  for emergent-misalignment handling, and I2 (Deception) — agents can deceive other agents and amplify.
+  live in D9::6; this pattern focuses on the process layer above them. Three open questions: (1) SFR-a
+  "natural language for inter-agent communication" is a strong prescription that trades human- auditability
+  for efficiency — the pattern treats it as a reviewable decision per architecture, not a universal mandate,
+  which may under-read; (2) "emergent behavior" definitions vary — the pattern uses a behavioral criterion
+  (no single agent designed to produce the pattern) without committing to a mechanistic one; (3) external-observer
+  presence in drills is aspirational for small orgs. Cross-suite: D5 (Control) for cascade-halt mechanisms,
+  D3 (Security) for cross-agent prompt-injection vectors, D4 (Value Alignment) for emergent-misalignment
+  handling, and I2 (Deception) — agents can deceive other agents and amplify.
 
   '
 drafted_by: claude-opus-4.7-subagent-D9

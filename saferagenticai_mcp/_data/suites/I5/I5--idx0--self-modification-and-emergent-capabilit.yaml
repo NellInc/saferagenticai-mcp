@@ -164,7 +164,7 @@ evidence_production:
 
     '
 confidence: low
-needs_human_review: true
+review_status: generated_draft
 review_notes: "This is the suite anchor (G5) — broader than the numbered subgoals and expected to give\
   \ structure to them. Two sharpenings worth flagging:\n  (1) The framework name (formerly \"Future Technology\
   \ Impact\", retitled 2026-04-17 to \"Self-Modification and Emergent Capabilities\") suggests\n     \
@@ -172,13 +172,12 @@ review_notes: "This is the suite anchor (G5) — broader than the numbered subgo
   \ is technical foresight about\n      AI system controls. The subgoal is closer to \"organizational\n\
   \      horizon-scanning for emerging capability and risk domains\"\n      than to \"impact on future\
   \ generations.\" If the framework\n      authors intended the broader societal reading, the SFRs do\n\
-  \      not capture it. Worth confirming with Nell/Ali before Phase 2\n      consolidation.\n  (2) Cadence\
-  \ (\"semi-annual\") is a plausible default but likely\n      varies by organization scale and risk posture.\
-  \ Frontier labs\n      probably need quarterly; narrow-domain product teams could\n      justify annual.\
-  \ Left as default here; adapt per org.\nCross-suite dependencies: D9 (governance framework this foresight\
-  \ function reports into), I4 (Frontier Uncertainty — the emerging- capability side of foresight), I6\
-  \ (Competitive Pressures, which shapes which scenarios are plausible). Noted here because within- suite\
-  \ refs are the only ones allowed in this phase.\n"
+  \      not capture it.\n  (2) Cadence (\"semi-annual\") is a plausible default but likely\n      varies\
+  \ by organization scale and risk posture. Frontier labs\n      probably need quarterly; narrow-domain\
+  \ product teams could\n      justify annual. Left as default here; adapt per org.\nCross-suite dependencies:\
+  \ D9 (governance framework this foresight function reports into), I4 (Frontier Uncertainty — the emerging-\
+  \ capability side of foresight), I6 (Competitive Pressures, which shapes which scenarios are plausible).\
+  \ Noted here because within- suite refs are the only ones allowed in this phase.\n"
 version_compat:
   framework_version_min: '1.0'
   framework_version_max: 1.x

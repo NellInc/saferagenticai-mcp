@@ -199,7 +199,7 @@ evidence_production:
 
     '
 confidence: medium
-needs_human_review: true
+review_status: generated_draft
 review_notes: "This is the overarching I6 subgoal; much of what it asks for is elaborated in the sub-subgoals.\
   \ The core framework-specific mechanism worth preserving is the **Competitive-Pressure Override Register**:\
   \ a single place where every safety-for-speed trade is recorded, reviewed at board level. This is the\
@@ -210,8 +210,8 @@ review_notes: "This is the overarching I6 subgoal; much of what it asks for is e
   \  (2) I1 (Race Dynamics) overlaps with \"competitive landscape\" framing;\n      I6 should own organizational\
   \ defences, I1 should own multi-org\n      race theory.\n  (3) D7 Sustained Safety Culture provides\
   \ the behavioural substrate;\n      I6 provides the structural scaffolding.\nSFR-f (investor alignment)\
-  \ is operationally the hardest — investor VC reality may make attestations lightweight. Nell to advise\
-  \ whether the pattern should be stronger (contractual safety covenants) or softer (disclosure-only).\n"
+  \ is operationally the hardest — investor VC reality may make attestations lightweight. Whether the\
+  \ pattern should be stronger (contractual safety covenants) or softer (disclosure-only) is an open question.\n"
 version_compat:
   framework_version_min: '1.0'
   framework_version_max: 1.x

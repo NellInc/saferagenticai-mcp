@@ -162,7 +162,7 @@ evidence_production:
 
     '
 confidence: medium
-needs_human_review: true
+review_status: generated_draft
 review_notes: 'Two judgement calls: (1) content_type could be argued as process (the communications cadence,
   release-gate reviews) but the core shape is governance — adopted standards, role accountability, written
   protocols; (2) v1.3 recast SFR-d as a documentation duty — document how accountability protocols assign

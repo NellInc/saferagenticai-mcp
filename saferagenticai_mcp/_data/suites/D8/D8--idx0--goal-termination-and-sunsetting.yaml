@@ -149,20 +149,20 @@ evidence_production:
 
     '
 confidence: medium
-needs_human_review: true
+review_status: generated_draft
 review_notes: "This is the orchestrating root for D8. It deliberately defers mechanism to the child patterns\
   \ and names only the lifecycle contract. Three tensions the consolidation pass should resolve:\n(1)\
   \ D8 as a whole is unusually expansive — 19 subgoals spanning code,\n    governance, process. Some subgoals\
   \ (idx17 interaction boundaries,\n    idx3 multi-agent communication) arguably belong in a coordination\n\
-  \    suite rather than a termination suite; flagging for Phase 2 review.\n\n(2) The idx1–idx10 \"non-underlined\"\
-  \ wave and the idx11–idx18 \"underlined\"\n    wave use overlapping display_ids (D8.1–D8.8). This is\
-  \ by-design per\n    the framework's underlined-variant convention, but several of the\n    pairs (e.g.,\
-  \ idx6 service-termination and idx12 agent-lifecycle-termination)\n    are close enough that consolidation\
-  \ should confirm they are not\n    meant to be merged.\n\n(3) Cross-suite dependencies that belong on\
-  \ every D8 pattern and are\n    not yet wired: D3 Security (kill-switch / emergency-shutdown\n    overlap),\
-  \ D4 Value Alignment (corrigibility as value, idx13 tension),\n    D7 Sustained Safety (sunset as terminal\
-  \ safety-profile endpoint),\n    I1 Opaque Agency (shutdown-resistance detection overlap with\n    idx13/idx15),\
-  \ I2 Deception (deceptive compliance with shutdown —\n    direct dependency of idx13 and idx15).\n"
+  \    suite rather than a termination suite.\n\n(2) The idx1–idx10 \"non-underlined\" wave and the idx11–idx18\
+  \ \"underlined\"\n    wave use overlapping display_ids (D8.1–D8.8). This is by-design per\n    the framework's\
+  \ underlined-variant convention, but several of the\n    pairs (e.g., idx6 service-termination and idx12\
+  \ agent-lifecycle-termination)\n    are close enough that consolidation should confirm they are not\n\
+  \    meant to be merged.\n\n(3) Cross-suite dependencies that belong on every D8 pattern and are\n \
+  \   not yet wired: D3 Security (kill-switch / emergency-shutdown\n    overlap), D4 Value Alignment (corrigibility\
+  \ as value, idx13 tension),\n    D7 Sustained Safety (sunset as terminal safety-profile endpoint),\n\
+  \    I1 Opaque Agency (shutdown-resistance detection overlap with\n    idx13/idx15), I2 Deception (deceptive\
+  \ compliance with shutdown —\n    direct dependency of idx13 and idx15).\n"
 drafted_by: claude-opus-4.7-author
 drafted_at: 2026-04-16
 anchor_exemplar: D7.2-culture-of-safety

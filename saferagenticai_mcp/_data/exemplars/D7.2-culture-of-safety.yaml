@@ -130,16 +130,16 @@ evidence_production:
 
     '
 confidence: medium
-needs_human_review: true
+review_status: generated_draft
 review_notes: "Much of this (blameless post-mortems, pre-deployment reviews, drills) is established SRE/security\
   \ culture and the LLM will draft similar patterns for other process subgoals. The framework-specific\
   \ sharpenings worth preserving as subagents generalize:\n  (1) \"Caution by default\" as a named, auditable\
   \ policy — this is a\n      framework-specific phrase with operational teeth if treated as such.\n \
   \ (2) Capability ledger / default-off stance — concrete mechanism that\n      subagents should look\
   \ for in other subgoals.\n  (3) Cross-referencing between subgoals (e.g., D9.2 evidence IV, the\n  \
-  \    Violation Register) — the framework is a graph, not a checklist.\nNell to weigh in on whether \"\
-  independent red teamer\" is expected in the pre-deployment review or is over-prescribing relative to\
-  \ the SFR text (which says \"proactive risk assessment\" without specifying independence).\n"
+  \    Violation Register) — the framework is a graph, not a checklist.\nWhether \"independent red teamer\"\
+  \ is expected in the pre-deployment review or is over-prescribing relative to the SFR text (which says\
+  \ \"proactive risk assessment\" without specifying independence) is an open question.\n"
 drafted_by: claude-opus-4.7-author
 drafted_at: 2026-04-16
 anchor_exemplar: self

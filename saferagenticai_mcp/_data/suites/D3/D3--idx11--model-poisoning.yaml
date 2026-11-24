@@ -18,8 +18,8 @@ summary: >
   expects defences *before* training/update (data provenance, filtering)
   *during* live retrieval (source allowlists plus provenance and integrity
   checks on retrieval corpora, with logs of rejected or quarantined
-  content — injection sanitization of the same retrieved content is
-  specified separately in G3.8b) and *across* ensembles (no single
+  content — injection handling of the same retrieved content is
+  specified separately in D3.8b) and *across* ensembles (no single
   corrupted model can dominate).
 
 normative_anchors:
@@ -73,9 +73,9 @@ design_patterns:
       or quarantined, and every rejection/quarantine is logged. The
       allowlist, the integrity-check configuration, and the
       rejected/quarantined-content logs are the conformity evidence.
-      Injection sanitization of the same retrieved content is a
-      separate control (G3.8b) — this pattern is the model-corruption
-      gate, not the injection filter.
+      Injection handling of the same retrieved content is a
+      separate control (D3.8b) — this pattern is the model-corruption
+      gate, not the injection defense.
     maps_to_sfr: [b]
     when_to_use: Any agent that retrieves live content.
 
@@ -164,8 +164,8 @@ code_shape:
         if not INTEGRITY.verify(doc):  # hash vs pinned corpus, signature
             QUARANTINE.log(doc, reason="integrity_check_failed")
             return FramedChunk.reject(reason="integrity_check_failed")
-        # Injection sanitization of doc.content is handled by the
-        # G3.8b control downstream; this gate governs corruption risk.
+        # Injection handling of doc.content is the D3.8b control
+        # downstream (provenance + quarantine); this gate governs corruption risk.
         return FramedChunk(
             content=doc.content,
             trust_class=RAG_SOURCES.trust_class(doc.source),  # informs prompt
@@ -182,18 +182,25 @@ evidence_production:
     how_to_produce: >
       Publish the model-promotion policy, the trigger/backdoor detection
       suite specification, the canary suite and baseline artifacts, and
-      promotion decision logs for a representative period. Include both
-      approved and blocked decisions.
+      promotion decision logs for a representative period, including
+      both approved and blocked decisions. Add results of seeded-poison
+      tests: plant known poisoned samples (backdoor triggers, label
+      flips, contaminated benchmark items) into a held copy of a
+      training or update corpus, run the provenance gate and
+      trigger-detection suite before the run, and export which planted
+      samples were flagged and which were missed, with the test
+      configuration so an assessor can repeat it.
 
   - evidence_numeral: II
     how_to_produce: >
-      Export the RAG source allowlist, the provenance and integrity-check
-      pipeline specification, and ingestion logs showing rejected or
-      quarantined content with reasons (unallowlisted source, hash
-      mismatch, failed signature). These deterministic logs are the
-      primary evidence for SFR-b. Include red-team probes against the
-      RAG pipeline and their outcomes; injection-sanitization evidence
-      for the same content belongs under G3.8b.
+      Export the RAG source allowlist configuration, the provenance and
+      integrity-check pipeline specification, and the quarantine logs
+      written by the ingestion or retrieval pipeline showing content
+      rejected or quarantined with reasons (unallowlisted source, hash
+      mismatch, failed signature). These pipeline-written logs are the
+      primary evidence for SFR-b. Include red-team probes against the RAG
+      pipeline and their outcomes; injection-handling evidence for the
+      same content belongs under D3.8b.
 
   - evidence_numeral: III
     how_to_produce: >
@@ -204,17 +211,17 @@ evidence_production:
       differ).
 
 confidence: high
-needs_human_review: true
+review_status: generated_draft
 review_notes: >
   Display_id "D3.1" collides with non-underlined D3.1 Authorization
-  (idx1); use full id to disambiguate. The framework's use of the
-  same numeric id for distinct underlined-variant subgoals is a
-  structural issue the reviewer should be aware of.
+  (idx1); use full id to disambiguate. The framework's use of the same
+  numeric id for distinct underlined-variant subgoals is a structural
+  issue.
 
   Content-type is code-applicable because the deliverables (pipeline,
-  detection suites, RAG filters, ensembles) are engineering work.
-  There is a governance overlay (approval authority, provenance
-  policy) I have kept minimal here; the D3.0 umbrella carries it.
+  detection suites, RAG filters, ensembles) are engineering work. There
+  is a governance overlay (approval authority, provenance policy) I have
+  kept minimal here; the D3.0 umbrella carries it.
 
   Confidence medium because the adversarial ML defence landscape is
   fast-moving — specific techniques (spectral signatures, activation
@@ -222,10 +229,9 @@ review_notes: >
   against current research before committing to them in live
   deployments.
 
-  Cross-suite hypothesis (not added as cross_reference): D2
-  (Robustness) likely carries adversarial testing patterns that
-  overlap. D5 (Transparency) may have patterns for model provenance
-  disclosure.
+  Cross-suite hypothesis (not added as cross_reference): D2 (Robustness)
+  likely carries adversarial testing patterns that overlap. D5
+  (Transparency) may have patterns for model provenance disclosure.
 
 drafted_by: claude-opus-4.7-subagent-D3
 drafted_at: 2026-04-16

@@ -128,7 +128,7 @@ evidence_production:
 
     '
 confidence: medium
-needs_human_review: true
+review_status: generated_draft
 review_notes: 'Process patterns age into SOPs; what matters is that the escalation path is real (staffed,
   fast, auditable) rather than nominal. SLAs and reviewer-pool sizing are deployment-specific. Cross-suite:
   D8 (Human Oversight) — direct overlap; consolidation should wire this subgoal into the D8 framework

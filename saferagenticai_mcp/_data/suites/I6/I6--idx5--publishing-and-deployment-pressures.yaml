@@ -118,19 +118,19 @@ evidence_production:
 
     '
 confidence: medium
-needs_human_review: true
+review_status: generated_draft
 review_notes: "Process is well-established in SRE/security cultures; the framework- specific sharpenings\
   \ worth preserving:\n  (1) The ombudsperson is external or at least structurally\n      independent\
   \ of product/commercial leadership. Internal-only\n      channels fail the subgoal under pressure.\n\
   \  (2) SFR-b is not normative in the input JSON — whistleblower\n      protection is soft-asked. The\
   \ pattern treats it as core anyway\n      because SFR-a (safety-first culture) cannot be evidenced\n\
-  \      without protected reporting. Nell may want to adjust.\n  (3) The Override Register (I6.idx0)\
-  \ is the cross-check: if the\n      deploy-gate is being bypassed, the register should show it.\n  \
-  \    If the register is empty but people report bypasses to the\n      ombudsperson, the register is\
-  \ being bypassed — which is a\n      more serious failure than the original bypass.\nCross-suite:\n\
-  \  (1) D7 Sustained Safety Culture owns safety culture broadly; I6.5\n      specializes it to deployment-pressure.\
-  \ The pre-deployment\n      risk review in D7.2 is the same artifact.\n  (2) D9 Governance owns the\
-  \ ombudsperson role; I6.5 adds the\n      specifically-competitive-pressure use case.\n"
+  \      without protected reporting.\n  (3) The Override Register (I6.idx0) is the cross-check: if the\n\
+  \      deploy-gate is being bypassed, the register should show it.\n      If the register is empty but\
+  \ people report bypasses to the\n      ombudsperson, the register is being bypassed — which is a\n \
+  \     more serious failure than the original bypass.\nCross-suite:\n  (1) D7 Sustained Safety Culture\
+  \ owns safety culture broadly; I6.5\n      specializes it to deployment-pressure. The pre-deployment\n\
+  \      risk review in D7.2 is the same artifact.\n  (2) D9 Governance owns the ombudsperson role; I6.5\
+  \ adds the\n      specifically-competitive-pressure use case.\n"
 version_compat:
   framework_version_min: '1.0'
   framework_version_max: 1.x

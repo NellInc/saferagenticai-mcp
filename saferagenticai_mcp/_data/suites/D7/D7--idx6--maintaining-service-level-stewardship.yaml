@@ -134,7 +134,7 @@ evidence_production:
 
     '
 confidence: medium
-needs_human_review: true
+review_status: generated_draft
 review_notes: 'The subgoal description flags an unusual consideration: open-source / federated deployments
   where "nominal duty holders may be unclear." Added an explicit Duty-Holder Charter as a process element
   because this is a live problem (LLM fine-tunes forked downstream, agent frameworks maintained as weekends-hobby

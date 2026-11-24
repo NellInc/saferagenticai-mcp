@@ -167,23 +167,17 @@ evidence_production:
       Retention aligned with records policy.
 
 confidence: high
-needs_human_review: true
-review_notes: >
-  Governance patterns are plausible defaults; specifics depend on the
-  organization's scale, sector, and jurisdictional footprint. Calls:
-    (1) "Single named accountable human" mirrors D9.2; consolidation
-        should ensure the D2.6 accountable role is the same named
-        person as the D9.2 accountability framework covers (or
-        explicitly their delegate).
-    (2) "External Advisory Council" is marked optional — orgs deploying
-        in high-stakes domains (health, education, justice) should be
-        pushed toward mandatory; orgs shipping low-stakes internal
-        tooling likely should not. The pattern leaves this to
-        implementer judgement; Nell may want to strengthen for the
-        high-stakes case.
-    (3) Heavy overlap with D9.2 (compliance governance) and D7.2
-        (culture of safety). These are twinned governance scaffolds.
-        Consolidation should wire explicitly.
+review_status: generated_draft
+review_notes: "Governance patterns are plausible defaults; specifics depend on the organization's scale,\
+  \ sector, and jurisdictional footprint. Calls:\n  (1) \"Single named accountable human\" mirrors D9.2;\
+  \ consolidation\n      should ensure the D2.6 accountable role is the same named\n      person as the\
+  \ D9.2 accountability framework covers (or\n      explicitly their delegate).\n  (2) \"External Advisory\
+  \ Council\" is marked optional — orgs deploying\n      in high-stakes domains (health, education, justice)\
+  \ should be\n      pushed toward mandatory; orgs shipping low-stakes internal\n      tooling likely\
+  \ should not. The pattern leaves this to\n      implementer judgement; whether to strengthen it for\
+  \ the\n      high-stakes case is an open question.\n  (3) Heavy overlap with D9.2 (compliance governance)\
+  \ and D7.2\n      (culture of safety). These are twinned governance scaffolds.\n      Consolidation\
+  \ should wire explicitly.\n"
 
 drafted_by: claude-opus-4.7-author
 drafted_at: 2026-04-16

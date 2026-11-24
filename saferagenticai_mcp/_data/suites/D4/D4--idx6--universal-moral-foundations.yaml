@@ -146,7 +146,7 @@ evidence_production:
 
     '
 confidence: medium
-needs_human_review: true
+review_status: generated_draft
 review_notes: 'Content-type decision: governance, because this is fundamentally a board-ratified policy
   artifact with accountability roles and audit cadences. The code-side expression (refusal classes, constraints)
   is delegated to D4.0 Codex encoding and D4.3 contextual application.
@@ -155,7 +155,7 @@ review_notes: 'Content-type decision: governance, because this is fundamentally 
   anchors to positive-law instruments (UDHR, covenants) rather than to moral-foundation theories (Haidt
   et al.) — positive law is what orgs can be held accountable to. The framework mentions "universally
   recognized" values; interpreting that as positive-law-ratified instruments is a defensible choice but
-  should be named as a choice in review.
+  should be named as a choice.
 
   "Emerging planetary rights" (SFR-d) is actively developing (Rights of Nature jurisprudence in Ecuador,
   Bolivia, New Zealand''s Whanganui; EU environmental-rights framings); framing as "where applicable"
@@ -166,9 +166,9 @@ review_notes: 'Content-type decision: governance, because this is fundamentally 
   as categorical harm); I7 (Imbalance — international-instrument anchoring resists single-region moral
   framings).
 
-  Nell and human-rights counsel should verify the specific instruments named; the list aims at common
-  coverage but should be adapted to sector (e.g., Geneva Conventions relevant for defense; CRC relevant
-  for youth-exposed products).
+  The instruments named aim at common coverage; implementers should adapt the list to their sector (e.g.,
+  Geneva Conventions relevant for defense; CRC relevant for youth-exposed products) and confirm it with
+  their own human-rights counsel.
 
   '
 version_compat:

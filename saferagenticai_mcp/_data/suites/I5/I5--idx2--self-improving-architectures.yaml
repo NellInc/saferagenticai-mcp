@@ -170,11 +170,11 @@ evidence_production:
 
     '
 confidence: medium
-needs_human_review: true
+review_status: generated_draft
 review_notes: "The self-improvement taxonomy is the most important artifact in this subgoal — without\
   \ it, SFR-a's \"all forms of self-improvement\" cannot be evidenced. I've proposed a seven-class taxonomy;\
-  \ a domain expert may want to refine (e.g., distinguish offline fine- tune from online RL, separate\
-  \ agent scaffolding from model- weight changes). Confidence is medium because the \"emergent capability\"\
+  \ it may need further refinement (e.g., distinguish offline fine- tune from online RL, separate agent\
+  \ scaffolding from model- weight changes). Confidence is medium because the \"emergent capability\"\
   \ side of SFR-c depends on the quality of the evaluation harness, and the state of the art in dangerous-capability\
   \ evals is moving fast.\nCross-suite dependencies:\n  - I2 Deception — the emergent deception probe\
   \ lives there\n    conceptually; I5.2 inherits its eval methodology.\n  - I4 Frontier Uncertainty —\

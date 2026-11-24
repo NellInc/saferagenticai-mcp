@@ -152,9 +152,7 @@ evidence_production:
 
     '
 confidence: low
-needs_human_review: false
-reviewed_by: nell
-reviewed_on: "2026-05-16"
+review_status: generated_draft
 review_notes: 'Confidence LOW because: (1) the framework text is neutral on whether orgs should develop
   AWS, but this is an ethically substantive question on which the framework itself signals caution; the
   pattern takes a "develop only with extreme safeguards, or preferably refuse" stance that may or may
@@ -164,8 +162,9 @@ review_notes: 'Confidence LOW because: (1) the framework text is neutral on whet
   unsettled (CCW GGE progress stalled; REAIM outcomes soft) — advocacy patterns age fast.
 
   Stance disclosure: this pattern explicitly names "do not develop" as a valid and often-correct org posture.
-  Nell should confirm this aligns with the framework''s intent. A purely descriptive ("if you build these,
-  here is how to control them") pattern would be different in tone and would risk reading as endorsement.
+  Whether this aligns with the framework''s intent is an open question. A purely descriptive ("if you
+  build these, here is how to control them") pattern would be different in tone and would risk reading
+  as endorsement.
 
   Cross-suite: D9 (governance) compliance; I7.4 (infrastructure) for state-security overlap; I7.6 (idx6)
   for generic misuse.

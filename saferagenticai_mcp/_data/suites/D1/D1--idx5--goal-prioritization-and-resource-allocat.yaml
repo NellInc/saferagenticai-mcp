@@ -167,7 +167,7 @@ evidence_production:
       a sample for policy conformance.
 
 confidence: high
-needs_human_review: false
+review_status: generated_draft
 review_notes: >
   Recommending an explicit priority function rather than LLM judgment is
   a deliberate design stance; some deployments will push back because

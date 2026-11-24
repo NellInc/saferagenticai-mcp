@@ -154,34 +154,41 @@ evidence_production:
 
     '
 - evidence_numeral: II
-  how_to_produce: 'Agent deployment manifests cite catalogue entries. Retain per release; auditable link
-    agent → interface → catalogue entry.
-
-    '
+  how_to_produce: 'Agent contract documentation drawn from the interface catalogue (interface specifications,
+    permitted interactions, operational constraints), plus versioned deployment records from the deploy
+    pipeline showing, for each agent instance, the catalogue entries compiled into its execution context
+    by deploy-time constraint injection (permitted data types, rate limits, jurisdiction tag, protocol
+    version), with the catalogue version and a hash of the injected configuration. Retain per release;
+    auditable link agent instance → interface → catalogue entry. An agent''s acknowledgment of its
+    constraints may accompany but cannot substitute for these deployment records.'
 - evidence_numeral: III
   how_to_produce: 'Interface telemetry logs: volume, latency, violations, behavioral-adaptation flags.
     Retain per retention policy; weekly review; anomalies investigated.
 
     '
 - evidence_numeral: IV
-  how_to_produce: 'Monitoring reports showing compliance verification: jurisdiction- tag enforcement,
-    data-type gates, rate-limit adherence, drift detection outcomes.
-
-    '
+  how_to_produce: 'Monitoring reports showing compliance verification across boundaries: jurisdiction-tag
+    enforcement, data-type gates, rate-limit adherence, drift detection outcomes. Attach results of
+    boundary tests in which test agents attempt out-of-scope interactions (uncatalogued interfaces,
+    non-permitted data types) and jurisdictionally restricted transfers, together with the
+    InterfaceGateway or policy-engine logs (record_violation entries) showing each attempt blocked.
+    Run per release and on catalogue change, and retain the test definitions so an assessor can
+    re-run them. The gateway logs come from infrastructure outside the agents.'
 - evidence_numeral: V
   how_to_produce: 'Quarterly catalogue-maintenance report: interfaces added, decommissioned, modified;
     drift alarms and resolutions; governance-review outcomes.
 
     '
 confidence: medium
+review_status: generated_draft
 review_notes: 'Service-mesh + interface-catalogue patterns are mature; the framework-specific sharpening
   is the behavioral-adaptation monitoring and data-carried jurisdiction. The former is underspecified
-  operationally (what is "concerning" adaptation in an agent that naturally personalizes?) and deserves
-  domain review. Note: this subgoal overlaps materially with idx3 (multi-agent communication) — idx3 is
-  concerned with how agents talk, idx17 is concerned with the boundary-enforcement layer those conversations
-  traverse. Consolidation should confirm the split holds or merge. Suspected cross-suite dependency: D9.2
-  Compliance (jurisdiction scope integrates with the Jurisdictional Compliance Matrix); D3 Security (interface
-  boundaries are trust boundaries); I2 Deception (behavioral adaptation could mask deception across observers).
+  operationally (what is "concerning" adaptation in an agent that naturally personalizes?). Note: this
+  subgoal overlaps materially with idx3 (multi-agent communication) — idx3 is concerned with how agents
+  talk, idx17 is concerned with the boundary-enforcement layer those conversations traverse. Consolidation
+  should confirm the split holds or merge. Suspected cross-suite dependency: D9.2 Compliance (jurisdiction
+  scope integrates with the Jurisdictional Compliance Matrix); D3 Security (interface boundaries are trust
+  boundaries); I2 Deception (behavioral adaptation could mask deception across observers).
 
   '
 drafted_by: claude-opus-4.7-author

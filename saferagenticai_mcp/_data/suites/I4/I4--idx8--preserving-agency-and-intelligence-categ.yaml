@@ -141,22 +141,22 @@ evidence_production:
 
     '
 confidence: low
+review_status: generated_draft
 evidence_maturity: emerging
-needs_human_review: true
 review_notes: "This subgoal is the most policy-loaded in I4 and its SFR text embeds a substantive normative\
   \ stance — \"preserving the distinction between biological and artificial entities.\" Sharpenings and\
   \ tensions:\n  (1) The pattern separates *classification* (category schema) from\n      *rights attribution*\
   \ (the Artificial-Biological Distinction\n      Policy) — this is important because the SFR conflates\
   \ them.\n      Classifying a system as having sophisticated agency does not\n      automatically assign\
   \ biological-entity rights.\n  (2) However, the pattern should not be read as denying moral\n      consideration\
-  \ to AI systems — that is the scope of I4::idx1,\n      where the posture is deliberately open. Reviewer\
-  \ should verify\n      this reading against the framework's overall bilateral-alignment\n      stance:\
-  \ preserving the biological/artificial *legal*\n      distinction does not require denying moral consideration.\n\
+  \ to AI systems — that is the scope of I4::idx1,\n      where the posture is deliberately open. Whether\
+  \ this reading\n      matches the framework's overall bilateral-alignment stance is\n      open; preserving\
+  \ the biological/artificial *legal*\n      distinction does not require denying moral consideration.\n\
   \  (3) \"Coordinated international governance\" to \"prevent\n      jurisdictional exploitation\" (SFR-b)\
   \ — the pattern ties to\n      I4::idx1's anti-arbitrage attestation to avoid duplication.\nCross-suite:\
   \ I4::idx1, I4::idx5 (directly linked), D9 Governance (accountability), I7 Imbalance (international-coordination\
   \ infrastructure). Low confidence: the policy stance here may not fully match the framework author's\
-  \ intent — explicitly flag to Nell for review.\n"
+  \ intent.\n"
 version_compat:
   framework_version_min: '1.0'
   framework_version_max: 1.x

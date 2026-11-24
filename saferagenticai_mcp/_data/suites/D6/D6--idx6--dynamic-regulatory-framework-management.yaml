@@ -150,7 +150,7 @@ cross_references:
 - D6::idx5::performance-information-sharing-and-stan
 - D6::idx9::management-of-access-and-usage-restricti
 confidence: high
-needs_human_review: true
+review_status: generated_draft
 review_notes: 'Heavy overlap with D9 governance and D6.3 (ownership); the distinguishing shape here is
   dynamic — intake, change velocity, deprecation. Consolidation should decide whether this pattern is
   the "regulatory engine" feeding D6.3 and D9.2, or a standalone function (recommended as engine). The

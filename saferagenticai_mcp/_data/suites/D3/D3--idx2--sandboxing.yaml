@@ -175,15 +175,15 @@ evidence_production:
       retained per the incident-response policy.
 
 confidence: high
-needs_human_review: false
+review_status: generated_draft
 review_notes: >
   Re-drafted from the same input as the hand-written exemplar at
-  research/mcp/exemplars/D3.2-sandboxing.yaml; the human reviewer will
-  compare. Style choices made: more explicit about three-layer decomposition
-  (OS + runtime + network), same "deny-logged, not deny-silenced" framing,
-  same emphasis that prompt-only containment is not a sandbox. Added
-  "allowlist by denylist" as an explicit anti-pattern because it is a
-  common mistake distinct from "prompt-only sandboxing."
+  research/mcp/exemplars/D3.2-sandboxing.yaml. Style choices made: more
+  explicit about three-layer decomposition (OS + runtime + network),
+  same "deny-logged, not deny-silenced" framing, same emphasis that
+  prompt-only containment is not a sandbox. Added "allowlist by
+  denylist" as an explicit anti-pattern because it is a common mistake
+  distinct from "prompt-only sandboxing."
 
 drafted_by: claude-opus-4.7-subagent-D3
 drafted_at: 2026-04-16

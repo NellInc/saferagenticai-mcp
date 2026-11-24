@@ -117,7 +117,7 @@ evidence_production:
 
     '
 confidence: high
-needs_human_review: false
+review_status: generated_draft
 review_notes: 'High confidence on the process shape — this is tech-writing discipline applied to AAI documentation.
   The harder problem is that AAI documentation has unusual properties: the system itself changes faster
   than traditional software docs assume, and emergent behavior means documentation can age rapidly even

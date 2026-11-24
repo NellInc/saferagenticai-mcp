@@ -138,8 +138,8 @@ evidence_production:
 
     '
 confidence: low
+review_status: generated_draft
 evidence_maturity: established
-needs_human_review: true
 review_notes: "Training-data quality management is well-trodden territory in ML ops, but the framework's\
   \ I4 framing sharpens it with frontier- uncertainty specifics. Sharpenings:\n  (1) \"Frontier uncertainty\"\
   \ framing — we do not reliably know how\n      training-data choices propagate into emergent capabilities.\n\
@@ -147,11 +147,12 @@ review_notes: "Training-data quality management is well-trodden territory in ML 
   \ control.\n  (2) Positive-trait curation is SFR-a-specific and often skipped in\n      favor of harm-filtering.\
   \ Pattern treats both as primary.\n  (3) Worker-welfare review for human reviewers — the framework's\n\
   \      SFRs do not mention this directly, but no data-curation\n      process involving manual review\
-  \ of harmful content is\n      ethically complete without it. Flagged for reviewer: should\n      this\
-  \ pattern own worker-welfare here, or point to another\n      suite?\n  (4) Data provenance and consent\
-  \ — overlaps with D4 Privacy / data\n      ethics suites (consolidation may need to wire this).\nCross-suite:\
-  \ D2 Behavioural Alignment (trait promotion overlaps), D4 Privacy (data provenance, consent), D5 Ethical\
-  \ Action (bias consequences), I2 Deception (training-data artifacts can induce deception behaviors).\n"
+  \ of harmful content is\n      ethically complete without it. Whether this pattern should\n      own\
+  \ worker-welfare here, or point to another suite, is an\n      open question.\n  (4) Data provenance\
+  \ and consent — overlaps with D4 Privacy / data\n      ethics suites (consolidation may need to wire\
+  \ this).\nCross-suite: D2 Behavioural Alignment (trait promotion overlaps), D4 Privacy (data provenance,\
+  \ consent), D5 Ethical Action (bias consequences), I2 Deception (training-data artifacts can induce\
+  \ deception behaviors).\n"
 version_compat:
   framework_version_min: '1.0'
   framework_version_max: 1.x

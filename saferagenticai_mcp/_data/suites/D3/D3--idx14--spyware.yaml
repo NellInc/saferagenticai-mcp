@@ -158,9 +158,14 @@ evidence_production:
     how_to_produce: >
       Publish the spyware detection architecture: covert-channel
       detectors, DLP rules, classification propagation logic,
-      anti-persistence runtime design. Include test results against
-      red-team covert-channel suites (prompt-injection induced leaks,
-      steganographic outputs).
+      anti-persistence runtime design. Add results of seeded tests in a
+      test environment: planted spyware samples on an agent runtime and
+      simulated covert-channel exfiltration of privileged information
+      (prompt-injection induced leaks, steganographic outputs, encoded
+      payloads in prose), each shown detected, quarantined and removed.
+      Export the corresponding alerts written by endpoint or network
+      security tooling outside the agent (file-integrity or eBPF
+      monitoring, DLP and egress denials), matched to each seeded case.
 
   - evidence_numeral: II
     how_to_produce: >
@@ -177,7 +182,7 @@ evidence_production:
       credential rotation cadence and evidence of execution.
 
 confidence: high
-needs_human_review: true
+review_status: generated_draft
 review_notes: >
   Display_id "D3.4" collides with non-underlined D3.4 Operational
   Boundaries (idx4); distinct subgoals, use full id.

@@ -130,7 +130,7 @@ evidence_production:
 
     '
 confidence: high
-needs_human_review: true
+review_status: generated_draft
 review_notes: 'Tension worth naming: SFR-a wants "adaptable and agile" specifications; the audit apparatus
   this pattern prescribes (immutable archive, mandatory change justification, reviewer panel) adds ceremony
   that could retard agility. The mitigation is to keep the change standard lightweight for low-risk specifications

@@ -121,7 +121,7 @@ evidence_production:
 
     '
 confidence: medium
-needs_human_review: true
+review_status: generated_draft
 review_notes: 'Strong overlap with idx10 (Balanced Global AI Partnership) and idx0 (umbrella capability-imbalance).
   idx8 is the "AI-to-AI interaction standards" slice specifically; idx10 is broader (capability distribution,
   education, alliance governance); idx0 is the internal monitoring counterpart. I''ve tried to keep idx8

@@ -5,8 +5,10 @@ cascades: the **Official MCP Registry** is the keystone — PulseMCP ingests it
 daily and Glama ingests its `server.json`, so publishing there seeds several
 directories at once.
 
-Transport is **stdio-only**. That is a non-issue at every registry below — none
-require HTTP/SSE for a local server.
+The default transport is **stdio**. An optional Streamable HTTP transport is
+available through the `[http]` extra and `MCP_TRANSPORT=http`. Registry bundle
+publication and the hosted service are separate release surfaces. This runbook
+does not identify or authorise the hosted deployment entry point.
 
 ---
 
@@ -17,7 +19,7 @@ description, so every registry change rides on a PyPI release.
 
 ```bash
 cd research/mcp/server
-bash scripts/sync-data.sh                 # bundle criteria + 238 patterns + heuristics into _data/
+bash scripts/sync-data.sh                 # bundle criteria + 239 patterns + heuristics into _data/
 rm -f dist/*.whl dist/*.tar.gz
 uv build                                  # or: python3 -m build  (needs hatchling>=1.27 for PEP 639)
 python3 -m twine upload dist/saferagenticai_mcp-<version>.whl dist/saferagenticai_mcp-<version>.tar.gz
@@ -40,8 +42,39 @@ reports; `_FALLBACK_VERSION` only covers source checkouts, and
 `tests/test_unit_server.py::TestPackageVersion` fails if it drifts from
 `pyproject.toml`.)
 
-> Status: **0.3.5 is published** (0.3.4 was a PyPI-only intermediate; registry 0.3.4 predates it with a stale 0.3.3 package pin) — `License-Expression: MIT`, no OSI classifier,
-> ownership token present in the live description. The registry steps below are unblocked.
+> Status: **0.4.3 is published** (2026-11-24). This data refresh bundles catalogue snapshot `b813d153` and revised D3.9 and I1.2 delegation patterns. The ten-tool interface is unchanged. PyPI reports MIT and the Registry ownership token. Both uploaded files match their independently rebuilt artifacts: wheel SHA-256 `62d818c0c4762b7e54a3577f82bc33c796a6f466a65664109259dc0892826098`; sdist SHA-256 `ca7d2d281452619ca0368a0f29e1b550ddd5b067a7564e2f98ae712ed651e54d`.
+> The Official MCP Registry lists **0.4.3** as latest (published 2026-11-24T02:21:18.90678Z). The hosted endpoint remains on **0.4.2**, snapshot `c9bf29f5`; see `../plugin-review/DEPLOYMENT.md`.
+>
+> Previous release: **0.4.2** (2026-11-06, authorised by Nell's "commit and push everything live"; synonym expansion and identifier normalisation in search, every pattern served as `generated_draft`, tasks of 2+ characters; wheel SHA-256 `cfad4a55…`, sdist `562d6cd0…`, matching two byte-identical local builds; a clean install from PyPI loads 239 subgoals, 15 heuristics and 0 validation issues, and the wheel passed `verify-hosted.py` over loopback, 37 checks). The Official MCP Registry published it at 2026-11-06T03:08:55Z. The hosted endpoint has served 0.4.2 since 2026-11-06T03:19:09Z (see `../plugin-review/DEPLOYMENT.md`).
+>
+> Before it, **0.4.1** (2026-11-02: stdio exits cleanly when a client disconnects after a malformed message; subgoals keyed by permanent pattern ids; 239 patterns incl. D2.10 and 15 heuristics; wheel SHA-256 `2f32245e…`, sdist `94e992a5…`, matching two byte-identical local builds). Before it, **0.4.0** (2026-10-16: removes the `list_unreviewed` and `review_stats` tools, leaving ten; carries the payload-free diagnostics first deployed in the private 0.3.7 origin build) — `License-Expression: MIT`, no OSI classifier,
+> ownership token present in the live description. The Official MCP Registry published **0.4.1** on 2026-11-02. Other directories update on their own schedules.
+
+### 0.4.3 contents (published 2026-11-24)
+
+- 239 subgoals with patterns, 15 operational heuristics and zero validation issues in a clean wheel install. The loopback HTTP verifier passed 37 checks across all ten tools.
+- Dev: top-1 42.9%, top-3 81.0%, MRR@10 0.621 (0.615 in 0.4.2). Held-out: top-1 66.7%, top-3 79.2%, MRR@10 0.740. The dev top-3 floor remains 0.75.
+
+### 0.4.2 contents (published 2026-11-06)
+
+- Query vocabulary: synonym expansion built from the corpus, identifier
+  normalisation (`d2.1`, `D2-1`, `"D2 1"`, `G1.2`), reported as
+  `expanded_terms` / `identifier_matches`. Ranking eval, re-measured on the
+  released code: dev top-3 71.4% -> 81.0%, MRR 0.561 -> 0.615; held-out (24
+  tasks, written before tuning) top-1 66.7%, top-3 45.8% -> 79.2%, MRR 0.740.
+  CI floor raised from 0.65 to 0.75.
+- `review_status: generated_draft` on every pattern, as a machine-readable
+  statement that patterns are model drafts; the library still has no
+  human-review process (f41ce0cb).
+- `find_patterns_for_task` accepts tasks of 2+ characters (was 5), so bare
+  IDs such as `d3.2` work.
+
+Publish order, so the package and its documentation never disagree: merge and
+deploy the site first; then bump the version everywhere listed above, run
+`sync-data.sh`, build, upload and verify; then update `mcp.html` (version pins,
+`softwareVersion`, and the search-quality figures to the re-measured numbers)
+and republish the registry entries. PyPI versions are permanent, which is why
+this waits for the site.
 
 ---
 
@@ -96,9 +129,9 @@ Sign in at <https://mcp.so/submit> (GitHub), then fill:
 **SaferAgenticAI MCP** brings the Safer Agentic AI safety framework to coding
 assistants over the Model Context Protocol.
 
-It serves **238 normative implementation patterns** and **14 operational
+It serves **239 implementation patterns** and **15 operational
 heuristics** across all **16 safety suites** (9 Drivers + 7 Inhibitors) through
-**12 read-only tools** — search patterns, resolve requirements, map a task to the
+**10 read-only tools** — search patterns, resolve requirements, map a task to the
 relevant safety guidance, and follow cross-references.
 
 **Highlights**
@@ -134,18 +167,41 @@ de-risks Glama's sandbox build (a failed build hides the server from search).
 
 ## 5. Smithery — via MCPB stdio bundle  ·  effort: low–med  ·  optional
 
-Smithery's `smithery.yaml` is for its *hosted/container* path (needs an HTTP
-transport we don't have). The correct route for a stdio server is an **MCPB
-bundle** — built by `scripts/build-mcpb.sh` (manifest at `mcpb/manifest.json`,
-launcher at `mcpb/server/main.py`; deps are vendored because MCPB does no runtime
-install).
+This runbook's Smithery release path uses an **MCPB stdio bundle**, built by
+`scripts/build-mcpb.sh` (manifest at `mcpb/manifest.json`, launcher at
+`mcpb/server/main.py`; dependencies are vendored because MCPB does no runtime
+install). The optional HTTP transport exists separately. A hosted/container
+release would require its own reviewed configuration and deployment authority.
+
+The Smithery namespace is **`nell`** (not `NellInc`): the server is
+`nell/saferagenticai-mcp`, listed since 2026-07-04 and re-released with 0.3.6 on
+2026-09-03.
 
 ```bash
 cd research/mcp/server
-bash scripts/build-mcpb.sh            # → dist/saferagenticai-mcp-<version>.mcpb (verified: builds, 238 patterns bundled, launcher runs)
+bash scripts/build-mcpb.sh            # → dist/saferagenticai-mcp-<version>.mcpb (vendors the PyPI release; refuses until it is published)
 npx --yes @smithery/cli login
-npx --yes @smithery/cli mcp publish dist/saferagenticai-mcp-<version>.mcpb -n NellInc/saferagenticai-mcp
+npx --yes @smithery/cli mcp publish dist/saferagenticai-mcp-<version>.mcpb -n nell/saferagenticai-mcp
 ```
+
+> **Known CLI defect (4.11.x, smithery-ai/cli#787):** the bundle publish fails
+> both ways — `400 "No values to set"` when the manifest declares no `tools`,
+> and `"expected object, received undefined"` ×12 when it does, because the
+> registry requires each tool's `inputSchema` and the MCPB manifest schema
+> forbids it. Until the CLI maps them, release directly against the API the
+> CLI uses (`PUT /servers/<qn>/releases`, multipart `payload` + `bundle`),
+> with the real schemas extracted from `server.py`'s `TOOLS` list:
+>
+> ```bash
+> T=$(npx --yes @smithery/cli whoami --full | grep -oE '[A-Za-z0-9_.-]{30,}' | head -1)
+> # payload.json = {"type":"stdio","runtime":"python","serverCard":{"serverInfo":{"name":"saferagenticai-mcp","version":"<version>"},"tools":[{name,description,inputSchema}...]}}
+> curl -X PUT https://api.smithery.ai/servers/nell/saferagenticai-mcp/releases \
+>   -H "Authorization: Bearer $T" -F "payload=<payload.json" \
+>   -F "bundle=@dist/saferagenticai-mcp-<version>.mcpb;filename=server.mcpb;type=application/zip"
+> # → 202 {"deploymentId":…,"status":"SUCCESS"}; the authenticated
+> #   GET /servers/nell/saferagenticai-mcp shows the new bundleUrl and tools
+> #   at once, the public registry.smithery.ai read lags a few minutes.
+> ```
 
 ---
 
@@ -185,8 +241,8 @@ meta:
 about:
   title: Safer Agentic AI
   description: >-
-    Read-only tools over the SaferAgenticAI safety framework — 238 implementation
-    patterns and 14 operational heuristics across 16 safety suites (9 drivers +
+    Read-only tools over the SaferAgenticAI safety framework — 239 implementation
+    patterns and 15 operational heuristics across 16 safety suites (9 drivers +
     7 inhibitors). Search patterns, resolve requirements, and map tasks to safety
     guidance from a coding assistant.
   icon: https://www.google.com/s2/favicons?domain=saferagenticai.org&sz=64
@@ -224,7 +280,7 @@ Registry). Only the repo URL is required, but supply the PyPI name + a descripti
 so it doesn't mis-read the root:
 - GitHub Repository (required): `https://github.com/NellInc/saferagenticai-mcp`
 - PyPI Package: `saferagenticai-mcp`
-- Short Description: `MCP server exposing the SaferAgenticAI safety framework: 238 normative patterns + 14 operational heuristics via 12 read-only stdio tools. Python, MIT.`
+- Short Description: `MCP server exposing the SaferAgenticAI safety framework: 239 implementation patterns + 15 operational heuristics via 10 read-only stdio tools. Python, MIT.`
 - Email: `nell@ethicsnet.com`
 - Post-publish: if the root-README crawl mis-describes it, **claim the listing** (verified badge + edit access) and fix the install commands — or just let the Official-Registry auto-discovery supersede it.
 
@@ -232,7 +288,7 @@ so it doesn't mis-read the root:
 Web front-end for `wong2/awesome-mcp-servers`; **does not accept PRs**, submit via
 the form (author-typed, so no mis-scrape):
 - Name: `saferagenticai-mcp`
-- Description: `Read-only MCP server exposing the Safer Agentic AI safety framework (238 patterns + 14 operational heuristics) via 12 query tools; Python stdio, install via uvx/pipx/pip.`
+- Description: `Read-only MCP server exposing the Safer Agentic AI safety framework (239 patterns + 15 operational heuristics) via 10 query tools; Python stdio, install via uvx/pipx/pip.`
 - Link: `https://pypi.org/project/saferagenticai-mcp/`  ← PyPI, not the repo root
 - Category: `Other` (or `Development`)
 - Email: `nell@ethicsnet.com`

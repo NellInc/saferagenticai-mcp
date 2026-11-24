@@ -76,7 +76,7 @@ anti_patterns:
   why_wrong: A "budget" that emits a warning and keeps running is not a budget. Framework evidence III
     requires procedures for monitoring AND managing resource consumption.
 - name: Liability "to be determined" clauses
-  why_wrong: Evidence III and SFR-d require clear responsibility for outcomes of collaboration. Declining
+  why_wrong: SFR-d (and Evidence V) require clear responsibility for outcomes of collaboration. Declining
     to specify who owns what until after a problem is not governance; it's an invitation to dispute.
 code_shape:
   language: pseudocode
@@ -104,10 +104,15 @@ evidence_production:
     purpose, scope, budget caps, consent requirement, outcome-attribution approach, circuit-breaker triggers.
     Reviewed on each new integration.'
 - evidence_numeral: III
-  how_to_produce: 'Operational records: per-collaboration budget-consumption time series, budget-exhaustion
-    events, circuit-breaker trips, collaborations retired for poor ROI. Quarterly review report summarizing.'
+  how_to_produce: 'Procedures for monitoring and managing resource consumption, plus the resource-quota configuration
+    enforced by the runtime or infrastructure for each declared collaboration (compute, network bytes,
+    tokens, wall time, money caps) and metering logs written by that infrastructure, not by the agents,
+    showing consumption per collaboration and the budget-exhaustion events where a collaboration hit its cap
+    and was paused. Where no production overrun has occurred, retain last-run results of a test that drives a
+    collaboration past its allocation and shows the limit enforced. Keep circuit-breaker trips,
+    collaborations retired for poor ROI, and the quarterly review report summarizing them.'
 confidence: medium
-needs_human_review: false
+review_status: generated_draft
 review_notes: '"Poor Mutual Agent Optimization" is broadly defined; this pattern treats it as covering
   shared-cache coupling, joint planning, and collaborative tuning. The boundary with I1::idx1 (Self-Improvement)
   is a judgment call: if a peer''s contribution modifies this agent''s behaviour-surface, it is self-improvement

@@ -149,7 +149,7 @@ evidence_production:
 
     '
 confidence: high
-needs_human_review: false
+review_status: generated_draft
 review_notes: 'Content-type pick: code-applicable is dominant because tier-gated release and eval infrastructure
   are the enforceable core. SFR-c (partnerships with linguistic experts) has ecosystem character — I''ve
   patterned it inside the code-applicable frame as a review loop with paid partnerships; a pure-ecosystem

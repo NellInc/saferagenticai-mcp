@@ -157,7 +157,7 @@ evidence_production:
 
     '
 confidence: high
-needs_human_review: false
+review_status: generated_draft
 review_notes: 'Updated for v1.3 catalog revision: SFR-a no longer prescribes 2σ / 5 % / 10 % — the
   organization defines, justifies, and documents its own drift metrics, baselines, thresholds, and
   escalation tiers, and must demonstrate via alert configurations and escalation logs that they fire

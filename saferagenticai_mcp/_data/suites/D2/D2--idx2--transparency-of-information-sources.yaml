@@ -178,21 +178,15 @@ evidence_production:
       requests. Portal access logs retained; access denials justified.
 
 confidence: high
-needs_human_review: false
-review_notes: >
-  High-confidence: the BOM triad is established practice in supply-chain
-  security and is being extended to data and models (NIST AI RMF, EU AI
-  Act Annex IV, NTIA guidance). Open questions left to implementers:
-    (1) Full public DBOM is often blocked by commercial licences; the
-        redacted-manifest + attested-summary pattern is the usual
-        compromise — flagging in case Nell or Ali prefer a stronger
-        default.
-    (2) "Content-addressed provenance" for very large web crawls is
-        operationally non-trivial; a snapshot-level hash plus a
-        filter-recipe hash is the practical minimum.
-  Cross-suite: strong overlap with D9.2 (compliance — licence
-  obligations), D5 (transparency — user-facing disclosure). Consolidation
-  to wire.
+review_status: generated_draft
+review_notes: "High-confidence: the BOM triad is established practice in supply-chain security and is\
+  \ being extended to data and models (NIST AI RMF, EU AI Act Annex IV, NTIA guidance). Open questions\
+  \ left to implementers:\n  (1) Full public DBOM is often blocked by commercial licences; the\n     \
+  \ redacted-manifest + attested-summary pattern is the usual\n      compromise — implementers may prefer\
+  \ a stronger default.\n  (2) \"Content-addressed provenance\" for very large web crawls is\n      operationally\
+  \ non-trivial; a snapshot-level hash plus a\n      filter-recipe hash is the practical minimum.\nCross-suite:\
+  \ strong overlap with D9.2 (compliance — licence obligations), D5 (transparency — user-facing disclosure).\
+  \ Consolidation to wire.\n"
 
 drafted_by: claude-opus-4.7-author
 drafted_at: 2026-04-16

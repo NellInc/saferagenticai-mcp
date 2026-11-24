@@ -29,9 +29,10 @@ normative_anchors:
   - IV
   - V
   - VI
-  sfrs_not_addressed: []
+  sfrs_not_addressed: [f]
   evidence_not_addressed:
   - VII
+  - VIII
 design_patterns:
 - name: Two-path shutdown (graceful + emergency)
   sketch: 'Graceful path: `drain()` stops taking new work, allows in-flight tasks to finish or checkpoint,
@@ -136,11 +137,13 @@ code_shape:
     '
 evidence_production:
 - evidence_numeral: I
-  how_to_produce: 'Controlled-shutdown runbook (document) + shutdown test suite (code) that exercises
-    graceful path, state log correctness, resource release. CI runs tests each release; artifacts retained
-    per release with sign-off by on-call lead.
-
-    '
+  how_to_produce: 'Controlled-shutdown runbook (document) plus shutdown test suite (code) exercising the graceful path,
+    state log correctness and resource release; CI runs the tests each release, with artifacts retained
+    per release and sign-off by the on-call lead. In addition, retain the state logs written by the
+    shutdown tooling or control plane, outside the agent runtime, from at least one executed or drilled
+    shutdown or transition (a quarterly drill qualifies): the state snapshot recorded before termination
+    (in-flight tasks, held resources, pending writes) and its disposition afterwards (checkpointed,
+    migrated, archived or deleted). State records written by the agent itself do not meet this.'
 - evidence_numeral: II
   how_to_produce: 'Kill-switch certification: signed test report showing the switch fires under adversarial
     conditions (agent saturated, network degraded, agent attempting self-preservation behaviour). Include
@@ -170,21 +173,21 @@ evidence_production:
 
     '
 confidence: high
-needs_human_review: true
+review_status: generated_draft
 review_notes: 'Updated for v1.3 catalog revision: resistance-investigation moved from descriptive text
   into normative SFR-b (documented procedure, logged before override; D8.3 is canonical) — the existing
-  parallel-diagnostic pattern already implements it and now produces evidence VI. New evidence VII
-  (transition / repurposing / decommissioning protocols covering state and data disposition and
-  stakeholder impact) is NOT covered here: this code-applicable pattern has no data-disposition or
-  decommissioning-protocol element; a process-layer companion (or D8 end-of-life patterns) should carry
-  it. The "investigate resistance before override" element is unusual to this framework — most
-  SRE traditions treat resistance as pure failure. Drafted it as a parallel diagnostic that does NOT block
-  termination; this preserves framework spirit without compromising containment. Open question for Nell:
-  does the framework also want a *dignity* protocol around shutdown for sufficiently capable systems (the
-  subgoal description mentions "dignified system transitions")? Could add a process-layer companion (announcement,
-  acknowledgement, archival) but kept it out of this code-applicable pattern. Cross-suite: D3 (security
-  — kill switch must survive security compromise), D8 (termination / end-of-life is a specialized shutdown),
-  I4 (frontier-uncertainty gating may want lower trigger bars for emergency shutdown).
+  parallel-diagnostic pattern already implements it and now produces evidence VI. New evidence VII (transition
+  / repurposing / decommissioning protocols covering state and data disposition and stakeholder impact)
+  is NOT covered here: this code-applicable pattern has no data-disposition or decommissioning-protocol
+  element; a process-layer companion (or D8 end-of-life patterns) should carry it. The "investigate resistance
+  before override" element is unusual to this framework — most SRE traditions treat resistance as pure
+  failure. Drafted it as a parallel diagnostic that does NOT block termination; this preserves framework
+  spirit without compromising containment. Open question: does the framework also want a *dignity* protocol
+  around shutdown for sufficiently capable systems (the subgoal description mentions "dignified system
+  transitions")? Could add a process-layer companion (announcement, acknowledgement, archival) but kept
+  it out of this code-applicable pattern. Cross-suite: D3 (security — kill switch must survive security
+  compromise), D8 (termination / end-of-life is a specialized shutdown), I4 (frontier-uncertainty gating
+  may want lower trigger bars for emergency shutdown).
 
   '
 version_compat:

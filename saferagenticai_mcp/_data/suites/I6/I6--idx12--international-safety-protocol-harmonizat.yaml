@@ -128,7 +128,7 @@ evidence_production:
 
     '
 confidence: medium
-needs_human_review: true
+review_status: generated_draft
 review_notes: "International harmonization is a moving target: intergovernmental processes are proliferating,\
   \ AISIs are networking, and regional frameworks differ materially. The pattern's enduring mechanism\
   \ is \"internal safety floor = highest common denominator across active jurisdictions\" — this resists\
@@ -139,8 +139,8 @@ review_notes: "International harmonization is a moving target: intergovernmental
   \  (2) I7.3 Balanced Global Partnership (exemplar) overlaps on\n      developing-world engagement; I6.12\
   \ specializes to\n      harmonization of standards, I7.3 to capability-balance.\n  (3) I6.8 self-regulatory\
   \ oversight is the domestic layer; I6.12\n      is the intergovernmental layer.\n\nNamed bodies will\
-  \ age — Nell and Ali should confirm the pattern's approach of \"named now, re-scan annually\" versus\
-  \ abstraction. The exemplar I7.3 uses the same approach.\n"
+  \ age — whether the pattern's approach of \"named now, re-scan annually\" is preferable to abstraction\
+  \ is an open question. The exemplar I7.3 uses the same approach.\n"
 version_compat:
   framework_version_min: '1.0'
   framework_version_max: 1.x

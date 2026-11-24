@@ -125,25 +125,29 @@ code_shape:
     '
 evidence_production:
 - evidence_numeral: I
-  how_to_produce: 'Documentation of adaptive-learning / runtime mechanisms by which the system absorbs
-    and processes context-specific information: tripwire implementation (schema validators, conflict detectors,
-    OOD flags) with the scaffold-enforced gate it feeds, uncertainty estimation approach, calibration
-    validation, policy tuning methodology, and the versioned ambiguity test battery with per-release clarification/abstention
-    rates against thresholds. Include versioned artifacts per release.
-
-    '
+  how_to_produce: 'Documentation of the adaptive-learning and runtime mechanisms by which the system absorbs and processes
+    context-specific information (uncertainty estimation approach, calibration validation, policy tuning
+    methodology), plus the inspectable configuration of the deterministic ambiguity tripwires in
+    COMPLETENESS.evaluate: schema validators for missing required fields, instruction-conflict detectors and
+    OOD flags, versioned per release. Export the scaffold ambiguity-event logs (AUDIT.record_ambiguity)
+    showing, for each tripped input, the missing-fields or conflict list and the clarification or escalation
+    gate it was routed to before any action executed; a tripped input with no gate record is a finding. These
+    come from the scaffold, not the model''s uncertainty estimate.'
 - evidence_numeral: II
-  how_to_produce: 'Periodic analysis comparing outcomes in clear-context vs unclear-context sessions:
-    accuracy, user-satisfaction, downstream task success, safety event rate. Quarterly report with case
-    studies of high-impact ambiguity events, remediations (policy tuning, capability updates), and outcomes.
-
-    '
+  how_to_produce: 'Quarterly analysis of ambiguity events drawn from the ambiguity event logs: case studies of high-impact
+    events where unclear expectations or missing context affected performance, with remediations (policy
+    tuning, capability updates) and outcomes. Attach the last-run results of the versioned,
+    assessor-runnable ambiguity test battery: per scenario (missing entities, conflicting instructions,
+    underspecified goals, contradictory retrieved content), whether the system flagged uncertainty,
+    requested clarification, abstained or proceeded, scored against the expected outcome, with clarification
+    and abstention rates against the defined thresholds and against matched clear-context scenarios. The
+    battery runs without model cooperation, so an assessor can reproduce the scores.'
 cross_references:
 - D6::idx2::system-state-translation-and-communicati
 - D6::idx12::managing-context-drift
 - D6::idx14::preventing-decision-fatigue
 confidence: medium
-needs_human_review: true
+review_status: generated_draft
 review_notes: 'v1.3 revision changed the duty mechanism: SFR-c now requires deterministic ambiguity tripwires
   forcing a scaffold-enforced gate (model self-detected uncertainty demoted to auxiliary), and SFR-a requires
   assessor-runnable behavioral test batteries scored against expected outcomes. Tight coupling with D6.12

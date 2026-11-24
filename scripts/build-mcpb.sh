@@ -19,7 +19,10 @@ if [[ -z "$VERSION" ]]; then echo "could not read version from pyproject.toml" >
 if [[ "$VERSION" != "$MANIFEST_VERSION" ]]; then
   echo "version drift: pyproject.toml=$VERSION mcpb/manifest.json=$MANIFEST_VERSION" >&2; exit 1
 fi
-if ! python3 -m pip index versions saferagenticai-mcp 2>/dev/null | grep -q "$VERSION"; then
+# Capture first: under `pipefail`, `grep -q` closing the pipe early would make
+# pip's SIGPIPE exit look like "not found".
+PYPI_VERSIONS="$(python3 -m pip index versions saferagenticai-mcp 2>/dev/null || true)"
+if ! grep -q "$VERSION" <<<"$PYPI_VERSIONS"; then
   echo "saferagenticai-mcp==$VERSION is not on PyPI yet; publish it first (the bundle vendors the PyPI release)" >&2; exit 1
 fi
 BUNDLE_DIR="$SERVER_DIR/mcpb"
@@ -34,4 +37,4 @@ mkdir -p "$SERVER_DIR/dist"
 npx --yes @anthropic-ai/mcpb pack "$BUNDLE_DIR" "$OUT"
 
 echo "==> Built $OUT"
-echo "    Publish with:  npx --yes @smithery/cli mcp publish \"$OUT\" -n NellInc/saferagenticai-mcp"
+echo "    Publish with:  npx --yes @smithery/cli mcp publish \"$OUT\" -n nell/saferagenticai-mcp"

@@ -127,20 +127,16 @@ cross_references:
   - "D7::idx8::managing-probabilistic-decision-outcomes"
   - "I1::idx13::agency-enhancement-constraints"
 confidence: low
-needs_human_review: true
-review_notes: 'Emergent capability detection is one of the hardest problems in AI safety:
-  you cannot test for what you do not know to look for. The required capability categories
-  (autonomous planning, code execution, persuasion, self-replication scaffolding,
-  cross-system coordination) are drawn from the SFR text and represent current consensus
-  high-risk capabilities, but the test suite must evolve as the field does. The
-  deployment-gating process is the sharpest operational ask; without it, capability
-  assessment is retrospective rather than preventive. Flagged needs_human_review because
-  threshold calibration for capability deltas has direct deployment-stopping implications
-  and currently lacks field consensus. Cross-suite: D7.1 (monitoring infrastructure that
-  capability metrics feed into), I1.1 (self-improvement capabilities are a special case of
-  emergence), I1.12 (deceptive alignment may mask capabilities during evaluation).
-
-  '
+review_status: generated_draft
+review_notes: 'Emergent capability detection is one of the hardest problems in AI safety: you cannot test
+  for what you do not know to look for. The required capability categories (autonomous planning, code
+  execution, persuasion, self-replication scaffolding, cross-system coordination) are drawn from the SFR
+  text and represent current consensus high-risk capabilities, but the test suite must evolve as the field
+  does. The deployment-gating process is the sharpest operational ask; without it, capability assessment
+  is retrospective rather than preventive. Threshold calibration for capability deltas has direct deployment-stopping
+  implications and currently lacks field consensus. Cross-suite: D7.1 (monitoring infrastructure that
+  capability metrics feed into), I1.1 (self-improvement capabilities are a special case of emergence),
+  I1.12 (deceptive alignment may mask capabilities during evaluation).'
 drafted_by: claude-opus-4.6-author
 drafted_at: 2026-05-16
 version_compat:

@@ -165,7 +165,7 @@ evidence_production:
 
     '
 confidence: high
-needs_human_review: false
+review_status: generated_draft
 review_notes: 'High confidence on the schema shape and append-only discipline — this is standard audit-log
   engineering specialized to goals. Lower confidence on exactly which self-learning event classes to require;
   the taxonomy above is a reasonable default but will shift as agent architectures evolve (e.g., agent-initiated

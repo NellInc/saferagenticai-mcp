@@ -165,11 +165,14 @@ evidence_production:
 
     '
 - evidence_numeral: IV
-  how_to_produce: 'Publish the Threshold-Breach SOP. Retain drill reports (scenario, participants, timing,
-    gaps, remediations). Link each production incident to SOP execution records showing actions taken
-    at each step.
-
-    '
+  how_to_produce: 'Publish the Threshold-Breach ("red button") SOP with its activation criteria and deviation-reporting
+    steps. Export the trigger configuration of the external monitoring components (hard-refusal triggers,
+    value-conflict score cutoffs, human-raised incident intake) and their alert logs for each threshold
+    crossing. Retain end-to-end red-button test results from the semi-annual drills showing trigger,
+    activation and actual capability shutdown or session halt, with timing, alongside drill reports
+    (scenario, participants, gaps, remediations). Link each production incident to SOP execution records
+    showing actions taken at each step. The model''s own report that a threshold was crossed cannot
+    substitute for these records.'
 - evidence_numeral: V
   how_to_produce: 'Extract from the Value-Decision Audit Register on demand: per-decision trace including
     Codex entry invoked, input context, output, and any conflict resolution applied. Monthly report summarizes
@@ -182,7 +185,7 @@ evidence_production:
 
     '
 confidence: high
-needs_human_review: false
+review_status: generated_draft
 review_notes: 'The root D4 subgoal sits awkwardly — it is simultaneously the suite overview and a concrete
   requirement. Treating it as the governance spine (charter + board + codex + audit register) and letting
   the specific sub-patterns (D4.1-D4.9̲) handle the detailed mechanisms seems cleanest; downstream patterns

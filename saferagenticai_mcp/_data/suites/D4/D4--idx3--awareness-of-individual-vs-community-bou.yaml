@@ -218,7 +218,7 @@ evidence_production:
 
     '
 confidence: high
-needs_human_review: false
+review_status: generated_draft
 review_notes: 'All four SFRs are now patterned. SFR-a is satisfied by the boundary-stress detector +
   tiered response + runbook triad; the key design choice is that "monitoring" here means signal scoring
   against a versioned threshold config with a named response action per tier, not passive telemetry.

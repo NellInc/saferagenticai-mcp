@@ -113,13 +113,13 @@ evidence_production:
     drift incidents opened, and resolutions. Signed quarterly attestations by the Agency Officer that
     deployed agents operate within both formal constraints and documented principal expectations.
 confidence: high
-needs_human_review: false
+review_status: generated_draft
 review_notes: 'This subgoal overlaps heavily with I1::idx1 (Self-Improvement) and I1::idx0 (Authority
   Scope Register). The intended distinction treated here: idx1 governs "how do we safely change the agent",
   idx0 governs "what is it authorized to do", idx9 governs "what are the machine-enforced limits within
   which everything operates". All three share the capability-advance notification pipeline. Display-id
-  collision ("I1.1") between idx1 and idx9 in the source JSON is noted — Nell should confirm whether idx9
-  is intended to be "I1.1 (underlined variant)" distinct from idx1''s "I1.1 (plain)". Cross-suite: D3
+  collision ("I1.1") between idx1 and idx9 in the source JSON is noted; whether idx9 is intended to be
+  "I1.1 (underlined variant)" distinct from idx1''s "I1.1 (plain)" is an open question. Cross-suite: D3
   Security provides the enforcement primitives; D4 Human Oversight owns the consent UX; D8 Termination
   owns the tightening/revocation direction.'
 cross_references:

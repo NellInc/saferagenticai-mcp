@@ -122,7 +122,7 @@ evidence_production:
       where cross-org coordination materially changed the outcome.
 
 confidence: medium
-needs_human_review: true
+review_status: generated_draft
 review_notes: >
   Content-type: ecosystem. The subgoal's framing ("all supply chain
   parties are included and incentivized", "collective approaches to
@@ -132,15 +132,15 @@ review_notes: >
   engagement-based, which is ecosystem.
 
   SFR b is marked normative:false. I have patterned it as core anyway
-  because it carries the collective-action substance of the subgoal.
-  If the framework intends b as informational-only, evidence II can be
-  de-emphasised; flagging for Nell.
+  because it carries the collective-action substance of the subgoal. If
+  the framework intends b as informational-only, evidence II can be
+  de-emphasised.
 
   Named coalitions / bodies (FMF, AI ISAC, CISA, NIST AISI, AISIs
-  internationally, etc.) are current as of April 2026 but will age.
-  The I7.3 exemplar flagged the same concern; I have erred toward
-  naming specific bodies to make the pattern actionable and noted the
-  aging risk here.
+  internationally, etc.) are current as of April 2026 but will age. The
+  I7.3 exemplar flagged the same concern; I have erred toward naming
+  specific bodies to make the pattern actionable and noted the aging
+  risk here.
 
   Cross-suite hypothesis (not added): D9 (Governance) for board-level
   supply-chain attestations; I1 (Race Dynamics) for tension between

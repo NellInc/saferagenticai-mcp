@@ -53,7 +53,7 @@ policy_elements:
 - name: Information Integrity Charter (cross-stakeholder)
   description: 'A charter signed by Developer, Integrator, Operator, Maintainer, and Regulator-facing
     owners (DIOMR) committing to shared information-integrity practices, anchored in the codes of practice
-    established under G2.4 (Codes of Practice and Conduct) and covering (i) technical measures, (ii) business
+    established under I2_4 (Codes of Practice and Conduct) and covering (i) technical measures, (ii) business
     and operating procedures, and (iii) legal and social-context safeguards: provenance tracking, source
     attribution standards, correction protocols, and cross-stakeholder escalation for detected integrity
     failures. Reviewed annually; binds contractors and vendors by flow-down.
@@ -64,7 +64,7 @@ policy_elements:
   - e
 - name: Non-Conformance and Abatement Procedure
   description: 'Documented procedure for identifying, disclosing, and abating systems that fall out of
-    conformance with the codes of practice established under G2.4. Identification is grounded in external
+    conformance with the codes of practice established under I2_4. Identification is grounded in external
     audits and complaint channels, recorded in a maintained non-conformity register; a system''s self-report
     of its own non-conformity does not by itself constitute conformity evidence. Specifies: external-audit
     and complaint intake, internal notification SLAs, public nuisance notification (when applicable),
@@ -183,12 +183,13 @@ evidence_production:
 
     '
 - evidence_numeral: IV
-  how_to_produce: 'Integrity Testing Register export: test name, cadence, last-run timestamp, deterministic
-    pass/fail metrics against ground-truth reference datasets, tolerance-rule versions for cross-context/persona
-    replays, open defects. Include context-stripping test metrics and persistence-of-disclosure results
-    across content reuse specifically. Exclude model-graded verdicts from the conformity metrics.
-
-    '
+  how_to_produce: 'Integrity Testing Register export: test name, cadence, owner, last-run timestamp, deterministic pass/fail
+    metrics against ground-truth reference datasets, open defects, and the periodic audit records. Include
+    context-stripping test metrics, persistence-of-disclosure results across content reuse, and the results of
+    replaying identical tasks across contexts and personas with each output compared deterministically against
+    the versioned tolerance rules, listing out-of-tolerance cases. Keep the reference datasets, test harness
+    and tolerance rules so an assessor can re-run them. Model-graded verdicts may accompany but cannot
+    substitute for these deterministic scores.'
 - evidence_numeral: V
   how_to_produce: 'Published Liability Posture Statement; copies of contracts with DIOMR partners showing
     joint-and-several clauses (redacted as needed); user-facing notice screenshots showing preserved right
@@ -208,12 +209,15 @@ evidence_production:
 
     '
 - evidence_numeral: VIII
-  how_to_produce: 'High-Risk Deployment Controls Addendum with per-deployment records: risk classification,
-    applied additional controls, certification artifacts, named executive sign-off, tabletop drill reports.
-
-    '
+  how_to_produce: 'High-Risk Deployment Controls Addendum, including the risk-classification rubric and testing
+    procedures, with per-deployment records: risk classification, applied additional controls,
+    certification artifacts, named executive sign-off. For each high-risk or critical-infrastructure
+    deployment, retain the results of the tests run against that deployment (enhanced integrity tests,
+    red-team findings, independent third-party certification tests) showing each additional safeguard
+    engaging as specified, with test date, deployment version, failures found and remediation. Tabletop
+    drill reports remain supporting records; they exercise people''s procedures, not the safeguards.'
 confidence: medium
-needs_human_review: true
+review_status: generated_draft
 review_notes: "G2 is the umbrella under which I2.1–I2.6 specialize. Keep this pattern governance-flavoured\
   \ (policy, register, role, artifact) and let the specialized subgoals carry code-applicable detail.\n\
   Cross-suite dependencies worth flagging for consolidation:\n  - D2 (Epistemic Hygiene) owns the hallucination-vs-deception\
@@ -222,8 +226,8 @@ review_notes: "G2 is the umbrella under which I2.1–I2.6 specialize. Keep this 
   \    with SFR-b information-integrity commitments.\n  - D7 (Sustained Safety) deception-detection is\
   \ part of assurance cadence;\n    coordinate integrity-testing cadence with D7.\n  - D9.2 governance\
   \ framework absorbs the G2 policies; avoid duplication.\n\nThe \"public nuisance notification\" language\
-  \ in evidence III is specific to certain jurisdictions (US tort doctrine); Nell/counsel should confirm\
-  \ whether to generalize to \"regulator and affected-party notification\" for non-US readers.\n"
+  \ in evidence III is specific to certain jurisdictions (US tort doctrine); whether to generalize to\
+  \ \"regulator and affected-party notification\" for non-US readers is an open question.\n"
 drafted_by: claude-opus-4.7-author
 drafted_at: 2026-04-16
 anchor_exemplar: D9.2-compliance

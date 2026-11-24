@@ -120,8 +120,8 @@ evidence_production:
 
     '
 confidence: medium
+review_status: generated_draft
 evidence_maturity: emerging
-needs_human_review: true
 review_notes: "Beneficence assessment is an honesty test — methodology that captures harm is harder to\
   \ build than methodology that captures benefit, and the incentive gradient pushes toward the latter.\
   \ Sharpenings:\n  (1) \"Without assuming inherent benevolence\" (SFR-a) — the Claims\n      audit is\

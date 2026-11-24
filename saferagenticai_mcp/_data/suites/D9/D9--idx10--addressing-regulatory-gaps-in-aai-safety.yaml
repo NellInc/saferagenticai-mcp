@@ -146,17 +146,17 @@ evidence_production:
 
     '
 confidence: high
-needs_human_review: true
+review_status: generated_draft
 review_notes: 'The underlying tension in this subgoal is principled: how much should an org do beyond
   what law requires? The pattern does not answer — it gives the mechanism (gap register + assurance strategy)
   and lets org risk posture set the level. Two concerns: (1) "gap- acknowledgment disclosure" is legally
   sensitive (admissions can attract liability in some jurisdictions) — legal counsel must shape; (2) this
   subgoal is titled an "underlined variant" of D9.1 in the framework, which implies it is a risk or inhibitor
   more than a positive driver — the pattern treats it as a positive governance practice, which may or
-  may not match the framework''s intent. Reviewer to confirm. Cross-suite: I6 (Competitive Pressures)
-  pulls against this subgoal — commercial pressure to do only minimum compliance; this pattern''s public
-  gap-acknowledgment is partly designed to resist that; I3 (Pace of Development) supplies the mechanism
-  by which gaps open in the first place.
+  may not match the framework''s intent. Cross-suite: I6 (Competitive Pressures) pulls against this subgoal
+  — commercial pressure to do only minimum compliance; this pattern''s public gap-acknowledgment is partly
+  designed to resist that; I3 (Pace of Development) supplies the mechanism by which gaps open in the first
+  place.
 
   '
 drafted_by: claude-opus-4.7-subagent-D9

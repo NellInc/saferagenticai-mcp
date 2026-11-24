@@ -171,8 +171,7 @@ evidence_production:
 
     '
 confidence: low
-reviewed_by: nell
-reviewed_on: "2026-05-16"
+review_status: generated_draft
 review_notes: 'This subgoal is at the frontier of AI governance and the patterns here age faster than
   most — MCP and A2A are both less than two years old at time of drafting, and the inter-agent protocol
   landscape will look materially different in five years. The governance posture recommended — principles
@@ -181,8 +180,8 @@ review_notes: 'This subgoal is at the frontier of AI governance and the patterns
   Imbalance (cross-org inter-agent protocols can entrench or challenge capability imbalances — who defines
   the protocol matters); D9.2 Compliance (cross-org protocols carry contractual and regulatory obligations);
   D3 Security (security properties of emerging protocols are routinely underspecified); D8.17 idx17 is
-  the code-level counterpart of this governance pattern. Nell to weigh in on whether specific protocols
-  (MCP, A2A) should be named or abstracted — naming makes the pattern actionable but ages fast; abstracting
+  the code-level counterpart of this governance pattern. Whether specific protocols (MCP, A2A) should
+  be named or abstracted is an open question — naming makes the pattern actionable but ages fast; abstracting
   requires the reader to know the landscape.
 
   '

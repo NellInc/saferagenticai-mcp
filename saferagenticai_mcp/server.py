@@ -1,4 +1,4 @@
-"""SaferAgenticAI MCP server — stdio transport, twelve tools.
+"""SaferAgenticAI MCP server — stdio transport, ten tools.
 
 Tools:
     find_patterns_for_task(task)          -> cross-layer search (normative + heuristics)
@@ -11,8 +11,6 @@ Tools:
     resolve_id(query)                    -> fuzzy id resolution to canonical pattern_id(s)
     get_cross_references(id)             -> outgoing adjacencies (explicit + inferred)
     get_reverse_references(id)           -> incoming references (who cites this pattern)
-    list_unreviewed(...)                 -> unreviewed patterns for Phase 3 review
-    review_stats                         -> coverage stats (reviewed %, per-suite, per-confidence)
 
 Run: `saferagenticai-mcp` after `pip install -e .` in the server directory.
 """
@@ -40,6 +38,7 @@ from .framework_loader import (
     newer_source_exists,
     subgoal_to_dict,
 )
+from .query_vocabulary import expand_query, identifier_candidates, stem
 
 log = logging.getLogger("saferagenticai.server")
 log.addHandler(logging.NullHandler())
@@ -51,8 +50,7 @@ def _get_index() -> FrameworkIndex:
     """Return the cached framework index, hot-reloading if any source file changed.
 
     Cheap: stat-walk the suites/ and exemplars/ dirs (~230 files) each call.
-    For an interactive Phase-3 review workflow this is what you want: edit
-    a pattern, call the MCP, see updated answer — no restart.
+    Edit a pattern, call the MCP, see the updated answer — no restart.
     """
     global _index
     if _index is None or newer_source_exists(_index):
@@ -151,6 +149,9 @@ def _fuzzy_candidates(idx: FrameworkIndex, id_str: str, limit: int = 5) -> list:
 
 def _tool_get_requirement(idx: FrameworkIndex, id_str: str, include_pattern: bool) -> dict:
     matches = idx.resolve_all(id_str)
+    if not matches and len(identifier_candidates(id_str.strip())) == 1:
+        # d2.1, D2-1, "D2 1", G1.2: same normalisation as resolve_id.
+        matches = _identifier_hits(idx, id_str.strip())
     if matches:
         if len(matches) == 1:
             return {"match_count": 1, "subgoal": subgoal_to_dict(matches[0], include_pattern)}
@@ -309,10 +310,27 @@ FIELD_WEIGHTS = {
 }
 
 
+# Pattern keys that hold identifiers or provenance rather than guidance prose.
+# Indexing them let every pattern that cross-references D3::idx2::sandboxing
+# match the query "sandbox", which both diluted the term's IDF weight and
+# produced body-only hits with nothing to do with sandboxing.
+_PATTERN_METADATA_KEYS = frozenset({
+    "id", "display_id", "suite_id", "suite_title", "subgoal_title",
+    "content_type", "confidence", "review_status", "cross_references", "anchor_exemplar",
+    "drafted_by", "drafted_at", "is_underlined_variant",
+    "display_id_variant_note",
+})
+
+
 def _pattern_text(pattern: dict) -> str:
-    """Recursively collect all string values from a pattern dict for search."""
+    """Collect the guidance prose of a pattern dict for search (one level deep).
+
+    Identifier and provenance fields (_PATTERN_METADATA_KEYS) are skipped.
+    """
     parts: list[str] = []
-    for v in pattern.values():
+    for k, v in pattern.items():
+        if k in _PATTERN_METADATA_KEYS:
+            continue
         if isinstance(v, str):
             parts.append(v)
         elif isinstance(v, list):
@@ -324,8 +342,60 @@ def _pattern_text(pattern: dict) -> str:
     return " ".join(parts)
 
 
+# Weight of a synonym-expansion term relative to a term the caller typed.
+EXPANSION_WEIGHT = 0.5
+
+
+def _identifier_hits(idx: FrameworkIndex, text: str) -> list[Subgoal]:
+    """Subgoals named by requirement identifiers in free text (D2.1, d2-1, G1.2).
+
+    Ambiguous forms (D2-1, "D2 1") return both the numbered requirement and
+    its underlined variant when both exist; neither is dropped.
+    """
+    hits: list[Subgoal] = []
+    seen: set[str] = set()
+    for _typed, display_ids in identifier_candidates(text):
+        for did in display_ids:
+            for s in idx.resolve_all(did):
+                if s.pattern_id not in seen:
+                    seen.add(s.pattern_id)
+                    hits.append(s)
+    return hits
+
+
+def _query_terms(
+    idx: FrameworkIndex, query: str, raw_terms: list[str]
+) -> tuple[list[str], dict[str, float], list[dict]]:
+    """Stem the typed terms, add synonym expansions, and weight them all.
+
+    Returns (terms, weights, expansions). Typed terms carry their full IDF
+    weight; expansion terms carry EXPANSION_WEIGHT of theirs.
+    """
+    terms: list[str] = []
+    for t in raw_terms:
+        st = stem(t)
+        if st not in terms:
+            terms.append(st)
+    typed = set(terms)
+    expansions: list[dict] = []
+    extra: list[str] = []
+    for key, words in expand_query(query):
+        added = [w for w in words if w not in typed and w not in extra]
+        extra.extend(added)
+        expansions.append({"phrase": key, "adds": list(words)})
+    weights = _term_weights(idx, terms + extra)
+    for w in extra:
+        weights[w] *= EXPANSION_WEIGHT
+    return terms + extra, weights, expansions
+
+
 def _tool_search_patterns(
-    idx: FrameworkIndex, query: str, limit: int, verbosity: str = "full"
+    idx: FrameworkIndex,
+    query: str,
+    limit: int,
+    verbosity: str = "full",
+    _pin_identifiers: bool = True,
+    _expansion_text: str | None = None,
 ) -> dict:
     """Field-weighted keyword search.
 
@@ -337,16 +407,24 @@ def _tool_search_patterns(
     Returns the snippet from the highest-weighted field that matched,
     so callers see *why* the match was ranked high.
 
+    Query handling (query_vocabulary.py): typed terms are lightly stemmed;
+    practitioner phrases add the framework's own terms at EXPANSION_WEIGHT
+    (reported as `expanded_terms`); requirement ids in the query (d2.1, D2-1,
+    G1.2) are pinned first with `matched_in: identifier`.
+
     `verbosity`:
         - "compact": id, display_id, suite_id, title, score, matched_in
           (no snippet, no confidence flags). ~70% smaller; use for triage.
-        - "full" (default): adds snippet, confidence, needs_human_review.
+        - "full" (default): adds snippet, review_status and confidence.
     """
     limit = _clamp_limit(limit, default=10, maximum=50)
-    terms = [t for t in re.split(r"\W+", query.lower()) if t]
-    if not terms:
+    raw_terms = [t for t in re.split(r"\W+", query.lower()) if t]
+    id_hits = _identifier_hits(idx, query) if _pin_identifiers else []
+    if not raw_terms and not id_hits:
         return {"error": "empty query"}
-    weights = _term_weights(idx, terms)
+    terms, weights, expansions = _query_terms(
+        idx, _expansion_text if _expansion_text is not None else query, raw_terms
+    )
 
     scored: list[tuple[float, Subgoal, str, str]] = []
     for s in idx.subgoals.values():
@@ -404,6 +482,13 @@ def _tool_search_patterns(
             scored.append((round(total, 3), s, best_snippet, best_field))
 
     scored.sort(key=lambda t: (-t[0], t[1].pattern_id))
+    if id_hits:
+        # A requirement named by identifier goes first, whatever its keyword
+        # score; the rest keep their keyword order.
+        pinned = {s.pattern_id for s in id_hits}
+        scored = [(0.0, s, "", "identifier") for s in id_hits] + [
+            row for row in scored if row[1].pattern_id not in pinned
+        ]
     top = scored[:limit]
     compact = verbosity == "compact"
     results = []
@@ -419,9 +504,7 @@ def _tool_search_patterns(
         if not compact:
             row["snippet"] = snippet
             row["confidence"] = s.pattern.get("confidence") if s.pattern else None
-            row["needs_human_review"] = (
-                s.pattern.get("needs_human_review") if s.pattern else None
-            )
+            row["review_status"] = s.review_status
         results.append(row)
     out = {
         "query": query,
@@ -429,6 +512,10 @@ def _tool_search_patterns(
         "returned": len(top),
         "results": results,
     }
+    if expansions:
+        out["expanded_terms"] = expansions
+    if id_hits:
+        out["identifier_matches"] = [s.pattern_id for s in id_hits]
     if compact:
         out["verbosity"] = "compact"
         out["next_step_hint"] = (
@@ -459,6 +546,39 @@ def _tool_resolve_id(idx: FrameworkIndex, query: str, limit: int = 5) -> dict:
                 for s in exact
             ],
         }
+    # Normalised identifier: d2.1, D2-1, "D2 1", G1.2, I1. A hyphen or space
+    # can mean the numbered requirement or its underlined variant, so both
+    # come back and the caller chooses.
+    stripped = query.strip()
+    normalised = (
+        _identifier_hits(idx, stripped)
+        if len(identifier_candidates(stripped)) == 1
+        else []
+    )
+    if normalised:
+        out = {
+            "query": query,
+            "resolved": True,
+            "match_count": len(normalised),
+            "normalised_from": stripped,
+            "candidates": [
+                {
+                    "pattern_id": s.pattern_id,
+                    "display_id": s.display_id,
+                    "suite_id": s.suite_id,
+                    "title": s.title,
+                    "score": 1000,
+                }
+                for s in normalised
+            ],
+        }
+        if len(normalised) > 1:
+            out["note"] = (
+                f"'{query}' could name more than one requirement (a numbered "
+                "requirement and its underlined variant share a printed label). "
+                "Use pattern_id for an unambiguous lookup."
+            )
+        return out
     # Fuzzy fallback
     scored = _fuzzy_candidates(idx, query, limit=limit)
     return {
@@ -500,14 +620,47 @@ def _tool_find_patterns_for_task(
     Pass "full" to inline snippets and confidence flags.
     """
     limit = _clamp_limit(limit, default=8, maximum=25)
+    # Identifiers first, on the raw text: the length filter below would drop
+    # the "1" in "D2.1" and leave a bare suite id behind.
+    id_hits = _identifier_hits(idx, task)
     words = [w for w in re.split(r"\W+", task.lower()) if len(w) > 2 and w not in _STOPWORDS]
-    if not words:
+    if not words and not id_hits:
         return {"error": "task description too short after stop-word removal"}
     query = " ".join(words)
 
-    search = _tool_search_patterns(idx, query, limit=limit, verbosity=verbosity)
-    if "error" in search:
-        return search
+    if words:
+        # Synonym phrases ("kill switch", "near miss") are matched on the raw
+        # task, since the filters above can split or drop their words.
+        search = _tool_search_patterns(
+            idx, query, limit=limit, verbosity=verbosity,
+            _pin_identifiers=False, _expansion_text=task,
+        )
+        if "error" in search:
+            return search
+    else:
+        search = {"total_matches": 0, "results": []}
+    if id_hits:
+        pinned = {s.pattern_id for s in id_hits}
+        id_rows = []
+        for s in id_hits:
+            row = {
+                "pattern_id": s.pattern_id,
+                "display_id": s.display_id,
+                "suite_id": s.suite_id,
+                "title": s.title,
+                "score": 0.0,
+                "matched_in": "identifier",
+            }
+            if verbosity != "compact":
+                row["snippet"] = ""
+                row["confidence"] = s.confidence
+                row["review_status"] = s.review_status
+            id_rows.append(row)
+        rest = [r for r in search["results"] if r["pattern_id"] not in pinned]
+        search["results"] = (id_rows + rest)[:limit]
+        search["total_matches"] = search["total_matches"] + len(
+            [s for s in id_hits if s.pattern_id not in {r["pattern_id"] for r in rest}]
+        )
 
     # Group by suite, with suite title for context
     by_suite: dict[str, list] = {}
@@ -546,7 +699,7 @@ def _tool_find_patterns_for_task(
             })
     relevant_heuristics.sort(key=lambda x: -x["score"])
 
-    return {
+    out = {
         "task": task,
         "keywords_used": words,
         "total_matches": search["total_matches"],
@@ -559,6 +712,11 @@ def _tool_find_patterns_for_task(
             "For operational heuristics, call get_operational_heuristic(id) for the full entry."
         ),
     }
+    if search.get("expanded_terms"):
+        out["expanded_terms"] = search["expanded_terms"]
+    if id_hits:
+        out["identifier_matches"] = [s.pattern_id for s in id_hits]
+    return out
 
 
 def _tool_get_cross_references(
@@ -615,117 +773,6 @@ def _tool_get_cross_references(
         ],
         "inferred_adjacent": inferred,
         "review_notes": s.pattern.get("review_notes") if s.pattern else None,
-    }
-
-
-def _tool_list_unreviewed(idx: FrameworkIndex, limit: int | None = None) -> dict:
-    """Return patterns that have no `reviewed_by` field yet.
-
-    Intended for Phase 3: Nell walks through unreviewed patterns.
-    Sort order: low confidence first, then `needs_human_review: true`, then alpha.
-    """
-    unreviewed: list[Subgoal] = []
-    for s in idx.subgoals.values():
-        if not s.pattern:
-            continue
-        if s.pattern.get("reviewed_by"):
-            continue
-        unreviewed.append(s)
-
-    def sort_key(s: Subgoal):
-        p = s.pattern or {}
-        conf = p.get("confidence", "medium")
-        conf_rank = {"low": 0, "medium": 1, "high": 2}.get(conf, 1)
-        needs = 0 if p.get("needs_human_review") else 1
-        return (conf_rank, needs, s.pattern_id)
-
-    unreviewed.sort(key=sort_key)
-    if limit is not None:
-        # None = return all; any supplied value is coerced/clamped to [1, 250].
-        unreviewed = unreviewed[: _clamp_limit(limit, default=250, maximum=250)]
-
-    total = sum(
-        1 for s in idx.subgoals.values() if s.pattern and not s.pattern.get("reviewed_by")
-    )
-    return {
-        "total_unreviewed": total,
-        "returned": len(unreviewed),
-        "subgoals": [
-            {
-                "pattern_id": s.pattern_id,
-                "display_id": s.display_id,
-                "suite_id": s.suite_id,
-                "title": s.title,
-                "confidence": s.confidence,
-                "needs_human_review": (s.pattern or {}).get("needs_human_review", False),
-                "content_type": s.content_type,
-            }
-            for s in unreviewed
-        ],
-        "next_step_hint": (
-            "After reviewing a pattern, add `reviewed_by: <your name>` and "
-            "`reviewed_on: <ISO date>` to its YAML. The server hot-reloads on "
-            "file change."
-        ),
-    }
-
-
-def _tool_review_stats(idx: FrameworkIndex) -> dict:
-    """Return coverage stats: reviewed vs unreviewed, per suite, per confidence."""
-    total = 0
-    reviewed = 0
-    per_suite_total: dict[str, int] = {}
-    per_suite_reviewed: dict[str, int] = {}
-    per_conf_total: dict[str, int] = {}
-    per_conf_reviewed: dict[str, int] = {}
-    flagged_for_review = 0
-    flagged_reviewed = 0
-
-    for s in idx.subgoals.values():
-        if not s.pattern:
-            continue
-        total += 1
-        suite = s.suite_id
-        conf = s.confidence or "unknown"
-        per_suite_total[suite] = per_suite_total.get(suite, 0) + 1
-        per_conf_total[conf] = per_conf_total.get(conf, 0) + 1
-        if s.pattern.get("needs_human_review"):
-            flagged_for_review += 1
-        if s.pattern.get("reviewed_by"):
-            reviewed += 1
-            per_suite_reviewed[suite] = per_suite_reviewed.get(suite, 0) + 1
-            per_conf_reviewed[conf] = per_conf_reviewed.get(conf, 0) + 1
-            if s.pattern.get("needs_human_review"):
-                flagged_reviewed += 1
-
-    def pct(r: int, t: int) -> float:
-        return round(100 * r / t, 1) if t else 0.0
-    return {
-        "total_patterns": total,
-        "reviewed": reviewed,
-        "unreviewed": total - reviewed,
-        "percent_reviewed": pct(reviewed, total),
-        "flagged_for_review": flagged_for_review,
-        "flagged_and_reviewed": flagged_reviewed,
-        "by_suite": {
-            suite: {
-                "total": per_suite_total[suite],
-                "reviewed": per_suite_reviewed.get(suite, 0),
-                "percent": pct(per_suite_reviewed.get(suite, 0), per_suite_total[suite]),
-            }
-            for suite in sorted(per_suite_total.keys())
-        },
-        "by_confidence": {
-            c: {
-                "total": per_conf_total[c],
-                "reviewed": per_conf_reviewed.get(c, 0),
-                "percent": pct(per_conf_reviewed.get(c, 0), per_conf_total[c]),
-            }
-            for c in ("low", "medium", "high")
-            if c in per_conf_total
-        },
-        "validation_issues_at_load": len(idx.validation_issues),
-        "sample_validation_issues": idx.validation_issues[:5],
     }
 
 
@@ -838,10 +885,6 @@ TOOL_HANDLERS = {
         limit=args.get("limit", 8),
         verbosity=args.get("verbosity", "compact"),
     ),
-    "list_unreviewed": lambda idx, args: _tool_list_unreviewed(
-        idx, limit=args.get("limit")
-    ),
-    "review_stats": lambda idx, args: _tool_review_stats(idx),
     "get_reverse_references": lambda idx, args: _tool_get_reverse_references(
         idx, id_str=args["id"]
     ),
@@ -894,7 +937,7 @@ def dispatch(name: str, arguments: dict) -> dict:
 def _build_mcp_server():
     """Lazily import mcp so this module is usable for local testing without it."""
     from mcp.server import Server
-    from mcp.types import TextContent, Tool
+    from mcp.types import TextContent, Tool, ToolAnnotations
 
     # Pass the version explicitly: without it the SDK reports its own version
     # in the initialize handshake, so clients and registries record the mcp
@@ -903,6 +946,7 @@ def _build_mcp_server():
 
     TOOLS = [
         Tool(
+            annotations=ToolAnnotations(readOnlyHint=True, destructiveHint=False, openWorldHint=False),
             name="list_suites",
             description=(
                 "List all 16 suites in the SaferAgenticAI framework (9 drivers + 7 inhibitors) "
@@ -911,6 +955,7 @@ def _build_mcp_server():
             inputSchema={"type": "object", "properties": {}, "additionalProperties": False},
         ),
         Tool(
+            annotations=ToolAnnotations(readOnlyHint=True, destructiveHint=False, openWorldHint=False),
             name="get_requirement",
             description=(
                 "Retrieve one subgoal (framework normative content + Pattern layer guidance) "
@@ -928,10 +973,14 @@ def _build_mcp_server():
             },
         ),
         Tool(
+            annotations=ToolAnnotations(readOnlyHint=True, destructiveHint=False, openWorldHint=False),
             name="list_requirements",
             description=(
                 "List subgoals matching filters (suite_id, suite_type, content_type, "
-                "min_confidence, missing_pattern_only). Results capped by limit (default 50, max 100)."
+                "min_confidence, missing_pattern_only). Results capped "
+                "by limit (default 50, max 100). Every pattern is a model-generated "
+                "draft (review_status generated_draft; there is no human-review "
+                "process); confidence is the drafting model's own rating of its draft."
             ),
             inputSchema={
                 "type": "object",
@@ -951,6 +1000,7 @@ def _build_mcp_server():
             },
         ),
         Tool(
+            annotations=ToolAnnotations(readOnlyHint=True, destructiveHint=False, openWorldHint=False),
             name="search_patterns",
             description=(
                 "Field-weighted keyword search across the framework. Terms match "
@@ -958,7 +1008,11 @@ def _build_mcp_server():
                 "terms outrank ubiquitous ones; field weights: title 10x, summary "
                 "4x, SFR text 3x (all of a subgoal's SFRs scored as one field), "
                 "description 2x, pattern body 1x. `matched_in` "
-                "reports the highest-weighted field that matched. No semantic / "
+                "reports the highest-weighted field that matched. Common "
+                "practitioner phrases are expanded to the framework's own terms "
+                "at half weight (reported in `expanded_terms`), and requirement "
+                "ids such as d2.1, D2-1 or G1.2 are pinned to the top "
+                "(`matched_in: identifier`). No semantic / "
                 "embedding search — known limitation, see /mcp.html. "
                 "Use verbosity='compact' to drop snippets and confidence flags "
                 "(~70% smaller payload) when triaging."
@@ -979,6 +1033,7 @@ def _build_mcp_server():
             },
         ),
         Tool(
+            annotations=ToolAnnotations(readOnlyHint=True, destructiveHint=False, openWorldHint=False),
             name="get_cross_references",
             description=(
                 "Return outgoing adjacencies for a pattern. `explicit_cross_references` "
@@ -999,10 +1054,14 @@ def _build_mcp_server():
             },
         ),
         Tool(
+            annotations=ToolAnnotations(readOnlyHint=True, destructiveHint=False, openWorldHint=False),
             name="resolve_id",
             description=(
                 "Resolve a loose reference (partial id, display_id, slug fragment, "
-                "or title keyword) to canonical pattern_id(s). Call this when you "
+                "or title keyword) to canonical pattern_id(s). Case, separator and "
+                "G/I prefix are normalised (d2.1, D2-1, 'D2 1', G1.2); a hyphen or "
+                "space returns both the numbered requirement and its underlined "
+                "variant. Call this when you "
                 "have a rough reference and need the exact id before calling "
                 "get_requirement. Always returns candidates — never 'not found'."
             ),
@@ -1017,6 +1076,7 @@ def _build_mcp_server():
             },
         ),
         Tool(
+            annotations=ToolAnnotations(readOnlyHint=True, destructiveHint=False, openWorldHint=False),
             name="find_patterns_for_task",
             description=(
                 "Given a natural-language task description (e.g., 'I'm building a "
@@ -1029,7 +1089,7 @@ def _build_mcp_server():
             inputSchema={
                 "type": "object",
                 "properties": {
-                    "task": {"type": "string", "minLength": 5, "maxLength": 500},
+                    "task": {"type": "string", "minLength": 2, "maxLength": 500},
                     "limit": {"type": "integer", "minimum": 1, "maximum": 25, "default": 8},
                     "verbosity": {
                         "type": "string",
@@ -1042,29 +1102,7 @@ def _build_mcp_server():
             },
         ),
         Tool(
-            name="list_unreviewed",
-            description=(
-                "Return patterns that have not been human-reviewed yet (no reviewed_by). "
-                "Sorted low-confidence first, then needs_human_review flagged, then alpha. "
-                "Use during Phase 3 review to pick the next pattern to examine."
-            ),
-            inputSchema={
-                "type": "object",
-                "properties": {
-                    "limit": {"type": "integer", "minimum": 1, "maximum": 250},
-                },
-                "additionalProperties": False,
-            },
-        ),
-        Tool(
-            name="review_stats",
-            description=(
-                "Coverage stats: total patterns, reviewed %, per-suite and per-confidence "
-                "breakdown. Surfaces load-time validation issue count."
-            ),
-            inputSchema={"type": "object", "properties": {}, "additionalProperties": False},
-        ),
-        Tool(
+            annotations=ToolAnnotations(readOnlyHint=True, destructiveHint=False, openWorldHint=False),
             name="get_reverse_references",
             description=(
                 "Return patterns that reference the given pattern_id in their "
@@ -1079,6 +1117,7 @@ def _build_mcp_server():
             },
         ),
         Tool(
+            annotations=ToolAnnotations(readOnlyHint=True, destructiveHint=False, openWorldHint=False),
             name="list_operational_heuristics",
             description=(
                 "List operational heuristics distilled from production agentic AI "
@@ -1106,6 +1145,7 @@ def _build_mcp_server():
             },
         ),
         Tool(
+            annotations=ToolAnnotations(readOnlyHint=True, destructiveHint=False, openWorldHint=False),
             name="get_operational_heuristic",
             description=(
                 "Retrieve a single operational heuristic by id (e.g., "
@@ -1137,23 +1177,46 @@ def _build_mcp_server():
 
 
 async def _run(server) -> None:
+    import anyio
     from mcp.server.stdio import stdio_server
 
-    async with stdio_server() as (read, write):
-        await server.run(read, write, server.create_initialization_options())
+    try:
+        from builtins import BaseExceptionGroup  # Python 3.11+
+    except ImportError:  # pragma: no cover - Python 3.10, via anyio's dependency
+        from exceptiongroup import BaseExceptionGroup
+
+    try:
+        async with stdio_server() as (read, write):
+            await server.run(read, write, server.create_initialization_options())
+    except BaseExceptionGroup as group:
+        # A client that sends a malformed message and then closes stdin leaves
+        # newer SDKs (seen with mcp 1.30) sending an error notification into the
+        # already-closed write stream. Nobody is left to deliver it to: that is
+        # a disconnect, not a server failure, so it must not exit non-zero.
+        # Every other exception in the group is re-raised.
+        _, rest = group.split((anyio.ClosedResourceError, anyio.BrokenResourceError))
+        if rest is not None:
+            raise rest
 
 
 def main() -> None:
     # stdio remains the default transport (PyPI / MCPB / Claude Desktop users are
     # unaffected). MCP_TRANSPORT=http switches to the hosted Streamable HTTP
     # transport (see _http.py) for the Cloud Run / VM deployment.
-    server = _build_mcp_server()
-    if os.environ.get("MCP_TRANSPORT", "stdio").lower() == "http":
-        from ._http import run_http
+    from ._diagnostics import configure_diagnostics
 
-        run_http(server)
-    else:
-        asyncio.run(_run(server))
+    http = os.environ.get("MCP_TRANSPORT", "stdio").lower() == "http"
+    configure_diagnostics(version=__version__, http=http)
+    try:
+        server = _build_mcp_server()
+        if http:
+            from ._http import run_http
+
+            run_http(server)
+        else:
+            asyncio.run(_run(server))
+    finally:
+        log.info("", extra={"diagnostic_event": "shutdown"})
 
 
 if __name__ == "__main__":

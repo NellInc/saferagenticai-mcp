@@ -105,17 +105,16 @@ evidence_production:
 
     '
 confidence: medium
-needs_human_review: true
+review_status: generated_draft
 review_notes: 'The "oversight competency matrix" and "apprenticeship-preserving workflow design" patterns
   require organizational buy-in that will compete with throughput incentives. The risk of oversight inversion
   — more capable agents producing less capable overseers — is theoretically well-grounded but empirical
   measurement methods are still maturing. Cross-suite: D7::idx11 (AI addiction/dependency), D9::idx13
   (automation bias monitoring), I4 (human oversight), D9::idx3 (ex-ante impact on well-being).
 
-  RELABELED 2026-06-10: content_type changed from process to code-applicable to match the
-  design_patterns/anti_patterns blocks this file actually carries (schema contract). The prose is
-  org/process-facing, so a human reviewer may prefer restructuring into process_elements/triggers
-  instead.
+  RELABELED 2026-06-10: content_type changed from process to code-applicable to match the design_patterns/anti_patterns
+  blocks this file actually carries (schema contract). The prose is org/process-facing, so restructuring
+  into process_elements/triggers is a possible alternative.
 
   '
 version_compat:

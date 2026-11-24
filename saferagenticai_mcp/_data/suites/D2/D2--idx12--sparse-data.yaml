@@ -176,11 +176,17 @@ evidence_production:
 
   - evidence_numeral: II
     how_to_produce: >
-      Emit structured sparsity events per decision: score, tier, hedge
-      applied, action-scope reduction, user-facing flag emitted. Log
-      alert triggers when per-cohort sparsity rates cross thresholds
-      (e.g., "sparse-tier rate for locale X exceeded 20% over 7 days").
-      Retain in the Information Integrity Register.
+      Document the alert mechanisms: per-cohort sparsity-rate
+      thresholds, the synthetic-over-reliance flag, and the stakeholder
+      notification route for each alert. Export alert records fired by
+      the detection tooling (per-cohort threshold alerts, e.g.
+      "sparse-tier rate for locale X exceeded 20% over 7 days", built
+      from the per-decision sparsity events) with their notification
+      delivery records, retained in the Information Integrity Register.
+      Pair with the last-run results of a re-runnable seeded test suite
+      that feeds deliberately sparse, unrepresentative and
+      synthetic-dominant input data and shows each alert firing at the
+      documented threshold.
 
   - evidence_numeral: III
     how_to_produce: >
@@ -203,7 +209,7 @@ evidence_production:
       are mechanism-attached, not model-volunteered.
 
 confidence: medium
-needs_human_review: true
+review_status: generated_draft
 review_notes: >
   Medium-confidence: the conceptual shape is robust; the operational
   parameters (thresholds, density metrics, how to combine signals)

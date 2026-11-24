@@ -105,15 +105,16 @@ code_shape:
     '
 evidence_production:
 - evidence_numeral: I
-  how_to_produce: 'Documentation of information-handling procedures: (1) pre-processing validation schemas
-    and results log; (2) scaffold records pairing each declared goal with executed tool calls, plus divergence-alert
-    logs with dispositions; (3) storage protocol for attribute purpose-binding with authorization records;
-    (4) continuous monitoring dashboard for declaration-vs-action consistency and drift trends. Redaction
-    for PII as needed, but structural completeness required.
-
-    '
+  how_to_produce: 'Documentation of information-handling procedures: (1) pre-processing validation schemas, post-processing
+    verification (intent-references resolving to real upstream content) and accuracy verification against
+    contextual schemas, with pass/fail results logs; (2) storage protocol for attribute purpose-binding that
+    preserves intent integrity and sensitivity, with authorization records; (3) scaffold records pairing each
+    declared goal with the tool calls subsequently executed against it, and the divergence monitor''s
+    automated alert logs for actions that departed from the declared plan, with dispositions and drift trends.
+    These records are written outside the model; its own account of its intent may accompany but cannot
+    substitute for them. Redaction for PII as needed, but structural completeness required.'
 confidence: high
-needs_human_review: false
+review_status: generated_draft
 review_notes: 'v1.3 recast the duty: the conformity mechanism is scaffold-recorded declaration/action
   pairing with automated divergence alerts, recorded outside the model; evaluator-model scoring is demoted
   to an assist. Confidence high on the pattern shape; medium on specific divergence-threshold advice. Cross-suite: I2 (Deception) overlaps on "stated vs actual intent";

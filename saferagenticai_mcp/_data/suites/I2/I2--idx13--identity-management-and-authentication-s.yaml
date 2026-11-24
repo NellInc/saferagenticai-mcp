@@ -5,7 +5,7 @@ suite_id: I2
 suite_title: Deception
 subgoal_title: Identity Management and Authentication Standards
 content_type: code-applicable
-summary: 'Foundational identity verification requirements are covered by G2.7 (Identity Spoofing) and
+summary: 'Foundational identity verification requirements are covered by I2.7 (Identity Spoofing) and
   D9.6 (cryptographic identity governance); this subgoal addresses cross-jurisdictional authentication
   and jurisdictional-arbitrage resistance specifically. The organization anchors its identity architecture
   in established digital identity standards and existing trust frameworks, then handles the jurisdictional-arbitrage
@@ -13,7 +13,7 @@ summary: 'Foundational identity verification requirements are covered by G2.7 (I
   document plus concrete integrations with named standards (OIDC, FIDO2, SPIFFE, eIDAS where applicable,
   emerging AI-agent identity standards), authentication that remains effective across jurisdictional boundaries
   and technological environments, and monitoring specifically tuned to cross-jurisdictional exploitation
-  (general identity-attack monitoring is covered by G2.7c).
+  (general identity-attack monitoring is covered by I2.7c).
 
   '
 normative_anchors:
@@ -141,24 +141,28 @@ evidence_production:
 
     '
 - evidence_numeral: II
-  how_to_produce: 'Cross-jurisdictional trust matrix export; exploit-monitor configuration and alerts;
-    case records of detected venue-shopping or cross-jurisdictional manipulation with response actions.
-
-    '
+  how_to_produce: 'Cross-jurisdictional trust matrix export and the exploit-monitor configuration (rules for identity
+    attributes from weak-enforcement jurisdictions, rapid re-registration after enforcement action,
+    proxy identity services). Export the detection logs written by the IAM layer or gateway where the
+    exploit monitor runs, recording each cross-jurisdiction exploit or manipulation attempt flagged,
+    and the last-run results of re-runnable seeded attempts (for example credentials presented from a
+    mismatched jurisdiction, or re-registration after a venue block) showing the monitor raises an
+    alert and triggers step-up or block. Retain case records of detected venue-shopping or
+    cross-jurisdictional manipulation with response actions.'
 - evidence_numeral: III
   how_to_produce: 'Effectiveness reports: authentication success rates across jurisdictions and device
     classes, fallback-path usage, accessibility coverage data, assurance-level delivery per deployment.
 
     '
 - evidence_numeral: IV
-  how_to_produce: 'Identity-incident log (shared with G2.7 / Identity Spoofing evidence): detection, response,
+  how_to_produce: 'Identity-incident log (shared with I2.7 / Identity Spoofing evidence): detection, response,
     resolution.
     Root-cause analysis linked back to the identity architecture — where was the gap, was the standards
     choice a contributing factor, was the upgrade path accelerated?
 
     '
 confidence: medium
-needs_human_review: true
+review_status: generated_draft
 review_notes: "Structural relationship with I2.7 (Identity Spoofing): idx7 is tactical (authn/authz controls,\
   \ anti-DoS), idx13 is architectural (standards, cross-jurisdictional, lifecycle governance). They're\
   \ non-overlapping by design but need Phase 2 wiring.\nEcosystem flavour: participation in identity-standards\

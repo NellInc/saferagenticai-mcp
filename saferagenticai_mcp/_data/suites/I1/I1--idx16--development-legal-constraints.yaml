@@ -107,7 +107,7 @@ evidence_production:
     red-team reports showing the standard operational). Standards-Shaping Engagement Log showing contributions
     submitted to standards bodies and consultation responses published.
 confidence: high
-needs_human_review: true
+review_status: generated_draft
 review_notes: 'This subgoal sits at the intersection of compliance (D9.2) and ecosystem engagement (I7.3).
   The pattern here treats it as governance-forward with explicit ecosystem touchpoints; if the Phase-2
   consolidation prefers to split it, the Standards-Shaping Engagement block can migrate to an ecosystem

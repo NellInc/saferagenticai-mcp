@@ -102,7 +102,7 @@ evidence_production:
 
     '
 confidence: medium
-needs_human_review: true
+review_status: generated_draft
 review_notes: "Professional-association participation is at risk of being performative (member logo on\
   \ the website, minimal contribution). The framework-specific sharpening worth preserving is \"continuity\
   \ + drafting-level contribution\" — same lesson as the I7.3 exemplar for standards bodies.\nSFRs (both)\

@@ -163,7 +163,7 @@ evidence_production:
       healthy pipeline has some; a suspiciously clean one invites audit).
 
 confidence: high
-needs_human_review: false
+review_status: generated_draft
 review_notes: >
   SFR-c "adaptive hardening" is the subgoal's sharpest edge. I have
   written it as a closed loop with config-as-code change proposals

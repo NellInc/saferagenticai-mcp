@@ -67,7 +67,7 @@ stakeholders:
     corpora, common evaluation protocols, agreed severity taxonomies. Conduct evaluations of potential
     harm scales (intentional and accidental) and contribute the results to international governance and
     standards processes, retaining records of each contribution; general consequence scanning and harm
-    modeling is covered in full by G9.3b. Publish the org''s harm-scale methodology and its mapping to
+    modeling is covered in full by D9.3b. Publish the org''s harm-scale methodology and its mapping to
     international frameworks (e.g., NIST AI RMF risk categories, EU AI Act Annex III classes).
 
     '
@@ -128,7 +128,7 @@ evidence_production:
 
     '
 confidence: medium
-needs_human_review: true
+review_status: generated_draft
 review_notes: 'Ecosystem patterns age quickly — named bodies and agreements will shift. This pattern names
   current (2026) touchpoints to be actionable, with the understanding that Phase 2 consolidation or later
   versions will refresh. Two specific uncertainties: (1) SFR-d on propaganda/cybersecurity coordination

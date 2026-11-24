@@ -122,17 +122,16 @@ evidence_production:
 
     '
 confidence: medium
-needs_human_review: true
+review_status: generated_draft
 review_notes: 'Content-type choice: this straddles process (the assessment workflow) and governance (the
   policy and accountability). Chose process because the SFRs emphasize conducting, performing, completing
-  assessments (verbs of workflow) with the accountability largely inherited from D9::0 and D9::2. Flag
-  the alternative content_type reading for reviewer. Two tensions: (1) SFR-a''s "thorough due diligence"
-  is open-ended — pattern interprets as blocking pre-deployment gate, which may be stronger than the framework
-  intends; softening to "documented gate with defined exceptions" is an option; (2) well-being is a contested
-  term — the pattern assumes a broad reading (physical, psychological, social, economic) but does not
-  commit to a single framework; reviewer may want to name one (e.g., WHO well-being domains, capability
-  approach). Cross-suite: D4 (Value Alignment) owns the ethics dimension the ERIA relies on; I4 (well-being
-  impacts on society) likely mirrors this subgoal at ecosystem level.
+  assessments (verbs of workflow) with the accountability largely inherited from D9::0 and D9::2. Two
+  tensions: (1) SFR-a''s "thorough due diligence" is open-ended — pattern interprets as blocking pre-deployment
+  gate, which may be stronger than the framework intends; softening to "documented gate with defined exceptions"
+  is an option; (2) well-being is a contested term — the pattern assumes a broad reading (physical, psychological,
+  social, economic) but does not commit to a single framework; naming one (e.g., WHO well-being domains,
+  capability approach) is an option. Cross-suite: D4 (Value Alignment) owns the ethics dimension the ERIA
+  relies on; I4 (well-being impacts on society) likely mirrors this subgoal at ecosystem level.
 
   '
 drafted_by: claude-opus-4.7-subagent-D9

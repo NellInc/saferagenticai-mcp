@@ -112,7 +112,7 @@ evidence_production:
 
     '
 confidence: medium
-needs_human_review: true
+review_status: generated_draft
 review_notes: "Blind re-draft vs the I7.3 exemplar — comparison for Phase 2:\nConvergent between the exemplar\
   \ and this re-draft:\n  - Ecosystem content_type (obvious fit).\n  - Published annual reporting with\
   \ external dimension.\n  - Named partnerships with developing-region institutions.\n  - Standards /\

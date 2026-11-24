@@ -107,7 +107,7 @@ evidence_production:
 
     '
 confidence: medium
-needs_human_review: true
+review_status: generated_draft
 review_notes: 'Content-type decision: ecosystem rather than process, because the evidence is fundamentally
   external — stakeholder input, multi-locality validation, documented consultation. Process-style activities
   (the internal cross-cultural review board) do appear here but serve the ecosystem-facing work rather
@@ -122,8 +122,8 @@ review_notes: 'Content-type decision: ecosystem rather than process, because the
   genuinely balanced or extractive?); D5 (Transparency — overlay provenance); D9 (Governance — partnership
   agreements are formal instruments).
 
-  Nell should verify whether retained paid consultants is viable at smaller-org scale or should be framed
-  differently for non-frontier deployers.
+  Whether retained paid consultants is viable at smaller-org scale or should be framed differently for
+  non-frontier deployers is an open question.
 
   '
 version_compat:

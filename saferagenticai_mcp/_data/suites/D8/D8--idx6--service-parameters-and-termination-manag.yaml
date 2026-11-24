@@ -171,6 +171,7 @@ evidence_production:
 
     '
 confidence: high
+review_status: generated_draft
 review_notes: 'The framework-specific contribution here is the insistence on graduated throttling as an
   alternative to binary shutdown. Most AI products today have "ship it" and "shut it off" with nothing
   in between; SFR-a and SFR-c push against this and deserve explicit emphasis. Medium confidence on the

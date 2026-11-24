@@ -152,7 +152,7 @@ evidence_production:
       baseline was perfectly calibrated or the metric is insensitive.
 
 confidence: medium
-needs_human_review: true
+review_status: generated_draft
 review_notes: >
   Drift measurement is genuinely hard; the formulation above is a
   reasonable default but embedding-based semantic distance has known

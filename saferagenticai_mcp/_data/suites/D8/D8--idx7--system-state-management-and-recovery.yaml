@@ -163,6 +163,7 @@ evidence_production:
 
     '
 confidence: high
+review_status: generated_draft
 review_notes: 'This is well-trodden ground in distributed systems (SRE, database recovery, actor-model
   checkpointing). The framework-specific move is requiring explicit restore-vs-reset policy and side-effect
   ledger as first-class audit artefacts. Suspected cross-suite dependency: D3 Security (checkpoint storage

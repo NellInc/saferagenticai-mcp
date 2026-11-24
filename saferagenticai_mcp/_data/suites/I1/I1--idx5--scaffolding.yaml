@@ -103,11 +103,16 @@ evidence_production:
     calibration curves, failure modes identified, mitigations. Retained in governance archive; updated
     whenever a scaffold is added, retuned, or retired.'
 - evidence_numeral: III
-  how_to_produce: 'Degradation-management runbook: detection thresholds (e.g., calibration drift > X over
-    N days), triage steps, rollback procedures, principal-notification thresholds. Incident log showing
-    the runbook exercised.'
+  how_to_produce: 'Degradation-management runbook: detection thresholds (e.g., calibration drift > X over N days),
+    triage steps, rollback procedures, principal-notification thresholds, and an incident log showing the
+    runbook exercised. Add the results of the calibration-on-holdout measurement, run by a harness
+    outside the scaffold: the system''s stated confidence after self-validation scored against
+    ground-truth outcomes on the held-out battery, pre- versus post-scaffold, with calibration curves and
+    confidence-inflation figures per scaffold_version, plus the battery and scoring code so an assessor
+    can re-run them. Heterogeneous-validator or other model verdicts may accompany but cannot substitute
+    for these ground-truth calibration results.'
 confidence: medium
-needs_human_review: true
+review_status: generated_draft
 review_notes: '"Scaffolding" in the framework is broader than the code-applicable framing used here; it
   also carries an ecosystem flavour (multi-agent frames, cultural divergence). I''ve kept the dominant
   content-type code-applicable because the SFRs a/b/c/e all resolve to instrumentation decisions; SFR-d

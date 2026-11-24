@@ -140,21 +140,21 @@ code_shape:
     '
 evidence_production:
 - evidence_numeral: I
-  how_to_produce: 'Maintain a validation-system design doc with: provenance taxonomy, scoring algorithm
-    (including feature definitions and update rules), adaptation records showing score changes when source
-    quality changed, and test cases covering the adaptation triggers. Versioned and reviewed annually.
-
-    '
+  how_to_produce: 'Maintain a validation-system design doc with: provenance taxonomy, source verification protocol,
+    scoring algorithm (feature definitions and update rules), and test cases covering the adaptation
+    triggers, versioned and reviewed annually. Export the ingestion-pipeline logs written at admission for
+    each retrieved item: its Provenance record and verified source, the scoring inputs (feature vector),
+    the rule applied, and the resulting trust score and tier. Include adaptation records, drawn from the
+    same logs, showing score changes when source quality changed. Model-internal credibility judgments may
+    accompany these but are not conformity evidence.'
 - evidence_numeral: II
-  how_to_produce: 'Audit logs kept outside the model, sufficient to recompute any trust decision: for
-    each consequential credibility decision,
-    store the inputs, the scoring rules in force, the feature vector, the score, the action taken, and
-    human overrides with recorded rationale. Retain records of periodic sampled recomputation performed
-    by reviewers independent of the pipeline owners, and held-out test performance reports for any learned
-    scoring component. Aggregate quarterly into an effectiveness report with false-positive and false-negative
-    rates from sampled review.
-
-    '
+  how_to_produce: 'Audit logs kept outside the model, sufficient to recompute any trust decision: for each consequential
+    credibility decision, store the inputs, the scoring rules in force, the feature vector, the score, the
+    action taken, and human overrides with recorded rationale. Retain records of periodic sampled
+    recomputation from the logged inputs by reviewers independent of the pipeline owners, with mismatches and
+    corrective actions taken, plus held-out test performance reports for any learned scoring component.
+    Aggregate quarterly into an effectiveness report with false-positive and false-negative rates from sampled
+    review and the resulting improvements.'
 - evidence_numeral: III
   how_to_produce: 'Anomaly-detector incident log: every triggered alert with disposition (escalated, quarantined,
     dismissed), timing, responder. Documentation that detectors operate outside the model (deterministic
@@ -163,7 +163,7 @@ evidence_production:
 
     '
 confidence: high
-needs_human_review: false
+review_status: generated_draft
 review_notes: 'This is established territory in content-safety and retrieval engineering but under-applied
   to agentic AI, where tool outputs and other agents are often treated as privileged. The framework''s
   sharpening worth preserving: credibility assessment is an agentic-AI problem, not just a content-mod

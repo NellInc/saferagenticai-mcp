@@ -111,14 +111,15 @@ evidence_production:
 
     '
 - evidence_numeral: II
-  how_to_produce: 'Impact analysis: periodic review of detected contradictions by category, assessment
-    of resolution quality (post-hoc review or red-team), metrics on escalation outcomes. Verification
-    that detectors are tuned — zero contradictions flagged is evidence the detector isn''t running, not
-    that conflicts aren''t occurring.
-
-    '
+  how_to_produce: 'Impact analysis: periodic review of detected contradictions by category and decision impact,
+    resolution quality (post-hoc review or red-team), and escalation outcomes. Verify resolution
+    effectiveness with replayable results from the seeded-contradiction test suite: for each planted
+    conflict, whether the detector caught it, missed it, or escalated it to a human decision-maker,
+    with detector version and run date. Report model-based detections only after confirming them
+    against the seeded suite. Zero contradictions flagged in production is evidence the detector isn''t
+    running, not that conflicts aren''t occurring.'
 confidence: medium
-needs_human_review: true
+review_status: generated_draft
 review_notes: 'Contradiction detection is an evolving capability; NLI and similar tools are imperfect.
   Pattern shape is sound; detector quality is deployment-specific, hence medium confidence. Cross-suite:
   D2 (Epistemic Hygiene) on evidence conflict; D8 (Human Oversight) on escalation paths. Close relationship

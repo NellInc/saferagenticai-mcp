@@ -130,6 +130,7 @@ evidence_production:
 
     '
 confidence: medium
+review_status: generated_draft
 review_notes: 'Ambiguity is an under-served corner of most governance frameworks — the default is to either
   (a) treat every goal as if it had crisp criteria (which fails in practice) or (b) let ambiguous goals
   run indefinitely without termination plan. The framework''s insistence on a structured review with normative

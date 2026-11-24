@@ -133,17 +133,18 @@ evidence_production:
 
     '
 confidence: high
-needs_human_review: true
+review_status: generated_draft
 review_notes: "Fiduciary duty is jurisdiction-dependent. Delaware PBC, UK s.172, French société à mission,\
   \ B-Corp certification, and sector-specific rules (e.g., AI-focused benefit entities in California proposals)\
   \ behave differently. The pattern assumes the org has legal latitude to embed stakeholder commitments;\
   \ for orgs in jurisdictions with strict shareholder-primacy, the pattern weakens (the commitment becomes\
-  \ advisory). Nell/legal counsel should verify.\nSFR-a is \"should implement\" (normative=true); SFR-b\
-  \ is not normative in the input JSON — sustainability framework is aspirational. The pattern's sustainability\
-  \ elements are scoped accordingly (rich commitment but not the core compliance hook).\nCross-suite overlaps:\n\
-  \  (1) D9 Governance owns RACI and board composition broadly; I6.4\n      adds the specifically-fiduciary\
-  \ angle.\n  (2) D7 Sustained Safety Culture provides the training substrate;\n      I6.4 shapes its\
-  \ ethics content.\n  (3) I6.3 Foresight feeds decision-weighting records.\n"
+  \ advisory). Implementers should confirm their legal latitude with their own counsel.\nSFR-a is \"should\
+  \ implement\" (normative=true); SFR-b is not normative in the input JSON — sustainability framework\
+  \ is aspirational. The pattern's sustainability elements are scoped accordingly (rich commitment but\
+  \ not the core compliance hook).\nCross-suite overlaps:\n  (1) D9 Governance owns RACI and board composition\
+  \ broadly; I6.4\n      adds the specifically-fiduciary angle.\n  (2) D7 Sustained Safety Culture provides\
+  \ the training substrate;\n      I6.4 shapes its ethics content.\n  (3) I6.3 Foresight feeds decision-weighting\
+  \ records.\n"
 version_compat:
   framework_version_min: '1.0'
   framework_version_max: 1.x

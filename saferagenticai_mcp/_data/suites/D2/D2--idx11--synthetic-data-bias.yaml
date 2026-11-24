@@ -13,7 +13,7 @@ summary: >
   way to re-encode the generator's existing biases into the training
   signal at higher fidelity. The subgoal asks for mechanisms that treat
   synthetic data as a managed intervention: bounded in volume, explicit
-  in purpose, provenance-tagged so bias monitoring (per D2.4/G2.4b) can
+  in purpose, provenance-tagged so bias monitoring (per D2.4b) can
   attribute observed drift to synthetic augmentation, continuously
   monitored for distributional and behavioural impact, and never a
   silent substitute for real data from under-represented populations.
@@ -24,8 +24,8 @@ summary: >
 normative_anchors:
   sfrs_addressed: [a, b, c]
   evidence_addressed: [I, II, III]
-  sfrs_not_addressed: []
-  evidence_not_addressed: []
+  sfrs_not_addressed: [d]
+  evidence_not_addressed: [IV]
 
 cross_references:
   - "D2::idx3::sanity-checking"
@@ -56,7 +56,7 @@ design_patterns:
       generation_parameters_hash, generated_at, purpose_id). Training
       and evaluation pipelines can compute and report the ratio per
       slice without recomputation, and bias monitoring (specified in
-      G2.4b, which this provenance supplements) can attribute observed
+      D2.4b, which this provenance supplements) can attribute observed
       drift to synthetic augmentation.
     maps_to_sfr: [b, c]
     when_to_use: Any dataset mixing real and synthetic data.
@@ -190,7 +190,7 @@ evidence_production:
       post-hoc impact assessment.
 
 confidence: medium
-needs_human_review: true
+review_status: generated_draft
 review_notes: >
   Medium-confidence — synthetic data practice is evolving quickly and
   the "right" volume cap is context-dependent. Calls:

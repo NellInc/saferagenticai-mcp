@@ -149,18 +149,21 @@ evidence_production:
 
     '
 - evidence_numeral: IV
-  how_to_produce: 'Human oversight protocol for uncertainty escalations: queue, SLA, verdict record, link
-    back to the original decision''s outcome distribution — plus escalation logs demonstrating that
-    oversight fired whenever the scaffold-computed signal exceeded the documented threshold.
-
-    '
+  how_to_produce: 'Human oversight protocol for uncertainty escalations: queue, SLA, verdict record, link back to the
+    original decision''s outcome distribution, plus intervention records of the human verdicts. Export
+    the scaffold escalation logs (AUDIT uncertainty_escalation entries with their PROBREG records) per
+    decision class, showing for each decision the computed uncertainty proxy value (ensemble
+    disagreement, sample variance, retrieval coverage), the documented threshold in force, and the
+    HUMAN_QUEUE request fired whenever the value exceeded it; a threshold breach with no request is a
+    finding. Model-stated confidence may be logged alongside but is not the signal and cannot substitute
+    for these logs.'
 - evidence_numeral: V
   how_to_produce: 'Training records for personnel interpreting probabilistic outputs: curriculum on calibration,
     distribution visualization, decision- theoretic basics. Cross-reference to D7.2 training pipeline.
 
     '
 confidence: high
-needs_human_review: true
+review_status: generated_draft
 review_notes: 'Updated for v1.3 catalog revision: SFR-a now locates the outcome analysis in design-time
   and periodic human review (runtime model enumeration explicitly does not constitute it) with
   config-enforced mitigations; SFR-c requires the uncertainty signal to be scaffold-computed from

@@ -151,14 +151,14 @@ evidence_production:
 
     '
 confidence: high
-needs_human_review: true
+review_status: generated_draft
 review_notes: 'Heavy overlap with D9.3 (regulatory compliance within the governance suite) — the D7.3
   slice is the "keep it running over time" lens; D9.3 tends to be the structural governance lens. Consolidation
   should cross-reference, not duplicate. Specific jurisdictions (EU AI Act, GDPR, sector regulators) would
   sharpen this further but age fast — named the program mechanics rather than the specific bodies. SFR-e''s
   "collaborative relationships with regulatory bodies" is non-normative in the input but is exactly the
-  kind of thing regulators increasingly expect — flagged for human review on whether to upgrade to a stronger
-  ask. Cross-suite: D9 governance, I7 (international coordination).
+  kind of thing regulators increasingly expect — whether to upgrade it to a stronger ask is an open question.
+  Cross-suite: D9 governance, I7 (international coordination).
 
   '
 version_compat:

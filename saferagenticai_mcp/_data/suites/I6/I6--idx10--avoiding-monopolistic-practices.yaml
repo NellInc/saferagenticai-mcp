@@ -103,7 +103,7 @@ evidence_production:
 
     '
 confidence: medium
-needs_human_review: true
+review_status: generated_draft
 review_notes: "This subgoal is the one most squarely in tension with commercial reality: frontier-scale\
   \ orgs have obvious incentives to enclose safety infrastructure. The pattern's mechanisms are genuine\
   \ but require board-level commitment to work. Failure mode is silent drift: safety infrastructure stays\
@@ -114,9 +114,9 @@ review_notes: "This subgoal is the one most squarely in tension with commercial 
   \ governs what can be released; I6.10 says\n      release it.\n  (3) D9 governance provides the compliance\
   \ framing for\n      regulator engagement.\n\nLegal note: in some jurisdictions, affirmative commitments\
   \ to share safety tooling can raise antitrust concerns (Rule of Reason analysis of safety-coordination\
-  \ among competitors). Nell and counsel should verify the safe-harbor pattern — most competition regulators\
-  \ have affirmed that coordinated AI safety work is procompetitive, but the specific licensing and governance\
-  \ mechanisms matter.\n"
+  \ among competitors). Most competition regulators have affirmed that coordinated AI safety work is procompetitive,\
+  \ but the specific licensing and governance mechanisms matter; implementers should confirm the safe-harbor\
+  \ pattern with their own counsel.\n"
 version_compat:
   framework_version_min: '1.0'
   framework_version_max: 1.x

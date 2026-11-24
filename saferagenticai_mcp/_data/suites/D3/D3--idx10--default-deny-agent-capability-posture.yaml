@@ -185,15 +185,14 @@ evidence_production:
       the default-deny posture.
 
 confidence: high
-needs_human_review: false
+review_status: generated_draft
 review_notes: >
-  Phase 3: Initial draft, awaiting human review. SFR and evidence
-  descriptions in criteria-v1.json are empty; content derived from the
-  subgoal description. This pattern pairs tightly with D3.9 (tool-use
-  authorization): D3.10 establishes the posture (deny by default),
-  D3.9 provides the per-invocation mechanism. Operational heuristic
-  "Trust Zone Architecture" is the closest match. The escalation
-  protocol pattern is drawn from production agent deployment
+  SFR and evidence descriptions in criteria-v1.json are empty; content
+  derived from the subgoal description. This pattern pairs tightly with
+  D3.9 (tool-use authorization): D3.10 establishes the posture (deny by
+  default), D3.9 provides the per-invocation mechanism. Operational
+  heuristic "Trust Zone Architecture" is the closest match. The
+  escalation protocol pattern is drawn from production agent deployment
   experience (Claude Code's permission model is a real-world
   implementation of this posture). The "broad grants to reduce
   permission prompts" anti-pattern names a genuine ergonomic tension

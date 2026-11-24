@@ -147,7 +147,7 @@ evidence_production:
 
     '
 confidence: medium
-needs_human_review: true
+review_status: generated_draft
 review_notes: "This subgoal is an exercise in distinguishing desirable adaptation from undesirable drift\
   \ — a line that is hard to draw precisely in the abstract and easier per-deployment. I've leaned on\
   \ the envelope-as-contract framing because it gives developers a concrete artifact; that framing is\

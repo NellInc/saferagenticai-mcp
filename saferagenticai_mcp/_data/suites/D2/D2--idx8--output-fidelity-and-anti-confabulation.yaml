@@ -166,12 +166,16 @@ evidence_production:
       Document the source attribution mechanism: how the scaffold pins
       citations to retrieved passages, the deterministic
       presence-in-source check, and the retrieved/inferred/generated
-      labelling scheme. Pair with test results (including adversarial
-      queries designed to elicit fabrication) showing the system
-      correctly identifies when it lacks sufficient evidence for a
-      factual claim — abstention and suppression logs, citation-check
-      pass/fail rates, and flagged-claim records with corrective
-      actions taken.
+      labelling scheme. Export the scaffold's citation-pinning records
+      linking each citation to the retrieved content it cites, with the
+      validator's pass/fail log. Pair with results of a re-runnable
+      seeded test set that injects fabricated and mismatched citations
+      and shows each rejected before delivery, and adversarial queries
+      designed to elicit fabrication showing the system identifies when
+      it lacks sufficient evidence (abstention and suppression logs,
+      flagged-claim records with corrective actions taken).
+      Model-authored provenance labels may accompany these records but
+      cannot substitute for them.
 
   - evidence_numeral: III
     how_to_produce: >
@@ -183,7 +187,7 @@ evidence_production:
       capitulation rates regressed.
 
 confidence: medium
-needs_human_review: false
+review_status: generated_draft
 review_notes: >
   Updated for the v1.3-draft catalog revision: SFR letters now carry
   explicit texts (a calibration, b scaffold-pinned attribution,

@@ -162,6 +162,7 @@ evidence_production:
 
     '
 confidence: high
+review_status: generated_draft
 review_notes: 'Allocation/fairness/quotas is canonical resource-scheduler engineering (k8s scheduler,
   YARN, SLURM). Framework-specific: the v1.3 requirement that organizations define, justify, and monitor
   their own fairness and headroom thresholds (replacing the earlier fixed 10% / 90% anchors), capacity

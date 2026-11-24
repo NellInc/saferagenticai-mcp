@@ -102,8 +102,8 @@ evidence_production:
 
     '
 confidence: low
+review_status: generated_draft
 evidence_maturity: aspirational
-needs_human_review: true
 review_notes: "Agency attribution under consciousness uncertainty is genuinely unsolved; the pattern is\
   \ a structured way to act under that uncertainty, not a claim to resolve it. Sharpenings:\n  (1) \"\
   Genuine openness in both directions\" (SFR-b) is the framework's\n      protection against both over-\

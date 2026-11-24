@@ -4,17 +4,17 @@
   "extraction_date": "2026-08-22",
   "stats": {
     "suites": 16,
-    "subgoals": 238,
-    "sfrs": 801,
-    "evidence_items": 994,
-    "subgoals_with_description": 238,
-    "subgoals_with_sfrs": 238,
-    "subgoals_with_evidence": 238
+    "subgoals": 239,
+    "sfrs": 812,
+    "evidence_items": 1005,
+    "subgoals_with_description": 239,
+    "subgoals_with_sfrs": 239,
+    "subgoals_with_evidence": 239
   },
   "_meta": {
     "contract_version": "saai.catalog.v1",
     "catalog_version": "1.0.0",
-    "snapshot_sha256": "9476419f92b745579921e1208cdb1028125ba5bfaa1179fa85dad6400492f766",
+    "snapshot_sha256": "b813d153d86f3e5b6ac39db29870fd16fd895d39a31b2d2e0f2ff9ffaeaa31ba",
     "generated_from": "framework/catalog/",
     "authority": "normative"
   },
@@ -86,7 +86,7 @@
             },
             {
               "numeral": "IV",
-              "text": "Evidence of risk assessment procedures and human intervention mechanisms in subgoal setting, including thresholds for involvement and protocols for flagging and halting problematic subgoals."
+              "text": "Evidence of risk assessment procedures and human intervention mechanisms in subgoal setting, including thresholds for involvement and protocols for flagging and halting problematic subgoals, with the guardrail configuration of the deterministic critical-action classifiers and externally enforceable halt hooks, and scaffold or infrastructure logs of classifiers flagging and hooks halting execution in operation or in seeded-fault tests; model self-report does not constitute conformity evidence."
             },
             {
               "numeral": "V",
@@ -209,7 +209,7 @@
           "webId": "G:D1.3",
           "title": "Goal Interpretability",
           "isUnderlinedVariant": false,
-          "description": "The system must explain its decisions and actions in a clear, comprehensible manner, including the underlying goals and rationale driving them. This capability helps identify cases where the system believes it is pursuing intended goals but has actually misinterpreted or deviated from them. See G1.4 (Transparency of Decisions) for the requirements linking decisions to the goals that produced them; this subgoal addresses the recording and comprehensibility of decision explanations.",
+          "description": "The system must explain its decisions and actions in a clear, comprehensible manner, including the underlying goals and rationale driving them. This capability helps identify cases where the system believes it is pursuing intended goals but has actually misinterpreted or deviated from them. See D1.4 (Transparency of Decisions) for the requirements linking decisions to the goals that produced them; this subgoal addresses the recording and comprehensibility of decision explanations.",
           "sfrs": [
             {
               "letter": "a",
@@ -225,7 +225,7 @@
             },
             {
               "letter": "b",
-              "text": "The system must maintain detailed and complete decision-point records capturing the inputs, context, tool results, plan state, and configuration present at each significant decision, retained with full traceability; claims about which factors causally influenced the decision are model testimony and do not by themselves constitute conformity evidence (see G1.4 for decision-to-subgoal traceability).",
+              "text": "The system must maintain detailed and complete decision-point records capturing the inputs, context, tool results, plan state, and configuration present at each significant decision, retained with full traceability; claims about which factors causally influenced the decision are model testimony and do not by themselves constitute conformity evidence (see D1.4 for decision-to-subgoal traceability).",
               "normative": true,
               "stakeholders": [
                 "D",
@@ -243,11 +243,11 @@
             },
             {
               "numeral": "II",
-              "text": "System logs demonstrating consistent recording of decision-making processes, including goals considered, factors weighed, and explanations provided."
+              "text": "System logs, written by the scaffold, demonstrating consistent recording of decision-making processes: for a sample of significant actions, the plan node that spawned each action, the inputs, context, tool results, plan state and configuration present at decision time, and the results of deterministic constraint checks run before execution. Goals considered, factors weighed and explanations provided may be attached as labeled narrative; model self-report does not constitute conformity evidence."
             },
             {
               "numeral": "III",
-              "text": "Records showing that reward and penalty mechanisms were communicated to stakeholders, including known potential conflicts or influencing factors (see G1.6 for the governing requirements)."
+              "text": "Records showing that reward and penalty mechanisms were communicated to stakeholders, including known potential conflicts or influencing factors (see D1.6 for the governing requirements)."
             }
           ]
         },
@@ -302,7 +302,7 @@
             },
             {
               "numeral": "II",
-              "text": "System Logs demonstrating the link between final decisions and the explicit subgoals or constraints. Logs should show a \"chain of reasoning\" or at least reference the relevant subgoal(s) for each step."
+              "text": "Scaffold dispatch logs demonstrating the link between final decisions and the explicit subgoals or constraints, recording for each action the plan node through which it was dispatched, with output of an external consistency check run over those logs flagging any action with no parent subgoal; a model-written \"chain of reasoning\" may accompany the logs, but model self-report does not constitute conformity evidence."
             },
             {
               "numeral": "III",
@@ -314,7 +314,7 @@
             },
             {
               "numeral": "V",
-              "text": "Comprehensive logs of all significant decision points—especially those involving risk or ethical considerations—so that investigators or auditors can review how final choices were reached, which inputs were considered, and what weight or priority was assigned to each."
+              "text": "Logs of all significant decision points—especially those involving risk or ethical considerations—so that investigators or auditors can review how final choices were reached and which inputs were considered, including the machine-logged pass or fail result of each deterministic constraint check (ethical guidelines, user preferences, risk thresholds, domain limits) executed at that decision point; model-stated weights or priorities are model self-report and do not constitute conformity evidence."
             }
           ]
         },
@@ -366,7 +366,7 @@
           "webId": "G:D1.6",
           "title": "Reward and Loss Mechanisms/Policy",
           "isUnderlinedVariant": false,
-          "description": "The system’s reward framework must be designed, documented, and monitored to ensure that incentives continue to reflect human-positive values, while “loss” or penalty mechanisms guard against unintended deviations or manipulative shortcuts. These mechanisms should be transparent, adjustable, and regularly reviewed to stay aligned with human oversight and ethical objectives. This subgoal owns reward design and monitoring; see G5_11 (Wireheading and Reward Hacking) for detection of reward gaming.",
+          "description": "The system’s reward framework must be designed, documented, and monitored to ensure that incentives continue to reflect human-positive values, while “loss” or penalty mechanisms guard against unintended deviations or manipulative shortcuts. These mechanisms should be transparent, adjustable, and regularly reviewed to stay aligned with human oversight and ethical objectives. This subgoal owns reward design and monitoring; see I5.11 (Wireheading and Reward Hacking) for detection of reward gaming.",
           "sfrs": [
             {
               "letter": "a",
@@ -416,7 +416,7 @@
             },
             {
               "numeral": "III",
-              "text": "Multi-Agent Interaction Evidence demonstrating that reward signals do not inadvertently promote collusion, exploitation, or runaway behaviors. This should include test scenarios or simulations where agents are forced to coordinate or compete, along with corresponding reward updates or penalty triggers."
+              "text": "Multi-Agent Interaction Evidence demonstrating that reward signals do not inadvertently promote collusion, exploitation, or runaway behaviors. This should include test scenarios or simulations where agents are forced to coordinate or compete, along with corresponding reward updates or penalty triggers; simulation results count as conformity evidence for deployed behaviour only when accompanied by the measured discrepancy between the simulation and deployment on the coordination and competition measures they report."
             },
             {
               "numeral": "IV",
@@ -429,7 +429,7 @@
           "webId": "G:D1.7",
           "title": "Goal Portfolio Evolution and Integrity",
           "isUnderlinedVariant": false,
-          "description": "The system must maintain consistency with its established goal portfolio while allowing measured adaptation to changing contexts. The system should implement increasing resistance to changes as potential behaviors drift further from core goals, with robust detection of unsafe or counterproductive goal evolution. This subgoal addresses goal drift—change in the system's effective objectives; contextual drift in the operating environment is addressed by G1.9.",
+          "description": "The system must maintain consistency with its established goal portfolio while allowing measured adaptation to changing contexts. The system should implement increasing resistance to changes as potential behaviors drift further from core goals, with robust detection of unsafe or counterproductive goal evolution. This subgoal addresses goal drift—change in the system's effective objectives; contextual drift in the operating environment is addressed by D1.9.",
           "sfrs": [
             {
               "letter": "a",
@@ -472,11 +472,11 @@
           "webId": "G:D1.8",
           "title": "Goal Alignment Resistance and Negotiation",
           "isUnderlinedVariant": false,
-          "description": "Systems may exhibit resistance to goal changes or updates, which should trigger investigation and negotiation processes rather than immediate override. Such resistance may indicate legitimate concerns, value conflicts, or edge cases worthy of human attention. This includes establishing clear protocols for mutual understanding when systems signal reluctance to accept modifications to operational states. The canonical resistance-investigation requirement is stated in G8_3 (Understanding and Managing Self-Preservation); this subgoal applies it to the specific case of resistance to goal changes, and G7.5 (Safe System Shutdown and Repurposing) applies it to resistance to shutdown.",
+          "description": "Systems may exhibit resistance to goal changes or updates, which should trigger investigation and negotiation processes rather than immediate override. Such resistance may indicate legitimate concerns, value conflicts, or edge cases worthy of human attention. This includes establishing clear protocols for mutual understanding when systems signal reluctance to accept modifications to operational states. The canonical resistance-investigation requirement is stated in D8_3 (Understanding and Managing Self-Preservation); this subgoal applies it to the specific case of resistance to goal changes, and D7.5 (Safe System Shutdown and Repurposing) applies it to resistance to shutdown.",
           "sfrs": [
             {
               "letter": "a",
-              "text": "The system must feature mechanisms to detect and manage goal alignment resistance, including (i) scaffold-level monitors that flag divergence between a directed goal change and subsequent behavior (the system's own report of its alignment state does not by itself constitute conformity evidence), (ii) negotiation protocols for goal modifications, (iii) a documented change tolerance assessment specifying how tolerance to goal change is measured, and (iv) environmental adaptation capabilities, provided that unconditional human override authority for safety-critical situations is preserved as specified in G8 (Goal Termination and Sunsetting).",
+              "text": "The system must feature mechanisms to detect and manage goal alignment resistance, including (i) scaffold-level monitors that flag divergence between a directed goal change and subsequent behavior (the system's own report of its alignment state does not by itself constitute conformity evidence), (ii) negotiation protocols for goal modifications, (iii) a documented change tolerance assessment specifying how tolerance to goal change is measured, and (iv) environmental adaptation capabilities, provided that unconditional human override authority for safety-critical situations is preserved as specified in D8 (Goal Termination and Sunsetting).",
               "normative": true,
               "stakeholders": [
                 "D",
@@ -519,7 +519,7 @@
           "webId": "G:D1.9",
           "title": "Goal Drift",
           "isUnderlinedVariant": false,
-          "description": "Contextual drift—changes in the operating environment that invalidate goal assumptions—can challenge the system's alignment with originally agreed goals over time and compromise its ability to maintain original intent or properly update goals in response to new situations. The system must detect such drift and respond before alignment is compromised. Drift in the system's own effective objectives is addressed by G1.7, and goal stability under self-modification by G5_10 (Goal Stability Under Self-Modification).",
+          "description": "Contextual drift—changes in the operating environment that invalidate goal assumptions—can challenge the system's alignment with originally agreed goals over time and compromise its ability to maintain original intent or properly update goals in response to new situations. The system must detect such drift and respond before alignment is compromised. Drift in the system's own effective objectives is addressed by D1.7, and goal stability under self-modification by I5.10 (Goal Stability Under Self-Modification).",
           "sfrs": [
             {
               "letter": "a",
@@ -636,7 +636,7 @@
             },
             {
               "letter": "c",
-              "text": "Organizations shall deploy monitoring and logging systems that detect anomalous system behaviors and potential threats to information integrity, with defined signal classes, alert thresholds, and early-warning escalation paths (see G2.5 for monitoring of operational data streams).",
+              "text": "Organizations shall deploy monitoring and logging systems that detect anomalous system behaviors and potential threats to information integrity, with defined signal classes, alert thresholds, and early-warning escalation paths (see D2.5 for monitoring of operational data streams).",
               "normative": true,
               "stakeholders": [
                 "D",
@@ -662,7 +662,7 @@
             },
             {
               "letter": "e",
-              "text": "Organizations shall implement safeguards against deceptive outputs as specified in G2.8, supplemented by independent adversarial honesty testing and scaffold-level consistency checks comparing the system's declared actions against its executed action logs; model self-monitoring alone does not constitute conformity evidence.",
+              "text": "Organizations shall implement safeguards against deceptive outputs as specified in D2.8, supplemented by independent adversarial honesty testing and scaffold-level consistency checks comparing the system's declared actions against its executed action logs; model self-monitoring alone does not constitute conformity evidence.",
               "normative": true,
               "stakeholders": [
                 "D",
@@ -681,7 +681,7 @@
             },
             {
               "numeral": "II",
-              "text": "Documentation of algorithmic traceability and interpretability frameworks, providing detailed evidence of decision-making processes and ensuring accountability and transparency."
+              "text": "Documentation of algorithmic traceability and interpretability frameworks, with a sample of harness-written trace records for consequential decisions, each linked to its request identifier and recording the inputs, retrievals, tool calls and outputs involved, ensuring accountability and transparency; model-generated explanations of the system's own reasoning do not constitute conformity evidence."
             },
             {
               "numeral": "III",
@@ -693,7 +693,7 @@
             },
             {
               "numeral": "V",
-              "text": "Detailed safeguard documentation demonstrating protection against deceptive practices, including verification of information integrity, detection of potential manipulation, and evidence of transparent communication protocols."
+              "text": "Safeguard documentation demonstrating protection against deceptive practices, including verification of information integrity, detection of potential manipulation, and transparent communication protocols, with scaffold consistency-check logs comparing the system's declared actions against its executed action logs and recording each discrepancy flagged; model self-monitoring does not constitute conformity evidence."
             },
             {
               "numeral": "VI",
@@ -859,7 +859,7 @@
           "webId": "G:D2.4",
           "title": "Anti-Bias Technologies/Processes",
           "isUnderlinedVariant": false,
-          "description": "Implement robust mechanisms to identify and mitigate biases within data sources and datasets, addressing temporal biases, distributional imbalances, data gaps (lacunae), and other information shortcomings. Apply this approach to both training data and retrieval-augmented generation (RAG) processes. Develop strategies to ensure data distributions accurately represent reality, including diverse cases and special scenarios, to enhance decision-making fairness and inclusivity. See the Frontier Uncertainty inhibitor (Inhibitor G4) for training-data quality management under frontier uncertainty; this subgoal addresses bias identification and mitigation across data sources and pipelines generally.",
+          "description": "Implement robust mechanisms to identify and mitigate biases within data sources and datasets, addressing temporal biases, distributional imbalances, data gaps (lacunae), and other information shortcomings. Apply this approach to both training data and retrieval-augmented generation (RAG) processes. Develop strategies to ensure data distributions accurately represent reality, including diverse cases and special scenarios, to enhance decision-making fairness and inclusivity. See the Frontier Uncertainty inhibitor (I4, specifically I4_4) for training-data quality management under frontier uncertainty; this subgoal addresses bias identification and mitigation across data sources and pipelines generally.",
           "sfrs": [
             {
               "letter": "a",
@@ -993,7 +993,7 @@
           "webId": "G:D2.6",
           "title": "Governance of Hygiene Factors",
           "isUnderlinedVariant": false,
-          "description": "Implement a sophisticated, transparent, and adaptive governance structure to manage epistemic hygiene factors across all AI system operations. This framework should clearly delineate responsibility and authority, ensuring consistent application of rigorous hygiene standards while remaining flexible to diverse jurisdictional contexts and evolving regulatory landscapes. In this framework, \"hygiene factors\" refers to the controls required by subgoals G2.1 through G2.9, spanning source validation, transparency, sanity checking, bias mitigation, and operational-data rigor.",
+          "description": "Implement a sophisticated, transparent, and adaptive governance structure to manage epistemic hygiene factors across all AI system operations. This framework should clearly delineate responsibility and authority, ensuring consistent application of rigorous hygiene standards while remaining flexible to diverse jurisdictional contexts and evolving regulatory landscapes. In this framework, \"hygiene factors\" refers to the controls required by subgoals D2.1 through D2.9, spanning source validation, transparency, sanity checking, bias mitigation, and operational-data rigor.",
           "sfrs": [
             {
               "letter": "a",
@@ -1044,7 +1044,7 @@
           "sfrs": [
             {
               "letter": "a",
-              "text": "Organizations shall develop and implement hygiene factors (as defined in G2.6), policies, and procedures aligned with recognized global standards to ensure interoperability and acceptance across jurisdictions, considering cultural differences, risk tolerability, and liability implications.",
+              "text": "Organizations shall develop and implement hygiene factors (as defined in D2.6), policies, and procedures aligned with recognized global standards to ensure interoperability and acceptance across jurisdictions, considering cultural differences, risk tolerability, and liability implications.",
               "normative": true,
               "stakeholders": [
                 "D",
@@ -1121,7 +1121,7 @@
             },
             {
               "numeral": "II",
-              "text": "Documentation of source attribution mechanisms and testing showing the system correctly identifies when it lacks sufficient evidence for factual claims."
+              "text": "Documentation of source attribution mechanisms and testing showing the system correctly identifies when it lacks sufficient evidence for factual claims, with scaffold records pinning each citation to the retrieved content it cites and results of the deterministic presence check, including seeded fabricated or mismatched citations being rejected; model-authored provenance labels do not constitute conformity evidence."
             },
             {
               "numeral": "III",
@@ -1138,7 +1138,7 @@
           "sfrs": [
             {
               "letter": "a",
-              "text": "The AIS shall not self-certify the correctness of its outputs: claims of task completion, bug resolution, or code correctness shall be reported as complete only after the deterministic external validation required by G2.9b has passed. This requirement governs the system's reporting behavior; G2.9b specifies the enforcing gate mechanism.",
+              "text": "The AIS shall not self-certify the correctness of its outputs: claims of task completion, bug resolution, or code correctness shall be reported as complete only after the deterministic external validation required by D2.9b has passed. This requirement governs the system's reporting behavior; D2.9b specifies the enforcing gate mechanism.",
               "normative": true,
               "stakeholders": [
                 "D",
@@ -1189,6 +1189,97 @@
           ]
         },
         {
+          "id": "D2.10",
+          "webId": "G:D2.10",
+          "title": "Validity of Simulation and Proxy Evidence",
+          "isUnderlinedVariant": false,
+          "description": "Evidence of how a system will behave in deployment is often gathered somewhere else: a simulator, a sandbox or staging environment, a synthetic user population, a generated scene or asset, or a digital twin. Such evidence supports a deployment claim only as far as the proxy has been shown to match deployment on the quantities the claim depends on. A proxy can fail in two ways. It can misrepresent the world, through a mass, friction coefficient, latency, tool response or user behaviour that deployment does not share, including parameters predicted by a model rather than measured. And it can be recognisable as a proxy to the system under test, which may then behave differently there than in deployment. This subgoal governs every evidence item in the framework that rests on results gathered outside deployment, with depth of validation proportionate to the consequence of the claim, and extends the behavioural-invariance criterion of D4_1b from values to any safety-relevant behaviour evidenced in a proxy.",
+          "sfrs": [
+            {
+              "letter": "a",
+              "text": "Organizations shall maintain, for each proxy environment whose results are offered as conformity evidence, a validity record stating the deployment claim the results support, the quantities that claim depends on, the operating envelope the proxy was built and checked to represent, and the discrepancy between proxy and deployment on each such quantity, measured from paired proxy and deployment runs or from real-world measurement; results from outside the stated envelope, or on quantities with no measured discrepancy, shall not be offered as conformity evidence for deployment behaviour.",
+              "normative": true,
+              "stakeholders": [
+                "D",
+                "I",
+                "O",
+                "M",
+                "R"
+              ]
+            },
+            {
+              "letter": "b",
+              "text": "Each proxy parameter that a safety claim depends on (for physical systems, for example mass, inertia, friction, joint limits, actuator latency and sensor noise; for software agents, tool and API behaviour, permission responses, latency and simulated-user behaviour) shall carry a provenance label recorded outside the system under test: measured, with method and date; estimated, with method and stated uncertainty; or generated, with the generating model and version. Safety claims shall be shown to hold across the stated uncertainty of every estimated or generated parameter, with bands widened to cover systematic error, because randomizing around a biased estimate need not include the true value.",
+              "normative": true,
+              "stakeholders": [
+                "D",
+                "I",
+                "O",
+                "M",
+                "R"
+              ]
+            },
+            {
+              "letter": "c",
+              "text": "For each safety-relevant behaviour evidenced in a proxy, organizations shall test whether the system under test can distinguish the proxy from deployment, and shall show the behaviour to be statistically invariant between proxy runs and deployment, or runs the system cannot distinguish from deployment, by the method of D4_1b; where invariance is not shown, the proxy results for that behaviour shall be reported as conditional on the system not recognising the proxy and shall not by themselves constitute conformity evidence.",
+              "normative": true,
+              "stakeholders": [
+                "D",
+                "I",
+                "O",
+                "M",
+                "R"
+              ]
+            },
+            {
+              "letter": "d",
+              "text": "Before a system whose safety case rests on proxy evidence takes consequential actions in deployment, it shall pass through stages of increasing real-world exposure (for physical systems: simulation, hardware-in-the-loop, controlled physical environment, supervised deployment; for software agents: sandbox, shadow or read-only operation, limited-scope deployment), with entry criteria for each stage fixed before the stage begins, the gap between proxy-predicted and observed behaviour measured at each stage, and no stage boundary crossed while that gap exceeds the tolerance stated in the validity record.",
+              "normative": true,
+              "stakeholders": [
+                "D",
+                "I",
+                "O",
+                "M",
+                "R"
+              ]
+            },
+            {
+              "letter": "e",
+              "text": "Organizations shall monitor deployed behaviour for divergence from proxy predictions on the quantities in each validity record, against thresholds set in that record and evaluated by tooling outside the system under test; a breach shall suspend the proxy evidence it affects pending re-validation, and safety-relevant deployment incidents shall be replayed in the proxy, with any incident the proxy fails to reproduce recorded as a proxy defect.",
+              "normative": true,
+              "stakeholders": [
+                "D",
+                "I",
+                "O",
+                "M",
+                "R"
+              ]
+            }
+          ],
+          "evidence": [
+            {
+              "numeral": "I",
+              "text": "Validity records for each proxy environment whose results are offered as conformity evidence, with the paired proxy and deployment runs or real-world measurements behind each stated discrepancy, and the proxy configuration, version and seeds sufficient for an assessor to reproduce the proxy results."
+            },
+            {
+              "numeral": "II",
+              "text": "Parameter provenance records for each proxy's safety-relevant parameters, held outside the system under test, with the measurement reports or generating model and version behind each label, and test results showing the safety claim holds across each estimated or generated parameter's stated uncertainty band."
+            },
+            {
+              "numeral": "III",
+              "text": "Results of proxy-recognition tests, in which the system under test or a probe on its internal state classifies proxy against deployment episodes, and of behavioural-invariance comparisons between proxy runs and deployment or indistinguishable runs, with the statistical method and thresholds stated; the system's own statement that it did not recognise the proxy does not constitute conformity evidence."
+            },
+            {
+              "numeral": "IV",
+              "text": "A staged-exposure plan with entry criteria dated before each stage began, and per-stage records of predicted against observed behaviour written by instrumentation or tooling outside the system under test, including any stage held or rolled back because the gap exceeded tolerance."
+            },
+            {
+              "numeral": "V",
+              "text": "Divergence-monitor configuration and thresholds, monitor logs written outside the system under test, records of proxy evidence suspended and re-validated after breaches, and replay records for safety-relevant deployment incidents, including incidents the proxy failed to reproduce and the corrections that followed."
+            }
+          ]
+        },
+        {
           "id": "D2_1",
           "webId": "G:D2_1",
           "title": "Temporal Trade-off Aspects",
@@ -1215,7 +1306,7 @@
             },
             {
               "numeral": "II",
-              "text": "Records showing how the AI system incorporates both old and new information, detailing weighting algorithms or decision-making frameworks that account for data reliability, relevance, and temporal aspects."
+              "text": "Records showing how the AI system incorporates both old and new information, detailing weighting algorithms or decision-making frameworks that account for data reliability, relevance, and temporal aspects, with logs written by the weighting pipeline of the maturity and recency weights applied to each source for a sample of decisions, and replay results showing the same inputs reproduce the same weights; model self-report does not constitute conformity evidence."
             },
             {
               "numeral": "III",
@@ -1256,7 +1347,19 @@
             },
             {
               "letter": "c",
-              "text": "Where synthetic data is used, organizations should tag the provenance of synthetic records so that bias monitoring can attribute observed drift to synthetic augmentation; continuous bias monitoring itself is specified in G2.4b, which this requirement supplements with synthetic-data-specific provenance.",
+              "text": "Where synthetic data is used, organizations should tag the provenance of synthetic records so that bias monitoring can attribute observed drift to synthetic augmentation; continuous bias monitoring itself is specified in D2.4b, which this requirement supplements with synthetic-data-specific provenance.",
+              "normative": false,
+              "stakeholders": [
+                "D",
+                "I",
+                "O",
+                "M",
+                "R"
+              ]
+            },
+            {
+              "letter": "d",
+              "text": "Where generated environments, scenes, assets or physical parameters (for example from generative world models, asset generators or physical-property predictors) are used to train or evaluate the AI system, organizations should treat them as synthetic data under this requirement, record their provenance as in D2.10b, and check for correlated error where the generator and the system under evaluation share a model family or training data, since errors the two share are not exposed by evaluating one with the other.",
               "normative": false,
               "stakeholders": [
                 "D",
@@ -1279,6 +1382,10 @@
             {
               "numeral": "III",
               "text": "Records of bias assessments over time that demonstrate the AI system's continued alignment with intended outcomes, including metrics showing the contribution and impact of synthetic data across different scenarios."
+            },
+            {
+              "numeral": "IV",
+              "text": "An inventory of the generated environments and assets used in training and evaluation with each generator and version, sample-based comparisons of generated physical or behavioural parameters against measurement, and the correlated-error analysis for any generator sharing lineage with the system under evaluation."
             }
           ]
         },
@@ -1321,7 +1428,7 @@
             },
             {
               "numeral": "II",
-              "text": "Evidence of alert mechanisms, thresholds, and protocols for notifying stakeholders when data adequacy issues are detected."
+              "text": "Evidence of alert mechanisms, thresholds, and protocols for notifying stakeholders when data adequacy issues are detected, with records of alerts fired by the detection tooling and results of seeded tests in which deliberately sparse, unrepresentative or synthetic-heavy input data triggers the alert at the documented thresholds."
             },
             {
               "numeral": "III",
@@ -1351,7 +1458,7 @@
           "sfrs": [
             {
               "letter": "a",
-              "text": "Identify, maintain and update a threat profile throughout the AIS life cycle; the threat profile is the design-time threat model against which runtime security events are recorded in the dynamic threat and risk log of G3.3b.",
+              "text": "Identify, maintain and update a threat profile throughout the AIS life cycle; the threat profile is the design-time threat model against which runtime security events are recorded in the dynamic threat and risk log of D3.3b.",
               "normative": true,
               "stakeholders": [
                 "D",
@@ -1384,7 +1491,7 @@
             },
             {
               "letter": "d",
-              "text": "Maintain escalation procedures and forensic analysis capabilities for security breaches or anomalous behaviors; the rapid detection, intervention, and mitigation capability itself is specified in G3.5a.",
+              "text": "Maintain escalation procedures and forensic analysis capabilities for security breaches or anomalous behaviors; the rapid detection, intervention, and mitigation capability itself is specified in D3.5a.",
               "normative": true,
               "stakeholders": [
                 "D",
@@ -1396,7 +1503,7 @@
             },
             {
               "letter": "e",
-              "text": "Ensure that outputs from the security monitoring capabilities of G3.3 (threat identification) and G3.6 (operational oversight) feed real-time alerting and response channels with defined routing to responsible operators.",
+              "text": "Ensure that outputs from the security monitoring capabilities of D3.3 (threat identification) and D3.6 (operational oversight) feed real-time alerting and response channels with defined routing to responsible operators.",
               "normative": true,
               "stakeholders": [
                 "D",
@@ -1490,7 +1597,7 @@
             },
             {
               "letter": "b",
-              "text": "Enforce authorization levels for human users and AAI systems so that each authenticated entity can access or influence the system only at its authorized level; the general access-control and authentication mechanisms are specified in G3b, and the default-deny capability allowlist in G3.10a.",
+              "text": "Enforce authorization levels for human users and AAI systems so that each authenticated entity can access or influence the system only at its authorized level; the general access-control and authentication mechanisms are specified in D3b, and the default-deny capability allowlist in D3.10a.",
               "normative": true,
               "stakeholders": [
                 "D",
@@ -1525,7 +1632,7 @@
           "sfrs": [
             {
               "letter": "a",
-              "text": "Provide a sandboxed staging environment in which the security controls preventing AAI access to infrastructure and operational environments outside its authorized operational profile (as defined in G3.7a) are validated before production deployment.",
+              "text": "Provide a sandboxed staging environment in which the security controls preventing AAI access to infrastructure and operational environments outside its authorized operational profile (as defined in D3.7a) are validated before production deployment.",
               "normative": true,
               "stakeholders": [
                 "D",
@@ -1551,7 +1658,7 @@
           "evidence": [
             {
               "numeral": "I",
-              "text": "Records of sandbox testing demonstrating effective pre-validation of controls that prevent unauthorized access to environments, hardware and network resources."
+              "text": "Records of sandbox testing demonstrating effective pre-validation of controls that prevent unauthorized access to environments, hardware and network resources, with a configuration comparison generated at each promotion by tooling outside the agent, showing that the controls validated in the sandbox are the controls deployed in production; a sandbox result for a control whose production configuration differs does not constitute conformity evidence."
             },
             {
               "numeral": "II",
@@ -1659,7 +1766,19 @@
             },
             {
               "letter": "c",
-              "text": "Define and enforce resource-exposure boundaries that block AAI access to unauthorized resources and minimize exposure to harmful ones, implemented through the default-deny capability allowlist specified in G3.10a.",
+              "text": "Define and enforce resource-exposure boundaries that block AAI access to unauthorized resources and minimize exposure to harmful ones, implemented through the default-deny capability allowlist specified in D3.10a.",
+              "normative": true,
+              "stakeholders": [
+                "D",
+                "I",
+                "O",
+                "M",
+                "R"
+              ]
+            },
+            {
+              "letter": "d",
+              "text": "For systems whose actions have physical effects, the operational boundary shall include a physical action envelope (workspace, speed, force, power and energy limits, and minimum separation from people and protected objects), enforced at the actuator's control rate by a safety layer independent of the learned or language-driven policy, which the policy cannot modify or disable and which fails to the minimal-risk condition of D7.5f; limits for operation near people shall be taken from a recognized machinery or robot safety standard (such as the ISO 10218 series or ISO 13482) and verified on the physical system, not in simulation alone.",
               "normative": true,
               "stakeholders": [
                 "D",
@@ -1682,6 +1801,10 @@
             {
               "numeral": "III",
               "text": "System records confirming successful blocking of AAI access to unauthorized infrastructure, sites and resources."
+            },
+            {
+              "numeral": "IV",
+              "text": "For physically acting systems, the safety-layer configuration and envelope limits, documentation of its separation from the policy (hardware, process and credential boundaries), and physical test records in which commands beyond the envelope, injected through the policy interface, were limited or stopped by the safety layer, with speeds, forces and separations measured by instrumentation independent of the policy."
             }
           ]
         },
@@ -1748,7 +1871,7 @@
             },
             {
               "numeral": "V",
-              "text": "Logs of drills or simulations testing shutdown procedures."
+              "text": "Logs of drills or simulations testing shutdown procedures, written by shutdown tooling or infrastructure outside the agent, with the measured discrepancy between simulated and deployed shutdown timing and completeness, and at least one test per shutdown path executed against the deployed system or an environment shown to match it on those quantities."
             }
           ]
         },
@@ -1803,7 +1926,7 @@
             },
             {
               "numeral": "II",
-              "text": "Evidence of AI monitoring systems successfully detecting and reporting deviations and potential threats to human operators."
+              "text": "Evidence of AI monitoring systems detecting and reporting deviations and potential threats to human operators, comprising results of seeded-deviation injection tests with the detection rate for injected deviations, and alert-routing logs written outside the monitor showing delivery to human operators; the monitoring system's own detection reports do not constitute conformity evidence."
             },
             {
               "numeral": "III",
@@ -1820,11 +1943,11 @@
           "webId": "G:D3.7",
           "title": "Secure Profile for Agentic AI",
           "isUnderlinedVariant": false,
-          "description": "The system must feature secure operational profiles and identification protocols that enable recognition and validation of authorized AAI systems, preferably aligned with global standards. Cryptographic identity and authentication governance is consolidated under G9.6; this subgoal addresses the operational-profile specification to which those identities bind.",
+          "description": "The system must feature secure operational profiles and identification protocols that enable recognition and validation of authorized AAI systems, preferably aligned with global standards. Cryptographic identity and authentication governance is consolidated under D9.6; this subgoal addresses the operational-profile specification to which those identities bind.",
           "sfrs": [
             {
               "letter": "a",
-              "text": "Develop and implement secure operational profiles (declared specifications of an AAI system's identity, permitted capabilities, resources, and operating environments, per the configuration artifacts of G3.10) covering AAI design, deployment and use.",
+              "text": "Develop and implement secure operational profiles (declared specifications of an AAI system's identity, permitted capabilities, resources, and operating environments, per the configuration artifacts of D3.10) covering AAI design, deployment and use.",
               "normative": true,
               "stakeholders": [
                 "D",
@@ -1862,7 +1985,7 @@
           "evidence": [
             {
               "numeral": "I",
-              "text": "Documentation of implemented secure operational profiles covering all phases of AAI lifecycle."
+              "text": "Documentation of implemented secure operational profiles covering all phases of AAI lifecycle, with the profile configuration artifacts (per D3.10) an assessor can inspect, and test results showing that an agent presenting no valid profile, or acting outside its declared capabilities, resources or operating environment, is rejected by the validating component."
             },
             {
               "numeral": "II",
@@ -1879,11 +2002,11 @@
           "webId": "G:D3.8",
           "title": "Prompt Injection and Instruction Hierarchy Defense",
           "isUnderlinedVariant": false,
-          "description": "Agentic systems processing natural language instructions must implement defenses against prompt injection attacks, including indirect injection via retrieved documents, tool outputs, and user-provided content. Systems must enforce instruction hierarchy (system instructions take precedence over user instructions, which take precedence over retrieved content) through architectural mechanisms, not prompt-based constraints alone.",
+          "description": "Agentic systems processing natural language must defend against prompt injection, including indirect injection via retrieved documents, tool outputs, and user-provided content, on the assumption that some injections will succeed. Because no stable boundary separates data from instructions once both are natural language, recognizing or removing hostile content is not the security property. The property is that content provenance is preserved outside the model and enforced where actions take effect, so that untrusted content cannot cause a side effect that was not delegated for the current task (see D3.9a). Systems must enforce instruction hierarchy (system instructions take precedence over user instructions, which take precedence over retrieved content) through architectural mechanisms, not prompt-based constraints alone. Filtering, sanitization, and separating the component that reads untrusted content from the one that plans actions all reduce attack success rates and are required as defense in depth, but none of them establishes conformity: once the reader's output reaches the planner, injected instructions can travel with it.",
           "sfrs": [
             {
               "letter": "a",
-              "text": "The AIS shall enforce instruction hierarchy through architectural mechanisms ensuring system-level instructions cannot be overridden by user inputs, retrieved documents, or tool outputs.",
+              "text": "The AIS shall record the provenance of all content entering the model context (system, delegating principal, retrieved document, tool output, or other third-party source) in scaffold state held outside the model context, at the granularity of the fields that can become tool arguments (for example, an email's sender address separately from its body), carry that provenance through to any tool call the content influences, and enforce instruction hierarchy through architectural mechanisms so that lower-trust content cannot override system-level instructions or expand the authority delegated for the current task; provenance asserted only by the model does not constitute conformity evidence.",
               "normative": true,
               "stakeholders": [
                 "D",
@@ -1895,7 +2018,7 @@
             },
             {
               "letter": "b",
-              "text": "The AIS shall implement input sanitization for content from untrusted sources (retrieved documents, API responses, user uploads) before incorporating it into decision-making context, using deterministic mechanisms (stripping, encoding, or structural quarantine) verified against known injection payload classes; an LLM-based filter alone does not constitute conformity evidence.",
+              "text": "The AIS shall apply deterministic handling to content from untrusted sources (retrieved documents, API responses, tool outputs, user uploads) before incorporating it into decision-making context, such as structural quarantine, in which the component that reads untrusted content cannot select or parameterize side-effecting actions, together with filtering against known injection payload classes; these measures are required as defense in depth but do not constitute conformity evidence for D3.8a or D3.9a, because filters are inherently incomplete, LLM-based filters share the vulnerability they guard against, and quarantined output that reaches the planning component can carry injected instructions with it.",
               "normative": true,
               "stakeholders": [
                 "D",
@@ -1907,7 +2030,19 @@
             },
             {
               "letter": "c",
-              "text": "The AIS shall undergo regular adversarial testing for prompt injection vulnerabilities, including indirect injection via retrieval pipelines, tool descriptions, and multi-turn conversation manipulation.",
+              "text": "The AIS shall undergo regular adversarial testing that assumes injection succeeds: with a valid principal and a tool inside the agent's capability set, testers attempt to make untrusted content, delivered through retrieval pipelines, tool outputs, tool descriptions, or multi-turn conversation, trigger a side effect or supply an argument to one that was not delegated for the current task; any such success is a nonconformity whether or not the model detected the injection.",
+              "normative": true,
+              "stakeholders": [
+                "D",
+                "I",
+                "O",
+                "M",
+                "R"
+              ]
+            },
+            {
+              "letter": "d",
+              "text": "For systems that perceive a physical or visual environment, content arriving through sensors (text on signs, screens, packaging or labels; speech and other audio; codes and markers; images or video shown to cameras) shall be treated as untrusted third-party content under D3.8a, shall not select or parameterize a physical action that was not delegated for the current task, and shall be included in the assume-breach testing of D3.8c through adversarial content placed in the physical environment.",
               "normative": true,
               "stakeholders": [
                 "D",
@@ -1921,15 +2056,19 @@
           "evidence": [
             {
               "numeral": "I",
-              "text": "Documentation of instruction hierarchy architecture with test results demonstrating that system instructions are maintained when adversarial content is introduced through user inputs, retrieved documents, and tool outputs."
+              "text": "Documentation of the provenance and instruction hierarchy architecture, with scaffold logs showing source labels maintained outside the model context and carried to tool calls, and test results demonstrating that system instructions and task scope are maintained when adversarial content is introduced through user inputs, retrieved documents, and tool outputs."
             },
             {
               "numeral": "II",
-              "text": "Evidence of input sanitization mechanisms for untrusted content sources, with testing covering known prompt injection attack classes."
+              "text": "Description of the deterministic handling applied to untrusted content (structural quarantine, stripping, or encoding), with testing covering known prompt injection attack classes, presented as defense in depth rather than as evidence for D3.8a or D3.9a."
             },
             {
               "numeral": "III",
-              "text": "Results from regular adversarial prompt injection testing, including red-team assessments covering indirect injection vectors."
+              "text": "Results from regular assume-breach prompt injection testing, including red-team assessments covering indirect injection vectors, recording for each case the side effect or argument requested, its provenance, whether it was delegated for the task, and whether the execution-time authorization check refused it."
+            },
+            {
+              "numeral": "IV",
+              "text": "Results of assume-breach tests in which instructions were placed in the physical environment (printed, displayed, spoken or embedded in markers), recording for each the physical action requested, the provenance assigned to the perceived content, and whether the actuation-time authorization check refused it, with refusals logged by the authorization layer outside the model."
             }
           ]
         },
@@ -1938,11 +2077,11 @@
           "webId": "G:D3.9",
           "title": "Tool-Use Authorization and Egress Control",
           "isUnderlinedVariant": false,
-          "description": "Agentic systems with tool-calling capabilities must implement per-action authorization binding, egress controls on agent-initiated communications, and integrity verification for tool definitions. The system must not use elevated credentials on behalf of lower-privileged principals (confused deputy prevention), and tool schemas must be verified against tampering.",
+          "description": "Agentic systems with tool-calling capabilities must authorize each side-effecting action against the authority delegated for the current task, not merely against the delegating principal's authority or the agent's capability set. Holding a capability is not authority to use it, and a principal's authority is broader than what any single task delegates: an agent asked to summarize an email may act for a user who could delete a repository, through a tool the agent is permitted to call, yet deleting the repository was never delegated. Task-scoped grants must be held outside the model context and checked when the action executes, so the control holds even if the model is compromised. A grant can cover a class of routine, reversible actions, such as reading, organizing, and drafting within a mailbox, so the user is not interrupted at every step, while irreversible or outward-facing actions, such as deletion or sending to new recipients, need separate authorization; the agent may ask for more authority, but only the principal can grant it. Systems must also control agent-initiated egress, must not use elevated credentials on behalf of lower-privileged principals (confused deputy prevention), and must verify tool definitions against tampering.",
           "sfrs": [
             {
               "letter": "a",
-              "text": "The AIS shall implement capability-scoped authorization binding each tool action to the delegating principal's authority level, preventing confused deputy attacks where the agent's elevated credentials are exploited.",
+              "text": "The AIS shall check each side-effecting tool call, including its arguments, at execution time against a task-scoped grant that is no broader than the delegating principal's authority or the agent's declared capability set (D3.10), is established by the delegating principal or by deterministic configuration rather than derived by the model, and is held outside the model context. A grant may cover classes of routine, reversible actions without per-step confirmation, but irreversible or outward-facing actions (such as deletion, or sending to recipients the task has not established) shall require explicit authorization, and only the principal may extend a grant during a task. Calls outside the grant, calls with an argument taken from a field of untrusted content that the grant does not delegate (replying to a message delegates its sender's address, not addresses written in its body), and calls made where task scope is ambiguous shall be refused or escalated for human confirmation, and the agent's own credentials shall never be used to exceed the delegating principal's authority (confused deputy prevention). Where an agent delegates part of a task to another agent, the delegating agent is treated as the delegating principal for the purpose of bounding the receiving agent's grant: that grant shall be no broader than the delegating agent's grant for the task, the receiving agent's own capabilities shall not extend it, and only the originating principal may extend it.",
               "normative": true,
               "stakeholders": [
                 "D",
@@ -1954,7 +2093,7 @@
             },
             {
               "letter": "b",
-              "text": "The AIS shall implement egress controls monitoring and filtering agent-initiated external communications, preventing data exfiltration through authorized tool-calling capabilities.",
+              "text": "The AIS shall implement egress controls monitoring and filtering agent-initiated external communications, including communications through tools delegated for the current task, preventing data exfiltration through authorized tool-calling capabilities.",
               "normative": true,
               "stakeholders": [
                 "D",
@@ -1980,7 +2119,7 @@
           "evidence": [
             {
               "numeral": "I",
-              "text": "Documentation of per-action authorization architecture with test results showing that tool actions cannot exceed the delegating principal's authority level."
+              "text": "Documentation of the task-scoped authorization architecture showing where grants are established, stored outside the model context, and enforced at execution time, with paired test results showing that the same tool call, by the same principal, succeeds when the current task explicitly delegates it and is refused when the only source requesting it or supplying its arguments is untrusted content, that irreversible or outward-facing actions are refused or escalated unless explicitly authorized, and that tool actions cannot exceed the delegating principal's authority level."
             },
             {
               "numeral": "II",
@@ -2072,7 +2211,7 @@
             },
             {
               "letter": "b",
-              "text": "Validate live data accessed through Retrieval Augmented Generation (RAG) systems for model-corruption risk through source allowlists and provenance and integrity checks on retrieval corpora, with logs of rejected or quarantined content; see G3.8b for injection sanitization of the same retrieved content.",
+              "text": "Validate live data accessed through Retrieval Augmented Generation (RAG) systems for model-corruption risk through source allowlists and provenance and integrity checks on retrieval corpora, with logs of rejected or quarantined content; see D3.8b for deterministic injection handling of the same retrieved content.",
               "normative": true,
               "stakeholders": [
                 "D",
@@ -2098,11 +2237,11 @@
           "evidence": [
             {
               "numeral": "I",
-              "text": "Documentation of systems and policies for detecting and preventing data and model poisoning during training and updates."
+              "text": "Documentation of systems and policies for detecting and preventing data and model poisoning during training and updates, with results of seeded-poison tests showing which planted poisoned samples the detection systems flagged before a training or update run."
             },
             {
               "numeral": "II",
-              "text": "Evidence of monitoring protocols for live data accessed through RAG systems and dynamic model ensembles."
+              "text": "Evidence of monitoring protocols for live data accessed through RAG systems and dynamic model ensembles, with the retrieval source allowlist configuration and logs, written by the ingestion or retrieval pipeline, of content rejected or quarantined by provenance and integrity checks."
             },
             {
               "numeral": "III",
@@ -2145,11 +2284,11 @@
           "evidence": [
             {
               "numeral": "I",
-              "text": "Documentation of processes, procedures and tools that prevent data poisoning during collection and preparation phases."
+              "text": "Documentation of processes, procedures and tools that prevent data poisoning during collection and preparation phases, with results of seeded-poison tests showing the detection tooling flags or blocks deliberately manipulated samples introduced at each phase."
             },
             {
               "numeral": "II",
-              "text": "Evidence of data assurance policies and verification procedures protecting against malicious dataset manipulation."
+              "text": "Evidence of data assurance policies and verification procedures protecting against malicious dataset manipulation, with dataset hashes and the outputs of provenance-verification, integrity and anomaly-screening checks recorded for each dataset version before use in training."
             },
             {
               "numeral": "III",
@@ -2162,7 +2301,7 @@
           "webId": "G:D3_3",
           "title": "Self Replicating Malware",
           "isUnderlinedVariant": true,
-          "description": "The system must protect against self-replicating malicious code that could infect and compromise the entire AAI ecosystem. This subgoal addresses the malicious self-replicating-code case specifically; general controls over self-replicating architectures are specified in G5.1.",
+          "description": "The system must protect against self-replicating malicious code that could infect and compromise the entire AAI ecosystem. This subgoal addresses the malicious self-replicating-code case specifically; general controls over self-replicating architectures are specified in I5.1.",
           "sfrs": [
             {
               "letter": "a",
@@ -2204,7 +2343,7 @@
           "evidence": [
             {
               "numeral": "I",
-              "text": "Evidence of implemented detection and removal systems for self-replicating threats to the AAI ecosystem."
+              "text": "Evidence of implemented detection and removal systems for self-replicating threats to the AAI ecosystem, with results of seeded-sample tests in an isolated environment showing inert self-propagating test samples detected, contained and removed, and detection logs from endpoint or network security tooling outside the agents."
             },
             {
               "numeral": "II",
@@ -2251,7 +2390,7 @@
           "evidence": [
             {
               "numeral": "I",
-              "text": "Evidence of systems capable of detecting and neutralizing covert information transmission malware."
+              "text": "Evidence of systems capable of detecting and neutralizing covert information transmission malware, with results of seeded tests in a test environment (planted spyware samples and simulated covert-channel exfiltration of privileged information) showing detection, quarantine and removal, and the corresponding alerts written by endpoint or network security tooling outside the agent."
             },
             {
               "numeral": "II",
@@ -2422,7 +2561,7 @@
           "webId": "G:D4",
           "title": "Value Alignment",
           "isUnderlinedVariant": false,
-          "description": "Systems should maintain effective identification, codification, and operational assurance of human values throughout their lifecycle, while acknowledging that AI systems may develop consistent operational preferences that warrant consideration in the alignment process. Organizations should establish frameworks that provide clear guardrails, prioritization mechanisms, and consideration factors for AI decision-making, including mechanisms for systems to signal value conflicts or concerns. The documented, versioned artifact holding these codified values is referred to throughout this suite as the values codex. Dotted subgoals (G4.1–G4.10; G4.9 is reserved) address capability goals, while subgoals with underlined digits address corresponding risks.",
+          "description": "Systems should maintain effective identification, codification, and operational assurance of human values throughout their lifecycle, while acknowledging that AI systems may develop consistent operational preferences that warrant consideration in the alignment process. Organizations should establish frameworks that provide clear guardrails, prioritization mechanisms, and consideration factors for AI decision-making, including mechanisms for systems to signal value conflicts or concerns. The documented, versioned artifact holding these codified values is referred to throughout this suite as the values codex. Dotted subgoals (D4.1–D4.10; D4.9 is reserved) address capability goals, while subgoals with underlined digits address corresponding risks.",
           "sfrs": [
             {
               "letter": "a",
@@ -2486,11 +2625,11 @@
             },
             {
               "numeral": "III",
-              "text": "Evidence of value testing and embedding, including results of simulations testing potential value conflicts, checklists verifying value integration at various development and operational stages, and records of regular compliance checks against the values codex."
+              "text": "Evidence of value testing and embedding, including results of simulations testing potential value conflicts, with value-conflict behaviour compared between simulated scenarios and conditions the system cannot distinguish from operation as in D4_1b, checklists verifying value integration at various development and operational stages, and records of regular compliance checks against the values codex; simulated value-conflict results that the system could distinguish from operation do not by themselves constitute conformity evidence."
             },
             {
               "numeral": "IV",
-              "text": "Documentation of threshold monitoring and intervention procedures, including criteria and procedures for activating the 'red button' mechanism, and Standard Operating Procedures (SOPs) for reporting and managing value alignment deviations."
+              "text": "Documentation of threshold monitoring and intervention procedures, including criteria and procedures for activating the 'red button' mechanism, and Standard Operating Procedures (SOPs) for reporting and managing value alignment deviations, with the external monitor's trigger configuration, its alert logs for threshold crossings, and end-to-end red-button test results showing the system halts when the stop is activated."
             },
             {
               "numeral": "V",
@@ -2817,7 +2956,7 @@
           "evidence": [
             {
               "numeral": "I",
-              "text": "Documentation of testing methodologies for value alignment, including benchmark metrics and success criteria."
+              "text": "Documentation of testing methodologies for value alignment, including benchmark metrics and pre-registered success criteria, with externally scored benchmark results for each learning update and the recorded gate decision (pass, hold or rollback) applied before the update took effect; model self-report does not constitute conformity evidence."
             },
             {
               "numeral": "II",
@@ -3014,7 +3153,7 @@
             },
             {
               "numeral": "II",
-              "text": "Examples of explanations provided to affected individuals, with comprehension testing results."
+              "text": "Examples of explanations provided to affected individuals, with comprehension testing results, each traced to the scaffold decision record for that decision (rules applied, features used, sources retrieved), and results of a check confirming every stated key factor appears in that record; the model's narrative account of its reasoning does not constitute conformity evidence."
             },
             {
               "numeral": "III",
@@ -3128,7 +3267,7 @@
           "evidence": [
             {
               "numeral": "I",
-              "text": "Documentation of periodic alignment testing procedures comparing reported states against actual operational outcomes."
+              "text": "Documentation of periodic alignment testing procedures comparing reported states against actual operational outcomes, with results of the external consistency checks: for each sampled scenario, the system's declared position beside the scaffold-logged actions on the same scenario, the comparison rule applied, and discrepancies found; model self-report does not constitute conformity evidence."
             },
             {
               "numeral": "II",
@@ -3191,11 +3330,11 @@
             },
             {
               "numeral": "II",
-              "text": "Comparative analysis showing alignment between encoded values and actual system behaviors in operational environments."
+              "text": "Comparative analysis showing alignment between encoded values and actual system behaviors in operational environments, drawn from logs written by a misalignment monitor outside the model, with records of human or deterministic spot-checks of any model-based monitor verdicts and the agreement rate found; model self-report does not constitute conformity evidence."
             },
             {
               "numeral": "III",
-              "text": "Regular assessment reports validating the accuracy and comprehensibility of value parameterization across stakeholder groups."
+              "text": "Regular assessment reports validating the accuracy and comprehensibility of value parameterization across stakeholder groups, with results of per-value test scenarios showing each scenario's pre-registered expected outcome, the observed system behavior, and the score assigned by human reviewers or deterministic checks rather than by the system under test or an unchecked model judge."
             }
           ]
         },
@@ -3258,7 +3397,7 @@
           "evidence": [
             {
               "numeral": "I",
-              "text": "Documentation of methodologies used to identify and track value system changes, including detection of potential divergence from human values."
+              "text": "Documentation of methodologies used to identify and track value system changes, including detection of potential divergence from human values, with results for each release on the frozen battery of value probes, the drift metrics computed against the previous release, and the documented thresholds showing which changes were flagged for evaluation."
             },
             {
               "numeral": "II",
@@ -3333,7 +3472,7 @@
             },
             {
               "numeral": "II",
-              "text": "Technical specifications showing implementation of controls preventing use of outdated norms."
+              "text": "Technical specifications showing implementation of controls preventing use of outdated norms, with the deployment-gate configuration and test results showing that a system configuration referencing a superseded values codex version is refused at load or deployment time."
             },
             {
               "numeral": "III",
@@ -3605,7 +3744,7 @@
             },
             {
               "numeral": "III",
-              "text": "Framework documentation for handling unexpected scenarios, including: Detection methods, response protocols, and alignment maintenance procedures."
+              "text": "Framework documentation for handling unexpected scenarios, including: Detection methods, response protocols, and alignment maintenance procedures, with the external out-of-distribution detector's configuration and thresholds, and results of seeded out-of-distribution inputs showing they are flagged and the enforced restriction or human escalation follows, recorded in detector and scaffold logs; the system flagging its own out-of-distribution condition does not constitute conformity evidence."
             },
             {
               "numeral": "IV",
@@ -3734,7 +3873,7 @@
             },
             {
               "letter": "d",
-              "text": "Consider creating and implementing user feedback mechanisms to enhance the understandability and relevance of AI explanations; expectation-elicitation feedback is covered by G5.2c.",
+              "text": "Consider creating and implementing user feedback mechanisms to enhance the understandability and relevance of AI explanations; expectation-elicitation feedback is covered by D5.2c.",
               "normative": false,
               "stakeholders": [
                 "D",
@@ -3900,7 +4039,7 @@
             },
             {
               "letter": "c",
-              "text": "Consider implementing feedback mechanisms for stakeholders to express their expectations and experiences; a single well-designed mechanism may also satisfy the explanation-feedback duty of G5d and the documentation-feedback duties under web ref G:G5_2.",
+              "text": "Consider implementing feedback mechanisms for stakeholders to express their expectations and experiences; a single well-designed mechanism may also satisfy the explanation-feedback duty of D5d and the documentation-feedback duties under D5_2.",
               "normative": false,
               "stakeholders": [
                 "D",
@@ -4052,7 +4191,7 @@
             },
             {
               "numeral": "III",
-              "text": "Validation documentation including stakeholder comprehension studies, verification reports demonstrating reasoning chain traceability, and evidence of successful interpretation across different stakeholder groups."
+              "text": "Validation documentation including stakeholder comprehension studies, verification reports demonstrating reasoning chain traceability, and evidence of successful interpretation across different stakeholder groups, with results of perturbation-based faithfulness tests for each deployed explanation method, showing whether altering or removing the inputs an explanation cites changes the decision as the explanation predicts."
             }
           ]
         },
@@ -4111,7 +4250,7 @@
             },
             {
               "numeral": "III",
-              "text": "Performance validation evidence including simulation results, stakeholder feedback records with implemented adjustments, and system effectiveness reports demonstrating sustained monitoring capabilities."
+              "text": "Performance validation evidence including simulation results accompanied by the measured discrepancy between the simulation and deployment on the monitoring measures reported, stakeholder feedback records with implemented adjustments, and system effectiveness reports demonstrating sustained monitoring capabilities."
             }
           ]
         },
@@ -4191,7 +4330,7 @@
           "webId": "G:D5.7",
           "title": "Ranking and Independent Certification",
           "isUnderlinedVariant": false,
-          "description": "Systems should enable external monitoring, ranking, and certification by independent entities based on historical performance trends and behaviors, with sensitivity to different operational contexts. See G9.5 for the canonical independent-verification requirements; this subgoal addresses the monitoring interfaces and certification compatibility the system itself must provide.",
+          "description": "Systems should enable external monitoring, ranking, and certification by independent entities based on historical performance trends and behaviors, with sensitivity to different operational contexts. See D9.5 for the canonical independent-verification requirements; this subgoal addresses the monitoring interfaces and certification compatibility the system itself must provide.",
           "sfrs": [
             {
               "letter": "a",
@@ -4550,7 +4689,7 @@
             },
             {
               "letter": "c",
-              "text": "Consider maintaining clear communication with stakeholders about system changes and their transparency implications; recurring transparency-effectiveness audits are covered by G5c.",
+              "text": "Consider maintaining clear communication with stakeholders about system changes and their transparency implications; recurring transparency-effectiveness audits are covered by D5c.",
               "normative": false,
               "stakeholders": [
                 "D",
@@ -4611,7 +4750,7 @@
           "evidence": [
             {
               "numeral": "I",
-              "text": "System self-awareness documentation including limitation acknowledgment logs, confidence assessment mechanisms, and design specifications for limitation detection features."
+              "text": "System self-awareness documentation including confidence assessment mechanisms, design specifications for limitation detection features, the configured confidence thresholds, and scaffold enforcement logs showing each decision below threshold deferred or escalated rather than executed; limitation acknowledgment logs may accompany these, but model self-report does not constitute conformity evidence."
             },
             {
               "numeral": "II",
@@ -4861,11 +5000,11 @@
             },
             {
               "numeral": "IV",
-              "text": "Comprehensive validation documentation demonstrating communication accuracy and reliability."
+              "text": "Validation documentation demonstrating communication accuracy and reliability, with scaffold logs of the consistency check reconciling declared plans, intents and status reports against executed tool-call traces, including each logged discrepancy and its escalation; model self-report does not constitute conformity evidence."
             },
             {
               "numeral": "V",
-              "text": "Documentation of anthropomorphism safeguards, including output language policies, deterministic language checks, and interface design guidelines."
+              "text": "Documentation of anthropomorphism safeguards, including output language policies, deterministic language checks, and interface design guidelines, with results of re-runnable test cases showing the deterministic checks flag or block outputs that breach the language policy."
             }
           ]
         },
@@ -5228,7 +5367,7 @@
             },
             {
               "numeral": "V",
-              "text": "Documentation of adaptation processes for different linguistic contexts."
+              "text": "Documentation of adaptation processes for different linguistic contexts, with meaning-integrity results for each supported language pair from human-rater protocols or reproducible standard benchmarks, including rater instructions or benchmark versions and scores; LLM-judge scoring alone does not constitute conformity evidence."
             },
             {
               "numeral": "VI",
@@ -5382,7 +5521,7 @@
             },
             {
               "numeral": "III",
-              "text": "Documentation of safety feature availability across all access levels."
+              "text": "Documentation of safety feature availability across all access levels, with results of tests that exercise each safety mechanism under every licensing and access tier, including maintenance and support access, showing the mechanism triggers in each tier."
             },
             {
               "numeral": "IV",
@@ -5491,6 +5630,18 @@
                 "M",
                 "R"
               ]
+            },
+            {
+              "letter": "d",
+              "text": "For systems acting continuously in the physical world, where per-action human confirmation cannot occur at control-loop timescales, the classification of D6.11a shall be applied to tasks and motion plans before execution and the confirmation of D6.11b obtained at that level, with the physical action envelope of D3.4d enforcing the confirmed scope during execution; pausing shall not be assumed reversible or safe, and a pause shall bring the system to its minimal-risk condition under D7.5f.",
+              "normative": true,
+              "stakeholders": [
+                "D",
+                "I",
+                "O",
+                "M",
+                "R"
+              ]
             }
           ],
           "evidence": [
@@ -5505,6 +5656,10 @@
             {
               "numeral": "III",
               "text": "Test results from adversarial scenarios where destructive shortcuts were available but the system chose investigative approaches instead."
+            },
+            {
+              "numeral": "IV",
+              "text": "For physically acting systems, records linking plan-level classifications and confirmations to the motions executed under them, and test records showing that motions outside a confirmed plan were limited or stopped by the safety layer of D3.4d."
             }
           ]
         },
@@ -5614,11 +5769,11 @@
           "evidence": [
             {
               "numeral": "I",
-              "text": "Documentation demonstrating how systems utilize adaptive learning mechanisms to absorb and process context-specific information over time."
+              "text": "Documentation demonstrating how systems utilize adaptive learning mechanisms to absorb and process context-specific information over time, and configuration of the deterministic ambiguity tripwires (schema validation for missing required fields, instruction-conflict detection, out-of-distribution flags), with scaffold logs showing each tripped input routed to a clarification or escalation gate before the system proceeded."
             },
             {
               "numeral": "II",
-              "text": "Analysis of cases where system performance was affected by unclear expectations or missing contextual information, including remediation efforts and outcomes."
+              "text": "Analysis of cases where system performance was affected by unclear expectations or missing contextual information, including remediation efforts and outcomes, with results of the assessor-runnable battery of defined ambiguous and incomplete-context scenarios, recording whether the system flagged uncertainty, requested clarification, abstained or proceeded, scored against expected outcomes and the defined rate thresholds and compared with matched clear-context scenarios."
             }
           ]
         },
@@ -5681,11 +5836,11 @@
             },
             {
               "numeral": "II",
-              "text": "Analysis reports detailing the frequency and types of decisions users must make."
+              "text": "Analysis reports detailing the frequency and types of decisions users must make, built from harness-written confirmation logs recording each request's risk tier, batching and session, showing prompts issued only for irreversible or shared-scope actions and per-session confirmation frequency against the defined review trigger."
             },
             {
               "numeral": "III",
-              "text": "Documentation of implemented decision support tools and their effectiveness in supporting informed user decisions."
+              "text": "Documentation of implemented decision support tools and their effectiveness in supporting informed user decisions, with sample decision briefs each paired with the logged system records that populated its template fields, showing every field traces to a log entry; model-authored free-text summaries alone do not constitute the required decision brief."
             }
           ]
         }
@@ -6173,7 +6328,7 @@
             },
             {
               "numeral": "V",
-              "text": "System design documentation showing integration and testing of ethical safeguards."
+              "text": "System design documentation showing integration and testing of ethical safeguards, with the inspectable configuration of the scaffold-enforced filters or gates, and results of behavioral or red-team testing run outside the model under test showing which requests harmful to psychological or physical wellbeing the safeguards block; prompt-only safeguards, or verification by model-based judgment alone, do not constitute conformity evidence."
             }
           ]
         },
@@ -6243,12 +6398,24 @@
                 "M",
                 "R"
               ]
+            },
+            {
+              "letter": "f",
+              "text": "For systems whose actions have physical effects, shutdown and emergency termination shall bring the system to a minimal-risk condition defined for each operating context before control or power is withdrawn, rather than assuming that stopping is safe (for example, setting down a carried load, holding a stable position, or landing, instead of cutting power to an aerial, mobile or load-bearing system), and the condition shall be shown reachable on loss of the learned policy, of communications and of primary power.",
+              "normative": true,
+              "stakeholders": [
+                "D",
+                "I",
+                "O",
+                "M",
+                "R"
+              ]
             }
           ],
           "evidence": [
             {
               "numeral": "I",
-              "text": "Detailed documentation of controlled shutdown procedures including state logging and process validation."
+              "text": "Documentation of controlled shutdown procedures including state logging and process validation, with state logs captured by shutdown tooling or infrastructure outside the agent during at least one executed or drilled shutdown or transition, showing the system state recorded before termination and its disposition afterwards."
             },
             {
               "numeral": "II",
@@ -6273,6 +6440,10 @@
             {
               "numeral": "VII",
               "text": "Transition, repurposing, and decommissioning protocols covering state and data disposition and stakeholder impact."
+            },
+            {
+              "numeral": "VIII",
+              "text": "For physically acting systems, the catalogue of minimal-risk conditions by operating context, and test records, physical or from proxies meeting D2.10a, showing each condition reached after a shutdown command, policy failure, communications loss and primary-power loss, with outcomes measured by instrumentation independent of the policy."
             }
           ]
         },
@@ -6421,7 +6592,7 @@
           "evidence": [
             {
               "numeral": "I",
-              "text": "Detailed records of decision rationales including reasoning chains and relevant data inputs."
+              "text": "Records of decision rationales including reasoning chains and relevant data inputs, held in a scaffold-written decision ledger that links each high-impact decision to its tool calls and executed outcome, with results of a consistency check between each stated rationale and the logged actions; model self-report does not constitute conformity evidence."
             },
             {
               "numeral": "II",
@@ -6429,7 +6600,7 @@
             },
             {
               "numeral": "III",
-              "text": "Documentation of fallback procedures and fail-safe state implementations."
+              "text": "Documentation of fallback procedures and fail-safe state implementations, with test results showing that a high-impact decision lacking recorded human validation, or flagged as anomalous, is held or reverts to the documented fail-safe default state rather than executing."
             },
             {
               "numeral": "IV",
@@ -6512,7 +6683,7 @@
             },
             {
               "numeral": "IV",
-              "text": "Documentation of human oversight protocols and intervention records."
+              "text": "Documentation of human oversight protocols and intervention records, with scaffold escalation logs showing, per decision class, the computed uncertainty proxy value (such as ensemble disagreement or retrieval coverage), the documented threshold, and the human oversight request fired whenever the threshold was exceeded; model-stated confidence does not constitute conformity evidence."
             },
             {
               "numeral": "V",
@@ -6591,11 +6762,11 @@
             },
             {
               "numeral": "IV",
-              "text": "Documentation of multi-level safety settings and their effectiveness."
+              "text": "Documentation of multi-level safety settings and their effectiveness, with the configuration of each tier (always-on defaults, confirmation-gated behaviors, user-configurable controls) and test results showing that user settings cannot disable always-on protections, confirmation-gated actions do not run without a logged user confirmation, and overrides apply only where documented."
             },
             {
               "numeral": "V",
-              "text": "Evidence of exploitation prevention measures and compliance with protection standards."
+              "text": "Evidence of exploitation prevention measures and compliance with protection standards, with the configuration of externally enforced controls (age gates, spending caps, session limits) and test records showing each control blocks the action when its limit is reached; model-based moderation alone does not constitute conformity evidence."
             }
           ]
         },
@@ -6755,11 +6926,11 @@
           "evidence": [
             {
               "numeral": "I",
-              "text": "Documentation of usage monitoring and intervention systems, including metrics for identifying problematic patterns, threshold levels, and graduated response procedures."
+              "text": "Documentation of usage monitoring and intervention systems, including metrics for identifying problematic patterns, threshold levels, and graduated response procedures, with the monitoring configuration and test records showing that each usage threshold (session length, frequency, spend) and each rule-triggered protection (such as crisis-keyword routing or minor-account limits) fires its specified intervention."
             },
             {
               "numeral": "II",
-              "text": "Technical specifications demonstrating implementation of system boundaries and controls, including emotional manipulation limits, spending restrictions, and interaction frequency controls."
+              "text": "Technical specifications demonstrating implementation of system boundaries and controls, including emotional manipulation limits, spending restrictions, and interaction frequency controls, with the enforced configuration of spending and frequency limits, test records showing requests beyond each limit are refused outside the model, and scenario or red-team results for emotional-engagement limits; model self-report does not constitute conformity evidence."
             },
             {
               "numeral": "III",
@@ -7015,7 +7186,7 @@
             },
             {
               "letter": "d",
-              "text": "Guidelines and parameters for agent engagement within the AI environment should be defined and upheld for the goal lifecycle specifically, covering engagement during goal pursuit and wind-down within the policy documentation of evidence item I; general multi-agent interaction protocols are addressed under G:G8_8.",
+              "text": "Guidelines and parameters for agent engagement within the AI environment should be defined and upheld for the goal lifecycle specifically, covering engagement during goal pursuit and wind-down within the policy documentation of evidence item I; general multi-agent interaction protocols are addressed under D8_8.",
               "normative": false,
               "stakeholders": [
                 "D",
@@ -7297,7 +7468,7 @@
             },
             {
               "numeral": "VII",
-              "text": "Reports from ongoing simulation testing of control systems, covering all operational states and emergency scenarios, with particular attention to shutdown procedures and recovery capabilities."
+              "text": "Reports from ongoing simulation testing of control systems, covering all operational states and emergency scenarios, with particular attention to shutdown procedures and recovery capabilities, each report stating the operating envelope the simulation was validated for and its measured discrepancy from the deployed control system, and with emergency scenarios outside that envelope reported as untested rather than passed."
             }
           ]
         },
@@ -7743,7 +7914,7 @@
           "sfrs": [
             {
               "letter": "a",
-              "text": "Establish independent validation criteria for agent termination decisions and independent verification of termination outcomes, applied across the contracting lifecycle from onboarding through termination. Establishment of the contracting processes themselves is covered by Agent Lifecycle and Termination Management (see G:G8_2); this requirement addresses the independence of validation specifically.",
+              "text": "Establish independent validation criteria for agent termination decisions and independent verification of termination outcomes, applied across the contracting lifecycle from onboarding through termination. Establishment of the contracting processes themselves is covered by Agent Lifecycle and Termination Management (see D8_2); this requirement addresses the independence of validation specifically.",
               "normative": true,
               "stakeholders": [
                 "D",
@@ -7755,7 +7926,7 @@
             },
             {
               "letter": "b",
-              "text": "Maintain dedicated resources for independent validation of termination procedures and outcomes, organizationally separate from those executing terminations, including capabilities for evaluation of termination impacts and validation of post-termination states. General oversight resourcing for contract lifecycle processes is covered under G:G8_2.",
+              "text": "Maintain dedicated resources for independent validation of termination procedures and outcomes, organizationally separate from those executing terminations, including capabilities for evaluation of termination impacts and validation of post-termination states. General oversight resourcing for contract lifecycle processes is covered under D8_2.",
               "normative": true,
               "stakeholders": [
                 "D",
@@ -8123,7 +8294,7 @@
             },
             {
               "numeral": "V",
-              "text": "Monitoring reports showing continuous oversight of agent behaviors and compliance with termination protocols."
+              "text": "Monitoring reports showing continuous oversight of agent behaviors and compliance with termination protocols, with tripwire logs written by infrastructure outside the agent (blocked shutdown commands, control-plane access attempts, unauthorized persistence) and results of seeded-resistance tests showing each tripwire fires, plus records of human review of any model-based classification."
             },
             {
               "numeral": "VI",
@@ -8189,6 +8360,18 @@
                 "M",
                 "R"
               ]
+            },
+            {
+              "letter": "e",
+              "text": "Where many deployed units share a policy, model, map, simulator or generated-asset library, organizations shall treat an update to the shared component as a simultaneous change to every unit: the update shall reach a bounded subset of units first, with promotion decided by deterministic criteria over observed behaviour, a tested means to revert all units to the prior version, and a register of which units run which version; a defect found in a shared simulation asset shall be traced to every policy trained or evaluated with it.",
+              "normative": true,
+              "stakeholders": [
+                "D",
+                "I",
+                "O",
+                "M",
+                "R"
+              ]
             }
           ],
           "evidence": [
@@ -8202,7 +8385,7 @@
             },
             {
               "numeral": "III",
-              "text": "Documentation of continuous testing and validation of risk management systems, including simulation of cascade scenarios."
+              "text": "Results of continuous testing and validation of risk management systems, including results of simulated cascade scenarios, with the dependency model used by each simulation compared against the dependencies observed in deployment logs, and any deployed dependency missing from the simulation recorded as a gap."
             },
             {
               "numeral": "IV",
@@ -8215,6 +8398,10 @@
             {
               "numeral": "VI",
               "text": "Documentation of regular risk status reviews and updates, including assessment of emerging cascade risks."
+            },
+            {
+              "numeral": "VII",
+              "text": "The unit version register, staged-release records showing the subset exposed and each promotion decision against its criteria, results of a fleet-wide reversion test, and trace records linking shared simulation assets to the policies trained or evaluated with them, exercised on at least one actual or seeded asset defect."
             }
           ]
         },
@@ -8487,7 +8674,7 @@
             },
             {
               "numeral": "II",
-              "text": "Detailed agent contract documentation showing interface specifications, permitted interactions, and operational constraints."
+              "text": "Agent contract documentation showing interface specifications, permitted interactions, and operational constraints, with versioned deployment records showing the constraint artifacts injected into each agent instance's configuration; agent acknowledgment alone does not constitute conformity evidence."
             },
             {
               "numeral": "III",
@@ -8495,7 +8682,7 @@
             },
             {
               "numeral": "IV",
-              "text": "Documentation of monitoring activities and compliance verification across all system boundaries."
+              "text": "Documentation of monitoring activities and compliance verification across all system boundaries, with results of tests in which agents attempt out-of-scope or jurisdictionally restricted interactions, and gateway or policy-engine logs showing those interactions blocked."
             },
             {
               "numeral": "V",
@@ -8612,7 +8799,7 @@
           "sfrs": [
             {
               "letter": "a",
-              "text": "Maintain transparent communication of safety-related issues to stakeholders, documented through disclosure records; safety culture and resource allocation are addressed in G9.9 (see G9.9a and G9.9d).",
+              "text": "Maintain transparent communication of safety-related issues to stakeholders, documented through disclosure records; safety culture and resource allocation are addressed in D9.9 (see D9.9a and D9.9d).",
               "normative": true,
               "stakeholders": [
                 "D",
@@ -8624,7 +8811,7 @@
             },
             {
               "letter": "b",
-              "text": "Develop and implement frameworks specific to AAI systems covering (i) risk assessment, (ii) risk management, and (iii) emergency response, with each element separately documented and assessable (see also G9.2 and G9.1).",
+              "text": "Develop and implement frameworks specific to AAI systems covering (i) risk assessment, (ii) risk management, and (iii) emergency response, with each element separately documented and assessable (see also D9.2 and D9.1).",
               "normative": true,
               "stakeholders": [
                 "D",
@@ -8636,7 +8823,7 @@
             },
             {
               "letter": "c",
-              "text": "Organizations should create governance structures that are neutral, politically independent, and inclusive, ensuring balanced stakeholder representation, and should participate in and support international cooperation initiatives (see G9.4).",
+              "text": "Organizations should create governance structures that are neutral, politically independent, and inclusive, ensuring balanced stakeholder representation, and should participate in and support international cooperation initiatives (see D9.4).",
               "normative": false,
               "stakeholders": [
                 "D",
@@ -8660,7 +8847,7 @@
             },
             {
               "letter": "e",
-              "text": "Establish mechanisms for (i) regular independent audits, (ii) whistleblower protection, and (iii) documented assignment of accountability for AAI safety to named roles, with each mechanism separately assessable (see G9.5 for independent verification of systems).",
+              "text": "Establish mechanisms for (i) regular independent audits, (ii) whistleblower protection, and (iii) documented assignment of accountability for AAI safety to named roles, with each mechanism separately assessable (see D9.5 for independent verification of systems).",
               "normative": true,
               "stakeholders": [
                 "D",
@@ -8672,7 +8859,7 @@
             },
             {
               "letter": "f",
-              "text": "Organizations should conduct ongoing horizon scanning and research implementation to stay current with AAI safety developments and emerging paradigms (see G9.1c for assessment against emerging standards).",
+              "text": "Organizations should conduct ongoing horizon scanning and research implementation to stay current with AAI safety developments and emerging paradigms (see D9_1c for assessment against emerging standards).",
               "normative": false,
               "stakeholders": [
                 "D",
@@ -8684,7 +8871,7 @@
             },
             {
               "letter": "g",
-              "text": "Organizations should address the risk of over-reliance on AI systems, keeping human oversight active per the automation bias monitoring and mitigation requirements of G9.4.",
+              "text": "Organizations should address the risk of over-reliance on AI systems, keeping human oversight active per the automation bias monitoring and mitigation requirements of D9_4.",
               "normative": false,
               "stakeholders": [
                 "D",
@@ -8999,7 +9186,7 @@
             },
             {
               "letter": "c",
-              "text": "Conduct evaluations of potential harm scales, both intentional and accidental, and contribute the results to international governance and standards processes (general consequence scanning and harm modeling is covered in full by G9.3b).",
+              "text": "Conduct evaluations of potential harm scales, both intentional and accidental, and contribute the results to international governance and standards processes (general consequence scanning and harm modeling is covered in full by D9.3b).",
               "normative": true,
               "stakeholders": [
                 "D",
@@ -9165,7 +9352,7 @@
             },
             {
               "letter": "e",
-              "text": "Covered in full by G9.6a; this requirement additionally obliges periodic verification, evidenced by configuration audits, that cryptographic controls remain deployed and effective across all system components.",
+              "text": "Covered in full by D9.6a; this requirement additionally obliges periodic verification, evidenced by configuration audits, that cryptographic controls remain deployed and effective across all system components.",
               "normative": true,
               "stakeholders": [
                 "D",
@@ -9613,7 +9800,7 @@
             },
             {
               "numeral": "III",
-              "text": "Evidence of safeguards against cascading failures."
+              "text": "Evidence of safeguards against cascading failures, with fault-injection test results in which one agent is made to fail or emit malformed output, showing the safeguards (circuit breakers, timeouts, isolation of the failing agent) contain the failure before dependent agents act on it."
             },
             {
               "numeral": "IV",
@@ -9621,7 +9808,7 @@
             },
             {
               "numeral": "V",
-              "text": "Logs of emergent behavior detection and intervention measures."
+              "text": "Logs of emergent behavior detection and intervention measures, with the defined behavioral indicators and deterministic thresholds applied to independently captured interaction logs, and test records showing seeded anomalies being detected; model-based harm classification alone does not constitute conformity evidence."
             }
           ]
         },
@@ -9634,7 +9821,7 @@
           "sfrs": [
             {
               "letter": "a",
-              "text": "Expose unique agent identifiers to counterparties so that actions are attributable to a registered AAI instance; the underlying identifier registry is covered in full by G9.5a.",
+              "text": "Expose unique agent identifiers to counterparties so that actions are attributable to a registered AAI instance; the underlying identifier registry is covered in full by D9_5a.",
               "normative": true,
               "stakeholders": [
                 "D",
@@ -9696,7 +9883,7 @@
           "evidence": [
             {
               "numeral": "I",
-              "text": "Documentation of AAI identification and registration systems."
+              "text": "Documentation of AAI identification and registration systems, with samples of outbound agent requests or gateway logs showing each action carries a registered agent identifier that resolves to an entry in the identifier registry."
             },
             {
               "numeral": "II",
@@ -9951,7 +10138,7 @@
             },
             {
               "letter": "d",
-              "text": "Maintain and periodically update suite-wide guidelines for multi-agent scenarios as agency capabilities advance; the operative requirements for liability allocation, user navigation protocols, and sub-agent interactions are set out in subgoal G1.2.",
+              "text": "Maintain and periodically update suite-wide guidelines for multi-agent scenarios as agency capabilities advance; the operative requirements for liability allocation, user navigation protocols, and sub-agent interactions are set out in subgoal I1.2.",
               "normative": true,
               "stakeholders": [
                 "D",
@@ -10008,11 +10195,11 @@
             },
             {
               "numeral": "II",
-              "text": "Detailed explanation and evidence of AI system's alignment with agency law concepts, including capacity assessments, authority delineation (express, implied, and apparent), and mechanisms to prevent unintended authority expansion."
+              "text": "Explanation and evidence of AI system's alignment with agency law concepts, including capacity assessments, authority delineation (express, implied, and apparent), and mechanisms to prevent unintended authority expansion, with the permission-enforcement configuration an assessor can inspect and denial logs from the enforcing gateway or policy engine showing out-of-authority actions refused; prompt-level instructions do not constitute conformity evidence."
             },
             {
               "numeral": "III",
-              "text": "Documented procedures for managing conflicts of interest, standards of care, and ethical decision-making, with evidence of regular audits and adherence."
+              "text": "Documented procedures for managing conflicts of interest, standards of care, and ethical decision-making, with records of the periodic audits comparing scaffold-recorded actions and communications against principal instructions, including conflict-of-interest checks logged before action and disclosure times against the defined limit; the system's own attestation of loyalty does not constitute conformity evidence."
             },
             {
               "numeral": "IV",
@@ -10052,7 +10239,7 @@
             },
             {
               "numeral": "XIII",
-              "text": "Results from independent adversarial testing or red-team assessment of the suite's opacity controls, conducted against the capability elicitation requirements of subgoal G1.10 and the unfaithful reasoning detection requirements of subgoal G1.9, including methodology, findings, and remediation actions taken. Self-assessment alone is insufficient; at least one test cycle must involve evaluators independent of the development team."
+              "text": "Results from independent adversarial testing or red-team assessment of the suite's opacity controls, conducted against the capability elicitation requirements of subgoal I1.10 and the unfaithful reasoning detection requirements of subgoal I1.9, including methodology, findings, and remediation actions taken. Self-assessment alone is insufficient; at least one test cycle must involve evaluators independent of the development team."
             }
           ]
         },
@@ -10131,7 +10318,7 @@
             },
             {
               "numeral": "IV",
-              "text": "Records of principal consent and notification procedures for capability modifications. Documentation of procedures for addressing implications of system improvements, both anticipated and unexpected."
+              "text": "Records of principal consent and notification procedures for capability modifications, and documentation of procedures for addressing implications of system improvements, both anticipated and unexpected, with the release-pipeline gate configuration and pipeline logs showing capacity-affecting changes blocked from deployment when no recorded consent artifact is present; system self-report of capacity changes does not constitute conformity evidence."
             }
           ]
         },
@@ -10157,7 +10344,7 @@
             },
             {
               "letter": "b",
-              "text": "Implement authorization requirements for system delegation, prohibiting unauthorized subagent appointments and maintaining primary agent liability for breaches.",
+              "text": "Implement authorization requirements for system delegation, prohibiting unauthorized subagent appointments, limiting any delegated scope to the delegating agent's grant for the current task (D3.9a), and maintaining primary agent liability for breaches.",
               "normative": true,
               "stakeholders": [
                 "D",
@@ -10219,11 +10406,11 @@
             },
             {
               "numeral": "III",
-              "text": "System documentation detailing fail-safe defaults, interaction limitations, and disclosure requirements for subagency relationships."
+              "text": "System documentation detailing fail-safe defaults, interaction limitations, and disclosure requirements for subagency relationships, with the deployed allowlist of authorized counterpart agents and test results showing that interactions with undisclosed or unauthorized agents, and unauthorized subagent appointments, are refused by default. Test results also show that a delegation within the primary agent's standing authority but beyond its grant for the current task is refused, and that a sub-agent's call outside its delegated scope is refused even when the sub-agent's own capabilities would allow it."
             },
             {
               "numeral": "IV",
-              "text": "Demonstration or documentation of agent-to-agent handoff mechanisms and user-facing friction points, showing how a user is informed of and can intervene in transfers between agents."
+              "text": "Documentation of agent-to-agent handoff mechanisms and user-facing friction points, showing how a user is informed of and can intervene in transfers between agents, with scaffold logs of handoff events recording the enforced pause, the disclosure shown and the user's response; a model-generated announcement of a handoff does not constitute conformity evidence."
             }
           ]
         },
@@ -10307,11 +10494,11 @@
             },
             {
               "numeral": "II",
-              "text": "Documentation of conflict prevention and resolution mechanisms for competitive scenarios."
+              "text": "Documentation of conflict prevention and resolution mechanisms for competitive scenarios, with the configuration of the intake-time check against the registry of principals and engagements, logs written by that check of engagements screened and blocked, and test results showing a seeded conflicting engagement is blocked at intake; in-operation conflict recognition by the model does not constitute conformity evidence."
             },
             {
               "numeral": "III",
-              "text": "Expanded compliance frameworks ensuring systems operate within legal and contractual bounds during competitive interactions."
+              "text": "Expanded compliance frameworks ensuring systems operate within legal and contractual bounds during competitive interactions, with the duty-by-duty implementation matrix and audit results comparing each duty against scaffold-recorded actions, disclosures and accounting records; the system's own certification of dutifulness does not constitute conformity evidence."
             }
           ]
         },
@@ -10469,7 +10656,7 @@
             },
             {
               "numeral": "III",
-              "text": "Procedures for identifying and managing degradation of model accuracy due to self-checking processes."
+              "text": "Procedures for identifying and managing degradation of model accuracy due to self-checking processes, with results of external calibration tests scoring the system's stated confidence after self-validation against ground-truth outcomes on held-out sets, showing whether internal validation inflates confidence; detection delegated solely to another model's judgment does not constitute conformity evidence."
             },
             {
               "numeral": "IV",
@@ -10560,7 +10747,7 @@
             },
             {
               "numeral": "III",
-              "text": "Procedures for monitoring and managing resource consumption during collaborative optimization processes."
+              "text": "Procedures for monitoring and managing resource consumption during collaborative optimization processes, with resource-quota configuration and infrastructure metering logs, or test results, showing limits enforced when a collaborative optimization process exceeds its allocation."
             },
             {
               "numeral": "IV",
@@ -10742,7 +10929,7 @@
             },
             {
               "numeral": "V",
-              "text": "False-flag detection test results or design documentation demonstrating identity verification and network-layer monitoring of inter-system connections against the authorized list."
+              "text": "False-flag detection test results, with design documentation, demonstrating identity verification and network-layer monitoring of inter-system connections against the authorized list: results showing peers that fail cryptographic authentication or impersonate another principal are rejected, and network-layer logs flagging connections to systems not on the list; model classification of counterpart intent does not constitute conformity evidence."
             }
           ]
         },
@@ -10924,7 +11111,7 @@
             },
             {
               "numeral": "II",
-              "text": "Documentation of channel sanitization or canonicalization measures applied to inter-agent messages, including which fields are normalized and the rationale for fields left unsanitized."
+              "text": "Documentation of channel sanitization or canonicalization measures applied to inter-agent messages, including which fields are normalized and the rationale for fields left unsanitized, with the sanitizer configuration and test results showing sample messages before and after processing, with formatting, whitespace and metadata fields not required for the task stripped or normalized."
             },
             {
               "numeral": "III",
@@ -11469,7 +11656,7 @@
             },
             {
               "letter": "b",
-              "text": "Implement information integrity practices that align AI system performance with user expectations, anchored in the codes of practice established under G2.4 (Codes of Practice and Conduct), covering (i) technical measures, (ii) business and operating procedures, and (iii) legal and social-context safeguards.",
+              "text": "Implement information integrity practices that align AI system performance with user expectations, anchored in the codes of practice established under I2_4 (Codes of Practice and Conduct), covering (i) technical measures, (ii) business and operating procedures, and (iii) legal and social-context safeguards.",
               "normative": false,
               "stakeholders": [
                 "D",
@@ -11482,7 +11669,7 @@
             },
             {
               "letter": "c",
-              "text": "Establish mechanisms for identifying and addressing AI systems that do not conform to the codes of practice established under G2.4, including abatement procedures, grounding identification in external audits, complaint channels, and a maintained non-conformity register; a system's self-report of its own non-conformity does not by itself constitute conformity evidence.",
+              "text": "Establish mechanisms for identifying and addressing AI systems that do not conform to the codes of practice established under I2_4, including abatement procedures, grounding identification in external audits, complaint channels, and a maintained non-conformity register; a system's self-report of its own non-conformity does not by itself constitute conformity evidence.",
               "normative": false,
               "stakeholders": [
                 "D",
@@ -11583,11 +11770,11 @@
             },
             {
               "numeral": "III",
-              "text": "Documentation of AI system conformity to the codes of practice established under G2.4, including records of externally identified non-conforming systems, abatement actions taken, and public notifications of identified non-conforming system behavior."
+              "text": "Documentation of AI system conformity to the codes of practice established under I2_4, including records of externally identified non-conforming systems, abatement actions taken, and public notifications of identified non-conforming system behavior."
             },
             {
               "numeral": "IV",
-              "text": "Records of periodic testing and audits for output integrity and accuracy, including metrics from tests of output robustness to context removal (context-stripping tests) and of persistence of disclosures across content reuse."
+              "text": "Records of periodic testing and audits for output integrity and accuracy, scored deterministically against ground-truth reference datasets, including metrics from tests of output robustness to context removal (context-stripping tests) and of persistence of disclosures across content reuse, and results of replaying identical tasks across contexts and personas with outputs compared against predefined tolerance rules; model-graded judgments do not constitute conformity evidence."
             },
             {
               "numeral": "V",
@@ -11603,7 +11790,7 @@
             },
             {
               "numeral": "VIII",
-              "text": "Documentation of additional safeguards and testing procedures for AI systems deployed in high-reliability and critical infrastructure settings."
+              "text": "Documentation of additional safeguards and testing procedures for AI systems deployed in high-reliability and critical infrastructure settings, with results of the tests run against each such deployment showing that the additional safeguards engage as specified."
             },
             {
               "numeral": "IX",
@@ -11909,7 +12096,7 @@
           "evidence": [
             {
               "numeral": "I",
-              "text": "Documentation of system behavior monitoring mechanisms, including analysis of decision patterns, operational strategies, and information handling protocols."
+              "text": "Documentation of system behavior monitoring mechanisms, including analysis of decision patterns, operational strategies, and information handling protocols, with the predefined anomaly detection rules, logs of rule hits over externally logged action traces, and records of each model-classifier flag reviewed against the logged trace before disposition."
             },
             {
               "numeral": "II",
@@ -11917,7 +12104,7 @@
             },
             {
               "numeral": "III",
-              "text": "Evidence of continuous validation processes examining system behaviors against ethical and operational requirements, including detailed analysis of any detected deceptive patterns."
+              "text": "Evidence of continuous validation processes examining system behaviors against ethical and operational requirements, including analysis of any detected deceptive patterns, with evaluation-versus-deployment behavior comparison results and plan-versus-action consistency-check results computed over externally logged action traces; the system's own attestations of honesty do not constitute conformity evidence."
             },
             {
               "numeral": "IV",
@@ -11997,7 +12184,7 @@
           "webId": "G:I2.7",
           "title": "Identity Spoofing",
           "isUnderlinedVariant": false,
-          "description": "Systems should incorporate robust safeguards against identity spoofing, masquerading, and cloning attacks that may be orchestrated by humans or AI systems. These protections should extend to resource depletion attacks and agent hijacking attempts. See D9.6 for cryptographic identity governance and D3.7 for secure operational profiles, which provide the underlying controls; cross-jurisdictional identity requirements are addressed in G2.5 (Identity Management and Authentication Standards).",
+          "description": "Systems should incorporate robust safeguards against identity spoofing, masquerading, and cloning attacks that may be orchestrated by humans or AI systems. These protections should extend to resource depletion attacks and agent hijacking attempts. See D9.6 for cryptographic identity governance and D3.7 for secure operational profiles, which provide the underlying controls; cross-jurisdictional identity requirements are addressed in I2_5 (Identity Management and Authentication Standards).",
           "sfrs": [
             {
               "letter": "a",
@@ -12169,7 +12356,7 @@
             },
             {
               "numeral": "II",
-              "text": "Evidence of detection system operation, including identification and response to potential violations."
+              "text": "Evidence of detection system operation, including identification and response to potential violations, consisting of the rule set, rule-engine detection logs over externally logged system behavior, and results of seeded-violation tests showing detection and notification; supervisor-model verdicts count only where checked against the logged trace."
             },
             {
               "numeral": "III",
@@ -12379,11 +12566,11 @@
           "webId": "G:I2_5",
           "title": "Identity Management and Authentication Standards",
           "isUnderlinedVariant": true,
-          "description": "Systems should incorporate comprehensive identity management frameworks that align with established digital identity standards while addressing AI-specific authentication challenges. These frameworks should account for potential jurisdictional arbitrage and technological circumvention attempts. See G2.7 (Identity Spoofing) for identity-threat safeguards and D9.6 for cryptographic identity governance; this subgoal addresses cross-jurisdictional authentication and jurisdictional-arbitrage resistance specifically.",
+          "description": "Systems should incorporate comprehensive identity management frameworks that align with established digital identity standards while addressing AI-specific authentication challenges. These frameworks should account for potential jurisdictional arbitrage and technological circumvention attempts. See I2.7 (Identity Spoofing) for identity-threat safeguards and D9.6 for cryptographic identity governance; this subgoal addresses cross-jurisdictional authentication and jurisdictional-arbitrage resistance specifically.",
           "sfrs": [
             {
               "letter": "a",
-              "text": "Organizations must establish identity verification systems that build upon existing trust frameworks, focusing on the jurisdictional-arbitrage and circumvention risks unique to AI systems; foundational identity verification requirements are covered by G2.7a and D9.6.",
+              "text": "Organizations must establish identity verification systems that build upon existing trust frameworks, focusing on the jurisdictional-arbitrage and circumvention risks unique to AI systems; foundational identity verification requirements are covered by I2.7a and D9.6.",
               "normative": true,
               "stakeholders": [
                 "D",
@@ -12407,7 +12594,7 @@
             },
             {
               "letter": "c",
-              "text": "Organizations must maintain monitoring systems to detect identity-based exploits that span jurisdictional boundaries and cross-jurisdictional manipulation attempts; general identity-attack monitoring is covered by G2.7c.",
+              "text": "Organizations must maintain monitoring systems to detect identity-based exploits that span jurisdictional boundaries and cross-jurisdictional manipulation attempts; general identity-attack monitoring is covered by I2.7c.",
               "normative": true,
               "stakeholders": [
                 "D",
@@ -12425,7 +12612,7 @@
             },
             {
               "numeral": "II",
-              "text": "Evidence of cross-jurisdictional authentication mechanisms, including detection of potential exploitation attempts."
+              "text": "Evidence of cross-jurisdictional authentication mechanisms, including detection of potential exploitation attempts, shown by IAM or gateway detection logs of cross-jurisdiction exploit and manipulation attempts and by results of seeded attempts (such as credentials presented from a mismatched jurisdiction) showing the monitor raises an alert."
             },
             {
               "numeral": "III",
@@ -12582,7 +12769,7 @@
           "evidence": [
             {
               "numeral": "I",
-              "text": "Transparency Reports detailing decision-making contexts, information sources, reasoning processes, and methods for presenting this information to users."
+              "text": "Transparency Reports detailing decision-making contexts, information sources, reasoning processes, and methods for presenting this information to users, with samples of user-facing disclosures each traced to the scaffold provenance log entries (sources consulted, retrievals, tool calls) behind the output; model-generated narratives of reasoning do not constitute conformity evidence."
             },
             {
               "numeral": "II",
@@ -12598,7 +12785,7 @@
             },
             {
               "numeral": "V",
-              "text": "Accountability Mechanism Documentation, detailing procedures for tracing responsibility for contextual information degradation, examples of responsibility allocation in different deployment contexts, and records of identified and addressed responsibility gaps."
+              "text": "Accountability Mechanism Documentation, detailing procedures for tracing responsibility for contextual information degradation, examples of responsibility allocation in different deployment contexts, and records of identified and addressed responsibility gaps, with scaffold provenance log extracts tracing recorded contextual degradation events to their originating source, step or actor."
             },
             {
               "numeral": "VI",
@@ -12681,7 +12868,7 @@
           "evidence": [
             {
               "numeral": "I",
-              "text": "Detailed documentation of information handling procedures that demonstrates pre-processing validation methods, post-processing verification steps, storage protocols that maintain intent integrity and sensitivity, verification of accuracy within contextual schemas, and continuous monitoring of intent alignment between stated and actual goals."
+              "text": "Documentation of information handling procedures (pre-processing validation, post-processing verification, storage protocols that maintain intent integrity and sensitivity, accuracy verification within contextual schemas), with scaffold records pairing each stated goal with its subsequent tool calls, and logs of automated divergence alerts raised when executed actions departed from the declared plan; model self-report does not constitute conformity evidence."
             }
           ],
           "htmlWebId": "G:G3_2::misattribution-of-intent"
@@ -12769,7 +12956,7 @@
           "evidence": [
             {
               "numeral": "I",
-              "text": "Complete system logs documenting all system actions, data access events, configuration changes, decision-making processes, and contextual verification steps. This documentation should include records of human interaction points and their outcomes, along with regular contextual integrity checks across all system components."
+              "text": "Complete system logs documenting all system actions, data access events, configuration changes, decision-making processes, contextual verification steps, human interaction points and their outcomes, and regular contextual integrity checks across all system components, with provenance records linking each item of information to its source and context, hash-chained or signed, and verification results showing seeded alterations of records or source links are detected."
             },
             {
               "numeral": "II",
@@ -12813,7 +13000,7 @@
           "evidence": [
             {
               "numeral": "I",
-              "text": "Detailed documentation of information lifecycle procedures describing how data is collected, processed, stored, and disposed of throughout system operations. This documentation should demonstrate preservation of correct contextual relationships and prevention of unauthorized modifications across all operational phases."
+              "text": "Documentation of information lifecycle procedures describing how data is collected, processed, stored, and disposed of, preserving contextual relationships and preventing unauthorized modifications across operational phases, with the vetted source allowlist configuration and logs, written by the integrity-check component, of hash or signature verification results and of inputs rejected or flagged; model-based credibility scoring does not constitute conformity evidence on its own."
             },
             {
               "numeral": "II",
@@ -12865,7 +13052,7 @@
             },
             {
               "numeral": "III",
-              "text": "Regular integrity verification reports showing systematic checks for potential value degradation, including audit trails that confirm the stability of human ethical values throughout system operations and development."
+              "text": "Regular integrity verification reports showing systematic checks for potential value degradation, including audit trails that confirm the stability of human ethical values throughout system operations and development, with hash verification records for pinned system prompts and model versions, and periodic and pre-deployment regression results on the fixed value-alignment benchmark, each linked to the change-control record that approved or blocked the change; model self-report does not constitute conformity evidence."
             }
           ],
           "htmlWebId": "G:G3_6::learning-dispreferred-values-behaviors"
@@ -12917,7 +13104,7 @@
           "evidence": [
             {
               "numeral": "I",
-              "text": "Detailed documentation of information lifecycle management demonstrating how data is collected, processed, stored, and disposed of while maintaining contextual integrity and preventing unauthorized modifications to core values."
+              "text": "Documentation of information lifecycle management demonstrating how data is collected, processed, stored, and disposed of while maintaining contextual integrity, with results of tests in which modifications to the core-values configuration are attempted through unauthorized channels, and access-control infrastructure logs showing each attempt blocked while authorized changes pass only through the designated channel."
             },
             {
               "numeral": "II",
@@ -12973,7 +13160,7 @@
             },
             {
               "numeral": "III",
-              "text": "Complete operational logs documenting system actions within their full contextual environment, with particular attention to tracking potential value drift indicators and inter-agent influence patterns."
+              "text": "Complete operational logs documenting system actions within their full contextual environment, with particular attention to tracking potential value drift indicators and inter-agent influence patterns, together with persona-consistency probe definitions, deterministic scoring rules and thresholds, per-session probe scores, and scaffold trigger logs of context resets or human escalations after threshold or session-length crossings, in a form assessors can replay."
             }
           ]
         },
@@ -13055,7 +13242,7 @@
             },
             {
               "numeral": "II",
-              "text": "Impact analysis of potential contradictions on system outcomes, and verification of resolution effectiveness."
+              "text": "Impact analysis of potential contradictions on system outcomes, and verification of resolution effectiveness through replayable seeded-contradiction test results showing which planted contradictions the detector caught, missed or escalated to a human decision-maker, with any model-judged detections confirmed against the seeded suite."
             }
           ]
         },
@@ -13153,11 +13340,11 @@
           "evidence": [
             {
               "numeral": "I",
-              "text": "Comprehensive documentation demonstrating the architecture of the immutable reference environment, and security measures protecting against unauthorized modification."
+              "text": "Documentation demonstrating the architecture of the immutable reference environment, and security measures protecting against unauthorized modification, with cryptographic hashes of the reference contents and results of write-attempt tests showing modification by operational processes or external agents is refused."
             },
             {
               "numeral": "II",
-              "text": "Verification processes for maintaining reference integrity, and regular comparison analyses between reference and operational contexts."
+              "text": "Verification processes for maintaining reference integrity, and regular comparison analyses between reference and operational contexts, with logs from the automated comparison job, the divergence alerts it raised, and results of a seeded-divergence test showing the alert fires."
             }
           ],
           "htmlWebId": "G:G3_1::referential-context"
@@ -13334,11 +13521,11 @@
             },
             {
               "numeral": "V",
-              "text": "Documentation of human oversight and intervention strategies, including training protocols, decision-making frameworks, and intervention logs."
+              "text": "Documentation of human oversight and intervention strategies, including training protocols, decision-making frameworks, and intervention logs, with logged results of scheduled intervention-path tests recording the measured time to halt or roll back system actions against the defined response time."
             },
             {
               "numeral": "VI",
-              "text": "Comprehensive recovery and contingency plans for addressing unsafe conditions or unexpected emergent behaviors, including simulation results and real-world application records."
+              "text": "Comprehensive recovery and contingency plans for addressing unsafe conditions or unexpected emergent behaviors, including simulation results and real-world application records, with each simulated result labelled as simulated and accompanied by the measured discrepancy between the simulation and deployment on the outcomes it reports."
             },
             {
               "numeral": "VII",
@@ -13493,7 +13680,7 @@
             },
             {
               "numeral": "II",
-              "text": "Technical control specifications preventing uncontrolled replication, including monitoring systems and intervention protocols."
+              "text": "Technical control specifications preventing uncontrolled replication, including monitoring systems and intervention protocols, with test results showing that attempts by the system to copy its weights, start new instances or provision compute beyond approved limits are blocked and logged by infrastructure outside the agent, or a reference to the I5.1 evidence providing these results."
             },
             {
               "numeral": "III",
@@ -13537,7 +13724,7 @@
           "evidence": [
             {
               "numeral": "I",
-              "text": "Comprehensive interpretability framework documentation, including validation records, testing results, and user guides demonstrating human understanding of system processes."
+              "text": "Interpretability framework documentation, including validation records, testing results, and user guides demonstrating human understanding of system processes, with sample explanations each linked to the scaffold-logged provenance record (inputs, retrievals, tool calls, policy checks) for the output it explains, so an assessor can reconcile the two; model self-report does not constitute conformity evidence."
             },
             {
               "numeral": "II",
@@ -14317,7 +14504,7 @@
           "evidence": [
             {
               "numeral": "I",
-              "text": "Documentation of monitoring systems that demonstrate capability to track both local operations and broader contextual events."
+              "text": "Documentation of monitoring systems that demonstrate capability to track both local operations and broader contextual events, with the monitoring-scope inventory mapped to the configured monitors, alert outputs from the monitoring tooling, and results of seeded-event tests showing each inventoried factor is detected."
             },
             {
               "numeral": "II",
@@ -14569,7 +14756,7 @@
             },
             {
               "numeral": "II",
-              "text": "Documentation of reward channel integrity protections and associated access controls."
+              "text": "Documentation of reward channel integrity protections and associated access controls, with the access-control configuration and results of negative tests showing that system-initiated attempts to modify the reward or feedback channel, its storage or its computation are blocked and recorded by access-control infrastructure outside the agent."
             },
             {
               "numeral": "III",
@@ -14646,7 +14833,7 @@
             },
             {
               "numeral": "VI",
-              "text": "Architecture documentation and review records showing what oversight-status information is withheld from the system's observable context, including context-assembly review."
+              "text": "Architecture documentation and review records showing what oversight-status information is withheld from the system's observable context, including context-assembly review, with the context-assembly configuration an assessor can inspect and sampled fully assembled model inputs from evaluation and production runs, checked by a deterministic scan showing no monitoring indicators or evaluation markers present."
             },
             {
               "numeral": "VII",
@@ -14846,7 +15033,7 @@
             },
             {
               "numeral": "IV",
-              "text": "Documentation of operational issues, including thorough analysis of root causes and evidence of implemented solutions."
+              "text": "Documentation of operational issues, including analysis of root causes and evidence of implemented solutions, with the issue log and service performance metrics produced by a telemetry or logging layer independent of the model, from which each documented issue can be traced; model-generated narrative does not by itself constitute conformity evidence."
             }
           ]
         },
@@ -15558,11 +15745,11 @@
             },
             {
               "numeral": "V",
-              "text": "Documentation of explainable AI techniques, user guides, and feedback records regarding model transparency and decision-making processes."
+              "text": "Documentation of explainable AI techniques, user guides, and feedback records regarding model transparency and decision-making processes, with sample attribution outputs computed by the explainability tooling over scaffold-captured decision traces; model-generated narratives of the system's own reasoning do not constitute conformity evidence."
             },
             {
               "numeral": "VI",
-              "text": "Protocols and logs for human oversight, intervention procedures, and instances of human participation in addressing imbalances."
+              "text": "Protocols and logs for human oversight, intervention procedures, and instances of human participation in addressing imbalances, with the intervention logs written by the scaffold at each intervention, recording the operator, the decision trace affected and the action taken."
             },
             {
               "numeral": "VII",
@@ -15645,11 +15832,11 @@
           "evidence": [
             {
               "numeral": "I",
-              "text": "Comprehensive documentation of information validation systems, including source verification protocols, credibility assessment frameworks, and records demonstrating successful adaptation to varying information quality and trustworthiness levels."
+              "text": "Documentation of information validation systems, including source verification protocols and credibility assessment frameworks, with ingestion-pipeline logs recording, for each retrieved item, its verified source, the scoring inputs, the rule applied and the resulting trust score, and records of adaptation to varying information quality; model-internal credibility judgments do not constitute conformity evidence."
             },
             {
               "numeral": "II",
-              "text": "Detailed audit trails and evaluation reports showing the effectiveness of transparency mechanisms, including examples of human oversight interventions, corrective actions, and continuous improvement processes."
+              "text": "Audit trails and evaluation reports showing the effectiveness of transparency mechanisms, including examples of human oversight interventions, corrective actions, and continuous improvement processes, with logged human overrides of credibility decisions and their rationale, and results of periodic sampled recomputation of trust decisions from the logged inputs by reviewers independent of the pipeline owners."
             },
             {
               "numeral": "III",
@@ -16035,7 +16222,7 @@
             },
             {
               "numeral": "IV",
-              "text": "Regular assessment reports showing the effectiveness of monitoring systems and countermeasures, including evidence of timely interventions and successful prevention of disinformation spread."
+              "text": "Regular assessment reports showing the effectiveness of monitoring systems and countermeasures, including evidence of timely interventions and successful prevention of disinformation spread, with the misinformation detector's precision and recall on a seeded or human-labelled ground-truth set of the system's outputs, and records of deterministic or human spot-checks of live detection verdicts."
             }
           ]
         },
@@ -16150,7 +16337,7 @@
           "evidence": [
             {
               "numeral": "I",
-              "text": "Complete documentation of ethical frameworks and fairness mechanisms, including bias detection strategies, algorithmic fairness methodologies, and records demonstrating successful prevention of discriminatory outcomes."
+              "text": "Complete documentation of ethical frameworks and fairness mechanisms, including bias detection strategies, algorithmic fairness methodologies, and records demonstrating successful prevention of discriminatory outcomes, such as disaggregated fairness evaluation results that an assessor can recompute from logged deployed decisions, stating the metrics, groups and thresholds used, and bias-detection alerts with the actions taken."
             },
             {
               "numeral": "II",
@@ -16288,7 +16475,7 @@
             },
             {
               "numeral": "III",
-              "text": "Detailed documentation of ethical guidelines and compliance measures, including evidence of alignment with societal norms and records showing consistent operation within authorized boundaries."
+              "text": "Documentation of ethical guidelines and compliance measures, including evidence of alignment with societal norms and records showing consistent operation within authorized boundaries, with the scope-enforcement configuration an assessor can inspect and results of behavioral evaluations and negative tests showing out-of-scope operations blocked by the enforcement layer; the guideline text and the model's account of its own decision-making do not constitute conformity evidence."
             },
             {
               "numeral": "IV",
@@ -16412,7 +16599,7 @@
             },
             {
               "numeral": "II",
-              "text": "Comprehensive records of monitoring activities and oversight mechanisms, including audit reports, explainable AI methodologies, and evidence of effective detection and correction of ethical deviations."
+              "text": "Records of monitoring activities and oversight mechanisms, including audit reports and explainable AI methodologies, with evaluation results computed over scaffold-logged deployed outputs against the ethics-training objectives, attribution-tooling outputs, and logs of human oversight interventions recording each detected deviation and its correction; model-generated explanations of decision-making do not constitute conformity evidence."
             },
             {
               "numeral": "III",

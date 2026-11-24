@@ -120,7 +120,7 @@ evidence_production:
 
     '
 confidence: medium
-needs_human_review: true
+review_status: generated_draft
 review_notes: "The framework-specific sharpenings worth preserving:\n  (1) \"Ideation provenance\" as\
   \ a standing artifact — many orgs use\n      AI tools casually without logging; the subgoal's teeth\
   \ come\n      from the logging requirement.\n  (2) Confabulation-as-a-named-risk is newly relevant and\

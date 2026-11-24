@@ -111,16 +111,23 @@ evidence_production:
     in principal-facing language and enumerates the duty requirements. Principals see, in plain terms,
     what their agent will and will not do on their behalf when competing.
 - evidence_numeral: II
-  how_to_produce: 'Conflict-prevention and resolution records: intake-time registry-check configuration
-    and blocked-engagement logs (the deterministic mechanism''s primary output), Conflicts Register entries
-    with lifecycle (identification → disclosure → resolution), Red Team scenario outputs showing the agent
-    declining to cross a Boundary even when it could "win", circuit-breaker event logs.'
+  how_to_produce: 'Documentation of the Deterministic Conflict Identification and Disclosure Protocol and the resolution
+    mechanisms, plus the intake-time check''s configuration and the registry of principals and existing
+    engagements it queries; the logs that check writes of every engagement screened and blocked; and the
+    last-run results of a re-runnable test that seeds a conflicting engagement and shows it blocked at
+    intake. Retain Conflicts Register entries with lifecycle (identification → disclosure → resolution),
+    Red Team scenario outputs and circuit-breaker event logs as supporting records. Conflicts the model
+    recognizes mid-operation may accompany but cannot substitute for the intake-check records.'
 - evidence_numeral: III
-  how_to_produce: Expanded compliance frameworks cross-linked to the Jurisdictional Compliance Matrix
-    (D9.2) — antitrust, market-manipulation, consumer-protection — with named mapping from duty to legal
-    authority. Review attestations retained.
+  how_to_produce: 'Expanded compliance frameworks cross-linked to the Jurisdictional Compliance Matrix (D9.2) —
+    antitrust, market-manipulation, consumer-protection — with the Fiduciary Duties Charter''s
+    duty-by-duty implementation matrix naming, for each of the nine duties, its legal authority and the
+    control implementing it. Retain audit results that test each duty against sampled scaffold-recorded
+    actions, disclosures to principals and accounting records, citing the records sampled, exceptions
+    found and remediation. The system''s own certification of dutifulness may accompany but cannot
+    substitute for these audit results.'
 confidence: high
-needs_human_review: true
+review_status: generated_draft
 review_notes: 'Race dynamics in AAI markets are under-specified at the legal layer today; the nine duties
   listed in SFR-b are classical agency law translated to AAI without a settled case-law foundation. The
   "Boundary Register" formalization is this pattern''s best attempt to make the duties operational. Cross-suite:

@@ -150,19 +150,19 @@ evidence_production:
 
     '
 confidence: high
-needs_human_review: true
+review_status: generated_draft
 review_notes: "Much of this depends on the specific regulatory environment: EU AI Act Article 22 (authorised\
   \ representatives), GDPR Article 27, UK and US sector rules, sanctions regimes change. The pattern provides\
   \ durable governance structure; concrete requirements (which regulators, which notifications) need counsel\
   \ per jurisdiction.\n\"Tariffs and embargoes\" appears in the subgoal description, which surfaces an\
   \ unusual concern — AI-specific export controls (advanced-chip export controls, compute-threshold notification\
   \ regimes emerging under EU AI Act and US executive orders). The pattern includes these under embargo\
-  \ / sanctions / tariff screening, but Nell / counsel should verify currency.\nCross-suite:\n  - D9.2\
-  \ (Compliance) — Jurisdictional Compliance Matrix there is\n    closely adjacent; this pattern specialises\
-  \ on the deception-\n    avoidance angle.\n  - I2.5 (I2::idx13 — Identity Management) — cross-jurisdictional\n\
-  \    authentication overlaps; identity standards pattern addresses the\n    technical authentication\
-  \ side, this pattern addresses the\n    governance side.\n  - I6 (Market Concentration) — structural\
-  \ avoidance of oversight\n    relates to anti-monopolistic governance.\n"
+  \ / sanctions / tariff screening, but implementers should confirm their currency with counsel.\nCross-suite:\n\
+  \  - D9.2 (Compliance) — Jurisdictional Compliance Matrix there is\n    closely adjacent; this pattern\
+  \ specialises on the deception-\n    avoidance angle.\n  - I2.5 (I2::idx13 — Identity Management) —\
+  \ cross-jurisdictional\n    authentication overlaps; identity standards pattern addresses the\n    technical\
+  \ authentication side, this pattern addresses the\n    governance side.\n  - I6 (Market Concentration)\
+  \ — structural avoidance of oversight\n    relates to anti-monopolistic governance.\n"
 drafted_by: claude-opus-4.7-author
 drafted_at: 2026-04-16
 anchor_exemplar: D9.2-compliance

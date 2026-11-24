@@ -138,7 +138,7 @@ cross_references:
 - D6::idx6::dynamic-regulatory-framework-management
 - D6::idx9::management-of-access-and-usage-restricti
 confidence: high
-needs_human_review: true
+review_status: generated_draft
 review_notes: 'Significant overlap with D9 governance (D9.2 Jurisdictional Compliance Matrix in particular).
   The consolidation pass should decide whether D6.3 is a downstream consumer of the D9 framework (recommended)
   or stands independently; current draft treats D6.3 as system-identity focused while D9.2 is capability-rule

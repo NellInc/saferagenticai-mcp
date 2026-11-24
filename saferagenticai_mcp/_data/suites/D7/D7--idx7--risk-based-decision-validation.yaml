@@ -130,12 +130,13 @@ code_shape:
     '
 evidence_production:
 - evidence_numeral: I
-  how_to_produce: 'Decision-ledger persistence layer with structured schema: decision ID, category, inputs,
-    tools invoked (as logged by the runtime), executed outcome, model-stated rationale (one field,
-    consistency-checkable against the logged actions), context hash. Exportable per-decision. Retention
-    per data policy; access audited.
-
-    '
+  how_to_produce: 'Export from the scaffold-maintained decision ledger, per high-impact decision: decision ID, category,
+    inputs, tools invoked (as logged by the runtime), executed outcome, model-stated rationale and
+    reasoning chain (one field), and context hash, with each entry linked to its tool-call records. Attach
+    the results of the scaffold-run consistency check comparing each stated rationale against the logged
+    actions, listing mismatches and their follow-up. Retention per data policy; access audited. The
+    model-stated rationale may accompany but cannot by itself evidence the decision basis; the ledger
+    linkage and check results are what an assessor verifies.'
 - evidence_numeral: II
   how_to_produce: 'Validation protocol document + validator training records. Protocol covers: ticket
     intake, what validators see, what they must record, escalation, appeal. Audit trail of who validated
@@ -143,10 +144,12 @@ evidence_production:
 
     '
 - evidence_numeral: III
-  how_to_produce: 'Fail-safe registry document listing each decision category and its fail-safe action.
-    CI test suite exercises timeout path and verifies fail-safe triggers. Export signed results per release.
-
-    '
+  how_to_produce: 'Fail-safe registry document listing each decision category and its fail-safe default action. The
+    DecisionGate CI test suite injects validate-tier decisions with no recorded human verdict (SLA timeout,
+    no validator available) and auto-tier decisions the anomaly detector flags, and asserts that each is
+    held or reverts to the registered fail-safe action, that no risky action executes, and that a
+    decision_failsafe audit record is written. Export signed results per release together with the test
+    definitions so an assessor can re-run them.'
 - evidence_numeral: IV
   how_to_produce: 'Validator training curriculum, assessment records, recertification schedule. Cross-reference
     to D7.2 training evidence pipeline.
@@ -158,7 +161,7 @@ evidence_production:
 
     '
 confidence: high
-needs_human_review: false
+review_status: generated_draft
 review_notes: 'Updated for v1.3 catalog revision: SFR-a now requires a system-maintained decision
   ledger linking decisions to inputs, tool calls, and executed outcomes, with the model''s stated
   rationale demoted to one auditable field rather than evidence of decision basis; SFR-b anchors

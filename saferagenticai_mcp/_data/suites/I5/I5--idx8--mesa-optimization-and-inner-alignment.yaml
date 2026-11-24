@@ -125,7 +125,7 @@ testability:
 - Off-distribution tests include observability-varied conditions with statistical comparison
 - Regression suite blocks deployment when divergence exceeds pre-committed tolerance
 confidence: medium
-needs_human_review: true
+review_status: generated_draft
 review_notes: |
   Mesa-optimization detection remains an active research area. The behavioral probe approach is
   implementable today but has known blind spots (a sufficiently capable mesa-optimizer may pass

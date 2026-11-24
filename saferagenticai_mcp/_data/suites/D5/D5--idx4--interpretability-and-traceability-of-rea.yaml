@@ -148,14 +148,16 @@ evidence_production:
 
     '
 - evidence_numeral: III
-  how_to_produce: 'Conduct and publish stakeholder comprehension studies: can auditors reconstruct the
-    decision from the record? Can experts catch a seeded-unfaithfulness case? Report faithfulness-probe
-    rates across decision classes and reasoning-chain traceability verification. Include studies with
-    multiple stakeholder groups (users, operators, auditors) showing differential comprehension.
-
-    '
+  how_to_produce: 'Conduct and publish stakeholder comprehension studies: can auditors reconstruct the decision from
+    the record? Can experts catch a seeded-unfaithfulness case? Include studies with multiple
+    stakeholder groups (users, operators, auditors) showing differential comprehension, plus
+    reasoning-chain traceability verification. For each deployed explanation method, add results from
+    the faithfulness-probe pipeline: counterfactual input edits and claimed-input ablation on a
+    stratified sample of decisions, recording per case whether the decision changed as the explanation
+    predicted, and the faithfulness rate per decision class, joined to the Decision Records so an
+    assessor can re-run the probes. Comprehension results show clarity, not faithfulness.'
 confidence: medium
-needs_human_review: true
+review_status: generated_draft
 review_notes: 'Medium — not high — because faithful interpretation of neural reasoning is an open research
   problem. The Decision Record pattern and structured-precondition pattern are solid engineering and should
   be implemented; the faithfulness-probe pattern is best-current-practice but will evolve as the research

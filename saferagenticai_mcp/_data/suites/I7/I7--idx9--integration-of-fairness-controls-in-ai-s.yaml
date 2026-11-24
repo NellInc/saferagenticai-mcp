@@ -148,11 +148,13 @@ code_shape:
     '
 evidence_production:
 - evidence_numeral: I
-  how_to_produce: 'Fairness framework documentation: slice taxonomy (with rationale and stakeholder input),
-    metric definitions, threshold values, gate configuration history. Eval reports per release, with disaggregated
-    results and gate-decision record.
-
-    '
+  how_to_produce: 'Fairness framework documentation: slice taxonomy (with rationale and stakeholder input), bias-detection
+    strategies, metric definitions, threshold values, and gate configuration history. Per-release eval reports
+    with disaggregated results and gate-decision records. For deployed behavior, retain logged production
+    decisions with slice attributes (where legally observable) and report disaggregated fairness results
+    computed from them, stating the metrics, groups and thresholds used, with the query or script so an
+    assessor can recompute them. Include inference-time drift alarms and bias-detection alerts with the
+    intervention or remediation taken for each.'
 - evidence_numeral: II
   how_to_produce: 'Production monitoring dashboards with slice-disaggregated metrics, alarm history, oncall
     response times. Intervention-path case files showing escalation, decision, remediation, verification.
@@ -171,7 +173,7 @@ evidence_production:
 
     '
 confidence: high
-needs_human_review: false
+review_status: generated_draft
 review_notes: 'This is mature ML-fairness territory; the pattern specializes it for agentic-AI concerns
   (refusal-rate disparities, generation-tone disparities). The "single aggregate fairness score" and "ethics
   board without refusal power" anti-patterns are framework-relevant sharpenings worth preserving.

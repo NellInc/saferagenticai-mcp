@@ -145,7 +145,7 @@ cross_references:
 - D6::idx8::prevention-of-role-persistence-errors
 - D6::idx13::managing-contextual-ambiguity
 confidence: high
-needs_human_review: false
+review_status: generated_draft
 review_notes: 'Strongly overlapping with I3 (Context Degradation) — consolidation should explicitly wire
   D6.10 and I3 so they don''t diverge; they are the same failure mode seen from the driver and inhibitor
   sides. Pattern treats drift as multi-signal because single-metric drift monitoring is the common failure.

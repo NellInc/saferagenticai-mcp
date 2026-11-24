@@ -125,7 +125,7 @@ evidence_production:
     decisions) when rapid or sustained growth crossed a threshold. A monitoring configuration with no retained
     escalation record for a crossed threshold is a finding, not evidence.'
 confidence: medium
-needs_human_review: true
+review_status: generated_draft
 review_notes: 'Most organizations will answer the non-indexed-environment question as "we don''t operate
   there" and that''s a valid governance answer — this pattern specifies how to document that posture rather
   than assume all orgs have deep/dark-web deployments. Where orgs do operate in those spaces (threat intelligence,

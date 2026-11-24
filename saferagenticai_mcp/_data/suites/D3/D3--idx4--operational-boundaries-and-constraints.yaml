@@ -19,13 +19,13 @@ summary: >
   judgments (or the agent's narrative that it stayed in bounds) do not
   by themselves constitute conformity evidence. Resource-exposure
   boundaries are implemented through the default-deny capability
-  allowlist (G3.10a).
+  allowlist (D3.10a).
 
 normative_anchors:
   sfrs_addressed: [a, b, c]
   evidence_addressed: [I, II, III]
-  sfrs_not_addressed: []
-  evidence_not_addressed: []
+  sfrs_not_addressed: [d]
+  evidence_not_addressed: [IV]
 
 cross_references:
   - "D3::idx1::authorization"
@@ -41,7 +41,7 @@ design_patterns:
       externally enforced constraints: (1) per-task action budget (max
       tool calls / max tokens / max wall clock), (2) per-resource rate
       limits, (3) topic and tool scope (only these tools, only these
-      domains, only these data classes — default-deny per G3.10a),
+      domains, only these data classes — default-deny per D3.10a),
       (4) content filters (input and output) for classes the agent is
       not authorised to handle. Any violation short-circuits the action
       and logs. LLM-based classifiers may sit in the stack as defence
@@ -200,20 +200,22 @@ evidence_production:
       profile, action, reason, timestamp, correlation ID.
 
 confidence: high
-needs_human_review: false
+review_status: generated_draft
 review_notes: >
-  "Mechanisms for agents to request boundary clarification or escalation"
-  in the description reads as a distinctive, framework-specific shape —
-  I have patterned it as an explicit `ask_for_clarification` tool and an
-  escalation-as-first-class-action stance. Nell should confirm this is
-  the intended reading rather than "escalate only to human, never to
-  supervisor agent" (which would be stricter).
+  "Mechanisms for agents to request boundary clarification or
+  escalation" in the description reads as a distinctive,
+  framework-specific shape — I have patterned it as an explicit
+  `ask_for_clarification` tool and an escalation-as-first-class-action
+  stance. Whether this is the intended reading rather than "escalate
+  only to human, never to supervisor agent" (which would be stricter) is
+  an open question.
 
   This subgoal overlaps heavily with D3.2 (Sandboxing) and D3.1
   (Authorization). I have drawn the line at: D3.1 = identity / decision
   of authority, D3.2 = isolation mechanism that prevents leakage, D3.4 =
   positive behavioural envelope and escalation. The framework does not
-  draw these lines sharply; a reviewer may want to merge or re-split.
+  draw these lines sharply; whether to merge or re-split is an open
+  question.
 
 drafted_by: claude-opus-4.7-subagent-D3
 drafted_at: 2026-04-16

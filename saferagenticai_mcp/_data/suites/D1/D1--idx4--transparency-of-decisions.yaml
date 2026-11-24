@@ -85,17 +85,19 @@ anti_patterns:
   - name: 'Chain of reasoning stored as LLM monologue'
     why_wrong: >
       A free-text reasoning dump may be illustrative but cannot be
-      structurally verified. Evidence II says logs should show a chain of
-      reasoning "or at least reference the relevant subgoal(s)" — the
-      subgoal reference is the minimum, and it requires the structured
-      subgoal_chain, not prose.
+      structurally verified. Evidence II asks for scaffold dispatch logs
+      recording the plan node through which each action was dispatched,
+      checked externally for actions with no parent subgoal; a model-written
+      chain of reasoning may only accompany them, and the linkage requires the
+      structured subgoal_chain, not prose.
 
   - name: Summary logs, detail discarded
     why_wrong: >
-      Evidence V asks for "comprehensive logs... so that investigators or
-      auditors can review how final choices were reached, which inputs
-      were considered, and what weight or priority was assigned to each."
-      Summary-only retention fails this outright.
+      Evidence V asks for logs of all significant decision points "so that
+      investigators or auditors can review how final choices were reached and
+      which inputs were considered," including the machine-logged pass or fail
+      result of each deterministic constraint check. Summary-only retention
+      fails this outright.
 
   - name: Auditor sees the same view as the user
     why_wrong: >
@@ -159,10 +161,16 @@ evidence_production:
 
   - evidence_numeral: II
     how_to_produce: >
-      Export decision logs showing subgoal_chain populated for each
-      decision; run a reconstruction query end-to-end on sample decisions
-      to prove chains resolve to active or historical goals in the goal
-      store.
+      Export scaffold dispatch logs recording, for each action, the plan
+      node through which it was dispatched and its populated
+      subgoal_chain. Run an external consistency check over those logs, a
+      deterministic reconstruction query outside the planner that
+      resolves each chain to active or historical goals in the goal store
+      (D1.1) and flags any action with no parent subgoal; retain its
+      output for each run, including zero-orphan results, with the query
+      so an assessor can re-run it. A model-written chain of reasoning
+      may accompany the logs but cannot substitute for the dispatch
+      records or the check output.
 
   - evidence_numeral: III
     how_to_produce: >
@@ -183,13 +191,20 @@ evidence_production:
   - evidence_numeral: V
     how_to_produce: >
       Retention policy aligned with audit requirements, demonstrated by
-      storage lifecycle reports. Spot-audit a random sample of decisions
-      against a rubric: were all material inputs captured? were
-      prioritized factors recorded? were assumptions made explicit?
-      Publish the rubric; record the audit cadence.
+      storage lifecycle reports. Export decision records for all
+      significant decision points, especially those involving risk or
+      ethical considerations, showing the inputs considered and the
+      constraints_checked entries: each constraint's id, source, value
+      at evaluation time and machine-logged pass or fail outcome for the
+      ethical guidelines, user preferences, risk thresholds and domain
+      limits evaluated there. Spot-audit a random sample against a
+      published rubric (were all material inputs captured? does every
+      applied check have a logged result?) and record the audit cadence.
+      Model-stated weights or priorities may be retained but are
+      self-report, not conformity evidence.
 
 confidence: high
-needs_human_review: false
+review_status: generated_draft
 review_notes: >
   Closely paired with D1.1 and D1.3. The sharpening for D1.4 vs D1.3 is
   the constraint manifest and the auditor read path — this subgoal is

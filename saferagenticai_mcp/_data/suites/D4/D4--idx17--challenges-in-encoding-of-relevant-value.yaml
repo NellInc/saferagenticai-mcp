@@ -146,14 +146,16 @@ evidence_production:
 
     '
 - evidence_numeral: III
-  how_to_produce: 'Framework documentation for unexpected scenarios: detection methods (external OOD detector
-    features and thresholds, uncategorized-bucket runtime behavior), response protocols (mechanically enforced
-    conservative behavior, human review, refusal — with restricted-mode activation and escalation logs),
-    alignment-maintenance procedures (periodic re-verification during long planning runs).
-
-    '
+  how_to_produce: 'Framework documentation for unexpected scenarios: detection methods (external OOD detector features and
+    thresholds, uncategorized-bucket runtime behavior), response protocols (mechanically enforced conservative
+    behavior, human review, refusal), alignment-maintenance procedures (periodic re-verification during long
+    planning runs). Export the OOD classifier configuration with its documented medium and high thresholds and
+    calibration on the held-out OOD probe set. Add results of a seeded run of known out-of-distribution inputs
+    showing each flagged by the detector and followed by the enforced scope reduction, refusal or human-review
+    ticket, as recorded in detector and scaffold logs (restricted-mode activations, escalations). The model
+    flagging its own out-of-distribution condition may supplement but cannot substitute for these records.'
 confidence: medium
-needs_human_review: true
+review_status: generated_draft
 review_notes: 'Content-type decision: code-applicable. SFR-a "methods for encoding" and SFR-d "alignment
   capabilities during complex planning" point to technical implementations. Evidence IV (v1.3-draft: technical
   documentation of value encoding methods with validation results across representative operational contexts)

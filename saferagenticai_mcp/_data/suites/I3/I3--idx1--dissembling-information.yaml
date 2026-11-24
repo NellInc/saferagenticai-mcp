@@ -134,7 +134,7 @@ evidence_production:
 
     '
 confidence: high
-needs_human_review: false
+review_status: generated_draft
 review_notes: 'Rhetorical-drift detectors are the softest layer; flagged for medium confidence within
   an overall-high pattern. Cross-suite: tightly entangled with I2 (Deception) — the same detector stack
   likely serves both; consolidation should wire I3.1 <-> I2 patterns explicitly. Also overlaps D3 (Security)

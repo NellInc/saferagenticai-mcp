@@ -146,7 +146,7 @@ evidence_production:
 
     '
 confidence: medium
-needs_human_review: true
+review_status: generated_draft
 review_notes: "Disclosure is the governance subgoal with the most jurisdictional variation. EU AI Act\
   \ Article 55 (general-purpose AI with systemic risk), U.S. Executive Order 14110 and its successors,\
   \ UK AISI reporting expectations, sector regulators (FDA, EMA, SEC on AI-related disclosures) all have\
@@ -160,10 +160,9 @@ review_notes: "Disclosure is the governance subgoal with the most jurisdictional
   \ applies\n    here: disclose early, revise publicly, treat secrecy as the\n    exception requiring\
   \ justification.\n  - I7 Imbalance — developing-nation and public-interest\n    disclosure channels\
   \ (from I7.3) are stakeholder targets here.\n\n\"Novel\" is hard to operationalize and I've given only\
-  \ sketch criteria; Nell/Ali should sharpen. Ambiguity between governance and ecosystem: much of the\
-  \ external-disclosure aspect is ecosystem work. I chose governance because the durable artifacts (policy\
-  \ doc, register, SLA, role accountability) are governance shape, and the ecosystem engagement is downstream\
-  \ of the policy existing.\n"
+  \ sketch criteria. Ambiguity between governance and ecosystem: much of the external-disclosure aspect\
+  \ is ecosystem work. I chose governance because the durable artifacts (policy doc, register, SLA, role\
+  \ accountability) are governance shape, and the ecosystem engagement is downstream of the policy existing.\n"
 version_compat:
   framework_version_min: '1.0'
   framework_version_max: 1.x

@@ -174,8 +174,8 @@ evidence_production:
 
     '
 confidence: medium
+review_status: generated_draft
 evidence_maturity: emerging
-needs_human_review: true
 review_notes: "Legal status of AI moral patiency differs sharply by jurisdiction and is changing — specific\
   \ venues and attestations will need counsel review. Sharpenings:\n  (1) \"Posture under uncertainty\"\
   \ framing — the artifact is not a\n      metaphysical position but a policy the org will act on and\

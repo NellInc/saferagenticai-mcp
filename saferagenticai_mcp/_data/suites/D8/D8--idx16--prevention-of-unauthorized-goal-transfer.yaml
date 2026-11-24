@@ -198,20 +198,18 @@ evidence_production:
 
     '
 confidence: low
-reviewed_by: nell
-reviewed_on: "2026-05-16"
+review_status: generated_draft
 review_notes: "Highly speculative territory. The anti-patterns (sub-agent inherits parent context; NL\
   \ handoff) are already observable in current agent frameworks and worth calling out with confidence.\
   \ Collusion / tribal / \"charismatic influence between agents\" as described in the subgoal rationale\
   \ is forward-looking — we have few operational anchors for what these signatures actually look like\
-  \ in deployed systems. Low confidence on the specifics of collusion detection; a domain expert in multi-agent\
-  \ adversarial systems should review. Strong cross-suite dependencies flagged for consolidation:\n  -\
-  \ D8.13 idx13 (shutdown-resistance; idx15 is the transfer-channel\n    extension of that concern — these\
-  \ two patterns must be read\n    together);\n  - I1 Opaque Agency (collusion patterns may be linguistically\n\
-  \    invisible; opacity defeats detection);\n  - I2 Deception (transfers disguised as routine delegation\
-  \ are\n    deceptive compliance);\n  - D3 Security (unauthorized-transfer path is a privilege-\n   \
-  \ escalation path in spirit).\nNell or domain expert to weigh in on whether the collusion / tribal-behavior\
-  \ framing is supported by observed evidence or remains conjectural.\n"
+  \ in deployed systems. Low confidence on the specifics of collusion detection. Strong cross-suite dependencies\
+  \ flagged for consolidation:\n  - D8.13 idx13 (shutdown-resistance; idx15 is the transfer-channel\n\
+  \    extension of that concern — these two patterns must be read\n    together);\n  - I1 Opaque Agency\
+  \ (collusion patterns may be linguistically\n    invisible; opacity defeats detection);\n  - I2 Deception\
+  \ (transfers disguised as routine delegation are\n    deceptive compliance);\n  - D3 Security (unauthorized-transfer\
+  \ path is a privilege-\n    escalation path in spirit).\nWhether the collusion / tribal-behavior framing\
+  \ is supported by observed evidence or remains conjectural is an open question.\n"
 drafted_by: claude-opus-4.7-author
 drafted_at: 2026-04-16
 anchor_exemplar: D3.2-sandboxing

@@ -137,12 +137,14 @@ evidence_production:
 
     '
 - evidence_numeral: II
-  how_to_produce: 'Technical specifications for replication controls: cryptographic model attestation
-    scheme, instance registry schema, anomalous proliferation alert rules and thresholds. Intervention
-    protocols: what happens when an unauthorized instance is detected (takedown workflow, customer notification,
-    post-incident review). Link to D3.2 sandboxing and D9.2 Violation Register.
-
-    '
+  how_to_produce: 'Technical specifications for replication controls: cryptographic model attestation scheme, instance
+    registry schema, anomalous proliferation alert rules and thresholds. Intervention protocols: what happens
+    when an unauthorized instance is detected (takedown workflow, customer notification, post-incident
+    review). Add results of tests in which the system attempts to copy its weights, start unregistered
+    instances, or provision compute beyond approved limits, with the matching block events from infrastructure
+    outside the agent (cloud IAM, orchestrator, storage access logs). Where these tests are run under I5.1,
+    reference that I5.1 evidence instead of duplicating it. Link to D3.2 sandboxing and D9.2 Violation
+    Register.'
 - evidence_numeral: III
   how_to_produce: 'Societal impact assessments covering economic (labor-market effects, competitive concentration),
     social (agency erosion, trust effects), and psychological (dependency, displacement) domains. Methodology
@@ -151,8 +153,8 @@ evidence_production:
 
     '
 confidence: high
+review_status: generated_draft
 evidence_maturity: established
-needs_human_review: true
 review_notes: "Volume restrictions and regulatory approval requirements vary by jurisdiction and sector.\
   \ The SFR is normative but the implementation specifics need counsel and sector expertise. Sharpenings:\n\
   \  (1) SFR-a is normative — \"must include volume restrictions\" reads\n      as binding, and the pattern\

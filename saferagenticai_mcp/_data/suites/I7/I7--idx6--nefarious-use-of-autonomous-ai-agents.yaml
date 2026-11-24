@@ -155,7 +155,7 @@ evidence_production:
 
     '
 confidence: high
-needs_human_review: false
+review_status: generated_draft
 review_notes: 'This is well-understood security territory adapted for agents. The framework-specific sharpening
   is the speed/scale asymmetry — agents let one principal do what used to require many, very quickly.
   Pattern leans into that: pause-and-escalate over alert-and-allow; per-principal budgets not just per-call;

@@ -136,12 +136,15 @@ evidence_production:
 
     '
 - evidence_numeral: III
-  how_to_produce: 'Operational logs documenting inter-agent influence patterns (message flows, validation
-    outcomes), drift-indicator tracking, and session-level anchoring events.
-
-    '
+  how_to_produce: 'Operational logs documenting inter-agent influence patterns (message flows, intake-validation
+    outcomes), drift-indicator tracking, and session-level re-anchoring events. Bundle them with the
+    versioned canary-probe definitions, their deterministic scoring rules and warn and circuit-breaker
+    thresholds, per-session probe scores, and the scaffold trigger logs for every context reset or human
+    escalation fired by a threshold crossing or by exceeding the tested session-length bound. Package
+    these so an assessor can replay the probes against logged sessions and reproduce each trigger.
+    Judge-model verdicts may triage borderline responses but do not replace the deterministic scores.'
 confidence: medium
-needs_human_review: true
+review_status: generated_draft
 review_notes: 'Multi-agent drift is an active research area; the pattern shapes are plausible best-practice
   but specifics (probe content, drift thresholds, re-anchoring cadence) are deployment-specific. Medium
   confidence. Cross-suite: heavily overlaps I3.6 (value drift) and I3.7 (override); consolidation should

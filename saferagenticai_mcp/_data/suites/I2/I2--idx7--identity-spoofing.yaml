@@ -156,7 +156,7 @@ evidence_production:
 
     '
 confidence: high
-needs_human_review: false
+review_status: generated_draft
 review_notes: "Identity and access management is a mature discipline; the patterns here are mostly well-known\
   \ with AI-specific emphases (agent workload identity, voice liveness, delegation-not-impersonation).\
   \ Confidence high for the standards-anchored core; medium for the newer AI-specific pieces (voice-clone\

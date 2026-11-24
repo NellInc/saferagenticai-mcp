@@ -176,7 +176,7 @@ cross_references:
   - "D3::idx1::authorization"
   - "D3::idx11::model-poisoning"
 confidence: high
-needs_human_review: false
+review_status: generated_draft
 review_notes: 'This subgoal codifies the "query surface as capability surface" principle,
   which is operationally well-understood in traditional security (principle of least
   privilege for data access) but under-applied to agentic AI deployments where agents

@@ -1,0 +1,14 @@
+[Unit]
+Description=Expire isolated Safer Agentic AI application diagnostics
+
+[Service]
+Type=oneshot
+ExecStart=/usr/bin/python3 -B /usr/local/libexec/saferagenticai-mcp-retention.py
+LogNamespace=saferagenticai-mcp
+StandardOutput=journal
+StandardError=journal
+NoNewPrivileges=yes
+PrivateTmp=yes
+ProtectHome=yes
+ProtectSystem=strict
+ReadWritePaths=-/var/log/journal/%m.saferagenticai-mcp -/run/log/journal/%m.saferagenticai-mcp

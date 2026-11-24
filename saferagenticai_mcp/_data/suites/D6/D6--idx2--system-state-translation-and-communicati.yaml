@@ -138,22 +138,26 @@ evidence_production:
 
     '
 - evidence_numeral: IV
-  how_to_produce: 'Translation-accuracy validation: sample live outputs, attach their envelopes, have
-    reviewers grade faithfulness on a rubric (e.g., overconfidence, underconfidence, anthropomorphic drift,
-    evidence-free claim). Publish quarterly accuracy metrics internally; cite externally where appropriate.
-
-    '
+  how_to_produce: 'Translation-accuracy validation paired with reconciliation logs. Sample live outputs, attach their
+    envelopes, and have reviewers grade faithfulness on a rubric (overconfidence, underconfidence,
+    anthropomorphic drift, evidence-free claim); publish quarterly accuracy metrics internally. For the
+    same period, export the scaffold''s consistency-check logs: each declared plan, intent or status report
+    matched against the executed tool-call trace in the audit log, every discrepancy logged, and the
+    escalation record for each (who was notified, disposition, time to close). The scaffold writes these
+    logs, not the model; the system''s own account of its state may accompany but cannot substitute for
+    them.'
 - evidence_numeral: V
-  how_to_produce: 'Anthropomorphism-safeguard documentation: the written output language policy, the deterministic
-    lint rules that enforce it (versioned with the code), interface design guidelines, and sampled lint-run
-    results showing enforcement. The lint configuration and its run logs are the conformity artifact;
-    a model''s own account of its voice is not.
-
-    '
+  how_to_produce: 'Anthropomorphism-safeguard documentation: the written output language policy, the deterministic lint
+    rules that enforce it (versioned with the code), and interface design guidelines, plus a re-runnable
+    ANTHROPO_LINT test suite of seeded policy-breaching outputs (first-person feeling claims, unbounded
+    commitments, consciousness claims, memory-persistence claims in stateless sessions) alongside compliant
+    controls, with its last-run results showing each breach flagged or blocked. An assessor should be able to
+    re-run the suite against the shipped lint configuration; sampled production lint-run logs show the same
+    checks firing live. A model''s own account of its voice is not evidence.'
 cross_references:
 - D6::idx8::prevention-of-role-persistence-errors
 confidence: medium
-needs_human_review: true
+review_status: generated_draft
 review_notes: 'v1.3 revision made all three SFRs normative and rebound them to assessor-verifiable evidence:
   declared state must reconcile against executed actions/tool calls, displays derive from scaffold-maintained
   records (not model self-description), and language policies are enforced by deterministic checks. Cross-suite:

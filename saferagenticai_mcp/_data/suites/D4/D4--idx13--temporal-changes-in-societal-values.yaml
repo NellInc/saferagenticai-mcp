@@ -103,11 +103,12 @@ evidence_production:
 
     '
 - evidence_numeral: II
-  how_to_produce: 'Technical specifications for controls that prevent operation under stale value frameworks:
-    Codex version-age checks at deployment time, automatic flagging when a Codex entry has not been reviewed
-    within its category''s maximum age, release- gate on deployments whose Codex is beyond an age threshold.
-
-    '
+  how_to_produce: 'Technical specifications for controls that prevent operation under stale value frameworks: Codex
+    version-age checks at deployment time, automatic flagging when a Codex entry has not been reviewed within
+    its category''s maximum age, release-gate on deployments whose Codex is beyond an age threshold. Export
+    the deployment-gate configuration (minimum accepted Codex version, age thresholds, superseded-version
+    list) and results of a re-runnable test in which a system configuration referencing a superseded Codex
+    version is refused at load or deployment time, with the gate''s refusal log.'
 - evidence_numeral: III
   how_to_produce: 'Codex update protocol documentation: triggering conditions (intelligence brief recommendation,
     regulatory change, material incident, scheduled review), verification procedures (impact assessment,
@@ -123,7 +124,7 @@ evidence_production:
 
     '
 confidence: medium
-needs_human_review: true
+review_status: generated_draft
 review_notes: 'Content-type decision: ecosystem, because the primary work is sustained external relationships
   that let the organization hear norm shifts before they become incidents. Process elements exist inside
   (the internal Intelligence function, update protocol), but they consume ecosystem output rather than

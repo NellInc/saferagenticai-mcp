@@ -117,7 +117,7 @@ evidence_production:
 
     '
 confidence: medium
-needs_human_review: true
+review_status: generated_draft
 review_notes: 'Content-type decision: process. The subgoal orchestrates artifacts that live in other subgoals
   (universal Codex in D4.6, overlays in D4.1 and D4.2, OOD handling in D4.8̲) — the work here is the coordination
   workflow, not producing new artifacts or new code.

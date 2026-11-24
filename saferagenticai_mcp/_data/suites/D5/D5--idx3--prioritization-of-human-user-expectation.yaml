@@ -118,7 +118,7 @@ evidence_production:
 
     '
 confidence: medium
-needs_human_review: true
+review_status: generated_draft
 review_notes: 'Process content-type because the deliverable is a cadence + roles + studies, not a code
   surface. The v1.3 revision resolved the earlier ambiguity in the word "prioritize": SFR-a now states
   explicitly that user expectations take priority over commercial and operational convenience "subject

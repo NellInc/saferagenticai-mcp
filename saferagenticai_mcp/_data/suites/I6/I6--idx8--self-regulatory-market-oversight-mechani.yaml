@@ -106,7 +106,7 @@ evidence_production:
 
     '
 confidence: medium
-needs_human_review: true
+review_status: generated_draft
 review_notes: "Ecosystem patterns for self-regulation carry two risks:\n  (1) Industry capture — self-regulation\
   \ is often a path to weaker\n      regulation. The subgoal's \"meaningful consequences for\n      non-compliance\"\
   \ is the test; a scheme without real teeth is\n      theatre. The pattern acknowledges this but cannot\

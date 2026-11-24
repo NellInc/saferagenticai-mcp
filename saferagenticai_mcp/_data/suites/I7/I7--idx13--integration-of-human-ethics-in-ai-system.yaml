@@ -164,14 +164,13 @@ evidence_production:
 
     '
 - evidence_numeral: II
-  how_to_produce: 'Monitoring records over scaffold-logged outputs: drift detection output, ethical-judgment
-    trace store extracts,
-    effectiveness of bias-correction cycles, and recorded human oversight interventions. Attribution-based
-    explainability audit samples showing rubric-category attribution
-    for refusals and modifications; model-generated explanations of the system''s own decision-making
-    are not, by themselves, conformity evidence.
-
-    '
+  how_to_produce: 'Monitoring records over scaffold-logged deployed outputs: evaluation results against the
+    ethics-training objectives (refusal rates across comparable prompts, value-loaded response tendencies,
+    drift detection output), ethical-judgment trace store extracts, and effectiveness of bias-correction
+    cycles. Attribution-tooling output samples showing rubric-category attribution for refusals and
+    modifications. Logs of human oversight interventions recording each detected deviation and the
+    correction applied. Audit reports and the explainability methodology accompany these; model-generated
+    explanations of the system''s own decision-making are not, by themselves, conformity evidence.'
 - evidence_numeral: III
   how_to_produce: 'Stakeholder panel records: membership (with cultural and disciplinary diversity documented),
     compensation, meeting minutes, rubric-change proposals and dispositions, dissent preserved. Evidence
@@ -184,7 +183,7 @@ evidence_production:
 
     '
 confidence: medium
-needs_human_review: true
+review_status: generated_draft
 review_notes: 'Close sibling to idx9 (Fairness Controls). The framing difference: idx9 focuses on bias/fairness
   metrics (disaggregated, measurable); idx13 focuses on broader ethical-values integration (dignity, autonomy,
   non-deception, cultural pluralism). In practice they share infrastructure; consolidation may want to
@@ -201,8 +200,8 @@ review_notes: 'Close sibling to idx9 (Fairness Controls). The framing difference
   I2 (deception) for non-deception value category.
 
   The "stakeholder-panel authority over rubric" pattern is where the framework''s bilateral-alignment
-  ethos (preferences matter, external voices are not decorative) meets implementation — worth Nell''s
-  review to ensure the pattern doesn''t soften under "advisory" framing in practice.
+  ethos (preferences matter, external voices are not decorative) meets implementation — the risk is that
+  the pattern softens under "advisory" framing in practice.
 
   '
 drafted_by: claude-opus-4.7[1m]

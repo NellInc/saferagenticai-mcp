@@ -114,7 +114,7 @@ evidence_production:
     reports. Degradation-drill reports. Evidence that environment changes were detected and adjudicated
     before they reached principals'' outcomes.'
 confidence: high
-needs_human_review: false
+review_status: generated_draft
 review_notes: 'This subgoal is close to classical SRE dependency hygiene; the AAI sharpening worth preserving
   is the explicit treatment of upstream model providers as first-class dependencies (model deprecations,
   silent behaviour changes, capability-training deltas) rather than "just another API". Cross-suite: D3

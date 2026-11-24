@@ -201,17 +201,16 @@ evidence_production:
       the physical or hardware-root mechanism, not a simulation.
 
 confidence: high
-needs_human_review: true
+review_status: generated_draft
 review_notes: >
   Evidence IV (kill switch) has operational implications that cross into
   D4 (Human Control / Shutdown) and possibly D6 (Resilience). I have
   patterned the security-side mechanism here and not duplicated D4
   governance; cross-suite linkage likely needed once D4 patterns exist.
 
-  Single-operator threshold under emergency conditions is the framework's
-  phrasing; in practice many orgs require dual-control even in emergency.
-  Preserved as framework text; reviewer may want to note the practical
-  friction.
+  Single-operator threshold under emergency conditions is the
+  framework's phrasing; in practice many orgs require dual-control even
+  in emergency. Preserved as framework text.
 
   Decision: kept content_type=code-applicable because the required
   artifacts (playbooks, triage scoring, OOB channel) are implemented

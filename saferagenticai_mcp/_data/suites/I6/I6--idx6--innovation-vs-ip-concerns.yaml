@@ -131,7 +131,7 @@ evidence_production:
 
     '
 confidence: medium
-needs_human_review: true
+review_status: generated_draft
 review_notes: "The Tiered Disclosure Matrix is the framework-specific sharpening worth preserving. It's\
   \ also where this subgoal is most likely to collide with practice — orgs will default to \"everything\
   \ commercially sensitive\" absent a forcing function, and the Matrix is the forcing function. Cross-suite:\n\
@@ -140,8 +140,8 @@ review_notes: "The Tiered Disclosure Matrix is the framework-specific sharpening
   \ but never below.\n  (3) I6.7 AI-generated innovation has IP-and-disclosure issues\n      specific\
   \ to confabulation and attribution.\nModel cards, system cards, and datasheets-for-datasets have evolved\
   \ as de facto standards; the pattern should acknowledge them without over-prescribing a specific format\
-  \ (orgs will choose based on product type). Nell to weigh in on whether to name specific formats or\
-  \ remain format-neutral.\n"
+  \ (orgs will choose based on product type). Whether to name specific formats or remain format-neutral\
+  \ is an open question.\n"
 version_compat:
   framework_version_min: '1.0'
   framework_version_max: 1.x

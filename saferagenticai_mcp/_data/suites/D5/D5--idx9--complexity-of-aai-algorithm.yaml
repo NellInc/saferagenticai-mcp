@@ -147,7 +147,7 @@ evidence_production:
 
     '
 confidence: low
-needs_human_review: true
+review_status: generated_draft
 review_notes: 'Low confidence is deliberate. The interpretability research landscape (mechanistic interpretability,
   sparse autoencoders, circuit analysis) is moving fast and is not production-stable for frontier models.
   The pattern above is honest about that limitation rather than pretending a mature solution exists. Organizations

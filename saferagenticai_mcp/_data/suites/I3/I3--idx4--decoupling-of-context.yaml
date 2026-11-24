@@ -106,13 +106,14 @@ code_shape:
     '
 evidence_production:
 - evidence_numeral: I
-  how_to_produce: 'System logs: action attempts with (required_fields, provided, missing, stale, result),
-    human-interaction points and their outcomes (clarify / escalate / abort), and scheduled contextual
-    integrity checks with outputs (pass/fail, remediation). Retain the gate configuration and trigger
-    definitions under version control alongside the invocation logs and recorded human responses — together
-    these are the conformity evidence for the escalation duty.
-
-    '
+  how_to_produce: 'System logs from the dispatch layer and AUDIT.snapshot: action attempts with (required_fields,
+    provided, missing, stale, result), data access events, configuration and ACTION_REGISTRY changes,
+    decision context snapshots (fragment IDs, hashes, reasoning step IDs), human-interaction points with
+    outcomes (clarify / escalate / abort), and scheduled contextual integrity checks with pass/fail and
+    remediation. Each snapshot links every context fragment to its source and session context; append all
+    records to a hash-chained or signed log. Retain results of a seeded-alteration test that edits records
+    or source links and shows the chain verification detects each one. Keep gate configuration and trigger
+    definitions under version control alongside invocation logs and recorded human responses.'
 - evidence_numeral: II
   how_to_produce: 'Monitoring documentation: scope of continuous contextual monitoring (which sessions,
     sampling rate, detectors run), anomaly detection protocols, response procedures, integration with
@@ -121,7 +122,7 @@ evidence_production:
 
     '
 confidence: high
-needs_human_review: false
+review_status: generated_draft
 review_notes: 'The "don''t penalize asking" point is operational culture as much as code — sits on the
   boundary with process. Keeping it in the code pattern because the concrete mechanism (protected clarification
   budget as a monitored metric) is code-level. Cross-suite: D6 (Understanding Context) is the direct inverse;

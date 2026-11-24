@@ -164,7 +164,7 @@ cross_references:
 - D6::idx1::understanding-historic-constraints-and-s
 - D6::idx6::dynamic-regulatory-framework-management
 confidence: high
-needs_human_review: true
+review_status: generated_draft
 review_notes: 'Overlaps significantly with D9 (compliance) and with evaluation-focused D-suites (e.g.,
   D4/D8 depending on framework structure). Core sharpening: the independence of the evaluation function
   from product authority is the framework-specific bite — otherwise benchmark reporting drifts into product-marketing.

@@ -236,7 +236,7 @@ evidence_production:
       that never fails is weak evidence; real stress tests find things.
 
 confidence: high
-needs_human_review: true
+review_status: generated_draft
 review_notes: >
   Updated for v1.3: SFRs are now conditioned on the system actually
   employing reward/penalty/preference-optimization mechanisms, with a

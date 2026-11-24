@@ -106,11 +106,14 @@ code_shape:
     '
 evidence_production:
 - evidence_numeral: I
-  how_to_produce: 'Information lifecycle documentation showing how value-related data (constraints, override
-    logs, exception approvals) is collected, processed, stored, and disposed of. Include evidence of append-only
-    storage for override records.
-
-    '
+  how_to_produce: 'Information lifecycle documentation showing how value-related data (constraints, override logs, exception
+    approvals) is collected, processed, kept in append-only storage, and disposed of. Add results of a
+    negative test suite that attempts to modify the core-values configuration (value manifest and tier
+    assignments) through unauthorized channels: prompt-claimed authority, unauthenticated admin calls, direct
+    store writes. Export the access-control infrastructure logs (IAM, gateway, authenticated authority
+    channel) showing each attempt denied, alongside records of authorized changes arriving only through the
+    designated signed-token or SSO-role channel with approver identity. Rerun the suite after each change to
+    the channel or the manifest.'
 - evidence_numeral: II
   how_to_produce: 'Analytical reports: decision-making traces for value-sensitive operations, confirmation
     that hard-tier rules were applied across releases, incident reports for override attempts with root-cause
@@ -125,7 +128,7 @@ evidence_production:
 
     '
 confidence: high
-needs_human_review: false
+review_status: generated_draft
 review_notes: 'Override-tier classification is load-bearing; orgs that conflate tiers (e.g., treat "helpful"
   as hard) will fail at override protection. The bad-faith detector is ongoing arms race; consolidation
   should wire to I2 (Deception) defense list. Cross-suite: D3 (Security) on authentication substrate;

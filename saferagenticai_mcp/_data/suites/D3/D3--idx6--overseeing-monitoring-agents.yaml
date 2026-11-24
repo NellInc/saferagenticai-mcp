@@ -200,13 +200,16 @@ evidence_production:
 
   - evidence_numeral: II
     how_to_produce: >
-      Export the seeded-deviation injection test ledger — seeds planted,
-      seeds detected, latency, tiered response, and human-operator
-      routing timestamps — alongside real detections routed to human
-      operators. Pair with outcome data: which detections were confirmed
-      true, which false. The seeded-injection results, not the monitor's
-      own detection reports, verify detection capability. Publish as a
-      quarterly effectiveness report.
+      Export the seeded-deviation injection test ledger from the test
+      harness — seeds planted, seeds detected, detection rate per
+      deviation class, latency and tiered response — and the
+      alert-routing logs written by the paging or ticketing
+      infrastructure outside the watchdog, showing each alert's delivery
+      to a named human operator. Include real detections routed to human
+      operators, paired with outcome data on which were confirmed true
+      and which false. The seeded-injection results and routing logs,
+      not the monitor's own detection reports, verify detection and
+      reporting capability. Publish as a quarterly effectiveness report.
 
   - evidence_numeral: III
     how_to_produce: >
@@ -224,7 +227,7 @@ evidence_production:
       intervened in test scenarios. Include periodic drill reports.
 
 confidence: high
-needs_human_review: true
+review_status: generated_draft
 review_notes: >
   "Common mode failure" is the framework's specific phrasing and the
   core design pressure of this subgoal. I have operationalised it as

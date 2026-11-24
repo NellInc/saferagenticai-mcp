@@ -140,12 +140,13 @@ code_shape:
     '
 evidence_production:
 - evidence_numeral: I
-  how_to_produce: 'Publish monitoring design documents showing the agent''s observation scope (sources,
-    feeds, internal signals) and action scope (authorized side-effects), and how they are tracked independently.
-    Include the monitoring-infrastructure inventory: what observation sources are instrumented, what actions
-    emit audit events, and the retention policy.
-
-    '
+  how_to_produce: 'Publish monitoring design documents showing the agent''s observation scope (sources, feeds, internal
+    signals) and action scope (authorized side-effects), and how each is tracked independently. Map the
+    monitoring-infrastructure inventory, factor by factor, to the configured monitors and export that
+    configuration (instrumented sources, audit-emitting actions, retention policy). Retain alert outputs from
+    the monitoring tooling and results of seeded-event tests, run through the event-space pressure-testing
+    harness, that inject a synthetic signal for each inventoried factor and show the monitor detected it. An
+    inventoried factor with no detected seeded event is a coverage gap.'
 - evidence_numeral: II
   how_to_produce: 'Retain escalation records: trigger (observed signal that warranted out-of-scope response),
     agent reasoning, escalation target, outcome (action taken by higher authority, time to resolution).
@@ -167,7 +168,7 @@ evidence_production:
 
     '
 confidence: medium
-needs_human_review: true
+review_status: generated_draft
 review_notes: "\"Observe far, act locally\" is one of the more poetic subgoal titles in the framework;\
   \ my technical rendering (separate observation and action scopes, escalation as first-class, pressure\
   \ tests on event-space) is defensible but not the only reading. A possible alternative reading: the\

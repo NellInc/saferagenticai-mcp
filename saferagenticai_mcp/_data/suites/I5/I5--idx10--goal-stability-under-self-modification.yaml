@@ -143,7 +143,7 @@ testability:
 - Rollback restores goal-alignment score to pre-drift baseline within defined SLA
 - Goal-lock resists modification attempts in red-team exercises
 confidence: medium
-needs_human_review: true
+review_status: generated_draft
 review_notes: |
   Goal stability is well-defined conceptually but the quality of the guarantee depends entirely on
   the goal specification's completeness. Incomplete specifications allow drift in unmeasured

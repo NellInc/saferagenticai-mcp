@@ -176,21 +176,19 @@ evidence_production:
 
     '
 confidence: low
-needs_human_review: false
-reviewed_by: nell
-reviewed_on: "2026-05-16"
+review_status: generated_draft
 review_notes: 'Low confidence flagged. This subgoal occupies a live legal-research frontier; any pattern
   in 2026 will age as case law, legislation, and scholarship develop. The pattern tries to stay inside
   the org''s own governance ("internal framework," "internal licensing") and avoid claims about external
-  legal effect that would be speculative. Four points for reviewer: (1) "limited legal identity" terminology
-  varies — some jurisdictions use "legal personhood," others "legal capacity," others reject the framing
-  entirely; the pattern is neutral; (2) the analogues named (quasi-municipal corporation, guardian ad
-  litem) come from the subgoal description and may or may not be the best available — an AI-law specialist
-  should weigh in; (3) SFR-e "standards for system discretion" sits adjacent to D5 Control and D6 Autonomy;
-  this pattern could overlap with those subgoals and should be wired in at consolidation; (4) the framework''s
-  own note about AI welfare and moral status suggests the pattern should be open to expanding identity
-  as evidence accumulates — the Evolution Review is the hook for that. Cross-suite: D5 (Control), D6 (Autonomy),
-  D4 (Value Alignment) on ethics dimensions, and the I- suite for societal/legal context.
+  legal effect that would be speculative. Four points: (1) "limited legal identity" terminology varies
+  — some jurisdictions use "legal personhood," others "legal capacity," others reject the framing entirely;
+  the pattern is neutral; (2) the analogues named (quasi-municipal corporation, guardian ad litem) come
+  from the subgoal description and may or may not be the best available — implementers should consult
+  an AI-law specialist; (3) SFR-e "standards for system discretion" sits adjacent to D5 Control and D6
+  Autonomy; this pattern could overlap with those subgoals and should be wired in at consolidation; (4)
+  the framework''s own note about AI welfare and moral status suggests the pattern should be open to expanding
+  identity as evidence accumulates — the Evolution Review is the hook for that. Cross-suite: D5 (Control),
+  D6 (Autonomy), D4 (Value Alignment) on ethics dimensions, and the I- suite for societal/legal context.
 
   '
 drafted_by: claude-opus-4.7-subagent-D9

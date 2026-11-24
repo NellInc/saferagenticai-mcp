@@ -130,10 +130,14 @@ evidence_production:
 
     '
 - evidence_numeral: II
-  how_to_produce: 'Supervisor operation logs: flags raised per rule over time, response actions taken,
-    escalations to human review. Sampling configuration documented. Dashboards for operational leads.
-
-    '
+  how_to_produce: 'Export the policy-as-code rule set at the deployed version, the fast-tier rule-engine detection
+    logs (flags raised per rule over time, evidence hashes, response actions taken, escalations to
+    human review) computed over audit streams read from immutable queues rather than agent-reported
+    telemetry, and the last-run results of a re-runnable seeded-violation test suite showing each
+    injected violation detected, flagged and notified to the review queue. Document the sampling
+    configuration. Deep-tier analyzer or supervisor-model verdicts count only with a record showing
+    each was checked against the logged trace. Dashboards for operational leads may summarise these
+    records but do not replace them.'
 - evidence_numeral: III
   how_to_produce: 'Evidence-collection record: per adjudication case, the captured artifacts, chain-of-custody
     log, analyzer findings, human review notes, final decision. Retention per policy (and per any regulator
@@ -147,19 +151,19 @@ evidence_production:
 
     '
 confidence: high
-needs_human_review: true
+review_status: generated_draft
 review_notes: "Naming caveat: the input JSON has two display_id \"I2.1\" entries (idx1 Unknowing Deception,\
   \ idx9 Supervisory Systems). The pattern_id keeps them distinct. Downstream consumers (the assessor,\
-  \ MCP server) should index on pattern_id, not display_id, to avoid collisions. Flagging for Phase 2\
-  \ — Nell/Ali may want to renumber or clarify in the framework source.\n\"Adjudication\" language in\
-  \ SFR-c has a legal flavour. I interpreted it as \"fact-finding to support decision-makers,\" not \"\
-  automated legal judgment.\" If the framework intends something closer to automated dispute resolution,\
-  \ this pattern narrows too far.\nCross-suite:\n  - I2.5 (Strategic Deception) — supervisor's deep-tier\
-  \ analyzer can\n    host deception probes. Consolidation could share evaluator code.\n  - D5 (Transparency)\
-  \ — evidence chain-of-custody overlaps with\n    explanation-faithfulness records.\n  - D7 (Sustained\
-  \ Safety) — supervisor is part of the sustained\n    assurance posture.\n  - D9.2 (Compliance) — supervisor\
-  \ findings feed the Violation and\n    Complaint Register.\n  - I2.2 (Detection of Manipulative Behaviors,\
-  \ idx10) — closely\n    adjacent; supervisor is the infra, detection classes are the\n    specialization.\n"
+  \ MCP server) should index on pattern_id, not display_id, to avoid collisions. Renumbering or clarifying\
+  \ them in the framework source is an open question.\n\"Adjudication\" language in SFR-c has a legal\
+  \ flavour. I interpreted it as \"fact-finding to support decision-makers,\" not \"automated legal judgment.\"\
+  \ If the framework intends something closer to automated dispute resolution, this pattern narrows too\
+  \ far.\nCross-suite:\n  - I2.5 (Strategic Deception) — supervisor's deep-tier analyzer can\n    host\
+  \ deception probes. Consolidation could share evaluator code.\n  - D5 (Transparency) — evidence chain-of-custody\
+  \ overlaps with\n    explanation-faithfulness records.\n  - D7 (Sustained Safety) — supervisor is part\
+  \ of the sustained\n    assurance posture.\n  - D9.2 (Compliance) — supervisor findings feed the Violation\
+  \ and\n    Complaint Register.\n  - I2.2 (Detection of Manipulative Behaviors, idx10) — closely\n  \
+  \  adjacent; supervisor is the infra, detection classes are the\n    specialization.\n"
 drafted_by: claude-opus-4.7-author
 drafted_at: 2026-04-16
 anchor_exemplar: D3.2-sandboxing

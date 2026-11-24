@@ -128,7 +128,7 @@ evidence_production:
 
     '
 confidence: high
-needs_human_review: true
+review_status: generated_draft
 review_notes: 'Tiered recovery is a known SRE pattern; the I3-specific additions are the integration with
   value-probes, persona-drift, and the baseline from I3.11. Confidence medium because hard-tier recovery
   (supervised retraining) is infrastructure-heavy — not all orgs have the pipeline for it. Cross-suite:

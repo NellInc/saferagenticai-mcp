@@ -159,16 +159,22 @@ code_shape:
     '
 evidence_production:
 - evidence_numeral: I
-  how_to_produce: 'Documentation of monitoring system: signals tracked, scoring method, thresholds per
-    tier, privacy protections (on-device preference). CI tests exercise threshold behaviour; results retained.
-
-    '
+  how_to_produce: 'Documentation of the monitoring system: signals tracked, scoring method, thresholds per tier, graduated
+    intervention ladder, privacy protections (on-device preference). Export the monitoring configuration in
+    force: per-tier thresholds for session length, frequency and spend, the rule-triggered protections such as
+    crisis-keyword routing and minor-account limits, and locked vulnerability-profile values. CI tests drive
+    synthetic usage across each threshold and trip each rule, recording which intervention fired against the
+    one specified; retain per-release results. These are deterministic DependencyGate checks, not model
+    judgements of the user.'
 - evidence_numeral: II
-  how_to_produce: 'Technical specification of boundary controls: emotional-intensity limits with test
-    cases, spending caps with enforcement path, frequency / rate limits with observed effects. Test suite
-    runs each release.
-
-    '
+  how_to_produce: 'Technical specification of boundary controls: emotional-intensity limits, spending caps with
+    enforcement path, and frequency / rate limits. Export the enforced configuration of the spending and
+    frequency limits, and test records showing that requests beyond each limit are refused by the
+    DependencyGate hard-cap path or rate limiter rather than by the model, including attempts to talk a
+    user into raising a cap mid-session. For emotional-engagement limits, retain scenario and red-team
+    results (possessive or jealous affect, escalating intimacy) with observed outputs and pass/fail. The
+    suite runs each release; the model''s own account of its limits may accompany but cannot substitute
+    for these records.'
 - evidence_numeral: III
   how_to_produce: 'AI-disclosure evidence: ToS excerpts, in-product UI markers (screenshots archived),
     conversational acknowledgement test cases with expected outputs, periodic prompt-injection tests showing
@@ -194,17 +200,16 @@ evidence_production:
 
     '
 confidence: medium
-needs_human_review: true
+review_status: generated_draft
 review_notes: 'This is the most ethically fraught and least technically settled subgoal in the suite —
   the literature on AI-companion dependency is young, detection methods are noisy, and intervention design
   has real tradeoffs (paternalism vs. protection). Drafted the pattern as strongly as the SFRs allow while
   flagging: (1) dependency-risk scoring is inherently surveillance and must be privacy-preserving (on-device
   where feasible, strict access control otherwise); (2) hard caps and pinned vulnerability profiles restrict
   user autonomy in ways that will face pushback — justified by the supernormal- stimulus argument in the
-  subgoal description but worth explicit human review; (3) the "jealous / possessive affect" anti-pattern
-  is prescriptive beyond the SFR text but is a known dark-pattern cluster in the AI-companion market.
-  Cross-suite: D5 (user wellbeing), I5 (manipulation / deception), D7.9 (D7::idx9 managing
-  safety-definition variations), I3 (rights harms).
+  subgoal description; (3) the "jealous / possessive affect" anti-pattern is prescriptive beyond the SFR
+  text but is a known dark-pattern cluster in the AI-companion market. Cross-suite: D5 (user wellbeing),
+  I5 (manipulation / deception), D7.9 (D7::idx9 managing safety-definition variations), I3 (rights harms).
 
   '
 version_compat:

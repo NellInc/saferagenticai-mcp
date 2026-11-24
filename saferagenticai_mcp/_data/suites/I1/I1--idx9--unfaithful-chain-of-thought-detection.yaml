@@ -165,19 +165,15 @@ cross_references:
   - "I1::idx12::deceptive-alignment-detection"
   - "I1::idx16::development-legal-constraints"
 confidence: medium
-needs_human_review: true
-review_notes: 'This is research-grade territory: faithfulness of chain-of-thought is an active
-  research area with no settled measurement standard. The perturbation testing approach is
-  grounded in published work (Lanham et al. 2023, Turpin et al. 2024) but specific
-  thresholds and sensitivity targets will need domain-specific calibration. The cross-context
-  comparison pattern (evaluation vs. production faithfulness) is directly related to I1.12
-  (deceptive alignment detection) and should be run jointly where feasible. Flagged
-  needs_human_review because the interpretation of faithfulness failures has significant
-  implications for whether CoT-based oversight mechanisms are trustworthy. Cross-suite:
-  D5 (transparency to users about reasoning reliability), D4 (interpretability mechanisms
-  that this subgoal validates).
-
-  '
+review_status: generated_draft
+review_notes: 'This is research-grade territory: faithfulness of chain-of-thought is an active research
+  area with no settled measurement standard. The perturbation testing approach is grounded in published
+  work (Lanham et al. 2023, Turpin et al. 2024) but specific thresholds and sensitivity targets will need
+  domain-specific calibration. The cross-context comparison pattern (evaluation vs. production faithfulness)
+  is directly related to I1.12 (deceptive alignment detection) and should be run jointly where feasible.
+  The interpretation of faithfulness failures has significant implications for whether CoT-based oversight
+  mechanisms are trustworthy. Cross-suite: D5 (transparency to users about reasoning reliability), D4
+  (interpretability mechanisms that this subgoal validates).'
 drafted_by: claude-opus-4.6-author
 drafted_at: 2026-05-16
 version_compat:

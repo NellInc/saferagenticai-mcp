@@ -175,7 +175,7 @@ cross_references:
 - D6::idx4::separation-of-control-and-data-channels
 - D6::idx12::managing-context-drift
 confidence: medium
-needs_human_review: true
+review_status: generated_draft
 review_notes: 'v1.3 revision changed the duty mechanism: SFR-a/b now require external behavioral-consistency
   monitoring with deterministic drift metrics over independently captured logs, explanation-to-log linkage,
   and exclude model self-assessment as conformity evidence — the pattern''s probes are recast as deterministically

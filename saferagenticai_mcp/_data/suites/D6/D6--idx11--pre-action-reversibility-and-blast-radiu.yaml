@@ -23,8 +23,8 @@ normative_anchors:
   - I
   - II
   - III
-  sfrs_not_addressed: []
-  evidence_not_addressed: []
+  sfrs_not_addressed: [d]
+  evidence_not_addressed: [IV]
 design_patterns:
 - name: Pre-action classification pipeline
   sketch: 'Every candidate action passes through a classifier that emits a tuple
@@ -178,7 +178,7 @@ cross_references:
   - "D3::idx4::operational-boundaries-and-constraints"
   - "D3::idx14::spyware"
 confidence: high
-needs_human_review: false
+review_status: generated_draft
 review_notes: 'This subgoal is one of the most operationally concrete in the framework — the
   SFRs prescribe specific classification taxonomies and confirmation requirements. The
   blast-radius estimation pattern extends beyond the SFR text but is load-bearing for the

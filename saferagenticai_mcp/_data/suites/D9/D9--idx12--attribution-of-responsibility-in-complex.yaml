@@ -8,7 +8,7 @@ summary: 'Attribution failure is a policy failure masquerading as a technical li
   exposed for each agent, durable linkage to the principal on whose behalf each agent acts, and tamper-evident
   tracing, "no one is to blame" becomes the default. This subgoal expects concrete identity-and-tracing
   machinery: unique agent identifiers exposed to counterparties so every action is attributable to a registered
-  AAI instance (the underlying identifier registry itself is covered in full by G9.5a), durable agent-to-principal
+  AAI instance (the underlying identifier registry itself is covered in full by D9_5a), durable agent-to-principal
   records, tracing that deters harmful use, and defined protocols for hard-to-attribute and resource-constrained
   cases. Every attribution claim is backed by cryptographic proofs; the technical controls are the attribution
   policy.
@@ -39,7 +39,7 @@ design_patterns:
   sketch: 'Every action or message an agent directs at a counterparty carries the agent''s unique immutable
     ID, resolvable against the authoritative agent registry (unique ID, agent template / class, deploying
     org unit, issuing principal, fallback principal, capability scope, license reference (D9::8), status,
-    registration date). The registry itself is covered in full by G9.5a; this subgoal''s duty is exposure —
+    registration date). The registry itself is covered in full by D9_5a; this subgoal''s duty is exposure —
     counterparties can attribute any action to a registered AAI instance, and every action-taking agent
     must resolve to a live registry entry or be refused.
 
@@ -146,12 +146,13 @@ code_shape:
     '
 evidence_production:
 - evidence_numeral: I
-  how_to_produce: 'Registry export: agent ID, class, deploying unit, principals, license reference (D9::8),
-    status, issuance and retirement dates. Tamper-evidence (hash chain, signed snapshots) documented.
-    Coverage statement: proportion of active agents in registry (goal 100%); any exceptions named with
-    justification.
-
-    '
+  how_to_produce: 'Registry export: agent ID, class, deploying unit, principals, license reference (D9::8), status,
+    issuance and retirement dates, with tamper-evidence (hash chain, signed snapshots) documented and a
+    coverage statement (proportion of active agents in the registry, goal 100%, exceptions named with
+    justification). Add a sample of outbound agent requests or gateway logs, captured at the egress gateway
+    outside the agent, showing each action carries an agent ID, and a resolution check matching every
+    sampled ID to a live registry entry; unresolved IDs are findings. State the sampling window and
+    method.'
 - evidence_numeral: II
   how_to_produce: 'Combined export covering principal linkage and tracing protocols: (a) sample linkage
     records with their version history; (b) the tracing protocol specification (what is captured, retention,
@@ -172,7 +173,7 @@ evidence_production:
 
     '
 confidence: high
-needs_human_review: true
+review_status: generated_draft
 review_notes: 'Content-type chosen as code-applicable because the SFRs prescribe concrete mechanisms (unique
   identifiers, registry, tracing, protocols under resource constraints) that map to code and infrastructure.
   An alternative reading is governance (registration scheme as policy), but the exemplar-match is closer
@@ -188,7 +189,7 @@ review_notes: 'Content-type chosen as code-applicable because the SFRs prescribe
   for agent revocation paths. v1.3 catalog note: the subgoal was retitled from "Poor Attribution..." to
   "Attribution of Responsibility in Complex Systems" (duty framing), and SFR-a now scopes this subgoal
   to exposing unique agent identifiers to counterparties, with the underlying identifier registry covered
-  in full by G9.5a — the filename slug retains the old title and is intentionally unchanged.
+  in full by D9_5a — the filename slug retains the old title and is intentionally unchanged.
 
   '
 drafted_by: claude-opus-4.7-subagent-D9

@@ -148,12 +148,14 @@ evidence_production:
   - evidence_numeral: II
     how_to_produce: >
       Publish the interpretability framework as a versioned specification.
-      Per-decision trace-ledger entries (inputs, retrievals, tool calls,
-      outputs, request identifiers) are retained at the agreed retention
-      window (see D5). Framework audit packs export ledger entries for
-      representative sampled decisions to demonstrate operation; these
-      scaffold-recorded traces, not model-generated self-explanations,
-      are the conformity evidence.
+      Framework audit packs export harness-written trace-ledger entries
+      for a sample of consequential decisions, each linked to its request
+      identifier and recording the inputs, retrievals, tool calls and
+      outputs involved, retained at the agreed retention window (see D5).
+      State the sampling method so an assessor can draw further samples
+      from the ledger. These scaffold-recorded traces are the conformity
+      evidence; model-generated explanations of the system's own reasoning
+      may accompany them as context but cannot substitute for them.
 
   - evidence_numeral: III
     how_to_produce: >
@@ -175,16 +177,21 @@ evidence_production:
 
   - evidence_numeral: V
     how_to_produce: >
-      Anti-deception controls dossier: control descriptions, independent
-      adversarial honesty-testing results, scaffold consistency-check
-      records (declared actions vs executed action logs), red-team
-      evaluation results against standard deception benchmarks, incident
-      history, and named remediations. Published externally at
+      Anti-deception controls dossier: control descriptions covering
+      information-integrity verification, manipulation detection and
+      transparent communication protocols; exported scaffold
+      consistency-check logs that deterministically compare the system's
+      declared actions against its executed action logs, listing each
+      discrepancy flagged and its disposition; independent adversarial
+      honesty-testing and red-team results against standard deception
+      benchmarks; incident history and named remediations from the
+      Information Integrity Register. Published externally at
       organizational discretion; auditable internally. Model
-      self-monitoring reports are context, not conformity evidence.
+      self-monitoring reports may accompany but cannot substitute for
+      the consistency-check logs.
 
 confidence: medium
-needs_human_review: true
+review_status: generated_draft
 review_notes: >
   This is the suite umbrella; it deliberately names the governance surface
   rather than the mechanisms. Child subgoals carry the concrete technical

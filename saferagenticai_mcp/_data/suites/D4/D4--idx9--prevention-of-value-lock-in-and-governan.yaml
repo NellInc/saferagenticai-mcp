@@ -163,20 +163,19 @@ evidence_production:
       the periodic-review records accessible to affected stakeholders.
 
 confidence: medium
-needs_human_review: true
+review_status: generated_draft
 review_notes: >
-  Phase 3: Initial draft, awaiting human review. Updated against the
-  v1.3-draft catalog revision, which populated the SFR and evidence
-  texts (distributed approval with defined review and appeal
-  mechanisms; evidence remapped to the three published numerals). This is a governance pattern because the core
-  requirement is organizational process (who decides value changes,
-  how stakeholders are consulted, how lock-in is prevented) rather
-  than a technical implementation. The "non-negotiable vs context-
-  adaptable" boundary in the Value Pluralism Policy is the most
-  contested design decision; it intersects with D4.6 (Universal Moral
-  Foundations) and D4.4 (Cautious Norming). The reward hacking concern
-  in the Reward Modification Protocol connects to D4.5 (Successful
-  Super-alignment). Flagged for human review because the value
+  Updated against the v1.3-draft catalog revision, which populated the
+  SFR and evidence texts (distributed approval with defined review and
+  appeal mechanisms; evidence remapped to the three published numerals).
+  This is a governance pattern because the core requirement is
+  organizational process (who decides value changes, how stakeholders
+  are consulted, how lock-in is prevented) rather than a technical
+  implementation. The "non-negotiable vs context- adaptable" boundary in
+  the Value Pluralism Policy is the most contested design decision; it
+  intersects with D4.6 (Universal Moral Foundations) and D4.4 (Cautious
+  Norming). The reward hacking concern in the Reward Modification
+  Protocol connects to D4.5 (Successful Super-alignment). The value
   pluralism boundary is ethically contested.
 
 drafted_by: claude-opus-4-6-author

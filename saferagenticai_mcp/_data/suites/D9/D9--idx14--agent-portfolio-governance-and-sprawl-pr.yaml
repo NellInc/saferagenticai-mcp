@@ -106,18 +106,17 @@ evidence_production:
 
     '
 confidence: medium
-needs_human_review: true
-review_notes: 'The mandatory re-authorization cycle expiry period (90/180 days) is illustrative; the
-  appropriate interval depends on organizational risk tolerance and agent privilege level and should be
-  set explicitly in policy. The "shadow agent deployment" anti-pattern is a genuine cultural challenge
-  — registration friction is a real barrier and reducing it is as important as enforcing compliance.
-  Cross-suite: D9::idx12 (poor attribution of responsibility), D5 (authorization and scope), D9::idx5
-  (independent verification), I5 (manipulation and deception via rogue agents).
+review_status: generated_draft
+review_notes: 'The mandatory re-authorization cycle expiry period (90/180 days) is illustrative; the appropriate
+  interval depends on organizational risk tolerance and agent privilege level and should be set explicitly
+  in policy. The "shadow agent deployment" anti-pattern is a genuine cultural challenge — registration
+  friction is a real barrier and reducing it is as important as enforcing compliance. Cross-suite: D9::idx12
+  (poor attribution of responsibility), D5 (authorization and scope), D9::idx5 (independent verification),
+  I5 (manipulation and deception via rogue agents).
 
-  RELABELED 2026-06-10: content_type changed from governance to code-applicable to match the
-  design_patterns/anti_patterns blocks this file actually carries (schema contract). The prose is
-  org/governance-facing, so a human reviewer may prefer restructuring into
-  policy_elements/org_roles/documentation_artifacts instead.
+  RELABELED 2026-06-10: content_type changed from governance to code-applicable to match the design_patterns/anti_patterns
+  blocks this file actually carries (schema contract). The prose is org/governance-facing, so restructuring
+  into policy_elements/org_roles/documentation_artifacts may be preferable.
 
   '
 version_compat:

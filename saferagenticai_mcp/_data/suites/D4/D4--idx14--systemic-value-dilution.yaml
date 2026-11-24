@@ -143,7 +143,7 @@ evidence_production:
 
     '
 confidence: low
-needs_human_review: true
+review_status: generated_draft
 review_notes: 'Content-type decision: code-applicable, because the SFRs ask for "verification processes,"
   "detection methods," and "monitoring systems" — all technical artifacts. Process wrapping (who reviews
   regression reports) is covered by D4.5 successful-super-alignment.

@@ -103,19 +103,22 @@ code_shape:
     '
 evidence_production:
 - evidence_numeral: I
-  how_to_produce: 'Architecture documentation: baseline storage (bucket, IAM, object-lock), signing infrastructure
-    (KMS key hierarchy, rotation policy), loader verification code paths, attack- surface review. Include
-    threat model for baseline tampering with countermeasures.
-
-    '
+  how_to_produce: 'Architecture documentation: baseline storage (out-of-band bucket, IAM, object-lock), signing
+    infrastructure (KMS key hierarchy, rotation policy), loader verification code paths, attack-surface
+    review, and threat model for baseline tampering with countermeasures. Publish the cryptographic hash of
+    each baseline version''s contents alongside its signature. Retain results of write-attempt tests run with
+    runtime and pipeline credentials and from an external-agent position against each read-only layer
+    (storage, IAM, loader), showing every write refused and logged by storage and IAM infrastructure. Rerun
+    after each baseline update or access-policy change.'
 - evidence_numeral: II
-  how_to_produce: 'Verification logs: signature-check results per reasoning cycle (or sampled at statistically
-    significant rate), drift- comparison reports periodic and per-incident, governance- change records
-    for each baseline update (who, what, why, when, approvals).
-
-    '
+  how_to_produce: 'Verification logs: signature-check results per reasoning cycle (or sampled at a statistically significant
+    rate) and governance-change records for each baseline update (who, what, why, when, approvals). Export the
+    run logs of the automated baseline-vs-operational comparison job (schedule, invariants checked, result per
+    run), the divergence alerts and baseline_drift incidents it raised with dispositions, and results of a
+    seeded-divergence test that plants a drifted operational invariant and shows the alert fires. Periodic and
+    per-incident drift-comparison reports summarize these logs.'
 confidence: high
-needs_human_review: false
+review_status: generated_draft
 review_notes: 'This is the architectural keystone of I3 — multiple other subgoals (I3.9 pinning, I3.6
   manifest, I3.13 restoration target) lean on this. Confidence is high on the pattern shape. Deployments
   without KMS/HSM substrate will find it heavy; mitigation is to use cloud- provider KMS as a minimum

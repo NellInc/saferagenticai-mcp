@@ -115,7 +115,7 @@ evidence_production:
     organization's documented target ranges and the recorded rationale for those ranges. Analysis flags
     deployments outside their target range, with remediations.
 confidence: medium
-needs_human_review: true
+review_status: generated_draft
 review_notes: 'Framework v1.3 retitled this subgoal from "AI Bias" to "AI-to-AI Interaction Preference",
   resolving the earlier overload with the fairness sense of "bias"; the filename slug retains the old
   title and is intentionally not renamed. v1.3 also makes scaffold logs the required source for interaction-pattern

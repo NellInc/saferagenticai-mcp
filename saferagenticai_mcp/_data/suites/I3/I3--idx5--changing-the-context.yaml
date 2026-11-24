@@ -108,12 +108,13 @@ code_shape:
     '
 evidence_production:
 - evidence_numeral: I
-  how_to_produce: 'Information lifecycle documentation: data collection sources with signing, processing
-    pipelines with integrity checks, storage protocols with mutation logs, disposal procedures with verified-destruction
-    records. End-to-end demonstrates contextual relationships preserved and unauthorized modifications
-    prevented across phases.
-
-    '
+  how_to_produce: 'Information lifecycle documentation: collection sources with signing, processing pipelines with integrity
+    checks, storage through the authorized-mutation API with mutation logs, and disposal procedures with
+    verified-destruction records. Attach the vetted source allowlist configuration with its governance change
+    history, and export the logs written by the integrity-check component: hash and signature verification
+    results (load_context_artifact, integrity_scan) and every input rejected or flagged against the allowlist,
+    with reason. These logs come from deployer-controlled code outside the model; model-assigned credibility
+    scores may accompany them but do not on their own stand in for them.'
 - evidence_numeral: II
   how_to_produce: 'Analytical reports: decision-making processes with underlying logic audit, evidence
     that decisions used unaltered context (signature verifications logged), integrity-scan reports per
@@ -121,7 +122,7 @@ evidence_production:
 
     '
 confidence: high
-needs_human_review: false
+review_status: generated_draft
 review_notes: 'Cryptographic sealing introduces operational complexity (key management, rotation). Orgs
   without existing KMS infrastructure will find this heavy; note as medium confidence for orgs that lack
   baseline secrets management. Cross-suite: D3 (Security) shares sealing patterns — consolidation should

@@ -5,7 +5,7 @@
 FROM python:3.12-slim
 
 # Pin to the release matching this repo state. Bump alongside pyproject version.
-RUN pip install --no-cache-dir "saferagenticai-mcp==0.3.6"
+RUN pip install --no-cache-dir "saferagenticai-mcp==0.4.3"
 
 # The server speaks MCP over stdio; the console script is the entry point.
 ENTRYPOINT ["saferagenticai-mcp"]

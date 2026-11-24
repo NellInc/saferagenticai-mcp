@@ -151,13 +151,22 @@ evidence_production:
     express authority scope, irrevocable-action classes, and principal acknowledgments. Use version diffs
     at each update so principals see what changed.
 - evidence_numeral: II
-  how_to_produce: Publish the Authority Scope Register structure (redacted of specifics where needed)
-    and the Capacity Assessment methodology. For each agent, retain the signed capacity assessment and
-    the authority scope document with gateway-level enforcement reference.
+  how_to_produce: 'Publish the Authority Scope Register structure (redacted of specifics where needed) and the
+    Capacity Assessment methodology, and for each agent retain the signed capacity assessment and the
+    authority scope document recording express, implied and apparent authority. Export the gateway or
+    policy-engine permission-enforcement configuration that denies by default anything not in the
+    register, in a form an assessor can inspect, and the enforcing gateway''s denial logs showing
+    out-of-authority actions refused over the review period. Prompt-level instructions the system is
+    trusted to obey may accompany but cannot substitute for the enforcement configuration and denial
+    logs.'
 - evidence_numeral: III
-  how_to_produce: Conflict-of-interest register (which principals the agent serves, where interests collide),
-    standards-of-care policies, and audit reports showing adherence. Cross-link to the loyalty-and-care
-    audit reports comparing recorded actions against principal instructions.
+  how_to_produce: 'Conflict-of-interest register (which principals the agent serves, where interests collide) and the
+    documented standards-of-care and ethical decision-making procedures, plus the quarterly loyalty-and-care
+    audit reports. Each signed report samples scaffold-recorded actions and principal communications,
+    compares them against principal instructions, and checks in the scaffold logs (1) that a
+    conflict-of-interest check was logged before each sampled action and (2) that disclosure times to the
+    principal fall within the defined limit, listing breaches and remediation. The system''s own attestation
+    of loyalty may accompany but cannot substitute for these audit records.'
 - evidence_numeral: IV
   how_to_produce: Action log retained per the org's retention policy with {agent_id, principal_id, action,
     counterparty, timestamp, reasoning_trace_ref, notification_sent_at}. "Significant actions" defined
@@ -192,7 +201,7 @@ evidence_production:
   how_to_produce: Explicit budget line for "human–AI goal-divergence investigation" with named owner,
     headcount, and quarterly output. Board report shows divergence trend and remediation effectiveness.
 confidence: high
-needs_human_review: true
+review_status: generated_draft
 review_notes: 'This subgoal is the suite-level header and carries the broadest SFR set; patterns here
   are heavily governance-flavoured but touch ecosystem (legal-community engagement on agency-law interpretation)
   and code-applicable (gateway-level authority enforcement) surfaces. Flagged cross-suite dependencies:
@@ -202,7 +211,7 @@ review_notes: 'This subgoal is the suite-level header and carries the broadest S
   Compliance Matrix and Violation Register); D3 Security owns gateway-level authority enforcement. Where
   SFRs are ill-defined — "undisclosed principal" in AAI contexts lacks settled legal interpretation; the
   pattern takes the conservative posture of requiring written justification for anything other than fully
-  disclosed. Nell and legal counsel should confirm.'
+  disclosed.'
 cross_references:
 - I1::idx1::opaque-self-improvement-capabilities
 - I1::idx2::undefined-multi-agent-ensembles

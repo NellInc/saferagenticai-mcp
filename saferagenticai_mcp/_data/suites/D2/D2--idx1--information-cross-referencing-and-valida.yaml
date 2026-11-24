@@ -183,7 +183,7 @@ evidence_production:
       validated; the enforcement log shows they are applied.
 
 confidence: high
-needs_human_review: false
+review_status: generated_draft
 review_notes: >
   High-confidence: the pattern mirrors established practice in fact-checking
   pipelines and retrieval-augmented generation, sharpened to the

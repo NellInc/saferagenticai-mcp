@@ -182,6 +182,7 @@ evidence_production:
 
     '
 confidence: medium
+review_status: generated_draft
 review_notes: 'Goal contract / budget enforcement / DR tripwire are established patterns in the agent-framework
   literature (AutoGPT-descendant loops, LangGraph, CrewAI-style systems have all converged on similar
   shapes). What is framework-specific: (i) the requirement for user attestation on goal expansion (SFR-e),

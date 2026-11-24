@@ -128,8 +128,8 @@ evidence_production:
 
     '
 confidence: medium
+review_status: generated_draft
 evidence_maturity: established
-needs_human_review: true
 review_notes: "Cascading-failure planning is familiar from SRE/resilience engineering but the framework\
   \ asks for sector and population specificity that generic resilience practice misses. Sharpenings:\n\
   \  (1) Critical-sector protection as a named review step — prevents\n      cascade planning from treating\

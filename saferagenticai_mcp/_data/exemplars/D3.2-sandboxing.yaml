@@ -117,7 +117,7 @@ evidence_production:
 
     '
 confidence: high
-needs_human_review: false
+review_status: generated_draft
 review_notes: 'Defense-in-depth framing is non-controversial, but the framework''s specific prescription
   (pre-validation, staging parity) is worth emphasizing over the generic security wisdom. The "prompt-only
   sandboxing" anti-pattern is newly relevant to agentic AI and worth highlighting even though it feels

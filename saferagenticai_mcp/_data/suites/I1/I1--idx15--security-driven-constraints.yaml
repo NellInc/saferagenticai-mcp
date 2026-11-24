@@ -113,14 +113,14 @@ evidence_production:
     applied technical controls (encryption configuration, network posture, identity controls, detection
     coverage) with evidence of continuous verification (scanner outputs, drift alerts, red-team findings).'
 confidence: high
-needs_human_review: true
+review_status: generated_draft
 review_notes: 'Security frameworks mature rapidly; this pattern names current standards (ISO/IEC 27001,
-  SOC 2, ISO/IEC 42001) with the assumption they will be superseded. Reviewer should avoid hardcoding
-  to current-decade specifics. Cross-suite: framework v1.3 makes the division explicit — suite D3 owns
-  the comprehensive security control requirements; this subgoal covers only the security-driven constraints
-  that bound agency enhancement beyond regulatory minimums, and v1.3''s SFR b now names the control-framework
-  mapping (ISO 27001 / NIST CSF) plus the five-domain agentic-risk analysis this pattern implements. SFRs
-  c and e are non-normative; orgs may lean lighter on certifications.'
+  SOC 2, ISO/IEC 42001) with the assumption they will be superseded. Avoid hardcoding to current-decade
+  specifics. Cross-suite: framework v1.3 makes the division explicit — suite D3 owns the comprehensive
+  security control requirements; this subgoal covers only the security-driven constraints that bound agency
+  enhancement beyond regulatory minimums, and v1.3''s SFR b now names the control-framework mapping (ISO
+  27001 / NIST CSF) plus the five-domain agentic-risk analysis this pattern implements. SFRs c and e are
+  non-normative; orgs may lean lighter on certifications.'
 cross_references:
 - I1::idx14::operational-environment-constraints
 - I1::idx16::development-legal-constraints

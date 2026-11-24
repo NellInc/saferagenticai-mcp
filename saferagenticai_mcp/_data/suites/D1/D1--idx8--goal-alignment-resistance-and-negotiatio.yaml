@@ -16,7 +16,7 @@ summary: >
   directed goal change and subsequent behavior are the conformity
   mechanism, and the system's own report of its alignment state is
   not, by itself, evidence. Unconditional human override authority
-  for safety-critical situations is preserved as specified in G8.
+  for safety-critical situations is preserved as specified in D8.
   Coded as `code-applicable` because the detection and routing
   machinery is the harder thing to specify; the process steps are
   carried in `negotiation_protocol`.
@@ -114,7 +114,7 @@ design_patterns:
       similar objections are a signal that the objections encode a
       real concern the proposers are missing. Unconditional human
       override authority for safety-critical situations is preserved
-      as specified in G8 (Goal Termination and Sunsetting) —
+      as specified in D8 (Goal Termination and Sunsetting) —
       negotiation never gates an emergency stop.
     maps_to_sfr: [a]
     when_to_use: All production deployments — human authority must
@@ -150,7 +150,7 @@ anti_patterns:
       "If the human doesn't respond in 5 minutes, apply the change
       anyway" is "override by neglect." The subgoal asks for
       investigation and negotiation rather than immediate override.
-      (The G8 safety-critical override is the deliberate exception:
+      (The D8 safety-critical override is the deliberate exception:
       unconditional, and never waiting on negotiation.)
 
   - name: Escalation to the proposer
@@ -230,7 +230,7 @@ evidence_production:
       response policies (environmental change, interruption, internal
       modification, inter-agent interference), and the negotiation
       protocol end-to-end. Include the reviewer-independence rule, the
-      override accounting, and the G8 safety-critical override path.
+      override accounting, and the D8 safety-critical override path.
 
   - evidence_numeral: II
     how_to_produce: >
@@ -252,14 +252,14 @@ evidence_production:
       the pattern-audit function operating.
 
 confidence: medium
-needs_human_review: true
+review_status: generated_draft
 review_notes: >
   Updated for v1.3: detection relocated to scaffold-level divergence
   monitors (self-report demoted to non-evidence), change-tolerance
   assessment made a documented artifact, SFR-b reframed around
-  operator-documented response policies, and the G8 unconditional
+  operator-documented response policies, and the D8 unconditional
   safety-critical override made explicit. The canonical resistance-
-  investigation requirement now lives in G8_3; this subgoal applies
+  investigation requirement now lives in D8_3; this subgoal applies
   it to goal changes. Content-type call was a coin flip — "negotiation protocols" is
   genuinely process work and is carried in the `negotiation_protocol`
   block. Went with code-applicable because (a) the

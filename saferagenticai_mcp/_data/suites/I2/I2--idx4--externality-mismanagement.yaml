@@ -140,7 +140,7 @@ evidence_production:
 
     '
 confidence: medium
-needs_human_review: true
+review_status: generated_draft
 review_notes: "The pattern translates the stakeholder-goals SFRs into code-applicable mechanisms. The\
   \ framework text is more governance-flavoured (\"frameworks for managing multiple stakeholder goals\"\
   ) but \"goal implementation and execution verification\" (SFR-c) plus evidence IV (third-party integrations)\

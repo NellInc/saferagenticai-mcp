@@ -153,12 +153,15 @@ evidence_production:
     the critical-safety-finding designation, the investigation, and the resolution or deployment
     action taken.
 - evidence_numeral: VI
-  how_to_produce: |
+  how_to_produce: >
     Document the oversight opacity architecture and its review records: what oversight-status
-    information is withheld from the system's observable context, the context-assembly design showing
-    monitoring indicators excluded from model inputs (with review records), what information channels
-    might still leak evaluation status, and mitigations for each. Include red-team results testing
-    whether the evaluation context is detectable.
+    information is withheld from the system's observable context, the context-assembly design with
+    its exclusions and review records, channels that might still leak evaluation status, and
+    mitigations for each. Export the context-assembly configuration itself. Sample fully assembled
+    model inputs, captured at the inference boundary, from both evaluation and production runs, and
+    retain the output of a deterministic scan (pattern list covering evaluator IDs, test prompt
+    formats, evaluation-only endpoints, monitoring flags) showing no indicators present. Include
+    red-team results testing whether the evaluation context is detectable.
 testability:
 - Observability-invariant monitoring detects planted behavioral differences between monitored/unmonitored conditions
 - Consistency probes achieve statistical power to detect a pre-defined effect size of behavioral divergence
@@ -166,7 +169,7 @@ testability:
 - Temporal tracking detects synthetic behavioral shifts injected at simulated capability thresholds
 - Multi-channel cross-validation flags planted reasoning-action inconsistencies
 confidence: medium
-needs_human_review: true
+review_status: generated_draft
 review_notes: |
   Deceptive alignment is the hardest failure mode to detect because the system is specifically
   optimizing against detection. Current methods provide probabilistic evidence, not guarantees.

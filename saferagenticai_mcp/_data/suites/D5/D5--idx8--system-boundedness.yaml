@@ -151,7 +151,7 @@ evidence_production:
 
     '
 confidence: high
-needs_human_review: false
+review_status: generated_draft
 review_notes: 'High confidence on the envelope + runtime gate + telemetry shape — this is well-understood
   safety engineering applied to agents. The hardest part in practice is the envelope''s content, not its
   enforcement: getting agreement on what the agent may and may not do is a product/policy question that

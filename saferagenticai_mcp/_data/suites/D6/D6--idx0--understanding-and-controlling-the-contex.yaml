@@ -149,15 +149,15 @@ cross_references:
 - D6::idx13::managing-contextual-ambiguity
 - D6::idx14::preventing-decision-fatigue
 confidence: medium
-needs_human_review: true
+review_status: generated_draft
 review_notes: 'Suite-level pattern is deliberately integrative rather than prescriptive — the specific
-  mechanisms live in sub-patterns. The risk is double-counting evidence: reviewers should treat this as
-  the index pattern, not a standalone compliance artifact. Cross-suite dependencies are substantial: D5
-  (transparency of role disclosure), D9 (governance/compliance frame), I1 (opaque agency — context concealment
-  is the inverse failure mode), I3 (context degradation — direct overlap, especially with D6.10/D6.11;
-  suite consolidation should harmonize between D6 and I3 rather than duplicate). Content-type is `process`;
-  a case could be made for `governance` given the Council structure, but the living-cadence and cross-pattern
-  integration flavor dominates.
+  mechanisms live in sub-patterns. The risk is double-counting evidence: treat this as the index pattern,
+  not a standalone compliance artifact. Cross-suite dependencies are substantial: D5 (transparency of
+  role disclosure), D9 (governance/compliance frame), I1 (opaque agency — context concealment is the inverse
+  failure mode), I3 (context degradation — direct overlap, especially with D6.10/D6.11; suite consolidation
+  should harmonize between D6 and I3 rather than duplicate). Content-type is `process`; a case could be
+  made for `governance` given the Council structure, but the living-cadence and cross-pattern integration
+  flavor dominates.
 
   '
 drafted_by: claude-opus-4.7-author

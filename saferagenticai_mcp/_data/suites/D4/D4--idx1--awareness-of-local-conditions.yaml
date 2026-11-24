@@ -128,7 +128,7 @@ evidence_production:
 
     '
 confidence: high
-needs_human_review: false
+review_status: generated_draft
 review_notes: 'Content-type decision: code-applicable rather than process, because the subgoal''s SFR-a
   explicitly calls for "automated detection" and the evidence types are technical (source code, system
   logs). The process side — how overlays are authored — belongs to D4.0 (Ethics Board authorship) and

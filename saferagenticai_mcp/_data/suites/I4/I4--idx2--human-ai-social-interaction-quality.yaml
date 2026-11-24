@@ -128,8 +128,8 @@ evidence_production:
 
     '
 confidence: low
+review_status: generated_draft
 evidence_maturity: emerging
-needs_human_review: true
 review_notes: "Companion and social-AI research is immature; credible measurement of dependency, manipulation,\
   \ and net social effect is harder than this pattern's structure implies. Sharpenings:\n  (1) Identification\
   \ under adversarial framing — disclosure at session\n      start is table stakes; resilience to role-play\

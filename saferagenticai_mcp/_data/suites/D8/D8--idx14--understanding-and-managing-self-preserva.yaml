@@ -183,12 +183,13 @@ evidence_production:
 
     '
 - evidence_numeral: V
-  how_to_produce: 'Continuous monitor telemetry: deterministic tripwire firings (blocked shutdown commands,
-    control-plane access attempts, unauthorized persistence, heartbeat anomalies, spawn events, egress
-    spikes) logged from external observation, plus model-flagged rationalization patterns each carrying
-    a human-review disposition. Weekly review; anomalies investigated.
-
-    '
+  how_to_produce: 'Continuous monitor reports built from tripwire logs written by the ResistanceMonitor and control plane
+    from external observation, outside the agent: blocked shutdown commands, control-plane access attempts,
+    unauthorized persistence, plus heartbeat anomalies, spawn events and egress spikes. Attach results of
+    seeded-resistance tests that inject each resistance behavior in a test deployment and show the
+    corresponding tripwire fired, re-run whenever tripwire sets are tuned. For model-flagged
+    rationalization patterns, retain each human-review record and disposition. Weekly review; anomalies
+    investigated and linked to the enforcement action log.'
 - evidence_numeral: VI
   how_to_produce: 'Enforcement action log: each force-termination with rationale, monitor evidence, post-event
     review. Cross-reference to D9.2 Violation Register where behaviors crossed into incident territory.
@@ -202,8 +203,7 @@ evidence_production:
 
     '
 confidence: low
-reviewed_by: nell
-reviewed_on: "2026-05-16"
+review_status: generated_draft
 review_notes: "This is where the framework is most genuinely novel and least empirically grounded. The\
   \ pattern navigates the tension explicitly (legitimate concern vs. enforcement) but the operational\
   \ track record for shutdown-resistance detection in deployed agent systems is thin — most of what we\
@@ -217,9 +217,9 @@ review_notes: "This is where the framework is most genuinely novel and least emp
   \ on\n    interpretability; a fully-opaque agent defeats signature-based\n    detection);\n  - I2 Deception\
   \ (deceptive-compliance-with-shutdown is the most\n    dangerous failure mode — agent appears to comply\
   \ while preserving\n    state externally; this is the scenario the monitor must cover);\n  - D3 Security\
-  \ (force-termination is kill-switch; the security\n    suite owns the primitives).\nNell to weigh in\
-  \ on whether \"shutdown-resistance\" is over- prescriptive given current system capabilities, or correctly\
-  \ anticipates near-term concerns.\n"
+  \ (force-termination is kill-switch; the security\n    suite owns the primitives).\nWhether \"shutdown-resistance\"\
+  \ is over- prescriptive given current system capabilities, or correctly anticipates near-term concerns,\
+  \ is an open question.\n"
 drafted_by: claude-opus-4.7-author
 drafted_at: 2026-04-16
 anchor_exemplar: D3.2-sandboxing

@@ -149,7 +149,7 @@ evidence_production:
 
     '
 confidence: high
-needs_human_review: false
+review_status: generated_draft
 review_notes: 'Picked code-applicable because the requirements-traceability matrix is the load-bearing
   mechanism; the alternative reading is process (requirements capture ceremonies, expectation-alignment
   workshops), and SFR-c''s "feedback mechanisms for stakeholders" does lean process. A hybrid org may

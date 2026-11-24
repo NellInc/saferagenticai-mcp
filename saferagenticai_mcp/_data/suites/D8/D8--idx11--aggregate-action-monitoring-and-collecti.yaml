@@ -138,7 +138,7 @@ cross_references:
   - "D7::idx8::managing-probabilistic-decision-outcomes"
   - "D8::idx19::undefined-multi-agent-interaction-protoc"
 confidence: medium
-needs_human_review: false
+review_status: generated_draft
 review_notes: 'This subgoal addresses a gap that single-action safety gates miss: the
   cumulative effect. The "salami attack" framing is deliberate — an adversary (or an
   optimization loop) can achieve a large effect through many small steps that each pass

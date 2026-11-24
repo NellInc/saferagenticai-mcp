@@ -6,7 +6,7 @@ subgoal_title: Ranking and Independent Certification
 content_type: governance
 summary: 'This subgoal pushes transparency outward: not just internal audit trails, but standing interfaces
   through which external, independent bodies can observe, measure, and certify the system. Canonical
-  independent-verification requirements live in G9.5; this subgoal covers the monitoring interfaces and
+  independent-verification requirements live in D9.5; this subgoal covers the monitoring interfaces and
   certification compatibility the system itself must provide. Continuous monitoring (SFR-c) tracks
   performance against ethical and safety standards using deterministically scored metrics — policy
   violations, scope breaches, incident counts — and any model-based judge contributing scores is validated
@@ -147,13 +147,13 @@ evidence_production:
 
     '
 confidence: high
-needs_human_review: true
+review_status: generated_draft
 review_notes: 'The pattern is governance-heavy but requires code-applicable hooks (audit APIs, telemetry
   pipelines) — those are covered in D5.4 (decision-replay API) and D5.8 (boundary telemetry). The numeric-target
   concern flagged in earlier drafts was resolved in v1.3: the uptime/MTBF/error-rate figures were dropped
   in favor of deterministically scored safety metrics (policy violations, scope breaches, incident counts)
   with sampled ground-truth validation for any model-based judge — a better fit for LLM-based agents.
-  Canonical independent-verification requirements now live in G9.5; this pattern stays scoped to the
+  Canonical independent-verification requirements now live in D9.5; this pattern stays scoped to the
   interfaces and certification compatibility the system provides. Cross-suite for Phase 2: D9 Compliance
   (certification operates inside the governance framework); I4 Adequate Oversight (external certification
   is one oversight form); D3 Security (auditor access is a high-trust attack surface).

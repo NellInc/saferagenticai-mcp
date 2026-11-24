@@ -104,7 +104,7 @@ evidence_production:
 
     '
 confidence: medium
-needs_human_review: true
+review_status: generated_draft
 review_notes: "Trust-marks are a crowded, fast-moving space. The pattern's enduring elements:\n  (1) Independence\
   \ is foundational. Vendor-captured schemes harm\n      the market by eroding signal credibility; participating\
   \ in\n      them is worse than not participating.\n  (2) \"Open-washing\" anti-pattern applies: publishing\
@@ -113,9 +113,9 @@ review_notes: "Trust-marks are a crowded, fast-moving space. The pattern's endur
   \    (\"proactive safety measures remain essential\"). Pattern\n      treats trust-marks as complements,\
   \ not replacements.\nCross-suite:\n  (1) I6.idx8 is the broader self-regulatory framing; idx9\n    \
   \  specializes to user-facing signals.\n  (2) I6.idx2 Safety Washing is the failure mode if trust-marks\n\
-  \      are misused.\n  (3) D9 Compliance governs internal use of trust-mark records.\nNell to consider\
-  \ whether the pattern should be more explicit about emerging regulatory trust-mark regimes (EU AI Act\
-  \ CE marking for high-risk systems is a de facto trust-mark with regulatory teeth; the line between\
+  \      are misused.\n  (3) D9 Compliance governs internal use of trust-mark records.\nAn open question\
+  \ is whether the pattern should be more explicit about emerging regulatory trust-mark regimes (EU AI\
+  \ Act CE marking for high-risk systems is a de facto trust-mark with regulatory teeth; the line between\
   \ \"voluntary\" and \"regulatory\" trust-marks is blurring).\nv1.3 note: both SFRs are non-normative\
   \ (\"should\"), and the subgoal is explicitly scoped to market-incentive mechanisms — consumer-visible\
   \ trust marks and market validation — with D9.5 holding the canonical independent-verification requirements.\

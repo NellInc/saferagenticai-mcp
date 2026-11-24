@@ -166,7 +166,7 @@ evidence_production:
 
     '
 confidence: medium
-needs_human_review: true
+review_status: generated_draft
 review_notes: 'Updated for v1.3 catalog revision: SFR-a now requires documented quantitative performance
   envelopes per operating regime; SFR-b names external logs and inspectable monitoring architecture as
   the conformity basis and excludes model-graded safety scoring. Evidence XI (independent adversarial

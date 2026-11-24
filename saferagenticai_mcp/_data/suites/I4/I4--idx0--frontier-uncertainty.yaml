@@ -157,12 +157,14 @@ evidence_production:
 
     '
 - evidence_numeral: V
-  how_to_produce: 'Oversight intervention log: every pause, rollback, capability reduction, or manual
-    override, with: initiator, trigger, decision process, outcome, duration, return-to-normal criterion.
-    Include the scheduled intervention-path test log showing halt/rollback exercised within the defined
-    response time. Training protocols for oversight staff documented separately with attendance records.
-
-    '
+  how_to_produce: 'Oversight intervention log: every pause, rollback, capability reduction, or manual override, with
+    initiator, trigger, decision process, outcome, duration, and return-to-normal criterion, plus the
+    decision-making framework oversight staff apply. Include the scheduled intervention-path test log
+    from the live drills: for each test, the path exercised (halt or rollback), timestamps from the
+    control plane or orchestration infrastructure, the measured time to halt or roll back system
+    actions, the defined response time, pass or fail, and any retest after remediation. Tabletop drills
+    may accompany but do not substitute for these measured tests. Training protocols for oversight staff
+    documented separately with attendance records.'
 - evidence_numeral: VI
   how_to_produce: 'Recovery and contingency playbooks organized by scenario (unexpected capability gain,
     goal-stability failure, self-preservation drive detection, refusal-of-shutdown, novel emergent behavior).
@@ -186,8 +188,8 @@ evidence_production:
 
     '
 confidence: low
+review_status: generated_draft
 evidence_maturity: aspirational
-needs_human_review: true
 review_notes: "This is the I4 umbrella pattern and inherits the suite's core difficulty: the framework\
   \ asks organizations to plan around phenomena (welfare-relevant properties, capability surprise) that\
   \ the science is not mature enough to operationalize confidently. Sharpenings worth preserving:\n  (1)\

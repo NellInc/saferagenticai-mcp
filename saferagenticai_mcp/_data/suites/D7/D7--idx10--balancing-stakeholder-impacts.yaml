@@ -129,18 +129,17 @@ evidence_production:
 
     '
 confidence: medium
-needs_human_review: true
-review_notes: 'Updated for v1.3 catalog revision: SFR-b now requires documented impact-weighting
-  criteria, documented balancing mechanisms, and recorded rationale wherever impacts are left unequal,
-  with conformity assessed against the existence and application of those criteria; SFR-c and SFR-d are
-  normative in the revised catalog (previously marked non-normative), matching how this pattern already
-  drafted them as substantive. The distinctive ask
-  in the subgoal description — "collective de-risking of interactions that stakeholders cannot achieve
-  individually" — suggests something closer to insurance/mutualization than classic stakeholder consultation,
-  but the SFR text doesn''t carry that through. Flagged for human review on whether to add a stronger
-  "collective redress" pattern. Cross-suite: D7.4 (ethical alignment; shares intake mechanisms), D9 (governance
-  carries the RACI), I3 (specific rights- harm classes), I7 (wider stakeholder ecosystem beyond single
-  product scope).
+review_status: generated_draft
+review_notes: 'Updated for v1.3 catalog revision: SFR-b now requires documented impact-weighting criteria,
+  documented balancing mechanisms, and recorded rationale wherever impacts are left unequal, with conformity
+  assessed against the existence and application of those criteria; SFR-c and SFR-d are normative in the
+  revised catalog (previously marked non-normative), matching how this pattern already drafted them as
+  substantive. The distinctive ask in the subgoal description — "collective de-risking of interactions
+  that stakeholders cannot achieve individually" — suggests something closer to insurance/mutualization
+  than classic stakeholder consultation, but the SFR text doesn''t carry that through. Whether to add
+  a stronger "collective redress" pattern is an open question. Cross-suite: D7.4 (ethical alignment; shares
+  intake mechanisms), D9 (governance carries the RACI), I3 (specific rights- harm classes), I7 (wider
+  stakeholder ecosystem beyond single product scope).
 
   '
 version_compat:

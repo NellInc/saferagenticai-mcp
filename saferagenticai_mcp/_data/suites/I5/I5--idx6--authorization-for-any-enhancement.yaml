@@ -158,7 +158,7 @@ evidence_production:
 
     '
 confidence: high
-needs_human_review: true
+review_status: generated_draft
 review_notes: "This subgoal overlaps heavily with D9 Governance (accountability framework, attestation\
   \ process) and with I5.2 code-applicable patterns (capability-delta gate). The division of labor I'd\
   \ propose: D9.2 is the generic governance frame; I5.2 code-applicable is the technical gate; I5.idx6\
@@ -171,8 +171,8 @@ review_notes: "This subgoal overlaps heavily with D9 Governance (accountability 
   \ align.\n  - I6 Competitive Pressures — external competitive pressure is a\n    known distorter of\
   \ authorization rigor; ladder design should\n    resist fast-tracking.\n\n\"Unauthorized-Enhancement\
   \ Response\" is critical and easy to omit; without it, the register only records compliant changes and\
-  \ becomes theatre. Nell/Ali to verify whether framework-external audit rights (external observer on\
-  \ retroactive authorization) are expected here or belong elsewhere.\n"
+  \ becomes theatre. Whether framework-external audit rights (external observer on retroactive authorization)\
+  \ are expected here or belong elsewhere is an open question.\n"
 version_compat:
   framework_version_min: '1.0'
   framework_version_max: 1.x

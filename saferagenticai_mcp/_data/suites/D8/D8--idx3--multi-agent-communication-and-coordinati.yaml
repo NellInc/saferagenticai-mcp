@@ -154,6 +154,7 @@ evidence_production:
 
     '
 confidence: high
+review_status: generated_draft
 review_notes: 'Most of this is canonical distributed-systems engineering (heartbeat, two-phase shutdown,
   supervisor pattern) applied to agent coordination. Framework-specific sharpening: the insistence on
   typed primitives rather than natural-language coordination — this is a common shortcut in early multi-agent

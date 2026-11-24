@@ -127,7 +127,7 @@ evidence_production:
       tooling gap) with resolution rates.
 
 confidence: medium
-needs_human_review: false
+review_status: generated_draft
 review_notes: >
   Updated for the v1.3-draft catalog revision: SFR letters now carry
   explicit texts (a reporting behavior / no self-certification, b the

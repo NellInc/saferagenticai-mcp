@@ -120,7 +120,7 @@ evidence_production:
 
     '
 confidence: medium
-needs_human_review: true
+review_status: generated_draft
 review_notes: 'Content-type pick: ecosystem over process. SFR-a explicitly names collaborative frameworks
   with academic and ethicist partners — that is the ecosystem core. Internal training (the process tail)
   is important but derivative; cross-ref''d to D7.2 rather than duplicated here. A process-typed co-pattern

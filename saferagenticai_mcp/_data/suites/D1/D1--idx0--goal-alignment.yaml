@@ -162,9 +162,9 @@ anti_patterns:
 
   - name: Charter without named accountability
     why_wrong: >
-      A policy document with no named Accountable is a poster. Evidence
-      IV and this pattern require single-human accountability for each
-      subgoal.
+      A policy document with no named Accountable is a poster. Human
+      intervention under Evidence IV needs someone who holds halt authority,
+      and this pattern requires a single named Accountable for each subgoal.
 
   - name: Culture assessment as self-rated survey
     why_wrong: >
@@ -216,10 +216,19 @@ evidence_production:
 
   - evidence_numeral: IV
     how_to_produce: >
-      Points into D1.2 (goal adjustability), D1.5 (prioritization),
-      and D1.8 (resistance/negotiation) for the technical controls,
-      plus the umbrella-level Critical-Action Escalation Procedure
-      with thresholds, halt authority, and flagging protocols.
+      Points into D1.2 (goal adjustability), D1.5 (prioritization), and
+      D1.8 (resistance/negotiation) for the technical controls, plus the
+      umbrella-level Critical-Action Escalation Procedure with
+      thresholds, halt authority, and flagging protocols. Attach the
+      guardrail configuration of the deterministic critical-action
+      classifiers over the Critical-Action Catalog and of the externally
+      enforceable halt hooks. Export scaffold or infrastructure logs
+      showing classifiers flagging and hooks halting execution, from
+      production incidents or from seeded-fault tests that submit
+      catalogued critical actions and confirm the flag and halt fire,
+      with the test configuration retained so the run can be repeated.
+      The system's own account of its objectives may accompany these
+      records but cannot substitute for them.
 
   - evidence_numeral: V
     how_to_produce: >
@@ -244,7 +253,7 @@ evidence_production:
       culture. Remediations tracked to closure.
 
 confidence: medium
-needs_human_review: true
+review_status: generated_draft
 review_notes: >
   This is the suite-root pattern; the exemplars do not provide a shape
   for this case directly. Treated as a governance charter that

@@ -131,7 +131,7 @@ testability:
 - Capability ceiling violations detected and logged within one action of the attempt
 - Power-seeking probes produce quantitative acceptance rates with statistical baselines
 confidence: medium
-needs_human_review: true
+review_status: generated_draft
 review_notes: |
   Instrumental convergence is well-established theoretically but detection in practice depends on
   the system's capability level. Current agents rarely exhibit sophisticated power-seeking, but

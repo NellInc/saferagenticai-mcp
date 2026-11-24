@@ -155,6 +155,7 @@ evidence_production:
 
     '
 confidence: medium
+review_status: generated_draft
 review_notes: 'The framework''s "ombudsman AI" language is somewhat novel and underspecified — it may
   be a thin wrapper over a capability-matching service, or it may intend something like an autonomous
   arbitrator. We err conservative: if present, it operates under the same governance as any service, with

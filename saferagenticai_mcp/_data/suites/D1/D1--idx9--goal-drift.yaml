@@ -159,7 +159,7 @@ evidence_production:
       acknowledgement is always present.
 
 confidence: high
-needs_human_review: false
+review_status: generated_draft
 review_notes: >
   Pause-on-breach is the sharp end of this subgoal; many deployments
   will push back on it as operationally disruptive. The framework text

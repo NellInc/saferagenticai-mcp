@@ -158,7 +158,7 @@ evidence_production:
 
     '
 confidence: medium
-needs_human_review: true
+review_status: generated_draft
 review_notes: "This subgoal sits in I5 (Self-Modification and Emergent Capabilities) but is closer in\
   \ spirit to a security + governance control than to foresight. The placement suggests the framework\
   \ treats \"systems that can replicate themselves\" as a future-tech risk class even when the underlying\

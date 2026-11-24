@@ -5,6 +5,7 @@ suite_title: Value Alignment
 subgoal_title: Content Provenance and Synthetic Media Identification
 content_type: governance
 confidence: low
+review_status: generated_draft
 summary: >
   AI systems capable of generating media (text, audio, images, video) must
   implement content provenance mechanisms enabling downstream identification
@@ -62,11 +63,9 @@ normative_anchors:
   sfrs_not_addressed: []
   evidence_not_addressed: []
 review_notes: >
-  Drafted from the canonical SFRs to replace an index-reconciliation stub
-  (2026-06-10). Governance blocks map one-to-one onto SFRs a-c and evidence
-  I-III but have not had domain-expert review; treat as a starting scaffold,
-  not settled guidance.
-needs_human_review: true
+  Drafted from the canonical SFRs to replace an index-reconciliation
+  stub (2026-06-10). Governance blocks map one-to-one onto SFRs a-c and
+  evidence I-III.
 version_compat:
   framework_version_min: "1.0"
   framework_version_max: "1.x"

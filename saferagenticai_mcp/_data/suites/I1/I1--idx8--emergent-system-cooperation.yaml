@@ -21,8 +21,9 @@ normative_anchors:
   - II
   - III
   - IV
+  - V
   sfrs_not_addressed: []
-  evidence_not_addressed: [V]
+  evidence_not_addressed: []
 design_patterns:
 - name: Capability-envelope enforcement
   sketch: Every agent carries a declared capability envelope (the set of action classes, spending limits,
@@ -114,8 +115,16 @@ evidence_production:
     specific cooperation boundaries (e.g., antitrust-avoidance for coordinated pricing, market-conduct
     rules for coordinated trading), mapping and attestations retained. Cross-linked to D9.2 Jurisdictional
     Compliance Matrix.'
+- evidence_numeral: V
+  how_to_produce: 'False-flag test suite and its last-run results: peers presenting unsigned, expired or
+    wrongly issued certificates, and peers replaying or impersonating another principal''s identity, each
+    refused at the peer-identity attestation step before any cooperation begins. Pair the results with
+    network-layer logs from the egress proxy or service mesh (infrastructure outside the agents) flagging
+    connections to systems not on the authorized peer list, and with the design documentation for both
+    controls. The agent''s own classification of a counterpart''s intent may accompany these records but
+    cannot substitute for them.'
 confidence: medium
-needs_human_review: true
+review_status: generated_draft
 review_notes: '"Emergent cooperation" is a genuinely hard-to-detect class of harm because the individual
   components may be authorized. The pattern''s envelope-enforcement approach is conservative (refuse anything
   outside the solo envelope) and may be tighter than orgs accept for use cases like legitimate collective-intelligence

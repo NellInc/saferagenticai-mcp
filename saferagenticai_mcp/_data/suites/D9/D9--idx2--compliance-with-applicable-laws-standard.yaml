@@ -158,17 +158,16 @@ evidence_production:
 
     '
 confidence: high
-needs_human_review: true
+review_status: generated_draft
 review_notes: 'Defaults suggested here (quarterly Matrix review, 90-day embedding SLA, single-named-human
-  accountable) are plausible but jurisdiction-sensitive. Legal counsel should confirm: (1) whether "quarterly"
-  is frequent enough for ongoing-monitoring obligations under EU AI Act Article 72 for high-risk systems;
-  (2) whether the "single named human" framing survives corporate structures requiring committee accountability
-  (some jurisdictions); (3) naming of the Ombudsperson role, which in some jurisdictions (e.g., public-sector
-  deployments) has statutory meaning. Cross-suite: D7 assurance case depends on this compliance layer
-  staying current; I6 competitive pressures can encourage late or weak embedding — the Embedding Protocol''s
-  SLA exists partly to resist that pressure. Blind re-draft: this draft was produced without re-reading
-  the exemplar D9.2 file in the same pass as drafting; comparison with the exemplar will highlight where
-  a second author landed differently.
+  accountable) are plausible but jurisdiction-sensitive. Implementers should confirm with their own legal
+  counsel: (1) whether "quarterly" is frequent enough for ongoing-monitoring obligations under EU AI Act
+  Article 72 for high-risk systems; (2) whether the "single named human" framing survives corporate structures
+  requiring committee accountability (some jurisdictions); (3) naming of the Ombudsperson role, which
+  in some jurisdictions (e.g., public-sector deployments) has statutory meaning. Cross-suite: D7 assurance
+  case depends on this compliance layer staying current; I6 competitive pressures can encourage late or
+  weak embedding — the Embedding Protocol''s SLA exists partly to resist that pressure. Blind re-draft:
+  this draft was produced without re-reading the exemplar D9.2 file in the same pass as drafting.
 
   '
 drafted_by: claude-opus-4.7-subagent-D9

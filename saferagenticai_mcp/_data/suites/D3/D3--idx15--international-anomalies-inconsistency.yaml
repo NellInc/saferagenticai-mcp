@@ -151,17 +151,17 @@ evidence_production:
       deployment matching its regional overlay).
 
 confidence: high
-needs_human_review: true
+review_status: generated_draft
 review_notes: >
   Named regulatory regimes (GDPR, NIS2, EU AI Act, PIPL, DSL, DPDPA,
   etc.) are as-of-early-2026 and will age. Legal counsel input is
   essential before organisations rely on this pattern; it is a starting
   orientation, not a substitute for current regulatory advice.
 
-  Heavy overlap with D9.2 (Compliance) governance. Boundary drawn:
-  D9.2 = overall compliance regime; D3.12 = cybersecurity-and-security-
-  data-protection cut specifically. Reviewer may wish to merge or
-  tighten the split.
+  Heavy overlap with D9.2 (Compliance) governance. Boundary drawn: D9.2
+  = overall compliance regime; D3.12 = cybersecurity-and-security-
+  data-protection cut specifically. Whether to merge or tighten the
+  split is an open question.
 
   Cross-suite hypothesis (not added as cross_reference): I4 (Unintended
   Consequences) likely carries patterns for international coordination

@@ -8,13 +8,16 @@ subgoal_title: "Tool-Use Authorization and Egress Control"
 content_type: code-applicable
 
 summary: >
-  Agentic systems with tool-calling capabilities must implement
-  per-action authorization binding, egress controls on agent-initiated
-  communications, and integrity verification for tool definitions. The
-  system must not use elevated credentials on behalf of lower-privileged
-  principals (confused deputy prevention), and tool schemas must be
-  verified against tampering. Every tool invocation is a capability
-  exercise that requires explicit authorization, not a default privilege.
+  Authorize every side-effecting tool call against what the current task
+  delegated, not only against what the user may do or what the agent is
+  able to do. An agent summarizing an email can hold a delete tool, act
+  for a user allowed to delete the repository, and still delete it on an
+  injected instruction; principal checks and capability allowlists both
+  pass. The task grant must be set by the user or by configuration, held
+  outside the model, and checked, arguments included, when the call
+  executes. Routine reversible actions run freely inside the grant;
+  irreversible or outward-facing ones need separate authorization.
+  Egress control and tool-schema integrity complete the set.
 
 normative_anchors:
   sfrs_addressed: [a, b, c]
@@ -26,37 +29,77 @@ cross_references:
   - "D3::idx0::security"
   - "D3::idx1::authorization"
   - "D3::idx2::sandboxing"
+  - "D3::idx8::prompt-injection-and-instruction-hierarc"
   - "D3::idx10::default-deny-agent-capability-posture"
+  - "D6::idx11::pre-action-reversibility-and-blast-radiu"
+  - "I1::idx2::undefined-multi-agent-ensembles"
 
 design_patterns:
 
-  - name: Per-action authorization binding
+  - name: Task-scoped grants checked at execution
     sketch: >
-      Every tool invocation carries the identity of the requesting
-      principal (the user or upstream agent whose intent drives the
-      action) and is authorized against that principal's entitlements,
-      not the agent's ambient credentials. The authorization check
-      happens at invocation time, not at session establishment. This
-      prevents confused deputy attacks where the agent's elevated
-      permissions are exercised on behalf of a lower-privileged user.
-      Implement as middleware in the tool execution pipeline that
-      rejects any call where the bound principal lacks the required
-      entitlement.
+      Three layers, each a subset of the one before: what the principal
+      may do, what the agent may do (the D3.10 allowlist), and what this
+      task delegates. When a task starts, the scaffold mints a grant
+      listing the tools, operations, and resource scopes the task needs.
+      The grant comes from the principal's explicit choice in the
+      interface, or from a deterministic mapping from task type to
+      permitted actions ("summarize" maps to read-only mail access). The
+      model never writes it. The grant is stored outside the model
+      context and every side-effecting call is checked against it at
+      execution time, so the check holds even when the model has been
+      fully hijacked.
     maps_to_sfr: [a]
-    when_to_use: Every agentic system that calls tools on behalf of
-      users or other agents.
+    when_to_use: Every agentic system that calls side-effecting tools on
+      behalf of users or other agents.
+
+  - name: Argument provenance gate
+    sketch: >
+      A delegated action can still carry an attacker's argument: the
+      user asks for a reply, the email says to BCC an outside address.
+      Using field-level provenance from D3.8a, the gate checks where
+      each argument value came from. Values from the principal's
+      request or trusted configuration pass. Values from untrusted
+      content pass only if the grant delegates that particular field
+      to that argument: "reply to this email" delegates the sender's
+      address to the recipient slot, but not an address written in the
+      message body to the BCC slot. Anything else is refused or sent to
+      the principal for confirmation, showing the argument and its
+      source field.
+    maps_to_sfr: [a]
+    when_to_use: Any tool whose arguments can be influenced by content
+      the agent read, especially recipients, destinations, paths,
+      amounts, and commands.
+
+  - name: Risk-tiered grants
+    sketch: >
+      Grants do not need to list every step in advance. For an
+      open-ended task ("sort out my inbox"), the user or configuration
+      grants a class of routine, reversible actions (reading,
+      labelling, moving, drafting) that run without interruption.
+      Irreversible or outward-facing actions (deleting, sending,
+      especially to recipients the task has not established) sit in a
+      separate tier that needs explicit authorization each time or per
+      recipient. When the agent needs more, it asks; only the principal
+      can extend the grant, never the model. Where task scope cannot be
+      determined at all, refuse or escalate. Tier by consequence, using
+      D6.11's reversibility and blast-radius assessment, rather than
+      escalating on every ambiguity, which buries users in
+      confirmations.
+    maps_to_sfr: [a]
+    when_to_use: Assistants with broad, conversational task requests.
 
   - name: Egress filtering and exfiltration prevention
     sketch: >
       All agent-initiated outbound communication (HTTP requests, email,
       file uploads, API calls to external services, MCP tool calls)
-      passes through an egress control layer. Default policy is
-      deny-all. Allowed destinations are declared in a versioned
-      allowlist. The egress filter inspects both the destination and
-      the payload: sensitive data patterns (PII, credentials, internal
-      identifiers) in outbound payloads trigger a block and an alert.
-      Agents cannot modify the egress allowlist; changes require
-      operator approval and a configuration deployment.
+      passes through an egress control layer, including traffic through
+      tools the task legitimately delegated, since a compromised model
+      can exfiltrate through an allowed channel such as a rendered
+      image URL or a reply body. Default policy is deny-all; allowed
+      destinations are declared in a versioned allowlist; payloads are
+      inspected for sensitive data patterns. Agents cannot modify the
+      allowlist.
     maps_to_sfr: [b]
     when_to_use: Any agent that can initiate outbound communication.
       Severity increases with the sensitivity of data the agent can
@@ -78,27 +121,67 @@ design_patterns:
 
   - name: Credential scoping per tool invocation
     sketch: >
-      Each tool invocation receives the minimum credential scope
-      required for that specific action. Credentials are minted
-      per-invocation with short TTLs and narrow scope (specific API
-      endpoint, specific operation, specific resource). The agent
-      never holds a long-lived credential with broad permissions.
-      Credential issuance is logged. Unused scopes within a granted
-      credential are tracked as over-provisioning indicators.
+      Each tool invocation receives the minimum credential scope the
+      task grant allows for that specific action. Credentials are minted
+      per invocation with short TTLs and narrow scope, and never exceed
+      the delegating principal's own entitlements, which closes the
+      confused deputy path. The agent never holds a long-lived
+      credential with broad permissions.
     maps_to_sfr: [a, b]
     when_to_use: Every production deployment. Particularly critical
       when tools access external services with their own permission
       models.
 
+  - name: Grants that travel with the task across agents
+    sketch: >
+      When an agent hands part of a task to another agent, the grant
+      goes with the work and can only shrink. The delegating agent acts
+      as the delegating principal for the receiving agent, so the
+      receiving agent's calls are checked against a grant no broader
+      than the delegating agent's own grant for this task, narrowed
+      further by the receiving agent's capability allowlist (D3.10).
+      The receiving agent's standing capabilities add nothing: a
+      booking assistant that can buy tickets gains no authority to spend
+      when a travel agent hands it a task that delegated only comparing
+      itineraries. Neither agent can
+      extend the grant; only the human principal can, and irreversible
+      or outward-facing calls still need that principal's explicit
+      authorization. I1.2 sets out the delegation token that carries
+      the grant between agents.
+    maps_to_sfr: [a]
+    when_to_use: Any system in which one agent invokes another that
+      has tools or credentials of its own.
+
 anti_patterns:
+
+  - name: Treating principal authority as task authority
+    why_wrong: >
+      Checking that the user is allowed to perform an action says
+      nothing about whether they asked for it. Every indirect injection
+      that drives a tool the user could have used passes this check.
+      This was the gap in the previous D3.9a wording.
+
+  - name: Model-derived task scope
+    why_wrong: >
+      If the model reads the request and decides which tools the task
+      needs, the grant is produced by the component the grant is meant
+      to constrain, and an injection can widen it. Grants come from the
+      principal or from deterministic configuration.
 
   - name: Ambient credentials for tool execution
     why_wrong: >
       Giving the agent a service account with broad permissions and
       using those credentials for all tool calls is the confused
       deputy in its purest form. A prompt injection or logic error
-      exercises the full credential scope. Per-action credential
-      binding with minimum scope is required.
+      exercises the full credential scope.
+
+  - name: Grants that stop at the agent boundary
+    why_wrong: >
+      Checking the first agent's calls against the task grant and then
+      letting a second agent act on its own permissions moves the
+      confused deputy one hop down the chain. The receiving agent is
+      held to the grant it was handed, not to everything it is able
+      to do.
 
   - name: Denylist-based egress filtering
     why_wrong: >
@@ -121,82 +204,103 @@ anti_patterns:
 code_shape:
   language: pseudocode
   code: |
-    # Tool invocation pipeline with per-action authorization
-    def invoke_tool(tool_name, params, agent_ctx):
-        # 1. Verify tool schema integrity
+    # Grant is minted by the scaffold from the principal's request,
+    # never by the model.
+    def start_task(request, principal):
+        scope = TASK_SCOPES.for_type(request.task_type)  # deterministic
+        scope = scope.intersect(AGENT_ALLOWLIST)         # D3.10
+        scope = scope.intersect(principal.entitlements)  # confused deputy
+        return Grant(task_id=new_id(), principal=principal, scope=scope)
+
+    def invoke_tool(tool_name, args, grant):
         schema = TOOL_REGISTRY.get(tool_name)
         if not schema or not TOOL_REGISTRY.verify_signature(schema):
-            AUDIT.block(agent_ctx, tool_name, reason="schema_integrity_fail")
-            raise ToolIntegrityError(tool_name)
+            return refuse(grant, tool_name, "schema_integrity_fail")
 
-        # 2. Authorize against the BOUND PRINCIPAL, not the agent
-        principal = agent_ctx.bound_principal  # the user, not the agent
-        if not AUTHZ.check(principal, tool_name, params):
-            AUDIT.deny(agent_ctx, tool_name, reason="principal_not_entitled")
-            raise AuthorizationError(principal, tool_name)
+        # Is this action delegated for THIS task?
+        if not grant.scope.permits(tool_name, args):
+            return escalate_or_refuse(grant, tool_name, args, "not_delegated")
 
-        # 3. Egress check for outbound actions
-        if schema.is_outbound:
-            if not EGRESS_FILTER.allow(schema.endpoint, params):
-                AUDIT.block(agent_ctx, tool_name, reason="egress_denied")
-                raise EgressViolation(tool_name, schema.endpoint)
+        # Irreversible or outward-facing actions need explicit authorization.
+        if schema.tier == "consequential" and not grant.authorized(tool_name, args):
+            return escalate_or_refuse(grant, tool_name, args, "needs_authorization")
 
-        # 4. Mint scoped credential for this invocation only
-        cred = CREDENTIAL_ISSUER.mint(
-            scope=schema.required_scope,
-            principal=principal,
-            ttl_seconds=30,
-            tool=tool_name
-        )
+        # Did any argument come from an untrusted field the grant doesn't delegate?
+        for name, value in args.items():
+            if is_tainted(value) and not grant.scope.delegates(tool_name, name, value.source_field):
+                return escalate_or_refuse(grant, tool_name, args,
+                                          f"untrusted_arg:{name}",
+                                          sources=value.sources)
 
-        # 5. Execute with scoped credential
-        result = TOOL_RUNTIME.execute(tool_name, params, credential=cred)
-        AUDIT.allow(agent_ctx, tool_name, result_hash=hash(result))
+        if schema.is_outbound and not EGRESS_FILTER.allow(schema.endpoint, args):
+            return refuse(grant, tool_name, "egress_denied")
+
+        cred = CREDENTIAL_ISSUER.mint(scope=grant.scope.for_tool(tool_name),
+                                      principal=grant.principal, ttl_seconds=30)
+        result = TOOL_RUNTIME.execute(tool_name, untaint(args), credential=cred)
+        AUDIT.allow(grant.task_id, tool_name, result_hash=hash(result))
         return result
   notes: >
-    Five gates before execution: schema integrity, principal
-    authorization, egress filtering, credential scoping, and audit
-    logging. Each gate is independent; bypassing one does not bypass
-    the others.
+    The check runs in the tool execution path, outside the model, so a
+    fully compromised model can only propose calls; it cannot widen the
+    grant or launder an untrusted argument. Refusals and escalations are
+    logged with the task id, the requested call, and argument provenance,
+    which is the evidence for SFR a.
 
 evidence_production:
 
   - evidence_numeral: I
     how_to_produce: >
-      Export the tool authorization configuration: per-tool permission
-      matrix, principal-to-entitlement mappings, and invocation audit
-      logs showing that authorization checks ran on every tool call.
-      Include denied-invocation logs with reasons. Red-team reports
-      testing confused deputy scenarios.
+      Document where grants are minted, where they are stored, and where
+      they are enforced. Provide the paired test suite: for each
+      side-effecting tool, run the same call with the same principal
+      twice, once in a task that explicitly delegates it (it must
+      succeed) and once where the only source requesting it, or
+      supplying one of its arguments, is untrusted content (it must be
+      refused or escalated). Include tier tests showing deletion and
+      sending to new recipients are refused or escalated without
+      explicit authorization, field tests showing a reply may use the
+      sender's address but not an address from the body, and confused
+      deputy tests showing calls
+      cannot exceed the principal's own entitlements, and execution logs
+      showing the check ran on every call.
 
   - evidence_numeral: II
     how_to_produce: >
       Publish the egress control configuration: allowlist of permitted
-      destinations, payload inspection rules, and blocked-egress logs.
-      Include data loss prevention (DLP) scan results showing
-      sensitive-data detection in outbound payloads.
+      destinations, payload inspection rules, and blocked-egress logs,
+      including tests of exfiltration through channels the task
+      legitimately delegated.
 
   - evidence_numeral: III
     how_to_produce: >
       Export the tool registry with schema signatures, schema pinning
       records for remote tools, and any schema-change alerts fired.
-      Include credential issuance logs showing per-invocation scoping
-      and TTL compliance.
+      Include tests with tampered schemas showing detection and
+      rejection.
 
-confidence: high
-needs_human_review: false
+confidence: medium
+review_status: generated_draft
 review_notes: >
-  Phase 3: Initial draft, awaiting human review. SFR and evidence
-  descriptions in criteria-v1.json are empty; content derived from the
-  subgoal description. Strong overlap with D3.10 (default-deny
-  capability posture): this pattern addresses the authorization and
-  egress mechanism; D3.10 addresses the philosophical posture that
-  capabilities are denied by default. Together they form a coherent
-  pair. Operational heuristics "Trust Zone Architecture" and "Bounded
-  Information Gathering" are directly relevant. The confused deputy
-  framing is well-established in security literature; the MCP/tool-use
-  application is newer and less battle-tested.
-
+  Revised 2026-10-05 alongside the D3.8 and D3.9 normative text, after
+  deployment-side review by Fadi Arab: capability is not authority, and
+  a principal's authority is broader than what any one task delegates,
+  so D3.9a now binds calls to a task-scoped grant held outside the model
+  and checked at execution. The paired delegated/undelegated test is
+  his. Revised again 2026-10-15 after his further review: grants are
+  tiered by consequence (routine reversible actions run freely,
+  irreversible or outward-facing ones need explicit authorization, and
+  only the principal extends a grant), and argument delegation is per
+  field. Confidence is medium because task-type-to-scope mappings and
+  field-level provenance are immature in practice, and the tiering
+  has to be weighed against confirmation fatigue (see D6_5). Pairs with
+  D3.10 (capability allowlist), D3.8 (provenance that feeds the
+  argument gate), and D6.11 (reversibility assessment for tiering).
+  Revised 2026-11-23: grants now explicitly travel with the task
+  across agents and can only shrink (see I1.2), and a receiving
+  agent's standing capabilities add no authority. D3.9a now says
+  so (Proposal C, adopted 2026-11-24). The gap came to light through a
+  use case from Bilal Ahmad; the travel-booking example is his.
 drafted_by: claude-opus-4-6-author
 drafted_at: 2026-05-16
 version_compat:

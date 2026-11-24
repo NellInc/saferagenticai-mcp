@@ -1,0 +1,11 @@
+[Unit]
+Description=Daily isolated MCP diagnostic expiry check
+
+[Timer]
+OnCalendar=daily
+Persistent=true
+AccuracySec=1min
+Unit=saferagenticai-mcp-retention.service
+
+[Install]
+WantedBy=timers.target

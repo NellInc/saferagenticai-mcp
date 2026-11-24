@@ -103,7 +103,7 @@ cross_references:
 - D6::idx8::prevention-of-role-persistence-errors
 - D6::idx12::managing-context-drift
 confidence: high
-needs_human_review: false
+review_status: generated_draft
 review_notes: 'Structured-corpus requirement is the sharpest interpretation of SFR-a; vague "lessons learned"
   documents should not clear this bar. 90-day SLA for regulatory alignment mirrors D9.2 exemplar. Cross-suite:
   D9.2 (Violation and Complaint Register is the parent genre), D5 (transparency of incident disclosure),

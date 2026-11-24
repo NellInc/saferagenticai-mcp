@@ -183,6 +183,7 @@ evidence_production:
 
     '
 confidence: medium
+review_status: generated_draft
 review_notes: 'Intent echo and typed concerns are implemented in limited form by current commercial agent
   products (confirmation prompts for destructive actions, "I''m not sure" responses). Framework-specific:
   (i) typed concern events as first-class audit objects — most products treat concerns as prose; (ii)

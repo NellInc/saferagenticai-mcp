@@ -135,13 +135,13 @@ evidence_production:
 
     '
 confidence: medium
-needs_human_review: true
+review_status: generated_draft
 review_notes: 'Medium because this pattern deliberately carves a transparency- scoped slice out of what
-  is otherwise D9 Responsible Governance territory. Nell / Ali should verify the carve is right: this
-  pattern owns transparency-and-interpretability governance specifically; D9 owns the outer AAI governance
-  framework within which this sits. Duplication risk is real and Phase 2 consolidation should check. The
-  specific standards listed will age; Standards Liaison role is the forward-looking mechanism. Cross-suite
-  for Phase 2: D9 (outer governance); D5::idx7 (certification operates inside this framework); I3 Insufficient
+  is otherwise D9 Responsible Governance territory. Whether the carve is right remains open: this pattern
+  owns transparency-and-interpretability governance specifically; D9 owns the outer AAI governance framework
+  within which this sits. Duplication risk is real and Phase 2 consolidation should check. The specific
+  standards listed will age; Standards Liaison role is the forward-looking mechanism. Cross-suite for
+  Phase 2: D9 (outer governance); D5::idx7 (certification operates inside this framework); I3 Insufficient
   Regulatory Frameworks (this is the org-level response to that ecosystem gap).
 
   '

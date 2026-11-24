@@ -140,7 +140,7 @@ evidence_production:
 
     '
 confidence: high
-needs_human_review: false
+review_status: generated_draft
 review_notes: 'The two-key authorization pattern here is stricter than the framework literally requires
   (it says "authorized" adjustments without specifying dual control). It is the safer default; orgs may
   substitute single-key with audit for genuinely low-stakes relaxation. Flag for consolidation: is the

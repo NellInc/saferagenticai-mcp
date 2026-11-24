@@ -226,7 +226,7 @@ evidence_production:
       document alone does not demonstrate the gates held.
 
 confidence: high
-needs_human_review: true
+review_status: generated_draft
 review_notes: >
   This is an umbrella subgoal spanning seven SFRs (a–g) that are independently
   patterned in D3.1–D3.7 and the underlined-variant subgoals. Choice made:

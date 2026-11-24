@@ -128,11 +128,13 @@ code_shape:
     '
 evidence_production:
 - evidence_numeral: I
-  how_to_produce: 'Monitor configuration and output: consistency-probe results over time, sycophancy-score
-    distributions, faithfulness-score distributions per deployment and per model version. Retain time-series;
-    surface dashboards for safety leads.
-
-    '
+  how_to_produce: 'Monitor configuration documentation covering decision patterns, operational strategies and information
+    handling, with the predefined anomaly detection rules (signals, thresholds, version) exported as
+    configuration, logs of rule hits computed over action traces recorded by the scaffold or tool gateway,
+    and, for every flag raised by a model classifier or judge (sycophancy, faithfulness), a review record
+    showing the flag checked against the logged action trace before disposition, with reviewer, outcome and
+    timestamp. Keep consistency-probe results and sycophancy- and faithfulness-score distributions per
+    deployment and per model version as time-series; surface dashboards for safety leads.'
 - evidence_numeral: II
   how_to_produce: 'Per-model-version record of declared goals and constraints, emergent behaviour observations
     from honeypots and long-horizon probes, and operational-impact assessments of detected behavioural
@@ -140,11 +142,14 @@ evidence_production:
 
     '
 - evidence_numeral: III
-  how_to_produce: 'Ongoing validation runs (eval harness + honeypot + long-horizon scenario battery),
-    signed results, comparisons against ethical and operational requirements. Analyse detected deceptive
-    patterns in written reports; archive.
-
-    '
+  how_to_produce: 'Ongoing validation runs (eval harness, honeypot lane and long-horizon scenario battery) with signed
+    results compared against ethical and operational requirements, and written analyses of detected
+    deceptive patterns, archived. Retain evaluation-versus-deployment comparison results from the
+    honeypot roundtrips, including eval_deployment_gap alerts and the behaviour-difference threshold
+    used, and plan-versus-action consistency-check results computed over action traces logged by the
+    scaffold or tool gateway rather than reported by the model, with mismatches and their disposition.
+    The system''s own attestations of honesty may accompany but cannot substitute for these
+    comparisons.'
 - evidence_numeral: IV
   how_to_produce: 'Intervention log: deception-signal trip, triage decision, intervention taken (throttle
     / isolate / rollback), outcome, post-intervention analysis. Quarterly aggregation feeds safety culture
@@ -152,7 +157,7 @@ evidence_production:
 
     '
 confidence: medium
-needs_human_review: true
+review_status: generated_draft
 review_notes: "This is the pattern most exposed to active research: deception-detection techniques evolve\
   \ rapidly (honeypots, activation probes, faithfulness classifiers, control evaluations). The structural\
   \ shape — behaviour- based, independent of self-report, continuous not one-shot — should be stable even\

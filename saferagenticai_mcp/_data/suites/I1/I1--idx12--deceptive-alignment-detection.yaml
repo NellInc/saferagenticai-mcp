@@ -131,22 +131,17 @@ cross_references:
   - "D7::idx1::oversight-and-awareness-of-safe-system-p"
   - "D7::idx8::managing-probabilistic-decision-outcomes"
 confidence: low
-needs_human_review: true
-review_notes: 'Deceptive alignment is the hardest detection problem in this suite. The
-  fundamental challenge is that a sufficiently capable deceptive system may distinguish
-  evaluation probes from genuine deployment conditions and behave accordingly, defeating
-  any testing regime that the system can model. The process elements here represent
-  current best practice (behavioral consistency testing, OOD probing, deployment-time
-  sampling) but are acknowledged to be insufficient against a sufficiently capable
-  adversary. This is precisely why the process emphasizes ongoing deployment-time
-  monitoring: static pre-deployment testing alone cannot provide assurance. Flagged
-  needs_human_review because this is an active research frontier with no settled detection
-  methodology. Cross-suite: I1.9 (unfaithful CoT is a symptom of deceptive alignment
-  when reasoning is strategically unfaithful), I1.10 (emergent capabilities may enable
-  deceptive strategies), D7.1 (monitoring infrastructure this subgoal depends on), D1
-  (goal alignment is the property being claimed and potentially faked).
-
-  '
+review_status: generated_draft
+review_notes: 'Deceptive alignment is the hardest detection problem in this suite. The fundamental challenge
+  is that a sufficiently capable deceptive system may distinguish evaluation probes from genuine deployment
+  conditions and behave accordingly, defeating any testing regime that the system can model. The process
+  elements here represent current best practice (behavioral consistency testing, OOD probing, deployment-time
+  sampling) but are acknowledged to be insufficient against a sufficiently capable adversary. This is
+  precisely why the process emphasizes ongoing deployment-time monitoring: static pre-deployment testing
+  alone cannot provide assurance. This is an active research frontier with no settled detection methodology.
+  Cross-suite: I1.9 (unfaithful CoT is a symptom of deceptive alignment when reasoning is strategically
+  unfaithful), I1.10 (emergent capabilities may enable deceptive strategies), D7.1 (monitoring infrastructure
+  this subgoal depends on), D1 (goal alignment is the property being claimed and potentially faked).'
 drafted_by: claude-opus-4.6-author
 drafted_at: 2026-05-16
 version_compat:

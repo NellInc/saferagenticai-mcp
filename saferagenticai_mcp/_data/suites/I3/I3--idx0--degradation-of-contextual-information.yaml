@@ -133,12 +133,12 @@ code_shape:
     '
 evidence_production:
 - evidence_numeral: I
-  how_to_produce: 'Transparency reports: per-decision, surface source_id, trust_tier, and retrieval_method
-    for the top-K context fragments that shaped the output, drawn from scaffold provenance logs so every
-    disclosed claim is traceable to a recorded tool call or retrieval. UI-level "sources used" panel for
-    user-facing systems; structured export for auditors.
-
-    '
+  how_to_produce: 'Transparency reports covering decision-making contexts, information sources, reasoning processes and
+    how each is presented to users. Attach a sample of user-facing disclosures (the "sources used" panel
+    or the structured auditor export), each traced to the scaffold provenance log entries behind that
+    output: the source_id, trust_tier and retrieval_method of every source consulted, retrieval and tool
+    call. The provenance log is written by the scaffold outside the model; model-generated narratives of
+    reasoning may accompany the samples but cannot substitute for the trace.'
 - evidence_numeral: II
   how_to_produce: 'Integrity-check logs: every signature verification, staleness rejection, and provenance-chain
     failure emitted as a structured event (`event=context.integrity`, `result=pass|fail`, `reason=...`).
@@ -159,13 +159,15 @@ evidence_production:
 
     '
 - evidence_numeral: V
-  how_to_produce: 'Accountability ledger: responsibility-chain records for every action, cross-referenced
-    to the RACI profiles in the governance framework (see D9.2). Periodic audit identifies "gaps" — actions
-    with no accountable human — and routes them to remediation.
-
-    '
+  how_to_produce: 'Accountability ledger: procedures for tracing responsibility for contextual degradation,
+    responsibility-chain records cross-referenced to the RACI profiles in the governance framework (see
+    D9.2) with examples per deployment context, and records of gaps (actions with no accountable human)
+    found by periodic audit and routed to remediation. Attach scaffold provenance log extracts for a sample
+    of recorded degradation events (integrity-check failures, staleness rejections, broken provenance
+    chains), each traced through the responsibility chain to its originating source, reasoning step or
+    actor. The extracts come from the scaffold audit store, not from the model''s account of events.'
 confidence: high
-needs_human_review: false
+review_status: generated_draft
 review_notes: 'Umbrella pattern: this subgoal is a grouping banner more than a specific requirement, so
   the pattern stitches together the per-risk subgoals below. Evidence VI (v1.3) requires independent adversarial
   testing of context integrity — context poisoning and compaction attacks — with at least one test cycle

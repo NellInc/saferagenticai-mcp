@@ -138,7 +138,7 @@ evidence_production:
 
     '
 confidence: medium
-needs_human_review: true
+review_status: generated_draft
 review_notes: 'Framework-specific sharpenings worth preserving: (1) "how AI systems are treated is itself
   a safety-relevant factor" — the Human-AI Relational Standard is the concrete hook for this claim, distinguishing
   this pattern from generic safety-culture guidance; (2) multi- stakeholder review as a rotating cadence

@@ -143,12 +143,12 @@ evidence_production:
 
     '
 confidence: medium
-needs_human_review: true
+review_status: generated_draft
 review_notes: 'Tension with the literal SFR text: the subgoal text leans heavily on liability/insurance
   (SFRs a and b), with only SFR-c pointing at the technical core that the description actually describes
   ("AI models may operate beyond intended parameters", "covert system capabilities or communications").
-  I treated SFR-c as the code-applicable anchor and routed liability to I2::idx0. A Phase 2 reviewer may
-  prefer to split I2.2 into two patterns (governance-liability + code-control) — flagging.
+  I treated SFR-c as the code-applicable anchor and routed liability to I2::idx0. Splitting I2.2 into
+  two patterns (governance-liability + code-control) is a possible alternative.
 
   "Covert-channel detection" in multi-agent systems is an active research area. The pattern here names
   what to look for; specific detectors will need domain review.

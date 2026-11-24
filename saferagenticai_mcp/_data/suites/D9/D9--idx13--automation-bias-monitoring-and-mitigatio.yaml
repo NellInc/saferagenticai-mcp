@@ -105,18 +105,17 @@ evidence_production:
 
     '
 confidence: medium
-needs_human_review: true
+review_status: generated_draft
 review_notes: 'Blind error injection (pattern 3) requires careful scoping to avoid harm from undetected
   injected errors — the technique is well-established in human factors research but the ethics depend
   heavily on domain and reversibility. The "approval count as oversight metric" anti-pattern is widespread
   and worth naming explicitly despite being obvious once stated. Cross-suite: D7::idx12 (operator skill
-  degradation), I4 (human oversight), D9::idx7 (accountability and transparency), D9::idx3 (ex-ante
-  well-being impact).
+  degradation), I4 (human oversight), D9::idx7 (accountability and transparency), D9::idx3 (ex-ante well-being
+  impact).
 
-  RELABELED 2026-06-10: content_type changed from process to code-applicable to match the
-  design_patterns/anti_patterns blocks this file actually carries (schema contract). The prose is
-  org/process-facing, so a human reviewer may prefer restructuring into process_elements/triggers
-  instead.
+  RELABELED 2026-06-10: content_type changed from process to code-applicable to match the design_patterns/anti_patterns
+  blocks this file actually carries (schema contract). The prose is org/process-facing, so restructuring
+  into process_elements/triggers may suit it better.
 
   '
 version_compat:
