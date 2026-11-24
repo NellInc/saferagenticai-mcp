@@ -43,7 +43,7 @@ reports; `_FALLBACK_VERSION` only covers source checkouts, and
 `pyproject.toml`.)
 
 > Status: **0.4.3 is published** (2026-11-24). This data refresh bundles catalogue snapshot `b813d153` and revised D3.9 and I1.2 delegation patterns. The ten-tool interface is unchanged. PyPI reports MIT and the Registry ownership token. Both uploaded files match their independently rebuilt artifacts: wheel SHA-256 `62d818c0c4762b7e54a3577f82bc33c796a6f466a65664109259dc0892826098`; sdist SHA-256 `ca7d2d281452619ca0368a0f29e1b550ddd5b067a7564e2f98ae712ed651e54d`.
-> The Official MCP Registry lists **0.4.3** as latest (published 2026-11-24T02:21:18.90678Z). The hosted endpoint remains on **0.4.2**, snapshot `c9bf29f5`; see `../plugin-review/DEPLOYMENT.md`.
+> The Official MCP Registry lists **0.4.3** as latest (published 2026-11-24T02:21:18.90678Z). The hosted endpoint has served **0.4.3**, snapshot `b813d153`, since 2026-11-24T03:12:26Z; see `../plugin-review/DEPLOYMENT.md`.
 >
 > Previous release: **0.4.2** (2026-11-06, authorised by Nell's "commit and push everything live"; synonym expansion and identifier normalisation in search, every pattern served as `generated_draft`, tasks of 2+ characters; wheel SHA-256 `cfad4a55…`, sdist `562d6cd0…`, matching two byte-identical local builds; a clean install from PyPI loads 239 subgoals, 15 heuristics and 0 validation issues, and the wheel passed `verify-hosted.py` over loopback, 37 checks). The Official MCP Registry published it at 2026-11-06T03:08:55Z. The hosted endpoint has served 0.4.2 since 2026-11-06T03:19:09Z (see `../plugin-review/DEPLOYMENT.md`).
 >

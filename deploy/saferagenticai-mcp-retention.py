@@ -8,7 +8,7 @@ import sys
 import time
 
 NAMESPACE = "saferagenticai-mcp"
-VERSION = "0.4.2"
+VERSION = "0.4.3"
 
 
 def journal_directories():
